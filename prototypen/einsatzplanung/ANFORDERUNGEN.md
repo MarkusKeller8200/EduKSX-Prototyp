@@ -240,6 +240,7 @@ Diese Punkte folgen den Standards der EduKSX-Plattform (EduKSX-Core) und sind be
 | ST-L8 | Sicherung, Wiederherstellung mit dokumentiertem RTO/RPO; regelmässige unabhängige Sicherheitsprüfung. | EMPFOHLEN | – |
 | ST-L9 | Barrierefreiheit WCAG 2.1 AA: Kontrast, Tastatur, Fokus, Screenreader, Status nie nur über Farbe. | EMPFOHLEN | ✓ |
 | ST-L10 | Hilfetexte an Feldern und Kennzahlen (Tooltips); Glossar-Begriffe aus **EduKSX-Glossary**. | EMPFOHLEN | ◐ |
+| ST-L11 | **Gesetzliche Grundlagen in der Hilfe:** LPG und LPVO (Kanton Zürich) vollständig, gegliedert nach Abschnitten und Paragraphen mit Randtiteln, durchsuchbar, §-Verweise im Text verlinkt; Stand und Link zur amtlichen Fassung. Regeln, Warnungen und Parameter der Anwendung verweisen direkt auf die Bestimmung (z. B. Mindestpensum → LPG § 6 Abs. 1). Bei neuem Stand neu aufbereiten (`tools/recht_aufbereiten.py`). | BESCHLOSSEN | ✓ |
 
 ## 15. Einbettung in die EduKSX-Plattform
 

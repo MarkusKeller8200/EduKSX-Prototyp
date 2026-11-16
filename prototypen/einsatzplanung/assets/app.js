@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  const SPEICHER = "eduksx-staffing-prototyp-v3";
+  const SPEICHER = "eduksx-staffing-prototyp-v4";
   const D = window.STAFFING_DATEN;
 
   // ---------------------------------------------------------------- Zustand
@@ -54,6 +54,24 @@
   const planbar = () => S.personen.filter((p) => !p.tagesstruktur && !p.pool);
   const RESS_NAME = () => Object.fromEntries(S.ressourcen.map((r) => [r.id, r.name]));
 
+
+  // ---------------------------------------------------------------- Gesetzliche Grundlagen (LPG, LPVO)
+  const RECHT = window.STAFFING_RECHT || {};
+  const pAnker = (kurz, nr, ueb) => `${kurz}-${ueb ? "ueb" + ueb + "-" : ""}${String(nr).replace(/\s+/g, "")}`;
+  function paragraph(kurz, nr) {
+    const g = RECHT[kurz];
+    if (!g) return null;
+    for (const a of g.abschnitte) for (const p of a.paragraphen) if (!p.uebergang && p.nr === nr) return p;
+    return null;
+  }
+  /** Verweis aus der Anwendung: R("LPVO", "2 c", "Abs. 4") → Link auf die Hilfe mit Randtitel als Tooltip. */
+  function R(kurz, nr, zusatz) {
+    const p = paragraph(kurz, nr);
+    const titel = p ? `${kurz} § ${nr}${p.titel ? " – " + p.titel : ""}` : `${kurz} § ${nr}`;
+    return `<a class="gesetz" href="#/hilfe/${kurz}/${String(nr).replace(/\s+/g, "")}" title="${esc(titel)}">${kurz} § ${esc(nr)}${zusatz ? " " + esc(zusatz) : ""}</a>`;
+  }
+  const RR = (...liste) => liste.map((x) => R(...x)).join(", ");
+
   function wordmark(zusatz) {
     const name = "EduKSX" + (zusatz ? "-" + zusatz : "");
     return `<span class="wm" role="img" aria-label="${esc(name)}"><span aria-hidden="true"><span class="v">E</span><span class="n">du</span><span class="o">K</span><span class="b">SX</span>${zusatz ? `<span class="n">-${esc(zusatz)}</span>` : ""}</span></span>`;
@@ -77,6 +95,7 @@
     stellenplan: ico('<path d="M4 4h16v16H4z"/><path d="M4 9h16M9 9v11"/>'),
     jahresablauf: ico('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
     vzetool: ico('<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12l2 2 4-4"/>'),
+    hilfe: ico('<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5V14M12 17.5v.01"/>'),
     parameter: ico('<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>'),
   };
 
@@ -122,12 +141,12 @@
     const anteilU = netto ? (unterrichtH / netto) * 100 : 0;
     const warnungen = [];
     const pz = bg * 100;
-    if (pz < P().mindestpensum - 0.05) warnungen.push(`Beschäftigungsgrad unter ${P().mindestpensum} % (Mindestpensum in der Regel)`);
-    if (pz > P().maxPensum + 0.05) warnungen.push(`Beschäftigungsgrad über ${P().maxPensum} %`);
-    if (netto && anteilU < P().anteilUnterrichtMin) warnungen.push(`60-%-Regel verletzt: nur ${zahl(anteilU)} % der Netto-Arbeitszeit im Unterricht`);
-    for (const k of klassen) if (k.wlInKlasse < P().klpMindestlektionen) warnungen.push(`Klassenlehrperson ${k.klasse}: nur ${k.wlInKlasse} WL in der Klasse (mindestens ${P().klpMindestlektionen})`);
-    for (const [b, x] of Object.entries(bereiche)) if (x.verplant > x.soll + 0.5) warnungen.push(`Bereich ${b}: ${zahl(x.verplant)} h verplant, Pauschale nur ${zahl(x.soll)} h`);
-    for (const x of gefaesse) if (x.g.kustodie && x.h > P().kustodieMaxStunden) warnungen.push(`${x.g.name}: über ${P().kustodieMaxStunden} h – Entscheid der Schulpflege nötig`);
+    if (pz < P().mindestpensum - 0.05) warnungen.push({ text: `Beschäftigungsgrad unter ${P().mindestpensum} % (Mindestpensum in der Regel)`, recht: ["LPG", "6", "Abs. 1"] });
+    if (pz > P().maxPensum + 0.05) warnungen.push({ text: `Beschäftigungsgrad über ${P().maxPensum} %`, recht: ["LPVO", "9"] });
+    if (netto && anteilU < P().anteilUnterrichtMin) warnungen.push({ text: `60-%-Regel verletzt: nur ${zahl(anteilU)} % der Netto-Arbeitszeit im Unterricht`, recht: ["LPG", "6", "Abs. 2"] });
+    for (const k of klassen) if (k.wlInKlasse < P().klpMindestlektionen) warnungen.push({ text: `Klassenlehrperson ${k.klasse}: nur ${k.wlInKlasse} WL in der Klasse (mindestens ${P().klpMindestlektionen})`, recht: ["LPVO", "10 f"] });
+    for (const [b, x] of Object.entries(bereiche)) if (x.verplant > x.soll + 0.5) warnungen.push({ text: `Bereich ${b}: ${zahl(x.verplant)} h verplant, Pauschale nur ${zahl(x.soll)} h`, recht: ["LPVO", { Schule: "10 a", Zusammenarbeit: "10 b", Weiterbildung: "10 c" }[b]] });
+    for (const x of gefaesse) if (x.g.kustodie && x.h > P().kustodieMaxStunden) warnungen.push({ text: `${x.g.name}: über ${P().kustodieMaxStunden} h – Entscheid der Schulpflege nötig`, recht: ["LPVO", "2 f"] });
     return { wl, faktor: faktor(p), unterrichtH, klpH, klassen, gefaesse, zusatzH, njaz: n, netto, bereiche, anteilU, pensum: pz, warnungen };
   }
   function personRessourcen(pid) {
@@ -236,6 +255,7 @@
     ["gespraeche", "Personalgespräche", "sl sv"],
     ["tagesstrukturen", "Tagesstrukturen", "sl sv bl"],
     ["gruppe", "Einstellungen"],
+    ["hilfe", "Hilfe und Gesetze", "alle"],
     ["parameter", "Parameter und Lektionentafeln", "sl sv"],
   ];
   const rolleKurz = () => ({ schulleitung: "sl", verwaltung: "sv", betreuung: "bl" }[S.rolle]);
@@ -371,10 +391,10 @@
       const wunsch = u && u.status === "eingereicht" ? `${u.wunschProzent} %` : "–";
       const w = Math.min(100, r.pensum);
       return `<tr><td><a href="#/person/${p.id}">${esc(p.name)}</a></td><td>${esc(p.art)}</td><td class="zahl">${r.festProzent ? "–" : r.wl}</td><td class="zahl">${r.festProzent ? "–" : zahl(r.netto)}</td>
-        <td class="zahl">${zahl(r.pensum, 1)} %${r.warnungen.length ? ` <span class="badge warnung" title="${esc(r.warnungen.join(" · "))}"><span aria-hidden="true">△</span>${r.warnungen.length}</span>` : ""}</td><td><div class="balken ${r.pensum > 100 ? "ueber" : r.pensum > 95 ? "voll" : ""}" role="img" aria-label="Pensum ${zahl(r.pensum, 1)} Prozent"><span style="width:${w}%"></span></div></td>
+        <td class="zahl">${zahl(r.pensum, 1)} %${r.warnungen.length ? ` <span class="badge warnung" title="${esc(r.warnungen.map((w) => w.text).join(" · "))}"><span aria-hidden="true">△</span>${r.warnungen.length}</span>` : ""}</td><td><div class="balken ${r.pensum > 100 ? "ueber" : r.pensum > 95 ? "voll" : ""}" role="img" aria-label="Pensum ${zahl(r.pensum, 1)} Prozent"><span style="width:${w}%"></span></div></td>
         <td class="zahl">${wunsch}</td><td>${badge(status(p.id))}</td></tr>`;
     }).join("");
-    return `<div class="seitenkopf"><div><h1>Personen und Pensen</h1><p class="muted">Beschäftigungsgrad nach Berufsauftrag Kanton Zürich: Unterricht (58 h je WL) + Klassenlehrperson (100 h je Klasse) + zusätzliche Aufgaben + anteilige Pauschalen Schule, Zusammenarbeit und Weiterbildung = Beschäftigungsgrad × Netto-Jahresarbeitszeit (nach Alter).</p></div>
+    return `<div class="seitenkopf"><div><h1>Personen und Pensen</h1><p class="muted">Beschäftigungsgrad nach Berufsauftrag Kanton Zürich: Unterricht (58 h je WL) + Klassenlehrperson (100 h je Klasse) + zusätzliche Aufgaben + anteilige Pauschalen Schule, Zusammenarbeit und Weiterbildung = Beschäftigungsgrad × Netto-Jahresarbeitszeit (nach Alter). Grundlage: ${RR(["LPG", "6"], ["LPG", "18"], ["LPVO", "7"], ["LPVO", "9"], ["LPVO", "10"], ["LPVO", "10 f"])}.</p></div>
       <div class="aktionen"><button class="btn" data-aktion="export-personen">⇩ Personalliste (CSV)</button></div></div>
       <div class="tabelle-wrap"><table><thead><tr><th>Person</th><th>Anstellung</th><th class="zahl">WL</th><th class="zahl">Netto-Arbeitszeit h</th><th class="zahl">Beschäftigungsgrad</th><th>Auslastung</th><th class="zahl">Wunsch</th><th>Status</th></tr></thead><tbody>${zeilen}</tbody></table></div>`;
   };
@@ -391,14 +411,14 @@
     const gZeilen = r.gefaesse.map((x) => `<tr><td>${esc(x.g.name)}</td><td>${esc(x.g.bereich)}</td><td>${x.g.art === "zusatz" ? '<span class="badge violett">zusätzlich</span>' : '<span class="badge neutral">aus Pauschale</span>'}</td><td class="zahl">${zahl(x.h)}</td></tr>`).join("");
     const ab = (key) => (f && f.stand ? f.stand[key] : null);
     const n = njaz(p);
-    const bereichZeilen = r.festProzent ? "" : Object.entries(r.bereiche).map(([b, x]) => `<tr><td>${b}: Pauschale ${PAUSCHALE()[b]} h × ${zahl(r.pensum, 1)} %<div class="small muted">davon in Gefässen verplant ${zahl(x.verplant)} h, frei ${zahl(x.soll - x.verplant)} h</div></td><td class="zahl">${zahl(x.soll)} h</td></tr>`).join("");
+    const bereichZeilen = r.festProzent ? "" : Object.entries(r.bereiche).map(([b, x]) => `<tr><td>${R("LPVO", { Schule: "10 a", Zusammenarbeit: "10 b", Weiterbildung: "10 c" }[b])} · ${b}: Pauschale ${PAUSCHALE()[b]} h × ${zahl(r.pensum, 1)} %<div class="small muted">davon in Gefässen verplant ${zahl(x.verplant)} h, frei ${zahl(x.soll - x.verplant)} h</div></td><td class="zahl">${zahl(x.soll)} h</td></tr>`).join("");
     return `
       <p class="small"><a href="#/personen">← Personen</a></p>
       <div class="seitenkopf"><div><h1>${esc(p.name)}</h1><p class="muted">${esc(p.art)}${p.berufseinfuehrung ? " · Berufseinführung" : ""} · Jahrgang ${p.jahrgang} (Alter ${alter(p)}, Ferienanspruch ${n.ferientage} Tage) · Fächer ${esc(p.faecher.join(", ") || "–")}</p></div>
         <div class="aktionen">${badge(status(id))}
           ${istSL() ? `<button class="btn primaer" data-aktion="freigeben" data-id="${id}">Zur Anstellung freigeben</button>` : ""}
           <button class="btn" data-aktion="drucken">⎙ Pensenübersicht (PDF)</button></div></div>
-      ${r.warnungen.length ? `<div class="meldung warnung" role="status"><strong>Prüfen:</strong><ul style="margin:.3rem 0 0">${r.warnungen.map((w) => `<li>${esc(w)}</li>`).join("")}</ul></div>` : ""}
+      ${r.warnungen.length ? `<div class="meldung warnung" role="status"><strong>Prüfen:</strong><ul style="margin:.3rem 0 0">${r.warnungen.map((w) => `<li>${esc(w.text)} – ${R(...w.recht)}</li>`).join("")}</ul></div>` : ""}
       <div class="karten">
         <div class="karte"><div class="titel">Beschäftigungsgrad geplant</div><div class="zahl">${zahl(r.pensum, 1)} %</div>${ab("pensum") != null ? `<div class="small muted">freigegeben: ${zahl(ab("pensum"), 1)} %</div>` : ""}</div>
         <div class="karte"><div class="titel">Netto-Arbeitszeit</div><div class="zahl">${r.festProzent ? "–" : zahl(r.netto) + " h"}</div><div class="small muted">von ${zahl(r.njaz)} h bei 100 %</div></div>
@@ -408,12 +428,12 @@
       ${r.festProzent ? `<div class="meldung info">Anstellung mit festem Pensum (${p.prozent} %) ausserhalb des kantonalen Berufsauftrags.</div>` : `
       <h2>Berufsauftrag nach Tätigkeitsbereichen</h2>
       <div class="tabelle-wrap"><table><tbody>
-        <tr><td>Unterricht: ${r.wl} WL × <span class="tip" title="Lektionenfaktor 58 h je Wochenlektion${p.berufseinfuehrung ? ", in der Berufseinführung +1.5 h" : ""}">${zahl(r.faktor, 1)} h</span></td><td class="zahl">${zahl(r.unterrichtH)} h</td></tr>
-        <tr><td>Klassenlehrperson ${esc(r.klassen.map((k) => k.klasse + (k.anteil < 1 ? " (geteilt)" : "")).join(", ") || "–")}</td><td class="zahl">${zahl(r.klpH)} h</td></tr>
-        <tr><td>Zusätzliche Aufgaben (Ämter, Kustodien, Projekte)</td><td class="zahl">${zahl(r.zusatzH)} h</td></tr>
+        <tr><td>${R("LPVO", "7", p.berufseinfuehrung ? "Abs. 1 und 4" : "Abs. 1")} · Unterricht: ${r.wl} WL × <span class="tip" title="Lektionenfaktor 58 h je Wochenlektion${p.berufseinfuehrung ? ", in der Berufseinführung +1.5 h" : ""}">${zahl(r.faktor, 1)} h</span></td><td class="zahl">${zahl(r.unterrichtH)} h</td></tr>
+        <tr><td>${R("LPVO", "10 f")} · Klassenlehrperson ${esc(r.klassen.map((k) => k.klasse + (k.anteil < 1 ? " (geteilt)" : "")).join(", ") || "–")}</td><td class="zahl">${zahl(r.klpH)} h</td></tr>
+        <tr><td>${R("LPVO", "2 c", "Abs. 4 lit. a")} · Zusätzliche Aufgaben (Ämter, Kustodien, Projekte)</td><td class="zahl">${zahl(r.zusatzH)} h</td></tr>
         ${bereichZeilen}
         <tr class="summe"><td>Netto-Arbeitszeit = Beschäftigungsgrad × ${zahl(r.njaz)} h</td><td class="zahl">${zahl(r.netto)} h</td></tr>
-        <tr class="summe"><td>Beschäftigungsgrad</td><td class="zahl">${zahl(r.pensum, 1)} %</td></tr>
+        <tr class="summe"><td>Beschäftigungsgrad (${R("LPVO", "9")}, ${R("LPG", "6")})</td><td class="zahl">${zahl(r.pensum, 1)} %</td></tr>
       </tbody></table></div>
       <div class="spalten" style="margin-top:1rem">
         <section><h3>Lektionen</h3><div class="tabelle-wrap"><table><thead><tr><th>Klasse</th><th>Fach</th><th>Ressource</th><th class="zahl">WL</th><th class="zahl">h</th></tr></thead><tbody>${lZeilen || '<tr><td colspan="5" class="muted">keine</td></tr>'}</tbody></table></div></section>
@@ -442,7 +462,7 @@
         <div class="tabelle-wrap"><table><thead><tr><th>Teilnehmende</th><th class="zahl">WL</th><th class="zahl">Stunden</th>${istSL() ? "<th></th>" : ""}</tr></thead><tbody>${teil || '<tr><td colspan="4" class="muted">noch niemand</td></tr>'}</tbody></table></div>
       </section>`;
     }).join("");
-    return `<div class="seitenkopf"><div><h1>Berufsauftrag</h1><p class="muted">Aufgaben, Ämter und Sitzungen als Gefässe. «Aus Pauschale» plant, wofür die Pauschalen Schule (60 h), Zusammenarbeit (50 h) und Weiterbildung (30 h bei 100 %) verwendet werden; «zusätzlich» erhöht den Beschäftigungsgrad. Stunden je Person fix oder linear nach Wochenlektionen.</p></div>
+    return `<div class="seitenkopf"><div><h1>Berufsauftrag</h1><p class="muted">Aufgaben, Ämter und Sitzungen als Gefässe. «Aus Pauschale» plant, wofür die Pauschalen Schule (60 h), Zusammenarbeit (50 h) und Weiterbildung (30 h bei 100 %) verwendet werden; «zusätzlich» erhöht den Beschäftigungsgrad. Stunden je Person fix oder linear nach Wochenlektionen. Grundlage: ${RR(["LPG", "18 a"], ["LPG", "18 b"], ["LPG", "18 c"], ["LPVO", "10 a"], ["LPVO", "10 b"], ["LPVO", "10 c"], ["LPVO", "10 e"])}; Entschädigung über 50 h: ${R("LPVO", "2 f")}.</p></div>
       <div class="aktionen">${istSL() ? '<button class="btn primaer" data-aktion="g-neu">+ Gefäss</button>' : ""}<button class="btn" data-aktion="export-ba">⇩ Gesamtexport (CSV)</button></div></div>${karten}`;
   };
 
@@ -476,7 +496,7 @@
         <div class="tabelle-wrap"><table>${kopf}<tbody>${S.ressourcen.map((r) => zeile(r, v[r.id])).join("")}</tbody></table></div>`;
     }
     const ueber = S.ressourcen.filter((r) => budget(r) - vSL[r.id].verplant < -0.05);
-    return `<div class="seitenkopf"><div><h1>Ressourcen</h1><p class="muted">Budget je Ressourcentyp, Verbrauch aus den Zuweisungen, Saldo und Posten.</p></div>
+    return `<div class="seitenkopf"><div><h1>Ressourcen</h1><p class="muted">Budget je Ressourcentyp, Verbrauch aus den Zuweisungen, Saldo und Posten. Kantonale VZE: ${RR(["LPG", "3"], ["LPG", "4"], ["LPVO", "2 c"])}; gemeindeeigene: ${R("LPVO", "2 e")}.</p></div>
       <div class="aktionen">${istSV() ? `<button class="btn" data-aktion="sperre" aria-pressed="${S.budgetGesperrt}">${S.budgetGesperrt ? "🔒 Budget entsperren" : "🔓 Budget für Schulleitung sperren"}</button>` : (S.budgetGesperrt ? '<span class="badge neutral"><span aria-hidden="true">🔒</span>Budget von der Schulverwaltung gesperrt</span>' : "")}
       <button class="btn" data-aktion="export-ress">⇩ Excel/CSV</button></div></div>
       ${ueber.length ? `<div class="meldung warnung" role="status"><strong>Warnung:</strong> Budget überschritten bei ${ueber.map((r) => esc(r.name)).join(", ")}. Die Planung bleibt möglich; bitte begründen oder umverteilen.</div>` : ""}
@@ -504,7 +524,7 @@
         <td>${f.stand ? `<button class="btn klein" data-aktion="vergleich" data-id="${p.id}">Vergleich</button>` : ""} ${aktion}</td></tr>`;
     }).join("");
     const verlauf = S.verlauf.filter((e) => /freigegeben|angestellt|zurückgezogen|quittiert|Bemerkung|erledigt/.test(e.text));
-    return `<div class="seitenkopf"><div><h1>Freigaben und Anstellung</h1><p class="muted">Die Schulleitung gibt abgeschlossene Planungen frei; die Schulverwaltung stellt an. Änderungen nach der Freigabe werden erkannt.</p></div>
+    return `<div class="seitenkopf"><div><h1>Freigaben und Anstellung</h1><p class="muted">Die Schulleitung gibt abgeschlossene Planungen frei; die Schulverwaltung stellt an. Änderungen nach der Freigabe werden erkannt. Grundlage: ${RR(["LPVO", "9", "Abs. 1"], ["LPG", "7"], ["LPVO", "3"], ["LPVO", "4"])}.</p></div>
       <div class="aktionen">${istSL() ? '<button class="btn primaer" data-aktion="sammel">Auswahl freigeben</button>' : ""}<button class="btn" data-aktion="export-personen">⇩ Personalliste</button></div></div>
       <div class="tabelle-wrap"><table><thead><tr>${istSL() ? '<th><span class="sr-only">Auswahl</span></th>' : ""}<th>Person</th><th>Status</th><th class="zahl">Pensum jetzt</th><th class="zahl">Pensum freigegeben</th><th>Freigabe</th><th>Aktionen</th></tr></thead><tbody>${zeilen}</tbody></table></div>
       <h2 style="margin-top:1.25rem">Verlauf</h2>
@@ -530,7 +550,7 @@
         <td>${u.status === "eingereicht" ? `<button class="btn klein" data-aktion="umfrage-zeigen" data-id="${pid}">Antworten</button>` : `<button class="btn klein" data-aktion="erinnern" data-id="${pid}">Erinnern</button>`}</td></tr>`;
     }).join("");
     const offenePersonen = planbar().filter((p) => !S.umfrage[p.id]);
-    return `<div class="seitenkopf"><div><h1>Pensenumfrage ${esc(S.schuljahr)}</h1><p class="muted">Angaben der Mitarbeitenden für das kommende Schuljahr: Weiterbeschäftigung, Pensenwunsch, Befähigungen, Wünsche und Sperrzeiten.</p></div>
+    return `<div class="seitenkopf"><div><h1>Pensenumfrage ${esc(S.schuljahr)}</h1><p class="muted">Angaben der Mitarbeitenden für das kommende Schuljahr: Weiterbeschäftigung, Pensenwunsch, Befähigungen, Wünsche und Sperrzeiten. Die Schulleitung legt den Beschäftigungsgrad fest (${R("LPVO", "9")}); Teilbeschäftigte können nicht zur Erhöhung verpflichtet werden (${R("LPVO", "8")}).</p></div>
       <div class="aktionen">${offenePersonen.length ? `<button class="btn primaer" data-aktion="einladen">Alle übrigen einladen (${offenePersonen.length})</button>` : ""}<button class="btn" data-aktion="erinnern-alle">Erinnerung an ausstehende</button></div></div>
       <div class="karten"><div class="karte"><div class="titel">Eingereicht</div><div class="zahl">${anz("eingereicht")}</div></div><div class="karte"><div class="titel">In Bearbeitung</div><div class="zahl">${anz("in Bearbeitung")}</div></div><div class="karte"><div class="titel">Eingeladen</div><div class="zahl">${anz("eingeladen")}</div></div></div>
       <div class="tabelle-wrap"><table><thead><tr><th>Person</th><th>Status</th><th>Weiter</th><th class="zahl">Wunsch</th><th class="zahl">Geplant</th><th class="zahl">Differenz</th><th>Sperrzeiten</th><th></th></tr></thead><tbody>${zeilen}</tbody></table></div>
@@ -554,7 +574,7 @@
         <td>${darfWeiter ? `<button class="btn klein primaer" data-aktion="sv-weiter" data-id="${a.id}" ${naechster === "geplant" && !a.vertretung ? "disabled title=\"Zuerst Stellvertretung wählen\"" : ""}>${naechster === "unterschrieben" ? "✍ Unterschreiben" : "→ " + esc(naechster)}</button>` : ""}
           ${istSL() && i >= 1 ? `<button class="btn klein" data-aktion="rapport" data-id="${a.id}">+ Rapport</button>` : ""}</td></tr>`;
     }).join("");
-    return `<div class="seitenkopf"><div><h1>Stellvertretungen</h1><p class="muted">Ausfälle erfassen, Vikariate planen, Formulare unterschreiben und weitergeben. Gründe nur als Kategorie, ohne Diagnose. Vikariate aus dem Gestaltungspool höchstens 14 Schulwochen je Einsatz; Kurzvikariate liegen ausserhalb des Berufsauftrags.</p></div>
+    return `<div class="seitenkopf"><div><h1>Stellvertretungen</h1><p class="muted">Ausfälle erfassen, Vikariate planen, Formulare unterschreiben und weitergeben. Gründe nur als Kategorie, ohne Diagnose. Vikariate aus dem Gestaltungspool höchstens 14 Schulwochen je Einsatz; Kurzvikariate liegen ausserhalb des Berufsauftrags. Grundlage: ${RR(["LPG", "5", "Abs. 2"], ["LPG", "25"], ["LPVO", "30"], ["LPVO", "31"], ["LPVO", "2 c", "Abs. 4 lit. d"], ["LPVO", "27"], ["LPVO", "28"], ["LPVO", "29"])}.</p></div>
       <div class="aktionen">${istSL() ? '<button class="btn primaer" data-aktion="ausfall-neu">+ Ausfall erfassen</button>' : ""}</div></div>
       <div class="tabelle-wrap"><table><thead><tr><th>Person</th><th>Grund</th><th>Zeitraum</th><th class="zahl">WL</th><th>Stellvertretung</th><th>Ablauf</th><th>Quelle / Rapport</th><th>Aktion</th></tr></thead><tbody>${zeilen}</tbody></table></div>
       <p class="small muted" style="margin-top:.75rem">Unterschrift über EduKSX-Sign (Signaturstufe ZU PRÜFEN); Meldung an den Kanton über EduKSX-Connect, sofern eine Schnittstelle besteht. Im Prototyp nur angedeutet.</p>`;
@@ -565,9 +585,9 @@
     const zeilen = liste.map((g) => `<tr><td>${esc(pname(g.person))}</td><td>${esc(g.art)}</td><td>${datum(g.datum)}</td><td>${esc(g.status)}</td>
       <td>${g.freigegeben ? '<span class="badge info"><span aria-hidden="true">➜</span>an Verwaltung freigegeben</span>' : '<span class="badge neutral"><span aria-hidden="true">🔒</span>nur Schulleitung</span>'}</td>
       <td>${istSL() ? `<button class="btn klein" data-aktion="formular" data-id="${g.id}">Formular vorausfüllen</button> ${g.freigegeben ? "" : `<button class="btn klein" data-aktion="g-freigeben" data-id="${g.id}">An Verwaltung freigeben</button>`}` : ""}</td></tr>`).join("");
-    return `<div class="seitenkopf"><div><h1>Personalgespräche und Dossier</h1><p class="muted">Mitarbeitendenbeurteilungen, Probezeitgespräche und Unterrichtsbesuche planen und dokumentieren.</p></div>
+    return `<div class="seitenkopf"><div><h1>Personalgespräche und Dossier</h1><p class="muted">Mitarbeitendenbeurteilungen, Probezeitgespräche und Unterrichtsbesuche planen und dokumentieren. Grundlage: ${RR(["LPG", "20"], ["LPVO", "23"], ["LPG", "7 a"], ["LPG", "11 b"], ["LPG", "21"])}.</p></div>
       <div class="aktionen">${istSL() ? '<button class="btn primaer" data-aktion="termin-neu">+ Termin</button>' : ""}</div></div>
-      <div class="meldung warnung" role="note"><strong>Besonders schützenswerte Personendaten.</strong> Zugriff nur für die zuständige Schulleitung; jede Einsicht wird protokolliert. Aufbewahrungs- und Löschfristen je Dokumentart.${istSV() ? " Die Schulverwaltung sieht nur ausdrücklich freigegebene Unterlagen." : ""}</div>
+      <div class="meldung warnung" role="note"><strong>Besonders schützenswerte Personendaten.</strong> Zugriff nur für die zuständige Schulleitung; jede Einsicht wird protokolliert (${R("LPG", "1 a")}). Aufbewahrungs- und Löschfristen je Dokumentart.${istSV() ? " Die Schulverwaltung sieht nur ausdrücklich freigegebene Unterlagen." : ""}</div>
       <div class="tabelle-wrap"><table><thead><tr><th>Person</th><th>Art</th><th>Datum</th><th>Stand</th><th>Sichtbarkeit</th><th></th></tr></thead><tbody>${zeilen || '<tr><td colspan="6" class="muted">Keine freigegebenen Unterlagen.</td></tr>'}</tbody></table></div>`;
   };
 
@@ -632,22 +652,24 @@
           <label class="feld">Basiswert<input type="number" value="${p.basiswert}" disabled><span class="small">Sekundarstufe</span></label>
         </div>
         <p class="small">VZE = ${st.schuelerzahl} × ${zahl(st.sozialindex, 1)} × ${p.korrekturfaktor} / (${p.basiswert} × 100) = <strong>${zahl(x.vze, 2)} VZE</strong> = ${zahl(x.wlBA, 1)} WL (1 VZE = ${p.lektionenJeVZE} WL). Klassen nach Lektionentafel brauchen ${zahl(x.bedarfKlassenVZE, 2)} VZE.</p>
+        <p class="small muted">Grundlage: ${RR(["LPG", "3", "Abs. 1"], ["LPVO", "2", "Abs. 1–4"], ["LPVO", "2 a"], ["LPVO", "2 b"], ["LPVO", "2 d"])}</p>
       </section>
       <div class="karten">
         <div class="karte"><div class="titel">VZE Berufsauftrag</div><div class="zahl">${zahl(x.vze, 2)}</div><div class="small muted">${zahl(x.wlBA, 1)} WL · verplant ${zahl(v.ba.verplant, 1)} WL</div></div>
-        <div class="karte"><div class="titel">VZE Schulleitung</div><div class="zahl">${zahl(x.sl, 3)}</div><div class="small muted">${p.slSockel} + ${p.slJeVZE} × VZE BA${x.vze >= 25 ? " + Sockel je 25 VZE" : ""}</div></div>
-        <div class="karte"><div class="titel">Gestaltungspool</div><div class="zahl">${zahl(x.pool, 3)} VZE</div><div class="small muted">${zahl(x.wlPool, 1)} WL · ${p.gestaltungspoolJeVZE} × VZE BA</div></div>
-        <div class="karte"><div class="titel">Koordination Sek (kommunal)</div><div class="zahl">${zahl(x.koordination, 3)} VZE</div><div class="small muted">${p.koordinationSekJeVZE} × VZE BA, Kosten Gemeinde</div></div>
-        <div class="karte"><div class="titel">Therapien (Höchstangebot)</div><div class="zahl">${zahl(x.therapieMax, 3)} VZE</div><div class="small muted">${p.therapieMaxJe100} VZE je 100 SuS; nicht genutzte in IF umlagerbar (Bewilligung)</div></div>
+        <div class="karte"><div class="titel">VZE Schulleitung</div><div class="zahl">${zahl(x.sl, 3)}</div><div class="small muted">${p.slSockel} + ${p.slJeVZE} × VZE BA${x.vze >= 25 ? " + Sockel je 25 VZE" : ""} · ${R("LPVO", "2 c", "Abs. 1–2")}</div></div>
+        <div class="karte"><div class="titel">Gestaltungspool</div><div class="zahl">${zahl(x.pool, 3)} VZE</div><div class="small muted">${zahl(x.wlPool, 1)} WL · ${p.gestaltungspoolJeVZE} × VZE BA · ${R("LPVO", "2 c", "Abs. 4–5")}</div></div>
+        <div class="karte"><div class="titel">Koordination Sek (kommunal)</div><div class="zahl">${zahl(x.koordination, 3)} VZE</div><div class="small muted">${p.koordinationSekJeVZE} × VZE BA, Kosten Gemeinde · ${R("LPVO", "2 e", "Abs. 1")}</div></div>
+        <div class="karte"><div class="titel">Therapien (Höchstangebot)</div><div class="zahl">${zahl(x.therapieMax, 3)} VZE</div><div class="small muted">${p.therapieMaxJe100} VZE je 100 SuS; nicht genutzte in IF umlagerbar (Bewilligung) · ${R("LPVO", "2 e", "Abs. 2 lit. c, e")}</div></div>
         <div class="karte"><div class="titel">DaZ-Aufnahmeunterricht</div><div class="zahl">${zahl(x.dazWL, 1)} WL</div><div class="small muted">ausserhalb VZE · ${st.dazErstesJahr} SuS 1. Jahr × ${p.dazErstesJahrWL} WL, ${st.dazFolgejahre} SuS Folgejahre</div></div>
       </div>
       <div class="formzeile">${ein("dazErstesJahr", "DaZ-SuS im 1. Jahr", "1", "2 WL je SuS")}${ein("dazFolgejahre", "DaZ-SuS 2./3. Jahr", "1", "0.5–0.75 WL je SuS")}</div>
       <h2>Klassenbildung</h2>
+      <p class="small muted">Die Gemeinde legt im Stellenplan die Aufteilung der VZE auf Abteilungen und Klassen fest (${R("LPG", "3", "Abs. 2")}) und meldet ihn dem Volksschulamt (${R("LPVO", "2", "Abs. 5")}).</p>
       <p class="small muted">Variante 2 Abteilungen (A/B). Höchstzahlen: A ${p.maxKlassengroesse.A}, B ${p.maxKlassengroesse.B}, C ${p.maxKlassengroesse.C}. Mehr als drei über dem Maximum: Halbklassen-/Teamteaching-Lektionen oder Teilung innerhalb der zugeteilten VZE. Schüler/innen in Klassen: ${summeKlassen} (Stichtag: ${st.schuelerzahl}).</p>
       <div class="tabelle-wrap"><table><thead><tr><th>Klasse</th><th>Lektionentafel</th><th class="zahl">Schüler/innen</th><th>Klassengrösse</th><th class="zahl">VZE</th><th class="zahl">WL der Klasse</th></tr></thead><tbody>${klassenZ}
         <tr class="summe"><td colspan="4">Total Klassenlektionen (ohne IF)</td><td class="zahl">${zahl(x.bedarfKlassenVZE, 2)}</td><td class="zahl">${lekBedarf}</td></tr></tbody></table></div>
       <h2 style="margin-top:1.25rem">Mutationen an das Volksschulamt</h2>
-      <p class="small muted">Änderungen während des Schuljahres vor der Eingabe im Personalsystem melden: was, warum, Lektionen, Quelle (Gestaltungspool oder Stellenpool), Person und Startdatum (ein Montag).</p>
+      <p class="small muted">Änderungen während des Schuljahres vor der Eingabe im Personalsystem melden: was, warum, Lektionen, Quelle (Gestaltungspool oder Stellenpool), Person und Startdatum (ein Montag). Anpassung der VZE bei geänderten Verhältnissen: ${R("LPG", "3", "Abs. 3")}.</p>
       <div class="tabelle-wrap"><table><thead><tr><th>Was</th><th>Warum</th><th class="zahl">Lektionen</th><th>Quelle</th><th>Person</th><th>Start</th><th>Stand</th><th></th></tr></thead><tbody>${muts || '<tr><td colspan="8" class="muted">Keine Mutationen.</td></tr>'}</tbody></table></div>
       ${istSL() || istSV() ? '<p style="margin-top:.5rem"><button class="btn" data-aktion="mutation-neu">+ Mutation erfassen</button></p>' : ""}`;
   };
@@ -657,10 +679,10 @@
     const zeilen = S.termine.map((t) => {
       const vorbei = t.datum < heute;
       const naechster = !vorbei && S.termine.filter((x) => x.datum >= heute)[0] === t;
-      return `<tr><td>${datum(t.datum)}</td><td>${esc(t.titel)}</td><td>${esc(t.wer)}</td><td>${vorbei ? '<span class="badge erfolg"><span aria-hidden="true">✓</span>vorbei</span>' : naechster ? '<span class="badge warnung"><span aria-hidden="true">!</span>nächste Frist</span>' : '<span class="badge neutral"><span aria-hidden="true">○</span>offen</span>'}</td></tr>`;
+      return `<tr><td>${datum(t.datum)}</td><td>${esc(t.titel)}</td><td>${esc(t.wer)}</td><td class="small">${t.recht ? R(...t.recht) : ""}</td><td>${vorbei ? '<span class="badge erfolg"><span aria-hidden="true">✓</span>vorbei</span>' : naechster ? '<span class="badge warnung"><span aria-hidden="true">!</span>nächste Frist</span>' : '<span class="badge neutral"><span aria-hidden="true">○</span>offen</span>'}</td></tr>`;
     }).join("");
     return `<div class="seitenkopf"><div><h1>Jahresablauf Planung ${esc(S.schuljahr)}</h1><p class="muted">Fristen der Lehrerstellenbewilligung und der Personalplanung. Planungsdatum im Prototyp: ${datum(heute)}. Daten sinngemäss nach Weisung 2026/27 (ZU PRÜFEN).</p></div></div>
-      <div class="tabelle-wrap"><table><thead><tr><th>Datum</th><th>Schritt</th><th>Zuständig</th><th>Stand</th></tr></thead><tbody>${zeilen}</tbody></table></div>
+      <div class="tabelle-wrap"><table><thead><tr><th>Datum</th><th>Schritt</th><th>Zuständig</th><th>Grundlage</th><th>Stand</th></tr></thead><tbody>${zeilen}</tbody></table></div>
       <p class="small muted" style="margin-top:.75rem">Erinnerungen und Fristen laufen später über EduKSX-Flow.</p>`;
   };
 
@@ -672,17 +694,17 @@
     return `<div class="seitenkopf"><div><h1>Parameter und Lektionentafeln</h1><p class="muted">Kanton Zürich: Berufsauftrag (Handbuch, Stand 1.1.2024) und Lehrerstellenbewilligung (Weisung 2026/27). Werte je Kanton und Schuljahr zu pflegen – im Prototyp änderbar, Änderungen wirken sofort.</p></div></div>
       <h2>Berufsauftrag</h2>
       <div class="formzeile">
-        ${feld("faktorLektion", "Unterricht: h je Wochenlektion", "Lektionenfaktor; Berufseinführung +1.5 h")}
-        ${feld("klassenlehrperson", "Klassenlehrperson: h je Klasse", "bei zwei Personen aufteilbar")}
-        ${feld("pauschaleSchule", "Schule: h bei 100 %", "anteilig")}
-        ${feld("pauschaleZusammenarbeit", "Zusammenarbeit: h bei 100 %", "anteilig")}
-        ${feld("pauschaleWeiterbildung", "Weiterbildung: h bei 100 %", "anteilig")}
+        ${feld("faktorLektion", "Unterricht: h je Wochenlektion", `Lektionenfaktor; Berufseinführung +1.5 h · ${R("LPVO", "7")}`)}
+        ${feld("klassenlehrperson", "Klassenlehrperson: h je Klasse", `bei zwei Personen aufteilbar · ${R("LPVO", "10 f")}`)}
+        ${feld("pauschaleSchule", "Schule: h bei 100 %", `anteilig · ${R("LPVO", "10 a")}`)}
+        ${feld("pauschaleZusammenarbeit", "Zusammenarbeit: h bei 100 %", `anteilig · ${R("LPVO", "10 b")}`)}
+        ${feld("pauschaleWeiterbildung", "Weiterbildung: h bei 100 %", `anteilig · ${R("LPVO", "10 c")}`)}
       </div>
       <div class="formzeile">
-        ${feld("mindestpensum", "Mindestpensum %", "in der Regel")}
-        ${feld("anteilUnterrichtMin", "Mindestanteil Unterricht %", "60-%-Regel")}
+        ${feld("mindestpensum", "Mindestpensum %", `in der Regel · ${R("LPG", "6", "Abs. 1")}`)}
+        ${feld("anteilUnterrichtMin", "Mindestanteil Unterricht %", `60-%-Regel · ${R("LPG", "6", "Abs. 2")}`)}
         ${feld("klpMindestlektionen", "Klassenlehrperson: Mindest-WL", "Sekundarstufe")}
-        ${feld("kustodieMaxStunden", "Kustodie im Berufsauftrag bis h", "darüber Schulpflege")}
+        ${feld("kustodieMaxStunden", "Kustodie im Berufsauftrag bis h", `darüber Entschädigung · ${R("LPVO", "2 f")}`)}
       </div>
       <div class="tabelle-wrap" style="max-width:640px"><table><thead><tr><th>Alter</th><th class="zahl">Ferientage</th><th class="zahl">Netto-Jahresarbeitszeit 100 %</th></tr></thead><tbody>${p.nettoJahresarbeitszeit.map((x, i, arr) => `<tr><td>${i === 0 ? "bis 20" : i === arr.length - 1 ? "ab 60" : (arr[i - 1].bisAlter + 1) + "–" + x.bisAlter}</td><td class="zahl">${x.ferientage}</td><td class="zahl">${zahl(x.stunden)} h</td></tr>`).join("")}<tr><td colspan="2">Brutto (52 × 42 h)</td><td class="zahl">${zahl(p.bruttoJahresarbeitszeit)} h</td></tr></tbody></table></div>
       <h2 style="margin-top:1.25rem">Lektionentafeln Sekundarstufe</h2><div class="spalten">${tafeln}</div>`;
@@ -768,7 +790,7 @@
         <tr><th scope="row">Schuljahr</th><td>${esc(v.schuljahr || "–")}${v.schuljahr && v.schuljahr !== S.schuljahr ? ` <span class="badge warnung"><span aria-hidden="true">△</span>Planung ist ${esc(S.schuljahr)}</span>` : ""}</td></tr>
         <tr><th scope="row">Schulgemeinde</th><td>${esc(v.gemeinde)} (${esc(v.nummer)})</td></tr>
         <tr><th scope="row">Schuleinheiten</th><td>${v.schuleinheiten.map((x) => esc(x.anzeige)).join(", ")}</td></tr></tbody></table></div>` : "";
-    return `<div class="seitenkopf"><div><h1>VZE-Tool des Volksschulamts</h1><p class="muted">Das Excel-Tool, das die Schulgemeinde vom VSA erhält, wird mit der Planung aus EduKSX-Staffing ausgefüllt – exakt im Original: Formatierung, Formeln, Kommentare, Blattschutz und ausgeblendete Blätter bleiben unverändert. Geschrieben wird nur in Eingabezellen.</p></div></div>
+    return `<div class="seitenkopf"><div><h1>VZE-Tool des Volksschulamts</h1><p class="muted">Das Excel-Tool, das die Schulgemeinde vom VSA erhält, wird mit der Planung aus EduKSX-Staffing ausgefüllt – exakt im Original: Formatierung, Formeln, Kommentare, Blattschutz und ausgeblendete Blätter bleiben unverändert. Geschrieben wird nur in Eingabezellen. Meldung des Stellenplans: ${R("LPVO", "2", "Abs. 5")}.</p></div></div>
       <div class="meldung info" role="note"><strong>Datenschutz:</strong> Die Datei wird nur in diesem Browser verarbeitet und nirgends hochgeladen oder gespeichert. Excel rechnet beim Öffnen alle Formeln neu (in LibreOffice: «Neu berechnen» bzw. Strg+Umschalt+F9).</div>
       <section class="karte" style="margin-bottom:1rem"><h2>1. VZE-Tool wählen</h2>
         <div class="formzeile"><label class="feld">Excel-Datei des VSA (.xlsx)<input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" data-aktion="vze-datei"></label></div>
@@ -786,6 +808,72 @@
       </section>
       <h2>3. Vorschau der Zellbelegung (${esc(version)})</h2>${vorschau}
       <p class="small muted">Nicht automatisch ausgefüllt: Abteilungen und Anforderungsstufen, kommunale Erweiterung, Zus. ISR, Antrag zusätzliche VZE, Datum und Unterschriften – diese Blätter bleiben wie geliefert.</p>`;
+  };
+
+  // ---------------------------------------------------------------- Hilfe
+  function verlinken(text, kurz) {
+    // §-Verweise im Gesetzestext verlinken: gleiches Erlass, «LPG»/«Lehrpersonalgesetz» → LPG; andere Erlasse nicht
+    return esc(text).replace(/(§§?\s?)(\d+(?:\s[a-z](?![a-zäöüß]))?)/g, (m, vor, nr, pos, ganz) => {
+      const danach = ganz.slice(pos + m.length, pos + m.length + 70).split("§")[0];
+      let ziel = kurz;
+      if (/\bLPG\b|Lehrpersonalgesetz|Lehrerpersonalgesetz/.test(danach)) ziel = "LPG";
+      else if (/Volksschul|Personalgesetz|Personalverordnung|VVO|Verordnung (über|vom)|Übergangsordnung|Berufseinführung|Obligationenrecht|OR\b|Mittelschul|Vollzugs/.test(danach)) return m;
+      if (!paragraph(ziel, nr)) return m;
+      return `${vor}<a class="gesetz" href="#/hilfe/${ziel}/${nr.replace(/\s+/g, "")}">${nr}</a>`;
+    });
+  }
+  // Stichworte der Anwendung, die im Gesetzestext nicht wörtlich vorkommen (für die Suche)
+  const STICHWORTE = {
+    "LPG-3": "VZE Stellenplan Sozialindex", "LPG-6": "Mindestpensum 35 % 60-%-Regel Beschäftigungsgrad", "LPG-5": "Vikariat Stellvertretung",
+    "LPG-18": "Berufsauftrag Unterricht", "LPG-18a": "Berufsauftrag Schule", "LPG-18b": "Berufsauftrag Zusammenarbeit", "LPG-18c": "Berufsauftrag Weiterbildung",
+    "LPG-20": "MAB Mitarbeitendenbeurteilung", "LPG-7a": "Probezeitgespräch",
+    "LPVO-2": "VZE Formel Basiswert Korrekturfaktor Stellenplan 1. März", "LPVO-2c": "Gestaltungspool Schulleitung VZE 0,028 0,204 0,041",
+    "LPVO-2d": "27,3 Wochenlektionen VZE", "LPVO-2e": "Koordination Sekundarstufe kommunal Mehrferien Altersentlastung Wahlfächer 3. Sek",
+    "LPVO-2f": "Kustodie Entschädigung 50 Stunden Ämter", "LPVO-7": "Lektionenfaktor 58 Stunden Berufseinführung 1,5",
+    "LPVO-9": "Beschäftigungsgrad Schulleitung Pensum", "LPVO-10": "Arbeitszeit Pensenvereinbarung Absenzen 1/12",
+    "LPVO-10a": "Pauschale Schule 60 Stunden", "LPVO-10b": "Pauschale Zusammenarbeit 50 Stunden", "LPVO-10c": "Pauschale Weiterbildung 30 Stunden",
+    "LPVO-10f": "Klassenlehrperson KLP 100 Stunden", "LPVO-11": "Arbeitszeitsaldo 300 Stunden", "LPVO-23": "MAB Mitarbeitendenbeurteilung jährlich",
+    "LPVO-30": "Vikariat Stellvertretung", "LPVO-31": "Vikariat Lohn Lektionenansatz", "LPVO-1a": "Schuljahr 1. August",
+  };
+  seiten.hilfe = function (q, kurz, nr) {
+    const aktiv = RECHT[kurz] ? kurz : (q.get("g") || "");
+    const tab = (k, t) => `<a role="tab" class="btn ${aktiv === k ? "primaer" : ""}" href="#/hilfe${k ? "/" + k : ""}" aria-selected="${aktiv === k}">${t}</a>`;
+    let inhalt;
+    if (!aktiv) {
+      inhalt = `<section class="karte" style="max-width:860px"><h2>So arbeitet EduKSX-Staffing</h2>
+        <ol>
+          <li><strong>Stellenplan und VZE</strong> – zugeteilte Vollzeiteinheiten nach Schülerzahl und Sozialindex (${R("LPG", "3")}, ${R("LPVO", "2")}), Schulleitung und Gestaltungspool (${R("LPVO", "2 c")}).</li>
+          <li><strong>Unterricht</strong> – Lektionen der Klassen Personen zuweisen; 27,3 Wochenlektionen je VZE (${R("LPVO", "2 d")}).</li>
+          <li><strong>Personen und Pensen</strong> – Beschäftigungsgrad aus dem Berufsauftrag (${R("LPG", "18")}–${R("LPG", "18 c")}, ${R("LPVO", "7")}, ${R("LPVO", "10 a")}–${R("LPVO", "10 f")}); Mindestpensum und 60-%-Regel (${R("LPG", "6")}).</li>
+          <li><strong>Freigaben</strong> – die Schulleitung legt den Beschäftigungsgrad im Rahmen des bewilligten Stellenplans fest (${R("LPVO", "9")}), die Gemeinde stellt an (${R("LPG", "7")}).</li>
+          <li><strong>VZE-Tool (VSA)</strong> – Stellenplan an das Volksschulamt melden (${R("LPVO", "2", "Abs. 5")}).</li>
+        </ol>
+        <p class="small muted">Verweise in der Anwendung (z. B. ${R("LPG", "6", "Abs. 2")}) öffnen die Bestimmung hier in der Hilfe.</p></section>
+        <div class="karten" style="margin-top:1rem">${Object.values(RECHT).map((g) => `<a class="karte" href="#/hilfe/${g.kurz}" style="text-decoration:none;color:inherit"><div class="titel">LS ${esc(g.nummer)} · Stand ${esc(g.stand)}</div><div class="zahl" style="font-size:1.2rem">${esc(g.titel)}</div><div class="small muted">${g.abschnitte.reduce((a, x) => a + x.paragraphen.filter((p) => p.nr && !p.uebergang).length, 0)} Paragraphen</div></a>`).join("")}</div>`;
+    } else {
+      const g = RECHT[aktiv];
+      let ueb = 0;
+      const inhaltVz = g.abschnitte.filter((a) => !a.titel.startsWith("Übergangs")).map((a) => `<li><strong>${esc(a.titel)}</strong>${a.paragraphen.length ? `<div class="small">${a.paragraphen.map((p) => `<a href="#/hilfe/${aktiv}/${p.nr.replace(/\s+/g, "")}" title="${esc(p.titel || "")}">§ ${esc(p.nr)}</a>`).join(" · ")}</div>` : ""}</li>`).join("");
+      const text = g.abschnitte.map((a) => {
+        const istUeb = a.titel.startsWith("Übergangs");
+        if (istUeb) ueb++;
+        return `<section class="gesetz-abschnitt"><h2 style="margin-top:1.5rem">${esc(a.titel)}</h2>${a.paragraphen.map((p) => {
+          const id = pAnker(aktiv, p.nr || "x", istUeb ? ueb : 0);
+          const absaetze = p.absaetze.map((x) => x.liste ? `<li style="list-style:none">${verlinken(x.text, aktiv)}</li>` : `<p>${x.nr ? `<sup>${esc(x.nr)}</sup> ` : ""}${verlinken(x.text, aktiv)}</p>`).join("");
+          return `<article class="paragraf${p.aufgehoben ? " muted" : ""}" id="${id}" data-suchtext="${esc(((p.titel || "") + " " + (istUeb ? "" : STICHWORTE[id] || "") + " " + p.absaetze.map((x) => x.text).join(" ")).toLowerCase())}" tabindex="-1">
+            ${p.nr ? `<h3>§ ${esc(p.nr)}${p.titel ? ` <span class="muted" style="font-weight:500">${esc(p.titel)}</span>` : ""}</h3>` : ""}<div class="paragraf-text">${absaetze}</div>${!istUeb && STICHWORTE[id] ? `<p class="small muted">In EduKSX-Staffing: ${esc(STICHWORTE[id])}</p>` : ""}</article>`;
+        }).join("")}</section>`;
+      }).join("");
+      inhalt = `<div class="spalten" style="grid-template-columns:minmax(0,260px) minmax(0,1fr);align-items:start">
+        <nav class="karte" aria-label="Inhalt ${esc(aktiv)}" style="position:sticky;top:5rem;max-height:75vh;overflow:auto"><h2>Inhalt</h2><ol style="padding-left:1rem;margin:0">${inhaltVz}</ol></nav>
+        <div>
+          <div class="seitenkopf" style="margin-bottom:.5rem"><div><h2 style="font-size:1.3rem">${esc(g.titel)}</h2><p class="muted small">LS ${esc(g.nummer)} · Stand ${esc(g.stand)} · aufbereitet aus der Zürcher Gesetzessammlung, ohne Fussnoten${aktiv === "LPVO" ? " und ohne Anhang (Lohntabellen)" : ""}. Massgebend ist die <a href="${esc(g.url)}" target="_blank" rel="noopener">amtliche Fassung</a>.</p></div></div>
+          <div class="formzeile"><label class="feld">Im ${esc(aktiv)} suchen<input type="search" data-aktion="hilfe-suche" placeholder="z. B. Gestaltungspool, Klassenlehrperson" style="min-width:18rem"></label><span class="small muted" id="hilfe-treffer"></span></div>
+          ${text}
+        </div></div>`;
+    }
+    return `<div class="seitenkopf"><div><h1>Hilfe und gesetzliche Grundlagen</h1><p class="muted">Lehrpersonalgesetz (LPG) und Lehrpersonalverordnung (LPVO) des Kantons Zürich – mit Verweisen aus der Anwendung.</p></div></div>
+      <div class="formzeile" role="tablist">${tab("", "Übersicht")}${tab("LPG", "Lehrpersonalgesetz (LPG)")}${tab("LPVO", "Lehrpersonalverordnung (LPVO)")}</div>${inhalt}`;
   };
 
   // ---------------------------------------------------------------- Dialog, Ansage, Export
@@ -943,14 +1031,18 @@
   function aktuelleSeite() { return (location.hash.replace(/^#\//, "").split("?")[0].split("/")[0]) || "uebersicht"; }
   function zeichnen(behalteFokus) {
     const [pfad, query] = location.hash.replace(/^#\//, "").split("?");
-    const [seite, param] = (pfad || "uebersicht").split("/");
+    const [seite, param, param2] = (pfad || "uebersicht").split("/");
     const ziel = seiten[seite] && erlaubt(seite) ? seite : "uebersicht";
     const fokusId = behalteFokus && document.activeElement ? selektor(document.activeElement) : null;
     const scroll = window.scrollY;
-    document.getElementById("app").innerHTML = rahmen(ziel, seiten[ziel](new URLSearchParams(query || ""), param));
+    document.getElementById("app").innerHTML = rahmen(ziel, seiten[ziel](new URLSearchParams(query || ""), param, param2));
     const titel = document.querySelector("main h1");
     document.title = (titel ? titel.textContent + " – " : "") + "EduKSX-Staffing (Prototyp)";
     if (fokusId) { const el = document.querySelector(fokusId); if (el) el.focus(); window.scrollTo(0, scroll); }
+    if (ziel === "hilfe" && param && param2) {
+      const anker = document.getElementById(pAnker(param, param2));
+      if (anker) { anker.classList.add("markiert"); setTimeout(() => { anker.scrollIntoView({ block: "start" }); anker.focus({ preventScroll: true }); }, 0); }
+    }
   }
   function selektor(el) {
     if (el.id) return "#" + CSS.escape(el.id);
@@ -963,11 +1055,21 @@
     const el = e.target.closest("button[data-aktion]");
     if (el && !el.disabled) aktion(el, e);
   });
+  document.addEventListener("input", (e) => {
+    const el = e.target.closest('input[data-aktion="hilfe-suche"]');
+    if (!el) return;
+    const w = el.value.trim().toLowerCase();
+    let n = 0;
+    document.querySelectorAll("article.paragraf").forEach((a) => { const t = !w || a.dataset.suchtext.includes(w); a.hidden = !t; if (t && w) n++; });
+    document.querySelectorAll("section.gesetz-abschnitt").forEach((sct) => { sct.hidden = !!w && !sct.querySelector("article.paragraf:not([hidden])"); });
+    const t = document.getElementById("hilfe-treffer"); if (t) t.textContent = w ? `${n} Paragraphen` : "";
+  });
   document.addEventListener("change", (e) => {
+    if (e.target.matches('input[data-aktion="hilfe-suche"]')) return;
     const el = e.target.closest("select[data-aktion], input[data-aktion]");
     if (el) aktion(el, e);
   });
-  window.addEventListener("hashchange", () => { zeichnen(); const m = document.getElementById("inhalt"); if (m) m.focus({ preventScroll: true }); window.scrollTo(0, 0); });
+  window.addEventListener("hashchange", () => { window.scrollTo(0, 0); zeichnen(); const m = document.getElementById("inhalt"); if (m && !/^#\/hilfe\/[^/]+\/./.test(location.hash)) m.focus({ preventScroll: true }); });
 
   try {
     const t = localStorage.getItem("eduksx-thema");

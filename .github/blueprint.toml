@@ -11,7 +11,7 @@ erledigt = true
 datum = "2026-11-16"
 
 [projekt]
-name = "EduKSX-Prototyp"                    # voller Name, z. B. «SekBülach Intranet»
+name = "EduKSX-Prototyp"                    # voller Name, z. B. «Musterhausen Intranet»
 kurz = "EduKSX-Prototyp"                    # kurzer Name für Release-Titel («Projekt 0.2.0»)
 # Art der Anwendung: «web» (Server/Browser), «desktop» (Installer/App für Windows, macOS, Linux) oder «beides».
 # Bestimmt die Vorgaben für «Fehler melden» (Browser bzw. Betriebssystem), die Betriebssysteme der Prüfungen,

@@ -209,13 +209,13 @@ window.STAFFING_DATEN = (function () {
   // Jahresablauf für die Planung 2027/28 – Termine nach Weisung 2026/27 sinngemäss ein Jahr später (ZU PRÜFEN)
   const termine = [
     { datum: "2026-09-15", titel: "Stichtag Schülerzahlen (Bildungsstatistik)", wer: "Schulverwaltung" },
-    { datum: "2026-12-18", titel: "Beschäftigungsgrad mit den Lehrpersonen klären (vor Weihnachten), Pensenumfrage abschliessen", wer: "Schulleitung" },
-    { datum: "2027-02-15", titel: "Stellenplan, Zusammenstellung VZE und VZE-Tool an das Volksschulamt", wer: "Schulpflege / Schulverwaltung" },
-    { datum: "2027-03-31", titel: "Arbeitszuweisung (Pensenvereinbarung) – muss nicht vorher abgeschlossen sein", wer: "Schulleitung" },
+    { datum: "2026-12-18", titel: "Beschäftigungsgrad mit den Lehrpersonen klären (vor Weihnachten), Pensenumfrage abschliessen", wer: "Schulleitung", recht: ["LPVO", "9"] },
+    { datum: "2027-02-15", titel: "Stellenplan, Zusammenstellung VZE und VZE-Tool an das Volksschulamt (Weisung; Verordnung: bis 1. März)", wer: "Schulpflege / Schulverwaltung", recht: ["LPVO", "2", "Abs. 5"] },
+    { datum: "2027-03-31", titel: "Arbeitszuweisung (Pensenvereinbarung) – muss nicht vorher abgeschlossen sein", wer: "Schulleitung", recht: ["LPVO", "10", "Abs. 1"] },
     { datum: "2027-06-30", titel: "Letzte Korrektur Schülerzahlen, Kredit und Umlagerung Therapie → IF", wer: "Schulverwaltung" },
     { datum: "2027-07-09", titel: "Klassenbildung vor den Sommerferien abschliessen", wer: "Schulleitung" },
-    { datum: "2027-08-16", titel: "Schuljahresbeginn 2027/28", wer: "alle" },
-    { datum: "2027-09-30", titel: "Nicht besetzte Ressourcen (Vakanzen) per VZE-Tool und Liste «VZE Mutationen» melden", wer: "Schulverwaltung" },
+    { datum: "2027-08-16", titel: "Schuljahresbeginn 2027/28 (anstellungsrechtlich 1. August)", wer: "alle", recht: ["LPVO", "1 a"] },
+    { datum: "2027-09-30", titel: "Nicht besetzte Ressourcen (Vakanzen) per VZE-Tool und Liste «VZE Mutationen» melden", wer: "Schulverwaltung", recht: ["LPG", "3", "Abs. 3"] },
   ];
 
   return { parameter, stellen, schulen, schuljahre, personen, faecher, lektionentafeln, klassen, lektionen, gefaesse,
