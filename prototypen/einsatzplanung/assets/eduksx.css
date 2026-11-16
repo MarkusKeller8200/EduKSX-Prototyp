@@ -256,3 +256,6 @@ details.gefaess > .inhalt { padding: 0 .8rem .8rem; }
 .karte table .zahl { font-size: inherit; font-weight: inherit; line-height: inherit; }
 .karte table th.zahl { font-size: .8rem; font-weight: 600; }
 td.zahl input[type="number"] { width: 5.5rem; }
+.spalten > * { min-width: 0; }
+.karte textarea { max-width: 100%; box-sizing: border-box; }
+@media (max-width: 600px) { .feldzeile input[type="text"] { width: 100%; } .formzeile .feld input[type="text"] { max-width: 100%; } }
