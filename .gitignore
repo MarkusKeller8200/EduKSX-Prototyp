@@ -9,6 +9,9 @@ __pycache__/
 *.pyc
 /tmp*/
 
+# GitHub Pages (gebaut)
+_site/
+
 # Abhängigkeiten und Bauergebnisse der Prototypen
 node_modules/
 vendor/

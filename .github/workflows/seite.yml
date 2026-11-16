@@ -1,0 +1,41 @@
+name: seite
+
+# Einstiegsseite (Menü) und alle Prototypen als GitHub Pages veröffentlichen (Quelle: GitHub Actions).
+# Projekteigener Workflow: baut _site mit tools/seite_bauen.py (statt pages.yml des Blueprints, der nur einen Ordner
+# veröffentlicht). Einmalig nötig: Settings → Pages → Build and deployment → Source «GitHub Actions».
+on:
+  push:
+    branches: [main]
+    paths: ['prototypen/**', 'seite/**', 'tools/seite_bauen.py', '.github/workflows/seite.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Prüfen
+        run: python3 tools/pruefen.py
+      - name: Seite bauen
+        run: python3 tools/seite_bauen.py _site
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

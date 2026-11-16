@@ -1,12 +1,14 @@
 # EduKSX-Prototyp – Projektstand
 
-> Stand 2026-11-16 (23:45): Repository eingerichtet (Blueprint-Dateien, Struktur `prototypen/`, Vorlage, Prüf- und Anlegeskript). Noch keine Prototypen. GitHub-Einstellungen (Labels, Meilensteine, Rulesets) und Umbenennung des Repositorys stehen noch aus.
+> Stand 2026-11-17 (00:30): Erster Prototyp EduKSX-Staffing (Einsatzplanung) mit Vorgaben Kanton Zürich und Einstiegsseite für GitHub Pages. GitHub-Einstellungen (Labels, Meilensteine, Rulesets) und das Einschalten von Pages stehen noch aus.
 
 ## Umgesetzt
 
 | Bereich | Stand | Seit Version | Konzept |
 |---|---|---|---|
 | Grundgerüst Prototypen-Ablage | fertig | 0.1.0 | `docs/PROJEKTSTART.md` |
+| Prototyp EduKSX-Staffing (Einsatzplanung) | Klickprototyp, in Abstimmung | 0.1.0 | `prototypen/einsatzplanung/ANFORDERUNGEN.md` |
+| Einstiegsseite GitHub Pages | fertig, Pages noch einzuschalten | 0.1.0 | `tools/seite_bauen.py` |
 
 ## Offen bzw. geplant
 

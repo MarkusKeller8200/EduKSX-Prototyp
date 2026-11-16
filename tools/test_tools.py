@@ -54,6 +54,34 @@ class Anlegen(unittest.TestCase):
             self.assertIn(teil, fehler)
 
 
+class Seite(unittest.TestCase):
+    def test_menue_und_kopien(self):
+        import seite_bauen
+        ziel = Path(tempfile.mkdtemp()) / "_site"
+        try:
+            namen = seite_bauen.bauen(ziel)
+            self.assertNotIn("_vorlage", namen)
+            menue = (ziel / "index.html").read_text(encoding="utf-8")
+            for name in namen:
+                self.assertTrue((ziel / name / "prototyp.json").is_file())
+                self.assertFalse(list((ziel / name).glob("*.md")))
+                start = json.loads((ziel / name / "prototyp.json").read_text(encoding="utf-8")).get("start")
+                if start:
+                    self.assertIn(f'href="{name}/{start}"', menue)
+                    self.assertTrue((ziel / name / start).is_file())
+            self.assertIn('aria-label="EduKSX"', menue)
+            self.assertTrue((ziel / "assets" / "eduksx.css").is_file())
+        finally:
+            shutil.rmtree(ziel.parent)
+
+    def test_wortmarke(self):
+        import seite_bauen
+        wm = seite_bauen.wortmarke("EduKSX-Staffing")
+        self.assertIn('aria-label="EduKSX-Staffing"', wm)
+        self.assertIn('<span class="o">K</span><span class="b">SX</span><span class="n">-Staffing</span>', wm)
+        self.assertEqual(seite_bauen.wortmarke("Andere"), "Andere")
+
+
 class Readme(unittest.TestCase):
     def test_block_ersetzen(self):
         text = f"a\n{pruefen.START}\nalt\n{pruefen.ENDE}\nb"

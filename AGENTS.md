@@ -12,6 +12,10 @@ Projekt: EduKSX-Prototyp.
   bei jeder Änderung an einem Prototyp dessen `version` erhöhen.
 - Übersicht im README.md nicht von Hand pflegen: `python3 tools/pruefen.py --schreiben`.
 - Vor jedem Commit `python3 tools/pruefen.py`.
+- Auftritt nach CI MarKusSXCH (markussxch/docs/brand): Farben nur über die Werte in `eduksx.css`, Wortmarke
+  exakt, Orange nie als Schrift, Status nie nur über Farbe. Produktnamen `EduKSX-<englischer Begriff>`; keine
+  Fremd-/Herstellernamen, keine echten Personendaten.
+- GitHub Pages: projekteigener Workflow `seite.yml` mit `tools/seite_bauen.py` (nicht `pages.yml` des Blueprints).
 
 <!-- blueprint:github-ablauf -->
 

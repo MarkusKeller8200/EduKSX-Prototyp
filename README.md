@@ -4,8 +4,13 @@ Ablage für Prototypen der EduKSX-Plattform: Klickprototypen und lauffähige Ver
 
 ## Prototypen
 
+**Online ausprobieren:** https://markuskeller8200.github.io/EduKSX-Prototyp/ – Einstiegsseite mit allen Prototypen
+(GitHub Pages, Workflow `seite`).
+
 <!-- prototypen:start -->
-_Noch keine Prototypen – neuen anlegen mit `python3 tools/neuer_prototyp.py <name>`._
+| Prototyp | Beschreibung | Version | Status | Technik | Ziel-Modul |
+|---|---|---|---|---|---|
+| [Einsatzplanung](prototypen/einsatzplanung/) | Pensen, Ressourcen und Berufsauftrag planen, Stellenplan und VZE nach den Vorgaben des Kantons Zürich, Anstellungsfreigaben, Pensenumfrage, Stellvertretungen, Personalgespräche und Tagesstrukturen. | 0.1.0 | in-arbeit | html | EduKSX-Staffing |
 <!-- prototypen:ende -->
 
 Die Tabelle erzeugt `python3 tools/pruefen.py --schreiben` aus den `prototyp.json` der einzelnen Ordner.
@@ -19,7 +24,10 @@ prototypen/
     prototyp.json        Name, Beschreibung, Version, Status, Technik, Ziel-Modul, Startdatei
     README.md            Frage, Starten, Ergebnis
     …                    eigene Dateien und Abhängigkeiten (HTML/JS, Laravel, …)
+seite/
+  eduksx.css             Farbwerte nach CI MarKusSXCH für die Einstiegsseite
 tools/
+  seite_bauen.py         Einstiegsseite (Menü) und Prototypen nach _site/ für GitHub Pages
   neuer_prototyp.py      neuen Prototyp aus der Vorlage anlegen
   pruefen.py             alle Prüfungen (lokal und im Workflow «pruefungen»)
 ```
@@ -31,7 +39,10 @@ tools/
 - **Version:** jeder Prototyp hat eine eigene Version in `prototyp.json`; wer einen Prototyp ändert, erhöht sie
   (geprüft beim Release). Das Repository selbst zählt in `VERSION`.
 - **Daten:** nur erfundene Testdaten, keine echten Personendaten, keine Zugangsdaten.
-- **Prüfen:** `python3 tools/pruefen.py` (Python 3.11+, nur Standardbibliothek).
+- **Prüfen:** `python3 tools/pruefen.py` (Python 3.11+, nur Standardbibliothek; inkl. Kontrastprüfung der CI-Farben).
+- **Veröffentlichen:** Jeder Push auf `main` unter `prototypen/` baut die Einstiegsseite neu (`python3 tools/seite_bauen.py`
+  lokal zum Ansehen). Neue Prototypen erscheinen automatisch im Menü; Prototypen mit Startdatei bekommen «öffnen».
+- **Auftritt:** CI MarKusSXCH (EduKSX: Orange als UI-Akzent, Wortmarke E violett · du · K orange · SX blau).
 
 ## Mitmachen
 

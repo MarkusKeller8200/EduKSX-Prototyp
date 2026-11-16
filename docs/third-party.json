@@ -11,6 +11,6 @@
     "vorlage": "Vorlagen, Formatbeschreibungen und Texte"
   },
   "items": [
-    {"id": "app", "group": "app", "name": "EduKSX-Prototyp", "use": "Dieses Projekt", "license": "MIT", "url": "https://github.com/MarkusKeller8200/eduksx-protoyp"}
+    {"id": "app", "group": "app", "name": "EduKSX-Prototyp", "use": "Dieses Projekt", "license": "MIT", "url": "https://github.com/MarkusKeller8200/EduKSX-Prototyp"}
   ]
 }
