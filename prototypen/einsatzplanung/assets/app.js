@@ -55,6 +55,39 @@
   const RESS_NAME = () => Object.fromEntries(S.ressourcen.map((r) => [r.id, r.name]));
 
 
+  // ---------------------------------------------------------------- EduKSX-Glossary (Einbindung für Entwickler, Variante 1)
+  // Feste Version mit Prüfsumme (SRI) gemäss https://glossary.eduksx.ch/entwickler. data-scope="none": Die Anwendung
+  // bestimmt selbst, welche Texte erklärt werden (Beschreibungen, Hinweise, Gesetzestexte) – nicht Tabellen und
+  // Eingabefelder. Die Suche läuft im Browser; es werden keine Inhalte an das Glossary gesendet, keine Cookies.
+  const GLOSSAR = {
+    src: "https://glossary.eduksx.ch/embed/v1.0.0/glossary.js",
+    integrity: "sha384-1mCvqROb5QPmHVzczuZc5aX4LLhtgGihVfRPA1jWZLfWdqNo5CRCNX9ggamRAS8x",
+    bereiche: "main .seitenkopf p, main .meldung, main p.small, main .karte > p, main section > p, main .paragraf-text, main li",
+  };
+  const glossarAn = () => { try { return localStorage.getItem("eduksx-glossar") !== "aus"; } catch (e) { return true; } };
+  function glossarLaden() {
+    if (!glossarAn() || document.getElementById("eduksx-glossary")) return;
+    const sc = document.createElement("script");
+    sc.id = "eduksx-glossary";
+    sc.src = GLOSSAR.src;
+    sc.integrity = GLOSSAR.integrity;
+    sc.crossOrigin = "anonymous";
+    sc.dataset.scope = "none";
+    sc.dataset.max = "1000000";
+    // nur Fachgebiete der Einsatzplanung (z. B. nicht «B» = Budget, «Abs.» bei jedem Verweis)
+    sc.dataset.categories = "Behörden,Personal,Sonderpädagogik,Unterricht,Lektion,Qualität,Statistik";
+    document.head.appendChild(sc);
+  }
+  function glossarErklaeren() {
+    if (!glossarAn()) return;
+    const go = () => {
+      if (!window.EduksxGlossary) return false;
+      document.querySelectorAll(GLOSSAR.bereiche).forEach((el) => { if (!el.closest("[data-glossary-ignore], table, nav, header")) window.EduksxGlossary.scan(el); });
+      return true;
+    };
+    if (!go()) { let n = 0; const t = setInterval(() => { if (go() || ++n > 40) clearInterval(t); }, 250); }
+  }
+
   // ---------------------------------------------------------------- Gesetzliche Grundlagen (LPG, LPVO)
   const RECHT = window.STAFFING_RECHT || {};
   const pAnker = (kurz, nr, ueb) => `${kurz}-${ueb ? "ueb" + ueb + "-" : ""}${String(nr).replace(/\s+/g, "")}`;
@@ -68,7 +101,7 @@
   function R(kurz, nr, zusatz) {
     const p = paragraph(kurz, nr);
     const titel = p ? `${kurz} § ${nr}${p.titel ? " – " + p.titel : ""}` : `${kurz} § ${nr}`;
-    return `<a class="gesetz" href="#/hilfe/${kurz}/${String(nr).replace(/\s+/g, "")}" title="${esc(titel)}">${kurz} § ${esc(nr)}${zusatz ? " " + esc(zusatz) : ""}</a>`;
+    return `<a class="gesetz" data-glossary-ignore href="#/hilfe/${kurz}/${String(nr).replace(/\s+/g, "")}" title="${esc(titel)}">${kurz} § ${esc(nr)}${zusatz ? " " + esc(zusatz) : ""}</a>`;
   }
   const RR = (...liste) => liste.map((x) => R(...x)).join(", ");
 
@@ -285,6 +318,7 @@
           <label class="sr-only" for="w-jahr">Schuljahr</label><select id="w-jahr" data-aktion="schuljahr">${jahre}</select>
           <label class="sr-only" for="w-rolle">Rolle</label><select id="w-rolle" data-aktion="rolle" title="Rolle im Prototyp wechseln">${rollen}</select>
           <button class="btn" data-aktion="thema" aria-pressed="${dunkel}" title="Hell/Dunkel">${dunkel ? "☀ Hell" : "☾ Dunkel"}</button>
+          <button class="btn" data-aktion="glossar" aria-pressed="${glossarAn()}" title="Abkürzungen mit EduKSX-Glossary erklären">${glossarAn() ? "Ⓖ Begriffe an" : "Ⓖ Begriffe aus"}</button>
           <button class="btn" data-aktion="zuruecksetzen" title="Testdaten neu laden">↺ Testdaten</button>
         </div>
       </header>
@@ -293,7 +327,7 @@
         <nav class="navi" aria-label="Hauptnavigation"><ul>${navi}</ul></nav>
         <main id="inhalt" tabindex="-1">${inhalt}</main>
       </div>
-      <footer class="fuss"><span>${wordmark("Staffing")} · Prototyp 0.1.0 · in Entwicklung · <a href="../">Alle Prototypen</a></span><span>Developed by ${WM_DEV}</span></footer>
+      <footer class="fuss"><span>${wordmark("Staffing")} · Prototyp 0.1.0 · in Entwicklung · <a href="../">Alle Prototypen</a> · Begriffe: <a href="https://glossary.eduksx.ch">EduKSX-Glossary</a> (CC BY 4.0)</span><span>Developed by ${WM_DEV}</span></footer>
       <div class="sr-only" aria-live="polite" id="ansage"></div>`;
   }
 
@@ -820,7 +854,7 @@
         <p><button class="btn primaer" data-aktion="vze-ausfuellen" ${v && v.bekannt ? "" : "disabled"}>⇩ Ausfüllen und herunterladen</button> <span class="small muted">${zellen.length} Eingabezellen</span></p>
         ${VZE && VZE.fehler ? (VZE.fehler.length ? `<div class="meldung warnung"><strong>Nicht geschrieben:</strong><ul>${VZE.fehler.map((f) => `<li>${esc(f)}</li>`).join("")}</ul></div>` : '<div class="meldung info">Alle Werte geschrieben. Datei vor dem Versand in Excel öffnen, prüfen (rote Felder) und unterschreiben lassen.</div>') : ""}
       </section>
-      <h2>3. Vorschau der Zellbelegung (${esc(version)})</h2>${vorschau}
+      <h2>3. Vorschau der Zellbelegung (${esc(version)})</h2><div data-glossary-ignore>${vorschau}</div>
       <p class="small muted">Nicht automatisch ausgefüllt: Abteilungen und Anforderungsstufen, kommunale Erweiterung, Zus. ISR, Antrag zusätzliche VZE, Datum und Unterschriften – diese Blätter bleiben wie geliefert.</p>`;
   };
 
@@ -833,7 +867,7 @@
       if (/\bLPG\b|Lehrpersonalgesetz|Lehrerpersonalgesetz/.test(danach)) ziel = "LPG";
       else if (/Volksschul|Personalgesetz|Personalverordnung|VVO|Verordnung (über|vom)|Übergangsordnung|Berufseinführung|Obligationenrecht|OR\b|Mittelschul|Vollzugs/.test(danach)) return m;
       if (!paragraph(ziel, nr)) return m;
-      return `${vor}<a class="gesetz" href="#/hilfe/${ziel}/${nr.replace(/\s+/g, "")}">${nr}</a>`;
+      return `${vor}<a class="gesetz" data-glossary-ignore href="#/hilfe/${ziel}/${nr.replace(/\s+/g, "")}">${nr}</a>`;
     });
   }
   // Stichworte der Anwendung, die im Gesetzestext nicht wörtlich vorkommen (für die Suche)
@@ -947,6 +981,12 @@
         try { localStorage.setItem("eduksx-thema", dunkel ? "dark" : "light"); } catch (x) { /* egal */ }
         break;
       }
+      case "glossar": {
+        const neu = !glossarAn();
+        try { localStorage.setItem("eduksx-glossar", neu ? "an" : "aus"); } catch (x) { /* egal */ }
+        if (!neu) { location.reload(); return; }
+        glossarLaden(); zeichnen(); return;
+      }
       case "zuruecksetzen":
         dialog("Testdaten neu laden?", "<p>Alle Änderungen dieser Sitzung gehen verloren.</p>", [{ text: "Neu laden", primaer: true, los: () => { S = neuerZustand(); speichern(); zeichnen(); } }]);
         return;
@@ -1054,6 +1094,7 @@
     const titel = document.querySelector("main h1");
     document.title = (titel ? titel.textContent + " – " : "") + "EduKSX-Staffing (Prototyp)";
     if (fokusId) { const el = document.querySelector(fokusId); if (el) el.focus(); window.scrollTo(0, scroll); }
+    glossarErklaeren();
     if (ziel === "hilfe" && param && param2) {
       const anker = document.getElementById(pAnker(param, param2));
       if (anker) { anker.classList.add("markiert"); setTimeout(() => { anker.scrollIntoView({ block: "start" }); anker.focus({ preventScroll: true }); }, 0); }
@@ -1091,6 +1132,7 @@
     const dunkel = t ? t === "dark" : window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
     document.documentElement.classList.toggle("dark", dunkel);
   } catch (e) { /* hell */ }
+  glossarLaden();
   zeichnen();
 
   // für Tests und Konsole

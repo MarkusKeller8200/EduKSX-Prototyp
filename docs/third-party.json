@@ -11,6 +11,21 @@
     "vorlage": "Vorlagen, Formatbeschreibungen und Texte"
   },
   "items": [
-    {"id": "app", "group": "app", "name": "EduKSX-Prototyp", "use": "Dieses Projekt", "license": "MIT", "url": "https://github.com/MarkusKeller8200/EduKSX-Prototyp"}
+    {
+      "id": "app",
+      "group": "app",
+      "name": "EduKSX-Prototyp",
+      "use": "Dieses Projekt",
+      "license": "MIT",
+      "url": "https://github.com/MarkusKeller8200/EduKSX-Prototyp"
+    },
+    {
+      "id": "eduksx-glossary",
+      "group": "dienst",
+      "name": "EduKSX-Glossary (Einbindung 1.0.0)",
+      "use": "Erklärung von Abkürzungen im Prototyp EduKSX-Staffing; Index-Daten CC BY 4.0",
+      "license": "CC BY 4.0 (Daten)",
+      "url": "https://glossary.eduksx.ch/entwickler"
+    }
   ]
 }

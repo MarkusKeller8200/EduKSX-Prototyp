@@ -92,7 +92,7 @@
     const r2 = (x) => Math.round(x * 100) / 100;
     const stufe = daten.stufe || "Sekundar";
 
-    setze(se.blatt, s.gpZuteilung, r2(daten.gpZuteilungVZE || 0), "Gestaltungspool", "Zuteilung GP-Ressourcen an Schule (VZE)");
+    setze(se.blatt, s.gpZuteilung, r2(daten.gpZuteilungVZE || 0), "Gestaltungspool", "Zuteilung Gestaltungspool an Schule (VZE)");
     let gpKlassen = 0;
     const klassen = daten.klassen || [];
     if (klassen.length > s.klassen.bis - s.klassen.von + 1) hinweise.push(`Nur ${s.klassen.bis - s.klassen.von + 1} Klassenzeilen im VZE-Tool – ${klassen.length - (s.klassen.bis - s.klassen.von + 1)} Klassen fehlen.`);
@@ -108,7 +108,7 @@
       if (korrektur) setze(se.blatt, s.klassen.korrektur + z, korrektur, "Klassenbildung", `Klasse ${k.name}: Korrektur (+/-) in WL (${k.lektionen} geplant, Standard ${standard})`);
       if (k.gestaltungspoolWL) { setze(se.blatt, s.klassen.gestaltungspool + z, k.gestaltungspoolWL, "Klassenbildung", `Klasse ${k.name}: Unterricht aus Gestaltungspool in WL`); gpKlassen += k.gestaltungspoolWL; }
     });
-    if (gpKlassen) setze(se.blatt, s.gpKlassenplanung[stufe], r2(gpKlassen / 27.3), "Gestaltungspool", "3a. VZE GP an Klassenplanung");
+    if (gpKlassen) setze(se.blatt, s.gpKlassenplanung[stufe], r2(gpKlassen / 27.3), "Gestaltungspool", "3a. VZE Gestaltungspool an Klassenplanung");
     setze(se.blatt, s.ifSpalte[stufe] + s.ifZeilen.wl, daten.ifWL, "Integrative Förderung", "IF in Wochenlektionen");
     setze(se.blatt, s.ifSpalte[stufe] + s.ifZeilen.gestaltungspool, daten.ifGestaltungspoolWL, "Integrative Förderung", "IF aus dem Gestaltungspool in WL");
     const bg = daten.erhoehungBG || [];

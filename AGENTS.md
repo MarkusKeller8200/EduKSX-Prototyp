@@ -20,6 +20,8 @@ Projekt: EduKSX-Prototyp.
   auf verbotene Namen und Metadaten.
   Neue Version des VZE-Tools: Zellbelegung in `assets/vze-tool.js` (VERSIONEN) ergänzen und mit einer lokalen Kopie
   per Rundreise prüfen (Eingaben lesen, leeren, wieder einfüllen, neu berechnen, vergleichen).
+- Begriffe: EduKSX-Glossary über die feste Einbindung mit Prüfsumme (Version und `integrity` aus
+  https://glossary.eduksx.ch/embed/manifest.json); bei neuer Version beides zusammen ändern.
 - GitHub Pages: projekteigener Workflow `seite.yml` mit `tools/seite_bauen.py` (nicht `pages.yml` des Blueprints).
 
 <!-- blueprint:github-ablauf -->
