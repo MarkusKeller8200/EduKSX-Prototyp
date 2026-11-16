@@ -1,0 +1,9 @@
+{
+  "name": "Vorlage",
+  "beschreibung": "Ausgangspunkt für neue Prototypen – mit tools/neuer_prototyp.py kopieren, nicht direkt bearbeiten.",
+  "version": "0.1.0",
+  "status": "idee",
+  "technik": "html",
+  "modul": "",
+  "start": "index.html"
+}

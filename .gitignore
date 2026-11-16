@@ -1,0 +1,24 @@
+# Betriebssystem und Editoren
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+/tmp*/
+
+# Abhängigkeiten und Bauergebnisse der Prototypen
+node_modules/
+vendor/
+dist/
+build/
+
+# Laufzeit und Geheimnisse (Laravel-Prototypen)
+.env
+.env.*
+!.env.example
+storage/*.key
+*.sqlite
+*.log
