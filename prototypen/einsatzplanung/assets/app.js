@@ -745,12 +745,23 @@
       })),
     };
   }
-  async function vzeLaden(datei) {
+  const MUSTER = "muster/VZE-Tool_Muster_VSA-2.19.xlsx";
+  async function vzeMusterLaden() {
+    try {
+      const antwort = await fetch(MUSTER);
+      if (!antwort.ok) throw new Error(`HTTP ${antwort.status}`);
+      await vzeLaden({ name: "VZE-Tool_Muster_VSA-2.19.xlsx", arrayBuffer: () => antwort.arrayBuffer() }, true);
+    } catch (e) {
+      VZE = { name: "Hinterlegtes Muster", fehlerLaden: `konnte nicht geladen werden (${e.message}). Lokal geöffnet (file://) blockiert der Browser das Nachladen – online über GitHub Pages öffnen oder die Datei «muster/VZE-Tool_Muster_VSA-2.19.xlsx» über «Datei wählen» laden.` };
+      zeichnen();
+    }
+  }
+  async function vzeLaden(datei, muster) {
     try {
       const bytes = new Uint8Array(await datei.arrayBuffer());
       const mappe = await XlsxVorlage.Mappe.oeffnen(bytes);
       const analyse = await VZETool.analysieren(mappe);
-      VZE = { name: datei.name, bytes, analyse, se: (analyse.schuleinheiten[0] || {}).index, leeren: true, fehler: null };
+      VZE = { name: datei.name, bytes, analyse, se: (analyse.schuleinheiten[0] || {}).index, leeren: true, fehler: null, muster: !!muster };
       protokoll(`VZE-Tool geladen (${analyse.version}, ${analyse.schuleinheiten.length} Schuleinheiten)`);
     } catch (e) {
       VZE = { name: datei.name, fehlerLaden: e.message };
@@ -793,7 +804,10 @@
     return `<div class="seitenkopf"><div><h1>VZE-Tool des Volksschulamts</h1><p class="muted">Das Excel-Tool, das die Schulgemeinde vom VSA erhält, wird mit der Planung aus EduKSX-Staffing ausgefüllt – exakt im Original: Formatierung, Formeln, Kommentare, Blattschutz und ausgeblendete Blätter bleiben unverändert. Geschrieben wird nur in Eingabezellen. Meldung des Stellenplans: ${R("LPVO", "2", "Abs. 5")}.</p></div></div>
       <div class="meldung info" role="note"><strong>Datenschutz:</strong> Die Datei wird nur in diesem Browser verarbeitet und nirgends hochgeladen oder gespeichert. Excel rechnet beim Öffnen alle Formeln neu (in LibreOffice: «Neu berechnen» bzw. Strg+Umschalt+F9).</div>
       <section class="karte" style="margin-bottom:1rem"><h2>1. VZE-Tool wählen</h2>
-        <div class="formzeile"><label class="feld">Excel-Datei des VSA (.xlsx)<input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" data-aktion="vze-datei"></label></div>
+        <div class="formzeile"><label class="feld">Excel-Datei des VSA (.xlsx)<input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" data-aktion="vze-datei"></label>
+          <span class="muted small" style="align-self:center">oder</span>
+          <button class="btn" data-aktion="vze-muster" title="Anonymisiertes VZE-Tool (VSA 2.19, Schulgemeinde Musterhausen, Schulhaus A und B) zum Ausprobieren">⇪ Hinterlegtes Muster laden</button></div>
+        ${VZE && VZE.muster ? '<div class="meldung warnung small">Hinterlegtes Muster: anonymisiertes VZE-Tool 2026/27 (Schulgemeinde Musterhausen, Schulhaus A und B) – nur zum Ausprobieren, nicht für eine Meldung an das VSA verwenden.</div>' : ""}
         ${VZE && VZE.fehlerLaden ? `<div class="meldung fehler" role="alert">${esc(VZE.name)}: ${esc(VZE.fehlerLaden)}</div>` : ""}
         ${info || '<p class="small muted">Ohne Datei zeigt die Vorschau unten die Zellbelegung für eine Beispiel-Schuleinheit.</p>'}
       </section>
@@ -1005,6 +1019,7 @@
       case "b-pensum": S.betreuungPensen[id] = Number(el.value); break;
       case "b-freigeben": S.betreuungFreigabe = true; protokoll("Pensen Tagesstrukturen zur Anstellung freigegeben"); ansage("Pensen der Tagesstrukturen freigegeben."); break;
       case "vze-datei": if (el.files && el.files[0]) vzeLaden(el.files[0]); return;
+      case "vze-muster": vzeMusterLaden(); return;
       case "vze-se": VZE.se = Number(el.value); VZE.fehler = null; zeichnen(); return;
       case "vze-leeren": if (VZE) VZE.leeren = el.checked; else VZE = { leeren: el.checked }; return;
       case "vze-ausfuellen": vzeAusfuellen().catch((x) => { VZE.fehler = [x.message]; zeichnen(); }); return;

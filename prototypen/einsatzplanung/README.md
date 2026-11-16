@@ -28,7 +28,7 @@ und dunkel. Änderungen bleiben im Browser gespeichert; «↺ Testdaten» setzt 
 | Berufsauftrag | Gefässe als Verwendung der Pauschalen oder als zusätzliche Stunden, Verteilregeln |
 | Ressourcen | Budget, Bedarf, Verbrauch, Saldo; Sicht Schulleitung / Schulverwaltung / Vergleich; Sperre |
 | Freigaben | Freigabe, Sammelfreigabe, Änderung nach Freigabe, Vergleich, Anstellung, Verlauf |
-| VZE-Tool (VSA) | Das Excel-Tool des Volksschulamts laden und mit der Planung befüllen – exakt im Original (nur Eingabezellen, Formatierung und Formeln unverändert), Vorschau der Zellbelegung; Datei bleibt im Browser |
+| VZE-Tool (VSA) | Das Excel-Tool des Volksschulamts laden (oder das hinterlegte anonymisierte Muster `muster/VZE-Tool_Muster_VSA-2.19.xlsx`) und mit der Planung befüllen – exakt im Original (nur Eingabezellen, Formatierung und Formeln unverändert), Vorschau der Zellbelegung; Datei bleibt im Browser |
 | Hilfe und Gesetze | Lehrpersonalgesetz (LPG) und Lehrpersonalverordnung (LPVO) mit Suche; Verweise aus Regeln, Warnungen und Parametern führen direkt zur Bestimmung |
 | Abläufe | Jahresablauf mit Fristen, Pensenumfrage, Stellvertretungen, Personalgespräche, Tagesstrukturen |
 

@@ -12,6 +12,8 @@ __pycache__/
 # Echte Excel-Dateien (z. B. VZE-Tool des VSA) gehören nicht ins öffentliche Repository
 *.xlsx
 *.xlsm
+# Ausnahme: anonymisierte Muster (Prüfung in tools/test_muster.py)
+!prototypen/*/muster/*.xlsx
 
 # GitHub Pages (gebaut)
 _site/
