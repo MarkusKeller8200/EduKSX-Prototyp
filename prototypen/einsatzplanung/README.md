@@ -28,6 +28,7 @@ und dunkel. Änderungen bleiben im Browser gespeichert; «↺ Testdaten» setzt 
 | Berufsauftrag | Gefässe als Verwendung der Pauschalen oder als zusätzliche Stunden, Verteilregeln |
 | Ressourcen | Budget, Bedarf, Verbrauch, Saldo; Sicht Schulleitung / Schulverwaltung / Vergleich; Sperre |
 | Freigaben | Freigabe, Sammelfreigabe, Änderung nach Freigabe, Vergleich, Anstellung, Verlauf |
+| VZE-Tool (VSA) | Das Excel-Tool des Volksschulamts laden und mit der Planung befüllen – exakt im Original (nur Eingabezellen, Formatierung und Formeln unverändert), Vorschau der Zellbelegung; Datei bleibt im Browser |
 | Abläufe | Jahresablauf mit Fristen, Pensenumfrage, Stellvertretungen, Personalgespräche, Tagesstrukturen |
 
 ## Ergebnis

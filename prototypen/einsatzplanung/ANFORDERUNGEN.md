@@ -75,6 +75,8 @@ Lehrpersonalverordnung (LPVO), Volksschulverordnung (VSV).
 |---|---|---|---|
 | ST-Z22 | Jahresablauf mit Fristen: Stichtag Schülerzahlen 15.9.; Beschäftigungsgrad vor Weihnachten klären; Stellenplan, Zusammenstellung VZE und VZE-Tool bis 15.2.; Korrekturen Schülerzahlen/Kredit/Umlagerung bis 30.6.; Klassenbildung vor den Sommerferien; Vakanzen bis 30.9. | EMPFOHLEN | ✓ |
 | ST-Z23 | Export im Format der kantonalen Unterlagen («Zusammenstellung VZE», «VZE Mutationen»); Stellen erst besetzen, wenn die VZE innerhalb der zugeteilten liegen. | EMPFOHLEN | ◐ |
+| ST-Z25 | **VZE-Tool des VSA exakt befüllen:** Die Schulgemeinde lädt das jährlich vom VSA gelieferte Excel-Tool; EduKSX-Staffing schreibt die Planung (Klassenbildung je Schuleinheit, Gestaltungspool, IF, Erhöhung Beschäftigungsgrad, Vikariate aus dem Gestaltungspool, Blatt Schulleitung, Kontrolle Sonderpädagogik) nur in die Eingabezellen. Formatierung, Formeln, Kommentare, Blattschutz und ausgeblendete Blätter bleiben unverändert; Excel rechnet beim Öffnen neu. Zellbelegung je Tool-Version (ab VSA 2.19). Datei wird nur lokal verarbeitet. | BESCHLOSSEN | ✓ |
+| ST-Z26 | Weitere Blätter des VZE-Tools befüllen (Abteilungen und Anforderungsstufen, kommunale Erweiterung, Zus. ISR, Antrag zusätzliche VZE) und Eingaben aus einem bestehenden VZE-Tool übernehmen (Import). | OFFEN | – |
 | ST-Z24 | Mutationen während des Schuljahres: was, warum, Lektionen, Quelle (Gestaltungspool/Stellenpool), Person, Startdatum (Montag); erst nach Bewilligung ins Personalsystem. | EMPFOHLEN | ✓ |
 
 **Quellen (Kanton Zürich, Bildungsdirektion, Volksschulamt):**

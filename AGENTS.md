@@ -15,6 +15,9 @@ Projekt: EduKSX-Prototyp.
 - Auftritt nach CI MarKusSXCH (markussxch/docs/brand): Farben nur über die Werte in `eduksx.css`, Wortmarke
   exakt, Orange nie als Schrift, Status nie nur über Farbe. Produktnamen `EduKSX-<englischer Begriff>`; keine
   Fremd-/Herstellernamen, keine echten Personendaten.
+- Echte Dateien von Schulen (z. B. das VZE-Tool des VSA) nie ins Repository legen; Tests nur mit erzeugten Dateien.
+  Neue Version des VZE-Tools: Zellbelegung in `assets/vze-tool.js` (VERSIONEN) ergänzen und mit einer lokalen Kopie
+  per Rundreise prüfen (Eingaben lesen, leeren, wieder einfüllen, neu berechnen, vergleichen).
 - GitHub Pages: projekteigener Workflow `seite.yml` mit `tools/seite_bauen.py` (nicht `pages.yml` des Blueprints).
 
 <!-- blueprint:github-ablauf -->

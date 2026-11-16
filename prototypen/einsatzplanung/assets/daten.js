@@ -55,6 +55,9 @@ window.STAFFING_DATEN = (function () {
     dazErstesJahr: 3,
     dazFolgejahre: 4,
     therapieVZE: 0.1,
+    // für das VZE-Tool des VSA (Blatt «Schulleitung»)
+    schulleitungen: [{ name: "Petra Leitwerk", vze: 0.52, bemerkung: "" }],
+    koordination: [{ person: "p3", vze: 0.08 }],
   };
 
   const schulen = [
@@ -149,7 +152,7 @@ window.STAFFING_DATEN = (function () {
     { id: "g3", name: "Schulinterne Weiterbildung", bereich: "Weiterbildung", art: "pauschal", regel: "linear", stunden: 16, sockel: 8, max: 16, ressource: "", teilnehmende: lehrpersonen.slice() },
     { id: "g4", name: "Stufenleitung", bereich: "Schule", art: "zusatz", regel: "fix", stunden: 120, ressource: "pool", teilnehmende: ["p3"] },
     { id: "g5", name: "ICT-Verantwortung", bereich: "Schule", art: "zusatz", regel: "fix", stunden: 60, ressource: "pool", teilnehmende: ["p8"] },
-    { id: "g6", name: "Projektgruppe Lernlandschaft", bereich: "Zusammenarbeit", art: "zusatz", regel: "fix", stunden: 30, ressource: "pool", teilnehmende: ["p1", "p4", "p6"] },
+    { id: "g6", name: "Projektgruppe Lernlandschaft", bereich: "Zusammenarbeit", art: "zusatz", regel: "fix", stunden: 30, ressource: "", teilnehmende: ["p1", "p4", "p6"] },
     { id: "g7", name: "Kustodie Sport", bereich: "Schule", art: "zusatz", kustodie: true, regel: "fix", stunden: 25, ressource: "", teilnehmende: ["p4"] },
   ];
 
@@ -183,7 +186,7 @@ window.STAFFING_DATEN = (function () {
   ];
 
   const mutationen = [
-    { id: "u1", was: "Teamteaching", warum: "Klasse 3A über der Höchstzahl (26 statt 25)", lektionen: 2, quelle: "Gestaltungspool", person: "p12", start: "2027-08-23", status: "erfasst" },
+    { id: "u1", klasse: "3A", was: "Teamteaching", warum: "Klasse 3A über der Höchstzahl (26 statt 25)", lektionen: 2, quelle: "Gestaltungspool", person: "p12", start: "2027-08-23", status: "erfasst" },
   ];
 
   const angebote = [

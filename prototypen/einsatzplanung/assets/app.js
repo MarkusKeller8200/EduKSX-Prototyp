@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  const SPEICHER = "eduksx-staffing-prototyp-v2";
+  const SPEICHER = "eduksx-staffing-prototyp-v3";
   const D = window.STAFFING_DATEN;
 
   // ---------------------------------------------------------------- Zustand
@@ -76,6 +76,7 @@
     gespraeche: ico('<path d="M4 5h16v10H9l-5 4z"/>'),
     stellenplan: ico('<path d="M4 4h16v16H4z"/><path d="M4 9h16M9 9v11"/>'),
     jahresablauf: ico('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
+    vzetool: ico('<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12l2 2 4-4"/>'),
     parameter: ico('<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>'),
   };
 
@@ -222,6 +223,7 @@
     ["uebersicht", "Übersicht", "alle"],
     ["gruppe", "Planung"],
     ["stellenplan", "Stellenplan und VZE", "sl sv"],
+    ["vzetool", "VZE-Tool (VSA)", "sl sv"],
     ["unterricht", "Unterricht", "sl sv"],
     ["personen", "Personen und Pensen", "sl sv"],
     ["berufsauftrag", "Berufsauftrag", "sl sv"],
@@ -686,6 +688,106 @@
       <h2 style="margin-top:1.25rem">Lektionentafeln Sekundarstufe</h2><div class="spalten">${tafeln}</div>`;
   };
 
+  // ---------------------------------------------------------------- VZE-Tool des VSA
+  let VZE = null; // { name, bytes, analyse, se, leeren, fehler } – nur im Speicher, nie gespeichert oder hochgeladen
+  function vzeDaten() {
+    const x = stellenRechnung();
+    const gpMut = (k) => S.mutationen.filter((m) => m.klasse === k && m.quelle === "Gestaltungspool").reduce((a, m) => a + Number(m.lektionen), 0);
+    const klassen = S.klassen.map((k) => ({
+      name: k.id, jahrgang: k.jahrgang, abteilung: k.abteilung, schueler: k.schueler,
+      klp: k.klp.map(pname).join(" / "),
+      lektionen: S.lektionen.filter((l) => l.klasse === k.id && l.ressource === "ba" && !l.zusatz).reduce((a, l) => a + Number(l.wl), 0),
+      gestaltungspoolWL: gpMut(k.id),
+    }));
+    const vzeJeStunde = 1 / (P().faktorLektion * P().lektionenJeVZE);
+    const bg = {};
+    for (const g of S.gefaesse) if (g.ressource === "pool" && g.art === "zusatz") for (const pid of g.teilnehmende) bg[pid] = (bg[pid] || 0) + gefaessStunden(g, pid) * vzeJeStunde;
+    const ifPersonen = planbar().filter((p) => S.lektionen.some((l) => l.person === p.id && l.fach === "IF"));
+    return {
+      stufe: "Sekundar",
+      klassen,
+      gpZuteilungVZE: x.pool,
+      ifWL: S.lektionen.filter((l) => l.fach === "IF").reduce((a, l) => a + Number(l.wl), 0),
+      ifGestaltungspoolWL: 0,
+      erhoehungBG: Object.entries(bg).map(([pid, vze]) => ({ name: pname(pid), vze })),
+      vikariate: S.ausfaelle.filter((a) => a.quelle === "Gestaltungspool").map((a) => ({ lektionen: a.wl * wochen(a), text: `${pname(a.person)}, ${datum(a.von)}–${datum(a.bis)}` })),
+      schulleitung: {
+        slVZE: x.sl, koordinationVZE: x.koordination,
+        personen: S.stellen.schulleitungen || [],
+        lehrpersonen: (S.stellen.koordination || []).map((k) => ({ name: pname(k.person), vze: k.vze, ko: true })),
+      },
+      kontrolleSP: ifPersonen.map((p) => ({
+        name: p.name,
+        ifWL: S.lektionen.filter((l) => l.person === p.id && l.fach === "IF").reduce((a, l) => a + Number(l.wl), 0),
+        regelklasseWL: S.lektionen.filter((l) => l.person === p.id && l.fach !== "IF" && l.ressource === "ba").reduce((a, l) => a + Number(l.wl), 0),
+      })),
+    };
+  }
+  async function vzeLaden(datei) {
+    try {
+      const bytes = new Uint8Array(await datei.arrayBuffer());
+      const mappe = await XlsxVorlage.Mappe.oeffnen(bytes);
+      const analyse = await VZETool.analysieren(mappe);
+      VZE = { name: datei.name, bytes, analyse, se: (analyse.schuleinheiten[0] || {}).index, leeren: true, fehler: null };
+      protokoll(`VZE-Tool geladen (${analyse.version}, ${analyse.schuleinheiten.length} Schuleinheiten)`);
+    } catch (e) {
+      VZE = { name: datei.name, fehlerLaden: e.message };
+    }
+    zeichnen();
+  }
+  async function vzeAusfuellen() {
+    const se = VZE.analyse.schuleinheiten.find((x) => x.index === Number(VZE.se));
+    const { zellen } = VZETool.belegung(VZE.analyse.version, se, vzeDaten());
+    const mappe = await XlsxVorlage.Mappe.oeffnen(VZE.bytes);
+    const r = await VZETool.ausfuellen(mappe, VZE.analyse.version, se, zellen, { leeren: VZE.leeren });
+    VZE.fehler = r.fehler;
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([r.bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+    a.download = VZE.name.replace(/\.xlsx$/i, "") + "_EduKSX.xlsx";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    protokoll(`VZE-Tool ausgefüllt: ${se.anzeige}, ${r.geschrieben} Zellen`);
+    ansage(`${a.download} erstellt – ${r.geschrieben} Eingabezellen ausgefüllt${r.fehler.length ? `, ${r.fehler.length} Hinweise` : ""}.`);
+    speichern();
+    zeichnen();
+  }
+
+  seiten.vzetool = function () {
+    const v = VZE && VZE.analyse;
+    const seListe = v ? v.schuleinheiten : [{ index: 1, anzeige: "Schuleinheit 1 (Beispiel)", blatt: "SE1" }];
+    const se = seListe.find((x) => x.index === Number(VZE && VZE.se)) || seListe[0];
+    const version = v && v.bekannt ? v.version : "VSA 2.19";
+    const { zellen, hinweise } = VZETool.belegung(version, se, vzeDaten());
+    const gruppen = {};
+    for (const z of zellen) (gruppen[z.bereich] = gruppen[z.bereich] || []).push(z);
+    const vorschau = Object.entries(gruppen).map(([b, zs]) => `<details ${b === "Klassenbildung" ? "open" : ""}><summary><strong>${esc(b)}</strong> · ${zs.length} Zellen</summary>
+      <div class="tabelle-wrap" style="margin:.5rem 0 1rem"><table><thead><tr><th>Blatt</th><th>Zelle</th><th>Wert</th><th>Bedeutung</th></tr></thead><tbody>${zs.map((z) => `<tr><td class="small">${esc(z.blatt)}</td><td><code>${esc(z.ref)}</code></td><td class="${typeof z.wert === "number" ? "zahl" : ""}">${esc(typeof z.wert === "number" ? zahl(z.wert, Number.isInteger(z.wert) ? 0 : 2) : z.wert)}</td><td class="small">${esc(z.text)}</td></tr>`).join("")}</tbody></table></div></details>`).join("");
+    const info = v ? `<div class="tabelle-wrap" style="max-width:720px"><table><tbody>
+        <tr><th scope="row">Datei</th><td>${esc(VZE.name)}</td></tr>
+        <tr><th scope="row">Version</th><td>${esc(v.version)} ${v.bekannt ? '<span class="badge erfolg"><span aria-hidden="true">✓</span>Zellbelegung bekannt</span>' : '<span class="badge fehler"><span aria-hidden="true">✕</span>unbekannte Version – Zellbelegung prüfen</span>'}</td></tr>
+        <tr><th scope="row">Schuljahr</th><td>${esc(v.schuljahr || "–")}${v.schuljahr && v.schuljahr !== S.schuljahr ? ` <span class="badge warnung"><span aria-hidden="true">△</span>Planung ist ${esc(S.schuljahr)}</span>` : ""}</td></tr>
+        <tr><th scope="row">Schulgemeinde</th><td>${esc(v.gemeinde)} (${esc(v.nummer)})</td></tr>
+        <tr><th scope="row">Schuleinheiten</th><td>${v.schuleinheiten.map((x) => esc(x.anzeige)).join(", ")}</td></tr></tbody></table></div>` : "";
+    return `<div class="seitenkopf"><div><h1>VZE-Tool des Volksschulamts</h1><p class="muted">Das Excel-Tool, das die Schulgemeinde vom VSA erhält, wird mit der Planung aus EduKSX-Staffing ausgefüllt – exakt im Original: Formatierung, Formeln, Kommentare, Blattschutz und ausgeblendete Blätter bleiben unverändert. Geschrieben wird nur in Eingabezellen.</p></div></div>
+      <div class="meldung info" role="note"><strong>Datenschutz:</strong> Die Datei wird nur in diesem Browser verarbeitet und nirgends hochgeladen oder gespeichert. Excel rechnet beim Öffnen alle Formeln neu (in LibreOffice: «Neu berechnen» bzw. Strg+Umschalt+F9).</div>
+      <section class="karte" style="margin-bottom:1rem"><h2>1. VZE-Tool wählen</h2>
+        <div class="formzeile"><label class="feld">Excel-Datei des VSA (.xlsx)<input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" data-aktion="vze-datei"></label></div>
+        ${VZE && VZE.fehlerLaden ? `<div class="meldung fehler" role="alert">${esc(VZE.name)}: ${esc(VZE.fehlerLaden)}</div>` : ""}
+        ${info || '<p class="small muted">Ohne Datei zeigt die Vorschau unten die Zellbelegung für eine Beispiel-Schuleinheit.</p>'}
+      </section>
+      <section class="karte" style="margin-bottom:1rem"><h2>2. Schuleinheit und Optionen</h2>
+        <div class="formzeile">
+          <label class="feld">Planung «${esc(S.schulen.find((x) => x.id === S.schule).name)}» eintragen in<select data-aktion="vze-se" ${v ? "" : "disabled"}>${seListe.map((x) => `<option value="${x.index}" ${x.index === se.index ? "selected" : ""}>${esc(x.anzeige)}</option>`).join("")}</select></label>
+          <label class="feld"><span><input type="checkbox" data-aktion="vze-leeren" ${!VZE || VZE.leeren !== false ? "checked" : ""}> bisherige Eingaben dieser Schuleinheit vorher leeren</span></label>
+        </div>
+        ${hinweise.length ? `<div class="meldung warnung">${hinweise.map(esc).join("<br>")}</div>` : ""}
+        <p><button class="btn primaer" data-aktion="vze-ausfuellen" ${v && v.bekannt ? "" : "disabled"}>⇩ Ausfüllen und herunterladen</button> <span class="small muted">${zellen.length} Eingabezellen</span></p>
+        ${VZE && VZE.fehler ? (VZE.fehler.length ? `<div class="meldung warnung"><strong>Nicht geschrieben:</strong><ul>${VZE.fehler.map((f) => `<li>${esc(f)}</li>`).join("")}</ul></div>` : '<div class="meldung info">Alle Werte geschrieben. Datei vor dem Versand in Excel öffnen, prüfen (rote Felder) und unterschreiben lassen.</div>') : ""}
+      </section>
+      <h2>3. Vorschau der Zellbelegung (${esc(version)})</h2>${vorschau}
+      <p class="small muted">Nicht automatisch ausgefüllt: Abteilungen und Anforderungsstufen, kommunale Erweiterung, Zus. ISR, Antrag zusätzliche VZE, Datum und Unterschriften – diese Blätter bleiben wie geliefert.</p>`;
+  };
+
   // ---------------------------------------------------------------- Dialog, Ansage, Export
   function dialog(titel, html, knoepfe) {
     const d = document.createElement("dialog");
@@ -814,6 +916,10 @@
       case "kinder": { S.angebote.find((x) => x.id === id).kinder = Number(el.value); break; }
       case "b-pensum": S.betreuungPensen[id] = Number(el.value); break;
       case "b-freigeben": S.betreuungFreigabe = true; protokoll("Pensen Tagesstrukturen zur Anstellung freigegeben"); ansage("Pensen der Tagesstrukturen freigegeben."); break;
+      case "vze-datei": if (el.files && el.files[0]) vzeLaden(el.files[0]); return;
+      case "vze-se": VZE.se = Number(el.value); VZE.fehler = null; zeichnen(); return;
+      case "vze-leeren": if (VZE) VZE.leeren = el.checked; else VZE = { leeren: el.checked }; return;
+      case "vze-ausfuellen": vzeAusfuellen().catch((x) => { VZE.fehler = [x.message]; zeichnen(); }); return;
       case "param": S.parameter[el.dataset.k] = Number(el.value); protokoll(`Parameter ${el.dataset.k}: ${el.value}`); break;
       case "stelle": S.stellen[el.dataset.k] = Number(el.value); protokoll(`Stellenberechnung ${el.dataset.k}: ${el.value}`); break;
       case "schueler": { const k = S.klassen.find((x) => x.id === el.dataset.klasse); k.schueler = Number(el.value); protokoll(`Schülerzahl ${k.id}: ${k.schueler}`); break; }

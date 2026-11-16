@@ -9,6 +9,10 @@ __pycache__/
 *.pyc
 /tmp*/
 
+# Echte Excel-Dateien (z. B. VZE-Tool des VSA) gehören nicht ins öffentliche Repository
+*.xlsx
+*.xlsm
+
 # GitHub Pages (gebaut)
 _site/
 
