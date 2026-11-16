@@ -270,3 +270,23 @@ Diese Punkte folgen den Standards der EduKSX-Plattform (EduKSX-Core) und sind be
 4. Welche Signaturstufe genügt für Stellvertretungs- und Gesprächsdokumente?
 5. Welche Lohn- bzw. Personalsysteme und kantonalen Meldestellen sollen angebunden werden?
 6. Berechnungslogik der Tagesstrukturen (siehe ST-K6).
+7. Wie werden «Sockel bis» und «Gesamte Zeit ab» bei linearen Gefässen genau bemessen (WL oder Beschäftigungsgrad)? Siehe ST-P6.
+
+## 18. Planungsdaten im Detail (Ergänzung)
+
+Die folgenden Informationen muss EduKSX-Staffing erfassen und auswerten. Vorlage war eine Liste fachlicher Angaben
+aus dem Planungsalltag. Die Bedienoberfläche ist eigenständig im EduKSX-Design gestaltet: keine fremden Layouts,
+Farbcodes oder Symbolleisten.
+
+| Nr. | Anforderung | Status |
+|---|---|---|
+| ST-P1 | **Personen:** Kürzel, Geburtsdatum, Alter am Stichtag (1.8.), Ferienanspruch und Netto-Jahresarbeitszeit, Neuanstellung, Berufseinführung (+1,5 h je WL), Quereinstieg; vereinbarter Beschäftigungsgrad (Soll) gegen den aus der Zuteilung berechneten (Ist) mit Differenz in Stunden (Hinweis ab ±5 h); Anteil kantonal/kommunal, weitere Anstellungen, Total, zusätzlich entschädigte Stunden, Pensum Vorjahr; Bemerkung intern und Bemerkung auf der Pensenübersicht. | BESCHLOSSEN |
+| ST-P2 | **Klassen:** Lektionentafel, Schülerzahl, Name im Vorjahr, Bemerkung; Klassenlehrperson(en) mit frei aufteilbaren Stunden (Soll 100 h je Klasse); WL der Schüler/innen und WL der Lehrpersonen (Soll/zugeteilt). | BESCHLOSSEN |
+| ST-P3 | **Gefässe (Klassenlektionen, weitere Lektionen, Sonderpädagogik, Anstellungen):** WL Schüler/innen, Halbklassen, Soll der Lehrpersonen (abweichend festlegbar), Zuteilung an **mehrere Personen**, Semester 1/2, abweichender Faktor je Gefäss, Ressource, Anstellungstyp (kantonal/kommunal), Stufe, Kategorie, Bemerkung; Soll/Ist/Differenz und BG-Richtwert. | BESCHLOSSEN |
+| ST-P4 | **Einheiten:** Wochenlektionen (WL), Stellenprozent (%) und Wochenstunden während der Schulwochen (WStd), z. B. Klassenassistenz oder Mittagstisch. Umrechnung über Richtwerte: 1 WL = 58 h/Jahr, 100 % = 1'890 h, 1 WStd = Schulwochen × 1 h. | ZU PRÜFEN (Werte) |
+| ST-P5 | **Ämter und Kustodien:** Stunden-Soll je Amt, Zuteilung an Personen, Ist und Differenz, Beschreibung, Bemerkung; Kustodien über 50 h zusätzlich entschädigt. | BESCHLOSSEN |
+| ST-P6 | **Gefässe des Berufsauftrags je Bereich** (Schule, Zusammenarbeit, Weiterbildung, Flex = nicht zugewiesene Zeit): Name kurz, Anzahl pro Jahr, Präsenz und Vorbereitung pro Mal, Vorzeichen (Aufgabe/Entlastung), Regel fix oder linear mit Sockel, «Sockel bis», «Gesamte Zeit ab» und Maximum, Beschreibung, Bemerkung. Im Prototyp werden «Sockel bis» und «Gesamte Zeit ab» in WL bemessen. | ZU PRÜFEN |
+| ST-P7 | **Personaldossier:** Einträge je Person in den Kategorien Diplome/Weiterbildung/Fächer, Anstellung/Urlaub/Abwesenheit, Mitarbeitendenbeurteilung, Besuche/Gespräche/Notizen, Weitere Unterlagen; Erfassung aus Vorlagen; Personalgespräche erscheinen automatisch. Nur Metadaten, Dokumente im EduKSX-Dokumentenspeicher. Rechte siehe Offene Frage 3. | ZU PRÜFEN (Rechte) |
+| ST-P8 | **Übersicht Klasse – Fach – Lehrperson:** Matrix aller Klassen und Fächer mit Kürzeln, Kennzeichnung Klassenlehrperson dieser bzw. einer anderen Klasse (Symbol und Fläche, nicht nur Farbe), Lektionendifferenz je Klasse; weitere Lektionen nach Kategorie; CSV-Export. | BESCHLOSSEN |
+| ST-P9 | **Ressourcen in VZE:** Gesamtsumme, kantonale und kommunale Anstellungen sowie jede Ressource mit Soll, Ist und Differenz in VZE; Abweichung des Beschäftigungsgrads gegenüber dem WL-Richtwert. | BESCHLOSSEN |
+| ST-P10 | **Betreuung und Klassenassistenz** als Anstellungen in % oder WStd; die Planung Tagesstrukturen zeigt Soll aus den Angeboten und Ist aus diesen Anstellungen. | BESCHLOSSEN |

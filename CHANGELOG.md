@@ -20,4 +20,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - Hilfe mit LPG (Stand 1.1.2022) und LPVO (Stand 1.4.2026), Suche und direkten Verweisen aus der Anwendung
   (`assets/recht.js`, erzeugt mit `tools/recht_aufbereiten.py`).
 - Einstiegsseite (Menü) für GitHub Pages (`tools/seite_bauen.py`, Workflow `seite`), Kontrastprüfung der CI-Farben.
+- EduKSX-Staffing: Datenmodell für Personen, Klassen und Einsätze erweitert (ANFORDERUNGEN § 18): mehrere Personen
+  je Gefäss, Einheiten WL/%/Wochenstunden, Soll/Ist-Beschäftigungsgrad, Klassen-Detailseite, Matrix Klasse – Fach –
+  Lehrperson, Ämter und Kustodien, Gefässe je Bereich inkl. Flex, Personaldossier, Ressourcen in VZE.
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

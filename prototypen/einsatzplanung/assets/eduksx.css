@@ -231,3 +231,28 @@ dialog::backdrop { background: rgb(15 23 42 / .45); }
 .paragraf.markiert { background: var(--secondary); outline: 2px solid var(--brand-orange); }
 a.gesetz { white-space: nowrap; }
 @media print { .paragraf { break-inside: avoid; } }
+
+/* Feldlisten (Detailseiten) */
+.feldliste { display: grid; gap: 0; }
+.feldzeile { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .45rem 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.feldzeile > span:last-child { text-align: right; }
+.feldzeile input[type="number"] { width: 6.5rem; }
+.feldzeile input[type="text"] { width: 12rem; }
+/* Matrix Klasse – Fach – Lehrperson: eigene Darstellung mit Symbol und Fläche */
+table.matrix { font-size: .85rem; }
+table.matrix th, table.matrix td { text-align: center; padding: .3rem .4rem; white-space: nowrap; }
+table.matrix th:first-child, table.matrix td:first-child { text-align: left; position: sticky; left: 0; background: var(--card); }
+table.matrix .klp-hier { background: var(--violet-soft); color: var(--violet-text); font-weight: 600; }
+table.matrix .klp-andere { outline: 1px dashed var(--muted-foreground); outline-offset: -3px; }
+.bereichskopf { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin: 1.25rem 0 .5rem; flex-wrap: wrap; }
+details.gefaess > summary { cursor: pointer; display: flex; justify-content: space-between; gap: 1rem; padding: .6rem .8rem; list-style: none; }
+details.gefaess > summary::-webkit-details-marker { display: none; }
+details.gefaess > summary > span:first-child { text-align: left; }
+details.gefaess > summary > span:first-child::before { content: "▸"; margin-right: .4rem; color: var(--muted-foreground); }
+details.gefaess[open] > summary > span:first-child::before { content: "▾"; }
+details.gefaess > summary > span:last-child { text-align: right; }
+details.gefaess { border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); margin-bottom: .5rem; }
+details.gefaess > .inhalt { padding: 0 .8rem .8rem; }
+.karte table .zahl { font-size: inherit; font-weight: inherit; line-height: inherit; }
+.karte table th.zahl { font-size: .8rem; font-weight: 600; }
+td.zahl input[type="number"] { width: 5.5rem; }
