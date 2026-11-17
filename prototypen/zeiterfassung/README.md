@@ -39,6 +39,7 @@ EduKSX-Ident, echte Schnittstelle.
   **ZU PRÜFEN:** Regel mit dem anwendbaren Personalrecht abgleichen (ArG Art. 15: >5,5 h 15 Min., >7 h 30 Min., >9 h 1 h).
 
 - 0.3.2: Im Pausenmodus eigene Tastenfarbe und Kaffeetasse («Pause beenden – weiterarbeiten», #24).
+- 0.3.3: Markantere Symbole für Kommen und Gehen (Tür mit Pfeil hinein/hinaus, #25).
 
 ## Starten
 

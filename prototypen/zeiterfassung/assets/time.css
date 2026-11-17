@@ -128,6 +128,9 @@ body {
 .taste.gehen { background: var(--foreground); color: var(--background); border-color: var(--foreground); }
 .taste.pause { background: var(--secondary); color: var(--secondary-foreground); }
 .taste .symbol-svg { width: 1.5rem; height: 1.5rem; flex: none; }
+.taste .symbol-svg.tuer { width: 1.9rem; height: 1.9rem; }
+.taste.kommen .symbol-svg.tuer { width: 2.4rem; height: 2.4rem; }
+.taste.klein .symbol-svg.tuer { width: 1.3rem; height: 1.3rem; }
 /* Pausenmodus: eigene Farbe (Warnton der Statusfarben, Kontrast AA) und Kaffeetasse statt Pfeil */
 .taste.pause-ende {
   background: var(--warning); color: var(--background); border-color: var(--warning);
