@@ -139,7 +139,7 @@ sb_secs = [{"titel": t, "kinder": [], "dokumente": [doc(n, SB.format(i), typ="pd
 # ---------------------------------------------------------------- Modell
 ORGS = [
  {"id": "pg-truellikon", "name": "Politische Gemeinde Trüllikon", "kurz": "Gemeinde Trüllikon", "typ": "Politische Gemeinde",
-  "bezirk": "Andelfingen", "website": "https://www.truellikon.ch", "rs_url": "https://www.truellikon.ch/rechtssammlung",
+  "bezirk": "Andelfingen", "gemeinden": ["Trüllikon"], "sitz": "Trüllikon", "website": "https://www.truellikon.ch", "rs_url": "https://www.truellikon.ch/rechtssammlung",
   "cms": "i-web / icms (Innovative Web AG)", "menu_pfad": ["Wir für Sie", "Rechtssammlung"],
   "weitere_einstiege": ["Wir für Sie › Online Schalter › Reglemente A-Z"],
   "struktur": "Flache Dokumenttabelle (DataTables, 20 pro Seite, Filterfeld); die 9 Sachgebiete stehen nur als Textliste darüber, die Zuordnung erfolgt über die Ziffer im Dateititel («5 - …»).",
@@ -155,7 +155,7 @@ ORGS = [
               "Zweckverbands-Statuten und Verträge sind mit kommunalen Erlassen vermischt (fachlich korrekt gem. Leitfaden, aber ohne Kennzeichnung)."],
   "sections": pgt_sections},
  {"id": "ps-truellikon", "name": "Primarschule Trüllikon", "kurz": "Schule Trüllikon", "typ": "Primarschulgemeinde",
-  "bezirk": "Andelfingen", "website": "https://www.schule-truellikon.ch",
+  "bezirk": "Andelfingen", "gemeinden": ["Trüllikon"], "sitz": "Trüllikon", "website": "https://www.schule-truellikon.ch",
   "rs_url": "https://www.schule-truellikon.ch/links-und-download/systematische-rechtssammlung/p-122/",
   "cms": "Escola-Schulplattform (Ordner-Sitemap)", "menu_pfad": ["Download", "Systematische Rechtssammlung"],
   "weitere_einstiege": ["Information › Regelungen und Konzepte", "Download › Konzepte und Merkblätter"],
@@ -173,7 +173,7 @@ ORGS = [
               "Tippfehler in Dateinamen («Trüllion», «Urnenabstimmunt»), Budget 2026 als «2026_12_08» datiert."],
   "sections": pst_tree()},
  {"id": "skm-marthalen", "name": "Sekundarschule Kreis Marthalen (SKM)", "kurz": "SKM", "typ": "Sekundarschulgemeinde",
-  "bezirk": "Andelfingen", "website": "https://www.skmarthalen.ch", "rs_url": "https://skmarthalen.ch/systematische-rechtssammlung/",
+  "bezirk": "Andelfingen", "gemeinden": ["Benken", "Marthalen", "Rheinau", "Trüllikon"], "sitz": "Marthalen", "website": "https://www.skmarthalen.ch", "rs_url": "https://skmarthalen.ch/systematische-rechtssammlung/",
   "cms": "WordPress (Theme BeTheme)", "menu_pfad": ["Schulgemeinde", "Systematische Rechtssammlung"],
   "weitere_einstiege": ["Schulgemeinde › Gemeindeordnung (direkter PDF-Link)", "Schulgemeinde › Beschlüsse", "Information › Informationen A – Z"],
   "struktur": "Eine redaktionelle Seite: H2 = Sachgebiet (100–105, Archiv), H4 = Erlass mit Nummer, darunter ein «PDF»-Button.",
@@ -189,7 +189,7 @@ ORGS = [
               "Keine Dateigrössen/Daten; Pflege rein manuell im Seiteneditor."],
   "sections": skm_secs},
  {"id": "sek-buelach", "name": "Sekundarschule Bülach", "kurz": "Sek Bülach", "typ": "Sekundarschulgemeinde",
-  "bezirk": "Bülach", "website": "https://www.sekbuelach.ch",
+  "bezirk": "Bülach", "gemeinden": ["Bülach"], "sitz": "Bülach", "website": "https://www.sekbuelach.ch",
   "rs_url": "https://www.sekbuelach.ch/schulverwaltung/systematische-rechtssammlung/p-5984/",
   "cms": "Escola-Schulplattform (Dokumentablage per AJAX)", "menu_pfad": ["Schulverwaltung", "Systematische Rechtssammlung"],
   "weitere_einstiege": ["Externer Link: BWS Bülach › Reglemente"],
@@ -407,33 +407,15 @@ ICON = ('<svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><rec
         '<rect x="13" y="3.5" width="7.5" height="7.5" rx="2" fill="none" stroke="var(--brand-neutral)" stroke-width="1.75"/>'
         '<rect x="3.5" y="13" width="7.5" height="7.5" rx="2" fill="var(--brand-orange)"/><rect x="13" y="13" width="7.5" height="7.5" rx="2" fill="var(--brand-blue)"/></svg>')
 
+def render_daten(gemeinden):
+    bezirke = list(dict.fromkeys(g["bezirk"] for g in gemeinden))
+    pg = {o["sitz"]: o["id"] for o in ORGS if o["typ"] == "Politische Gemeinde"}
+    gem = [{**g, "org": pg.get(g["gemeinde"]) if g["status"] != "offen" else None} for g in gemeinden]
+    daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "organisationen": ORGS}
+    return ("/* Erzeugt von tools/build.py – nicht von Hand bearbeiten. */\nwindow.CODEX = "
+            + json.dumps(daten, ensure_ascii=False, separators=(",", ":")) + ";\n")
+
 def render_index(gemeinden):
-    karten = ""
-    for o in ORGS:
-        bef = "".join(f"<li>{esc(b)}</li>" for b in o["befunde"])
-        karten += f"""
-      <article class="karte org">
-        <h2>{esc(o['name'])}</h2>
-        <p class="small"><span class="badge neutral">{esc(o['typ'])}</span> <span class="badge neutral">Bezirk {esc(o['bezirk'])}</span>
-          <span class="badge violett">{o['anzahl_dokumente']} Dokumente</span></p>
-        <dl class="fakten"><dt>Menüpfad</dt><dd>{' › '.join(map(esc,o['menu_pfad']))}</dd><dt>CMS</dt><dd>{esc(o['cms'])}</dd>
-          <dt>Aufbau</dt><dd>{esc(o['struktur'])}</dd><dt>Nummerierung</dt><dd>{esc(o['nummerierung'])}</dd>
-          <dt>Umfang</dt><dd>{o['anzahl_rubriken']} Rubriken · Ordnertiefe {o['max_tiefe']}</dd></dl>
-        <details><summary>Befunde ({len(o['befunde'])})</summary><ul>{bef}</ul></details>
-        <div class="formzeile"><a class="btn primaer" href="demo/{o['id']}.html">Demo-Seite öffnen</a>
-          <a class="btn" href="{esc(o['rs_url'])}" target="_blank" rel="noopener">Original ↗</a></div>
-      </article>"""
-    zeilen = ""
-    for g in gemeinden:
-        erfasst = g["status"] != "offen"
-        badge = '<span class="badge erfolg"><span aria-hidden="true">✓</span>erfasst</span>' if erfasst else '<span class="badge neutral"><span aria-hidden="true">○</span>offen</span>'
-        link = f'<a href="{esc(g["rechtssammlung_url"])}" target="_blank" rel="noopener">Rechtssammlung ↗</a>' if g["rechtssammlung_url"] else ""
-        zeilen += f"<tr><td>{esc(g['bezirk'])}</td><td>{esc(g['gemeinde'])}</td><td>{esc(g['cms'])}</td><td>{link}</td><td>{badge}</td></tr>"
-    done = sum(1 for g in gemeinden if g["status"] != "offen")
-    cmp = "".join(f"<tr><th scope='row'>{lab}</th>{''.join(f'<td>{f(o)}</td>' for o in ORGS)}</tr>" for lab, f in [
-        ("CMS", lambda o: esc(o['cms'])), ("Menüpfad", lambda o: ' › '.join(map(esc, o['menu_pfad']))),
-        ("Rubriken / Dokumente", lambda o: f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),
-        ("Ordnertiefe", lambda o: str(o['max_tiefe'])), ("Nummerierung", lambda o: esc(o['nummerierung']))])
     return f"""<!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -443,49 +425,22 @@ def render_index(gemeinden):
   <title>EduKSX-Codex – Rechtssammlungen (Prototyp)</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="assets/eduksx.css">
-  <style>
-    .seite {{ max-width: 1240px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }}
-    .gitter {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(min(480px, 100%), 1fr)); gap: 1rem; }}
-    .org {{ display: flex; flex-direction: column; gap: .35rem; }} .org h2 {{ margin: 0; font-size: 1.15rem; }}
-    .org .formzeile {{ margin-top: auto; }} a.btn {{ text-decoration: none; }}
-    dl.fakten {{ display: grid; grid-template-columns: 8.5rem 1fr; gap: .25rem .75rem; margin: .25rem 0; font-size: .92rem; }}
-    dl.fakten dt {{ color: var(--muted-foreground); }} dl.fakten dd {{ margin: 0; }}
-    details summary {{ cursor: pointer; font-weight: 600; }} section {{ margin-top: 2rem; }}
-    .scroll {{ max-height: 32rem; overflow: auto; }}
-  </style>
+  <link rel="stylesheet" href="assets/codex.css">
   <script>
     try {{ var t = localStorage.getItem("eduksx-thema"); if (t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.classList.add("dark"); }} catch (e) {{}}
   </script>
 </head>
 <body>
   <header class="kopf">
-    <a class="marke" href="../">{ICON}{WM}</a><span class="muted small">Prototyp Rechtssammlung</span>
+    <a class="marke" href="#/">{ICON}{WM}</a><span class="muted small">Prototyp Rechtssammlung</span>
     <div class="werkzeuge"><a class="btn" href="../">← Alle Prototypen</a> <button class="btn" id="thema" type="button">◐ Hell/Dunkel</button></div>
   </header>
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
-  <main class="seite">
-    <h1>Systematische Rechtssammlungen im Kanton Zürich</h1>
-    <p class="muted">Gemeinden und Schulgemeinden müssen ihr geltendes Recht in einer systematisch aufgebauten Rechtssammlung veröffentlichen.
-      EduKSX-Codex erfasst, wie sie heute aufgebaut sind – Grundlage für eine einheitliche Codex-Normalform.</p>
-    <section style="margin-top:1rem"><h2>Pilot: 4 Organisationen</h2><div class="gitter">{karten}
-    </div></section>
-    <section><h2>Vergleich</h2><div class="tabelle-wrap"><table><thead><tr><th></th>{''.join(f"<th scope='col'>{esc(o['kurz'])}</th>" for o in ORGS)}</tr></thead>
-      <tbody>{cmp}</tbody></table></div></section>
-    <section><h2>Alle 160 politischen Gemeinden <span class="badge info">{done} von {len(gemeinden)} erfasst</span></h2>
-      <div class="formzeile"><label class="feld">Filtern <input type="text" id="q" placeholder="Gemeinde oder Bezirk"></label></div>
-      <div class="tabelle-wrap scroll"><table id="g"><thead><tr><th>Bezirk</th><th>Gemeinde</th><th>CMS</th><th>Rechtssammlung</th><th>Status</th></tr></thead>
-      <tbody>{zeilen}</tbody></table></div></section>
-  </main>
-  <footer class="fuss"><span>{WM} · Prototyp 0.1.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
-  <script>
-    var q = document.getElementById("q"), rs = Array.prototype.slice.call(document.querySelectorAll("#g tbody tr"));
-    q.addEventListener("input", function () {{ var f = q.value.toLowerCase(); rs.forEach(function (r) {{ r.style.display = r.textContent.toLowerCase().indexOf(f) >= 0 ? "" : "none"; }}); }});
-    document.getElementById("thema").addEventListener("click", function () {{
-      var d = document.documentElement.classList.toggle("dark");
-      try {{ localStorage.setItem("eduksx-thema", d ? "dark" : "light"); }} catch (e) {{}}
-    }});
-  </script>
+  <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
+  <footer class="fuss"><span>{WM} · Prototyp 0.2.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <script src="assets/daten.js"></script>
+  <script src="assets/app.js"></script>
 </body>
 </html>
 """
@@ -523,6 +478,7 @@ def main():
     (ROOT/"demo").mkdir(exist_ok=True)
     for o in ORGS: (ROOT/f"demo/{o['id']}.html").write_text(RENDER[o["id"]](o), encoding="utf-8")
     (ROOT/"index.html").write_text(render_index(gem), encoding="utf-8")
+    (ROOT/"assets/daten.js").write_text(render_daten(gem), encoding="utf-8")
     (ROOT/"docs").mkdir(exist_ok=True)
     (ROOT/"docs/evaluation.md").write_text(render_md(), encoding="utf-8")
     for o in ORGS: print(f"{o['id']:15} {o['anzahl_rubriken']:2} Rubriken {o['anzahl_dokumente']:4} Dokumente Tiefe {o['max_tiefe']}")

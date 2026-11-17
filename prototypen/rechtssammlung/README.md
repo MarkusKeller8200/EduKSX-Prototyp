@@ -9,8 +9,9 @@ Wie sind die systematischen Rechtssammlungen der Zürcher Gemeinden und Schulgem
 
 ## Starten
 
-`index.html` im Browser öffnen (Übersicht, Vergleich, Liste der 160 politischen Gemeinden); von dort führen die
-Demo-Seiten unter `demo/` weiter. Online über die Einstiegsseite der Prototypen.
+`index.html` im Browser öffnen. Links das Menü: je Bezirk die politischen Gemeinden und die Schulgemeinden (eigener
+Zweig); bei erfassten Organisationen klappen die Rubriken der Rechtssammlung auf. Rechts Steckbrief, Befunde,
+Struktur und Dokumente; von dort führen die Demo-Seiten unter `demo/` weiter. Online über die Einstiegsseite der Prototypen.
 
 Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/rechtssammlung/tools/build.py`
 
@@ -18,7 +19,9 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 
 | Pfad | Zweck |
 |---|---|
-| `index.html` | Übersicht im EduKSX-Auftritt: Pilot-Evaluation, Vergleich, Gemeindeliste |
+| `index.html` | Übersicht im EduKSX-Auftritt mit Menü links: Bezirk › Politische Gemeinden / Schulgemeinden › Rubriken der Rechtssammlung |
+| `assets/app.js`, `assets/codex.css` | Menü und Ansichten (Übersicht, Bezirk, Gemeinde, Organisation, Rubrik) |
+| `assets/daten.js` | Daten für die Übersicht (erzeugt von `tools/build.py`) |
 | `demo/*.html` | Je eine nachgebaute Rechtssammlungs-Seite im Stil der Original-Website |
 | `docs/evaluation.md` | Evaluation mit Menüstruktur und vollständiger Dateiliste je Organisation |
 | `data/rechtssammlungen.json` | Normalisiertes Datenmodell (Rubrik → Unterordner → Dokument) |

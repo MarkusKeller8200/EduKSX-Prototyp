@@ -7,6 +7,10 @@
    "kurz": "Gemeinde Trüllikon",
    "typ": "Politische Gemeinde",
    "bezirk": "Andelfingen",
+   "gemeinden": [
+    "Trüllikon"
+   ],
+   "sitz": "Trüllikon",
    "website": "https://www.truellikon.ch",
    "rs_url": "https://www.truellikon.ch/rechtssammlung",
    "cms": "i-web / icms (Innovative Web AG)",
@@ -387,6 +391,10 @@
    "kurz": "Schule Trüllikon",
    "typ": "Primarschulgemeinde",
    "bezirk": "Andelfingen",
+   "gemeinden": [
+    "Trüllikon"
+   ],
+   "sitz": "Trüllikon",
    "website": "https://www.schule-truellikon.ch",
    "rs_url": "https://www.schule-truellikon.ch/links-und-download/systematische-rechtssammlung/p-122/",
    "cms": "Escola-Schulplattform (Ordner-Sitemap)",
@@ -1406,6 +1414,13 @@
    "kurz": "SKM",
    "typ": "Sekundarschulgemeinde",
    "bezirk": "Andelfingen",
+   "gemeinden": [
+    "Benken",
+    "Marthalen",
+    "Rheinau",
+    "Trüllikon"
+   ],
+   "sitz": "Marthalen",
    "website": "https://www.skmarthalen.ch",
    "rs_url": "https://skmarthalen.ch/systematische-rechtssammlung/",
    "cms": "WordPress (Theme BeTheme)",
@@ -1817,6 +1832,10 @@
    "kurz": "Sek Bülach",
    "typ": "Sekundarschulgemeinde",
    "bezirk": "Bülach",
+   "gemeinden": [
+    "Bülach"
+   ],
+   "sitz": "Bülach",
    "website": "https://www.sekbuelach.ch",
    "rs_url": "https://www.sekbuelach.ch/schulverwaltung/systematische-rechtssammlung/p-5984/",
    "cms": "Escola-Schulplattform (Dokumentablage per AJAX)",
