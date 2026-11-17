@@ -4,7 +4,7 @@
  * (GitHub Pages hängt ?v=<Prüfsumme> an CSS/JS), und Stempeln geht auch offline.
  * Bei Änderungen an der Dateiliste VERSION erhöhen.
  */
-const VERSION = "eduksx-time-0.1.0";
+const VERSION = "eduksx-time-0.2.0";
 const DATEIEN = [
   "./",
   "index.html",

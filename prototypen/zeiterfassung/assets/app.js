@@ -210,6 +210,44 @@
       ${syncBadge(b)}</li>`).join("")}</ul>`;
   }
 
+  /**
+   * Animierte Stempeluhr (eingestempelt bzw. Pause): Ring = Ist heute im Verhältnis zum Soll, umlaufender Sekundenpunkt
+   * (CSS, mit negativer Verzögerung auf die Sekunde ausgerichtet), Mitte = laufender Block und Gesamtzeit heute.
+   */
+  const UHR_R = 100;
+  const UHR_U = 2 * Math.PI * UHR_R;
+  function ringAnteil(a) {
+    if (a.soll <= 0) return { anteil: a.ist > 0 ? 1 : 0, ueber: a.ist > 0 };
+    return { anteil: Math.min(1, a.ist / a.soll), ueber: a.ist > a.soll };
+  }
+  function stempeluhr(z, a, jetzt) {
+    const pause = z.art === "pause";
+    const block = jetzt - z.letzte.zeit;
+    const { anteil, ueber } = ringAnteil(a);
+    const striche = Array.from({ length: 60 }, (_, i) => {
+      const lang = i % 5 === 0;
+      return `<line x1="120" y1="${lang ? 30 : 33}" x2="120" y2="38" transform="rotate(${i * 6} 120 120)" class="${lang ? "lang" : ""}"/>`;
+    }).join("");
+    const verzoegerung = -((block / 1000) % 60);
+    return `<section class="stempeluhr${pause ? " ist-pause" : ""}" aria-label="${pause ? "Pause" : "Eingestempelt"}: laufende Zeit und Gesamtzeit heute">
+      <svg viewBox="0 0 240 240" aria-hidden="true">
+        <g class="striche">${striche}</g>
+        <circle class="spur" cx="120" cy="120" r="${UHR_R}"/>
+        <circle class="fortschritt${ueber ? " ueber" : ""}" data-ring cx="120" cy="120" r="${UHR_R}"
+          stroke-dasharray="${UHR_U.toFixed(1)}" stroke-dashoffset="${(UHR_U * (1 - anteil)).toFixed(1)}" transform="rotate(-90 120 120)"/>
+        <g class="umlauf" style="animation-delay:${verzoegerung.toFixed(2)}s"><circle cx="120" cy="${120 - UHR_R}" r="7"/></g>
+      </svg>
+      <div class="mitte">
+        <span class="etikett"><span class="puls" aria-hidden="true"></span>${pause ? "Pause seit " + hhmm(z.letzte.zeit) : "Eingecheckt seit " + hhmm(z.letzte.zeit)}</span>
+        <span class="block" data-lauf="${z.letzte.zeit}">${laufzeit(block)}</span>
+        <span class="trenn" aria-hidden="true"></span>
+        <span class="gesamt-etikett">Heute gesamt</span>
+        <span class="gesamt" data-gesamt>${laufzeit(a.ist * 3600000)}</span>
+        <span class="soll muted">Soll ${dauer(a.soll)} · <span data-uhr>${hhmm(jetzt)}</span></span>
+      </div>
+    </section>`;
+  }
+
   function seiteStempeln() {
     const jetzt = Date.now();
     const z = zustand(jetzt);
@@ -217,15 +255,16 @@
     const a = auswertung(heute, jetzt);
     const teile = [];
 
-    teile.push(`<section class="uhr" aria-label="Aktuelle Zeit"><div class="zeit" data-uhr>${hhmm(jetzt)}</div><div class="datum">${e(datumLang(jetzt))}</div></section>`);
+    if (z.art === "ein" || z.art === "pause") teile.push(stempeluhr(z, a, jetzt));
+    else teile.push(`<section class="uhr" aria-label="Aktuelle Zeit"><div class="zeit" data-uhr>${hhmm(jetzt)}</div><div class="datum">${e(datumLang(jetzt))}</div></section>`);
 
     // Status
     let status;
     if (z.art === "ein") {
       const seit = z.letzte.typ === "pause_ende" ? "wieder seit" : "seit";
-      status = `<div class="status ein" role="status"><span class="symbol" aria-hidden="true">✓</span><div><b>Eingestempelt</b><span class="muted">${e(ARTEN[z.letzte.art]?.name)} ${seit} ${hhmm(z.letzte.zeit)}</span></div><span class="laufzeit" data-lauf="${z.letzte.zeit}">${laufzeit(jetzt - z.letzte.zeit)}</span></div>`;
+      status = `<div class="status ein" role="status"><span class="symbol" aria-hidden="true">✓</span><div><b>Eingestempelt</b><span class="muted">${e(ARTEN[z.letzte.art]?.name)} ${seit} ${hhmm(z.letzte.zeit)}</span></div></div>`;
     } else if (z.art === "pause") {
-      status = `<div class="status pause" role="status"><span class="symbol" aria-hidden="true">॥</span><div><b>In der Pause</b><span class="muted">seit ${hhmm(z.letzte.zeit)}</span></div><span class="laufzeit" data-lauf="${z.letzte.zeit}">${laufzeit(jetzt - z.letzte.zeit)}</span></div>`;
+      status = `<div class="status pause" role="status"><span class="symbol" aria-hidden="true">॥</span><div><b>In der Pause</b><span class="muted">seit ${hhmm(z.letzte.zeit)}</span></div></div>`;
     } else {
       status = `<div class="status aus" role="status"><span class="symbol" aria-hidden="true">○</span><div><b>Nicht eingestempelt</b><span class="muted">${a.liste.length ? `Zuletzt gegangen um ${hhmm(z.letzte.zeit)}` : "Guten Tag – bereit zum Stempeln"}</span></div></div>`;
     }
@@ -374,6 +413,14 @@
     document.querySelectorAll("[data-uhr]").forEach((el) => { el.textContent = hhmm(jetzt); });
     document.querySelectorAll("[data-lauf]").forEach((el) => { el.textContent = laufzeit(jetzt - Number(el.dataset.lauf)); });
     const a = auswertung(tagKey(jetzt), jetzt);
+    const gesamt = document.querySelector("[data-gesamt]");
+    if (gesamt) gesamt.textContent = laufzeit(a.ist * 3600000);
+    const ring = document.querySelector("[data-ring]");
+    if (ring) {
+      const { anteil, ueber } = ringAnteil(a);
+      ring.setAttribute("stroke-dashoffset", (UHR_U * (1 - anteil)).toFixed(1));
+      ring.classList.toggle("ueber", ueber);
+    }
     const ist = document.querySelector("[data-ist]");
     if (ist) ist.textContent = dauer(a.ist);
     const saldo = document.querySelector("[data-saldo]");

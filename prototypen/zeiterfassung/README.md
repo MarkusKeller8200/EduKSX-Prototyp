@@ -23,6 +23,12 @@ Kommen-/Gehen-Buchungen, Buchungsarten und Sollzeit pro Tag.
 Folgt später: Abwesenheiten, Korrekturen, Monatsübersicht mit Saldo und Ferien, Einreichen und Visum, Anmeldung über
 EduKSX-Ident, echte Schnittstelle.
 
+## Schritt 2 (0.2.0)
+
+- **Animierte Uhr**, solange man eingestempelt ist (#21): in der Mitte die aktuell eingecheckte Zeit (Block seit
+  Kommen bzw. Pausenende) und die Gesamtzeit heute; Ring = Ist im Verhältnis zum Soll (über Soll violett),
+  Sekundenpunkt läuft rund. In der Pause steht die Uhr still. Ohne Animation bei «Bewegung reduzieren».
+
 ## Starten
 
 Über GitHub Pages (Einstiegsseite › EduKSX-Time) auf dem Handy öffnen und installieren. Lokal braucht der Service

@@ -34,6 +34,41 @@ body {
 
 .inhalt { padding: 1rem; display: grid; gap: 1rem; }
 
+/* Animierte Stempeluhr (eingestempelt / Pause) */
+.stempeluhr { position: relative; width: min(19rem, 82vw); aspect-ratio: 1; margin: .25rem auto 0; }
+.stempeluhr svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.stempeluhr .striche line { stroke: var(--border); stroke-width: 1.5; stroke-linecap: round; }
+.stempeluhr .striche line.lang { stroke: var(--muted-foreground); stroke-width: 2; }
+.stempeluhr .spur { fill: none; stroke: var(--muted); stroke-width: 14; }
+.stempeluhr .fortschritt {
+  fill: none; stroke: var(--success); stroke-width: 14; stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear, stroke .3s;
+}
+.stempeluhr .fortschritt.ueber { stroke: var(--brand-violet); }
+.stempeluhr .umlauf { transform-origin: 120px 120px; animation: umlauf 60s linear infinite; }
+.stempeluhr .umlauf circle { fill: var(--brand-orange); stroke: var(--background); stroke-width: 3; }
+.stempeluhr.ist-pause .umlauf { animation-play-state: paused; }
+.stempeluhr.ist-pause .umlauf circle { fill: var(--muted-foreground); }
+.stempeluhr.ist-pause .fortschritt { stroke: var(--warning); }
+.stempeluhr .mitte {
+  position: absolute; inset: 14%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: .1rem;
+}
+.stempeluhr .etikett { display: inline-flex; align-items: center; gap: .4rem; font-size: .85rem; color: var(--muted-foreground); }
+.stempeluhr .puls { width: .6rem; height: .6rem; border-radius: 50%; background: var(--success); animation: puls 1.6s ease-in-out infinite; }
+.stempeluhr.ist-pause .puls { background: var(--warning); animation: none; }
+.stempeluhr .block { font-size: clamp(2rem, 11vw, 2.7rem); font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.stempeluhr .trenn { width: 40%; height: 1px; background: var(--border); margin: .35rem 0; }
+.stempeluhr .gesamt-etikett { font-size: .78rem; color: var(--muted-foreground); }
+.stempeluhr .gesamt { font-size: 1.35rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+.stempeluhr .soll { font-size: .78rem; }
+@keyframes umlauf { to { transform: rotate(360deg); } }
+@keyframes puls { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.7); } }
+@media (prefers-reduced-motion: reduce) {
+  .stempeluhr .umlauf, .stempeluhr .puls { animation: none; }
+  .stempeluhr .fortschritt { transition: none; }
+}
+
 /* Uhr und Status */
 .uhr { text-align: center; padding: .5rem 0 0; }
 .uhr .zeit { font-size: 3.2rem; font-weight: 650; letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.05; }

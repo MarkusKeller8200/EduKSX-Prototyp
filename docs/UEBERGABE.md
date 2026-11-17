@@ -42,6 +42,7 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
   angebundene Zeiterfassung (Kommen/Gehen, Buchungsarten, Sollzeit). Schritt 1 = installierbare Mobil-App (PWA) zum
   Ein- und Ausstempeln (#19 → `_3 Beta-Test`). Getestet mit Handy-Ansicht (hell/dunkel), offline, Service Worker.
 - Herstellername erscheint nicht im Prototyp (Regel «keine Fremd-/Herstellernamen»).
+- EduKSX-Time 0.2.0: animierte Uhr beim Eingestempelt-Sein (#21 → `_3 Beta-Test`).
 - Offen: weitere Schritte («der ganze Rest») je als Issue nach Freigabe; Icon «time» vorläufig, nicht im Icon-Set.
 
 ### Sitzung 2026-11-17 (05:10–05:50) – EduKSX-Codex 0.5.0

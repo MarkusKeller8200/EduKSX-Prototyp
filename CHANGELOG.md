@@ -12,6 +12,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Mobil-App (PWA) zum Ein- und Ausstempeln – Kommen, Pause, Gehen mit Buchungsart, Tagesliste, Ist/Soll/Saldo,
   Rückgängig, Gehen nachtragen, Pausenhinweis, Verlauf 14 Tage, offline mit simulierter Übertragung; Icon «time»
   (vorläufig) auf der Einstiegsseite.
+- EduKSX-Time 0.2.0: animierte Uhr, solange man eingestempelt ist – laufender Block und Gesamtzeit heute, Ring
+  im Verhältnis zum Soll, umlaufender Sekundenpunkt; in der Pause angehalten (#21).
 - Repository mit dem GitHub-Blueprint eingerichtet.
 - Ordnerstruktur `prototypen/<name>/` mit Vorlage `prototypen/_vorlage/` (prototyp.json, README, index.html).
 - Prototyp **EduKSX-Staffing – Einsatzplanung** (`prototypen/einsatzplanung`): Anforderungskatalog und
