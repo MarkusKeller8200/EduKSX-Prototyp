@@ -128,6 +128,27 @@ def menue(liste: list[tuple[Path, dict]]) -> str:
 """
 
 
+def cache_brechen(ordner: Path) -> None:
+    """Lokale CSS-/JS-Verweise in HTML-Dateien mit ?v=<Prüfsumme> versehen.
+
+    GitHub Pages erlaubt Browsern 10 Minuten Cache; mit der Prüfsumme lädt jede geänderte Datei sofort neu."""
+    import hashlib
+    import re
+    for html in ordner.rglob("*.html"):
+        text = html.read_text(encoding="utf-8")
+
+        def ersetzen(m: re.Match) -> str:
+            datei = (html.parent / m.group(2)).resolve()
+            if not datei.is_file():
+                return m.group(0)
+            pruef = hashlib.sha256(datei.read_bytes()).hexdigest()[:10]
+            return f'{m.group(1)}"{m.group(2)}?v={pruef}"'
+
+        neu = re.sub(r'((?:src|href)=)"((?!https?:|//|#)[^"?]+\.(?:js|css))"', ersetzen, text)
+        if neu != text:
+            html.write_text(neu, encoding="utf-8")
+
+
 def bauen(ziel: Path) -> list[str]:
     if ziel.exists():
         shutil.rmtree(ziel)
@@ -136,6 +157,7 @@ def bauen(ziel: Path) -> list[str]:
     liste = prototypen()
     for ordner, _ in liste:
         shutil.copytree(ordner, ziel / ordner.name, ignore=shutil.ignore_patterns("node_modules", "vendor", ".env*", "*.md", "__pycache__"))
+        cache_brechen(ziel / ordner.name)
     (ziel / "index.html").write_text(menue(liste), encoding="utf-8")
     (ziel / ".nojekyll").write_text("", encoding="utf-8")
     return [o.name for o, _ in liste]
