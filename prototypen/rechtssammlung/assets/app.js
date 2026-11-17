@@ -165,9 +165,9 @@
       h("div", { cls: "gitter" }, karten),
       h("h2", { text: "Vergleich" }),
       h("div", { cls: "tabelle-wrap" }, h("table", null,
-        h("thead", null, h("tr", null, h("th"), D.organisationen.map(function (o) { return h("th", { scope: "col", text: o.kurz }); }))),
-        h("tbody", null, zeilen.map(function (z) {
-          return h("tr", null, h("th", { scope: "row", text: z[0] }), D.organisationen.map(function (o) {
+        h("thead", null, h("tr", null, h("th", { scope: "col", text: "Organisation" }), zeilen.map(function (z) { return h("th", { scope: "col", text: z[0] }); }))),
+        h("tbody", null, D.organisationen.map(function (o) {
+          return h("tr", null, h("th", { scope: "row" }, h("a", { href: link("org", o.id), text: o.kurz })), zeilen.map(function (z) {
             var v = typeof z[1] === "function" ? z[1](o) : String(o[z[1]]);
             return typeof v === "string" ? h("td", { text: v }) : h("td", null, v);
           }));
