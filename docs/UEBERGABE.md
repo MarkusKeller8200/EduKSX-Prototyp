@@ -43,6 +43,8 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
   Ein- und Ausstempeln (#19 → `_3 Beta-Test`). Getestet mit Handy-Ansicht (hell/dunkel), offline, Service Worker.
 - Herstellername erscheint nicht im Prototyp (Regel «keine Fremd-/Herstellernamen»).
 - EduKSX-Time 0.2.0: animierte Uhr beim Eingestempelt-Sein (#21 → `_3 Beta-Test`).
+- EduKSX-Time 0.3.0: Soll-Markierung, gesetzliche Pause 30 Min. nach 5 h (zählt nicht als Arbeitszeit) (#22 → `_3 Beta-Test`).
+  Entscheid 2026-11-17: Regel «nach 5 h 30 Min.» (Vorgabe Projektleitung); Abgleich mit Personalrecht ZU PRÜFEN.
 - Offen: weitere Schritte («der ganze Rest») je als Issue nach Freigabe; Icon «time» vorläufig, nicht im Icon-Set.
 
 ### Sitzung 2026-11-17 (05:10–05:50) – EduKSX-Codex 0.5.0

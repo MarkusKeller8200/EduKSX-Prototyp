@@ -9,8 +9,11 @@
   const SPEICHER = "eduksx-time-v1";
   const SOLL_100 = 8.4; // Stunden pro Arbeitstag bei 100 % (42-Stunden-Woche)
   const RUECKGAENGIG_MS = 2 * 60 * 1000;
-  const MINDESTPAUSE_MIN = 30;
-  const PAUSE_AB_STUNDEN = 6;
+  // Gesetzliche Pause (Vorgabe Projektleitung 17.11.2026): nach 5 Stunden Arbeit 30 Minuten, die nicht als Arbeitszeit
+  // zählen. Bereits gebuchte Pausen werden angerechnet. ZU PRÜFEN: Abgleich mit Personalrecht/ArG Art. 15.
+  const ZWANG_AB_MIN = 5 * 60;
+  const ZWANG_DAUER_MIN = 30;
+  const M = 60000;
 
   const ARTEN = {
     arbeitszeit: { name: "Arbeitszeit", zeichen: "▣" },
@@ -107,23 +110,86 @@
     return SOLL_100 * (Number(daten.person.pensum) || 0) / 100;
   }
 
-  /** Ist und Pausen eines Tages; laufendes Intervall zählt bis jetzt (nur heute). */
+  /** Arbeitsblöcke (von–bis) aus den Buchungen; offenAb = laufender Block ohne Ende. */
+  function bloecke(liste) {
+    const iv = [];
+    let start = null;
+    for (const b of liste) {
+      if (b.typ === "kommen" || b.typ === "pause_ende") start = b.zeit;
+      else if (start !== null) { iv.push({ von: start, bis: b.zeit }); start = null; }
+    }
+    return { iv, offenAb: start };
+  }
+
+  /**
+   * Zeitachse des Tages: Arbeit, gebuchte Pause (Lücken) und gesetzliche Pause. Sobald 5 Stunden gearbeitet sind und
+   * noch keine 30 Minuten Pause vorliegen, wird der Rest bis 30 Minuten als gesetzliche Pause abgezogen.
+   */
+  function segmentieren(iv) {
+    const seg = [];
+    let arbeit = 0, pause = 0, vorher = null;
+    for (const { von, bis } of iv) {
+      if (vorher !== null && von > vorher) { seg.push({ typ: "pause", von: vorher, bis: von }); pause += (von - vorher) / M; }
+      let cur = Math.max(von, vorher ?? von);
+      while (cur < bis) {
+        if (arbeit >= ZWANG_AB_MIN && pause < ZWANG_DAUER_MIN) {
+          const ende = Math.min(bis, cur + (ZWANG_DAUER_MIN - pause) * M);
+          if (ende - cur < 1) { pause = ZWANG_DAUER_MIN; continue; }
+          seg.push({ typ: "zwang", von: cur, bis: ende }); pause += (ende - cur) / M; cur = ende;
+        } else {
+          const ende = Math.min(bis, arbeit < ZWANG_AB_MIN ? cur + (ZWANG_AB_MIN - arbeit) * M : bis);
+          if (ende - cur < 1) { arbeit = ZWANG_AB_MIN; continue; }
+          seg.push({ typ: "arbeit", von: cur, bis: ende }); arbeit += (ende - cur) / M; cur = ende;
+        }
+      }
+      vorher = Math.max(vorher ?? bis, bis);
+    }
+    return { seg, arbeit, pause };
+  }
+
+  /** Ist und Pausen eines Tages; laufender Block zählt bis jetzt (nur heute), gesetzliche Pause abgezogen. */
   function auswertung(key, jetzt = Date.now()) {
     const liste = sortiert().filter((b) => tagKey(b.zeit) === key);
-    let ist = 0, pause = 0, start = null, ende = null, offen = false, laengstePause = 0;
-    for (const b of liste) {
-      if (b.typ === "kommen" || b.typ === "pause_ende") {
-        if (ende !== null) { const p = (b.zeit - ende) / 3600000; pause += p; laengstePause = Math.max(laengstePause, p); ende = null; }
-        start = b.zeit;
-      } else if (start !== null) {
-        ist += (b.zeit - start) / 3600000; start = null; ende = b.zeit;
-      }
+    const { iv, offenAb } = bloecke(liste);
+    let offen = false;
+    if (offenAb !== null) {
+      if (key === tagKey(jetzt)) iv.push({ von: offenAb, bis: Math.max(offenAb, jetzt) }); else offen = true;
     }
-    if (start !== null) {
-      if (key === tagKey(jetzt)) ist += (jetzt - start) / 3600000; else offen = true;
-    }
+    const s = segmentieren(iv);
     const soll = sollTag(key);
-    return { liste, ist, pause, laengstePause, soll, saldo: ist - soll, offen };
+    const ist = s.arbeit / 60;
+    const zwang = s.seg.filter((x) => x.typ === "zwang").reduce((n, x) => n + (x.bis - x.von) / 3600000, 0);
+    const letztes = s.seg.at(-1);
+    const zwangJetzt = offenAb !== null && key === tagKey(jetzt) && letztes?.typ === "zwang" && letztes.bis >= jetzt - 1000 ? letztes : null;
+    return { liste, ist, pause: s.pause / 60, zwang, soll, saldo: ist - soll, offen, seg: s.seg, start: iv[0]?.von ?? null, zwangJetzt };
+  }
+
+  /** Vorschau ab jetzt bei ununterbrochener Arbeit: wann ist das Soll erreicht, wo liegt die gesetzliche Pause. */
+  function prognose(key, jetzt, a) {
+    if (a.soll <= 0) return null;
+    const liste = sortiert().filter((b) => tagKey(b.zeit) === key);
+    const { iv, offenAb } = bloecke(liste);
+    iv.push({ von: offenAb ?? jetzt, bis: jetzt + 24 * 3600000 });
+    const { seg } = segmentieren(iv);
+    const sollMin = a.soll * 60;
+    let summe = 0, sollEnde = null;
+    for (const s of seg) {
+      if (s.typ !== "arbeit") continue;
+      const d = (s.bis - s.von) / M;
+      if (summe + d >= sollMin) { sollEnde = s.von + (sollMin - summe) * M; break; }
+      summe += d;
+    }
+    const zukunft = seg.filter((s) => s.typ === "zwang" && s.bis > jetzt && (sollEnde === null || s.von < sollEnde))
+      .map((s) => ({ ...s, von: Math.max(s.von, jetzt) }));
+    return { sollEnde, zukunft };
+  }
+
+  /** Ende der laufenden gesetzlichen Pause, wenn ohne Unterbruch weitergearbeitet wird. */
+  function zwangEnde(jetzt) {
+    const { iv, offenAb } = bloecke(sortiert().filter((b) => tagKey(b.zeit) === tagKey(jetzt)));
+    iv.push({ von: offenAb ?? jetzt, bis: jetzt + 24 * 3600000 });
+    const s = segmentieren(iv).seg.find((x) => x.typ === "zwang" && x.von <= jetzt && x.bis > jetzt);
+    return s ? s.bis : jetzt;
   }
 
   function buchen(typ, zeit = Date.now(), extra = {}) {
@@ -211,41 +277,104 @@
   }
 
   /**
-   * Animierte Stempeluhr (eingestempelt bzw. Pause): Ring = Ist heute im Verhältnis zum Soll, umlaufender Sekundenpunkt
-   * (CSS, mit negativer Verzögerung auf die Sekunde ausgerichtet), Mitte = laufender Block und Gesamtzeit heute.
+   * Animierte Stempeluhr (eingestempelt bzw. Pause). Der Ring ist die Tagesachse ab dem ersten Kommen (mindestens
+   * 10 Stunden, Striche alle 10 Minuten, lang je Stunde): Arbeit grün (über Soll violett), gebuchte Pause grau,
+   * gesetzliche Pause schraffiert (künftige blasser), Markierung beim voraussichtlichen Erreichen des Solls.
+   * Sekundenpunkt läuft per CSS rund; Ring und Mitte werden jede Sekunde nachgeführt.
    */
   const UHR_R = 100;
-  const UHR_U = 2 * Math.PI * UHR_R;
-  function ringAnteil(a) {
-    if (a.soll <= 0) return { anteil: a.ist > 0 ? 1 : 0, ueber: a.ist > 0 };
-    return { anteil: Math.min(1, a.ist / a.soll), ueber: a.ist > a.soll };
+  function punkt(winkel, r) {
+    const w = (winkel - 90) * Math.PI / 180;
+    return [120 + r * Math.cos(w), 120 + r * Math.sin(w)];
+  }
+  function bogen(w1, w2, klasse) {
+    if (w2 - w1 < 0.2) return "";
+    const [x1, y1] = punkt(w1, UHR_R), [x2, y2] = punkt(Math.min(w2, w1 + 359.9), UHR_R);
+    return `<path class="${klasse}" d="M${x1.toFixed(2)} ${y1.toFixed(2)}A${UHR_R} ${UHR_R} 0 ${w2 - w1 > 180 ? 1 : 0} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}"/>`;
+  }
+  function ringZeichnen(a, p, jetzt) {
+    const t0 = a.start ?? jetzt;
+    const ende = Math.max(jetzt, p?.sollEnde ?? 0, ...(p?.zukunft || []).map((s) => s.bis));
+    const stunden = Math.max(10, Math.ceil((ende - t0) / 3600000 + 0.25));
+    const winkel = (ms) => Math.max(0, Math.min(360, ((ms - t0) / (stunden * 3600000)) * 360));
+    const teile = [];
+    for (let i = 0; i < stunden * 6; i++) {
+      const lang = i % 6 === 0;
+      const [xa, ya] = punkt(i * 360 / (stunden * 6), lang ? 82 : 85), [xb, yb] = punkt(i * 360 / (stunden * 6), 90);
+      teile.push(`<line class="strich${lang ? " lang" : ""}" x1="${xa.toFixed(2)}" y1="${ya.toFixed(2)}" x2="${xb.toFixed(2)}" y2="${yb.toFixed(2)}"/>`);
+    }
+    teile.push(`<circle class="spur" cx="120" cy="120" r="${UHR_R}"/>`);
+    let summe = 0;
+    const sollMin = a.soll * 60;
+    for (const s of a.seg) {
+      if (s.typ === "arbeit") {
+        const d = (s.bis - s.von) / M;
+        const grenze = sollMin > 0 && summe < sollMin && summe + d > sollMin ? s.von + (sollMin - summe) * M : null;
+        const ueber = sollMin > 0 && summe >= sollMin;
+        if (grenze) { teile.push(bogen(winkel(s.von), winkel(grenze), "seg arbeit"), bogen(winkel(grenze), winkel(s.bis), "seg arbeit ueber")); }
+        else teile.push(bogen(winkel(s.von), winkel(s.bis), `seg arbeit${ueber || sollMin === 0 ? " ueber" : ""}`));
+        summe += d;
+      } else teile.push(bogen(winkel(s.von), winkel(s.bis), `seg ${s.typ}`));
+    }
+    (p?.zukunft || []).forEach((s) => teile.push(bogen(winkel(s.von), winkel(s.bis), "seg zwang zukunft")));
+    if (p?.sollEnde) {
+      const w = winkel(p.sollEnde);
+      const [x1, y1] = punkt(w, UHR_R - 12), [x2, y2] = punkt(w, UHR_R + 13), [fx, fy] = punkt(w, UHR_R + 15);
+      teile.push(`<line class="soll-marke" x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}"/><circle class="soll-fahne" cx="${fx.toFixed(2)}" cy="${fy.toFixed(2)}" r="4"/>`);
+    }
+    const [jx, jy] = punkt(winkel(jetzt), UHR_R);
+    teile.push(`<circle class="jetzt" cx="${jx.toFixed(2)}" cy="${jy.toFixed(2)}" r="6"/>`);
+    return teile.join("");
+  }
+  function uhrTexte(z, a, p, jetzt) {
+    let etikett = z.art === "pause" ? `Pause seit ${hhmm(z.letzte.zeit)}` : `Eingecheckt seit ${hhmm(z.letzte.zeit)}`;
+    if (z.art === "ein" && a.zwangJetzt) etikett = "Gesetzliche Pause";
+    let soll = "Heute kein Soll";
+    if (a.soll > 0 && p?.sollEnde) {
+      soll = a.ist < a.soll ? `Soll ${dauer(a.soll)} · noch ${dauer(a.soll - a.ist)} · bis ${hhmm(p.sollEnde)}` : `Soll ${dauer(a.soll)} erreicht um ${hhmm(p.sollEnde)}`;
+    }
+    return { etikett, block: laufzeit(jetzt - z.letzte.zeit), gesamt: laufzeit(a.ist * 3600000), soll };
   }
   function stempeluhr(z, a, jetzt) {
     const pause = z.art === "pause";
-    const block = jetzt - z.letzte.zeit;
-    const { anteil, ueber } = ringAnteil(a);
-    const striche = Array.from({ length: 60 }, (_, i) => {
-      const lang = i % 5 === 0;
-      return `<line x1="120" y1="${lang ? 30 : 33}" x2="120" y2="38" transform="rotate(${i * 6} 120 120)" class="${lang ? "lang" : ""}"/>`;
-    }).join("");
-    const verzoegerung = -((block / 1000) % 60);
-    return `<section class="stempeluhr${pause ? " ist-pause" : ""}" aria-label="${pause ? "Pause" : "Eingestempelt"}: laufende Zeit und Gesamtzeit heute">
+    const p = prognose(tagKey(jetzt), jetzt, a);
+    const x = uhrTexte(z, a, p, jetzt);
+    const verzoegerung = -(((jetzt - z.letzte.zeit) / 1000) % 60);
+    return `<section class="stempeluhr${pause ? " ist-pause" : ""}${a.zwangJetzt && !pause ? " ist-zwang" : ""}" data-stempeluhr aria-label="Laufende Zeit, Gesamtzeit heute und Soll">
       <svg viewBox="0 0 240 240" aria-hidden="true">
-        <g class="striche">${striche}</g>
-        <circle class="spur" cx="120" cy="120" r="${UHR_R}"/>
-        <circle class="fortschritt${ueber ? " ueber" : ""}" data-ring cx="120" cy="120" r="${UHR_R}"
-          stroke-dasharray="${UHR_U.toFixed(1)}" stroke-dashoffset="${(UHR_U * (1 - anteil)).toFixed(1)}" transform="rotate(-90 120 120)"/>
-        <g class="umlauf" style="animation-delay:${verzoegerung.toFixed(2)}s"><circle cx="120" cy="${120 - UHR_R}" r="7"/></g>
+        <defs><pattern id="schraffur" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)">
+          <rect class="schraffur-grund" width="5" height="5"/><line class="schraffur-linie" x1="0" y1="0" x2="0" y2="5"/></pattern></defs>
+        <g data-ring>${ringZeichnen(a, p, jetzt)}</g>
+        <g class="umlauf" style="animation-delay:${verzoegerung.toFixed(2)}s"><circle cx="120" cy="34" r="3.5"/></g>
       </svg>
       <div class="mitte">
-        <span class="etikett"><span class="puls" aria-hidden="true"></span>${pause ? "Pause seit " + hhmm(z.letzte.zeit) : "Eingecheckt seit " + hhmm(z.letzte.zeit)}</span>
-        <span class="block" data-lauf="${z.letzte.zeit}">${laufzeit(block)}</span>
+        <span class="etikett"><span class="puls" aria-hidden="true"></span><span data-etikett>${e(x.etikett)}</span></span>
+        <span class="block" data-block>${x.block}</span>
         <span class="trenn" aria-hidden="true"></span>
         <span class="gesamt-etikett">Heute gesamt</span>
-        <span class="gesamt" data-gesamt>${laufzeit(a.ist * 3600000)}</span>
-        <span class="soll muted">Soll ${dauer(a.soll)} · <span data-uhr>${hhmm(jetzt)}</span></span>
+        <span class="gesamt" data-gesamt>${x.gesamt}</span>
+        <span class="soll muted" data-sollzeile>${e(x.soll)}</span>
       </div>
-    </section>`;
+    </section>
+    <ul class="legende" aria-label="Legende">
+      <li><span class="farbe arbeit" aria-hidden="true"></span>Arbeitszeit</li>
+      <li><span class="farbe pause" aria-hidden="true"></span>Pause</li>
+      <li><span class="farbe zwang" aria-hidden="true"></span>Gesetzliche Pause</li>
+      <li><span class="farbe soll" aria-hidden="true"></span>Soll erreicht</li>
+    </ul>`;
+  }
+  function uhrNachfuehren(jetzt, a) {
+    const uhr = document.querySelector("[data-stempeluhr]");
+    if (!uhr) return;
+    const z = zustand(jetzt);
+    if (z.art !== "ein" && z.art !== "pause") return;
+    const p = prognose(tagKey(jetzt), jetzt, a);
+    const x = uhrTexte(z, a, p, jetzt);
+    uhr.querySelector("[data-ring]").innerHTML = ringZeichnen(a, p, jetzt);
+    uhr.querySelector("[data-etikett]").textContent = x.etikett;
+    uhr.querySelector("[data-block]").textContent = x.block;
+    uhr.querySelector("[data-gesamt]").textContent = x.gesamt;
+    uhr.querySelector("[data-sollzeile]").textContent = x.soll;
   }
 
   function seiteStempeln() {
@@ -310,9 +439,9 @@
     }
     if (tasten) teile.push(`<div class="tasten">${tasten}</div>`);
 
-    // Pausenhinweis
-    if (z.art === "ein" && a.ist >= PAUSE_AB_STUNDEN && a.laengstePause * 60 < MINDESTPAUSE_MIN) {
-      teile.push(`<div class="meldung warnung"><span class="zeichen" aria-hidden="true">!</span><p>Seit über ${PAUSE_AB_STUNDEN} Stunden gearbeitet und noch keine Pause von mindestens ${MINDESTPAUSE_MIN} Minuten gebucht.</p></div>`);
+    // Gesetzliche Pause läuft
+    if (z.art === "ein" && a.zwangJetzt) {
+      teile.push(`<div class="meldung info"><span class="zeichen" aria-hidden="true">▨</span><p><b>Gesetzliche Pause bis ${hhmm(zwangEnde(jetzt))}</b> – nach 5 Stunden Arbeit zählen ${ZWANG_DAUER_MIN} Minuten Pause nicht als Arbeitszeit. Die Uhr läuft weiter.</p></div>`);
     }
 
     // Kennzahlen heute
@@ -322,7 +451,7 @@
       <div class="zahl"><small>Saldo heute</small><b data-saldo class="${a.saldo >= 0 ? "plus" : "minus"}">${dauer(a.saldo, true)}</b></div>
     </div></section>`);
 
-    teile.push(`<section class="abschnitt"><h2>Buchungen heute <span class="muted">${a.pause > 0 ? `Pause ${dauer(a.pause)}` : ""}</span></h2>${buchungsliste(a.liste)}</section>`);
+    teile.push(`<section class="abschnitt"><h2>Buchungen heute <span class="muted">${a.pause > 0 ? `Pause ${dauer(a.pause)}${a.zwang > 0 ? `, davon gesetzlich ${dauer(a.zwang)}` : ""}` : ""}</span></h2>${buchungsliste(a.liste)}</section>`);
     return teile.join("");
   }
 
@@ -349,7 +478,7 @@
       return `<li class="tag"><b>${e(datumKurz(key))}${key === tagKey(jetzt) ? " · heute" : ""}</b>
         <span class="ist">${dauer(a.ist)}</span>
         <span class="saldo ${a.saldo >= 0 ? "plus" : "minus"}">${dauer(a.saldo, true)}</span>
-        <small>${a.liste.length ? `${zeiten.join(", ")} · ${e(arten)}${offen ? " · ↻ noch nicht übertragen" : ""}` : "Keine Buchung"}</small></li>`;
+        <small>${a.liste.length ? `${zeiten.join(", ")} · ${e(arten)}${a.zwang > 0 ? ` · gesetzliche Pause ${dauer(a.zwang)}` : ""}${offen ? " · ↻ noch nicht übertragen" : ""}` : "Keine Buchung"}</small></li>`;
     }).join("");
     return `<section class="abschnitt"><h2>Diese Woche</h2>
         <div class="zahlen"><div class="zahl"><small>Ist</small><b>${dauer(wIst)}</b></div><div class="zahl"><small>Soll</small><b>${dauer(wSoll)}</b></div>
@@ -413,22 +542,17 @@
     document.querySelectorAll("[data-uhr]").forEach((el) => { el.textContent = hhmm(jetzt); });
     document.querySelectorAll("[data-lauf]").forEach((el) => { el.textContent = laufzeit(jetzt - Number(el.dataset.lauf)); });
     const a = auswertung(tagKey(jetzt), jetzt);
-    const gesamt = document.querySelector("[data-gesamt]");
-    if (gesamt) gesamt.textContent = laufzeit(a.ist * 3600000);
-    const ring = document.querySelector("[data-ring]");
-    if (ring) {
-      const { anteil, ueber } = ringAnteil(a);
-      ring.setAttribute("stroke-dashoffset", (UHR_U * (1 - anteil)).toFixed(1));
-      ring.classList.toggle("ueber", ueber);
-    }
+    uhrNachfuehren(jetzt, a);
     const ist = document.querySelector("[data-ist]");
     if (ist) ist.textContent = dauer(a.ist);
     const saldo = document.querySelector("[data-saldo]");
     if (saldo) { saldo.textContent = dauer(a.saldo, true); saldo.className = a.saldo >= 0 ? "plus" : "minus"; }
     leisteZeichnen();
     // Tageswechsel oder neue Warnung → neu zeichnen
-    if (seite() === "stempeln" && ticken.tag && ticken.tag !== tagKey(jetzt)) zeichnen();
+    const zwang = Boolean(a.zwangJetzt);
+    if (seite() === "stempeln" && ((ticken.tag && ticken.tag !== tagKey(jetzt)) || (ticken.zwang !== undefined && ticken.zwang !== zwang))) zeichnen();
     ticken.tag = tagKey(jetzt);
+    ticken.zwang = zwang;
   }
 
   // ---------- Dialog «Gehen nachtragen» ----------

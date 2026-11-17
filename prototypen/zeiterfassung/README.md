@@ -14,7 +14,6 @@ Kommen-/Gehen-Buchungen, Buchungsarten und Sollzeit pro Tag.
   (Arbeitszeit, Homeoffice).
 - Status mit laufender Zeit, Tagesliste der Buchungen, Ist / Soll / Saldo heute (Soll = Pensum × 8:24 pro Arbeitstag).
 - Letzte Buchung 2 Minuten lang **rückgängig**; vergessenes **Gehen nachtragen** (als nachgetragen gekennzeichnet).
-- Hinweis, wenn nach 6 Stunden noch keine Pause von 30 Minuten gebucht ist.
 - **Verlauf**: Woche und letzte 14 Tage mit Zeiten, Ist und Saldo.
 - **Offline**: Service Worker hält die App bereit; Buchungen bleiben auf dem Gerät und werden mit Verbindung
   «übertragen» (simuliert, Kennzeichen je Buchung).
@@ -28,6 +27,15 @@ EduKSX-Ident, echte Schnittstelle.
 - **Animierte Uhr**, solange man eingestempelt ist (#21): in der Mitte die aktuell eingecheckte Zeit (Block seit
   Kommen bzw. Pausenende) und die Gesamtzeit heute; Ring = Ist im Verhältnis zum Soll (über Soll violett),
   Sekundenpunkt läuft rund. In der Pause steht die Uhr still. Ohne Animation bei «Bewegung reduzieren».
+
+## Schritt 3 (0.3.0)
+
+- Uhr als **Tagesachse** ab dem ersten Kommen (mind. 10 h, Striche alle 10 Min., lang je Stunde) mit
+  **Soll-Markierung** und «noch h:mm · bis hh:mm» (#22).
+- **Gesetzliche Pause:** Nach 5 h Arbeit werden 30 Min. schraffiert angezeigt und nicht als Arbeitszeit gezählt
+  (Ist, Saldo, Verlauf); die Uhr läuft weiter. Bereits gebuchte Pausen werden angerechnet. Konstanten
+  `ZWANG_AB_MIN` / `ZWANG_DAUER_MIN` in `assets/app.js`.
+  **ZU PRÜFEN:** Regel mit dem anwendbaren Personalrecht abgleichen (ArG Art. 15: >5,5 h 15 Min., >7 h 30 Min., >9 h 1 h).
 
 ## Starten
 

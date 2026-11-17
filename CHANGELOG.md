@@ -14,6 +14,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   (vorläufig) auf der Einstiegsseite.
 - EduKSX-Time 0.2.0: animierte Uhr, solange man eingestempelt ist – laufender Block und Gesamtzeit heute, Ring
   im Verhältnis zum Soll, umlaufender Sekundenpunkt; in der Pause angehalten (#21).
+- EduKSX-Time 0.3.0: Uhr als Tagesachse mit Soll-Markierung («noch … bis …») und gesetzlicher Pause – nach 5 h
+  Arbeit 30 Min. schraffiert, zählt nicht als Arbeitszeit, Uhr läuft weiter; gebuchte Pausen angerechnet (#22).
 - Repository mit dem GitHub-Blueprint eingerichtet.
 - Ordnerstruktur `prototypen/<name>/` mit Vorlage `prototypen/_vorlage/` (prototyp.json, README, index.html).
 - Prototyp **EduKSX-Staffing – Einsatzplanung** (`prototypen/einsatzplanung`): Anforderungskatalog und
