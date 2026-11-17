@@ -1,6 +1,6 @@
 # Prototyp: Rechtssammlung
 
-**Status:** in-arbeit · **Version:** 0.5.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
+**Status:** in-arbeit · **Version:** 0.5.1 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
 
 ## Frage
 
@@ -19,7 +19,7 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 
 | Pfad | Zweck |
 |---|---|
-| `index.html` | Übersicht im EduKSX-Auftritt mit Menü links: Bezirk › Politische Gemeinden (Vermerk Einheitsgemeinde) / Schulgemeinden › Rubriken |
+| `index.html` | Übersicht im EduKSX-Auftritt mit Menü links: Bezirk › Politische Gemeinden (Vermerk «EG» = Einheitsgemeinde, «EG ?» = nicht gesichert) / Schulgemeinden › Rubriken |
 | `assets/app.js`, `assets/codex.css` | Menü und Ansichten: Übersicht, Bezirk, Gemeinde, Schulgemeinden, Organisation (Steckbrief, Nachbau, iFrame-Variante, Original ⟷ Nachbau, Matrix-Spalte), Rubrik mit PDF-Vorschau, Struktur-Matrix |
 | `assets/daten.js` | Daten für Übersicht und Widget (erzeugt von `tools/build.py`) |
 | `embed/` | Einbettbares Widget (`embed/index.html?org=<id>`): Sachgebiet › Unterordner › Dokument, Suche, PDF-Vorschau, meldet seine Höhe per `postMessage` |
@@ -68,7 +68,7 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
   Gemeinden mit Schulaufgaben).
 - Websites: Domain der Verwaltungs-E-Mail aus «Liste Politische Gemeinden» (Gemeindeamt); BFS-Nummern über die
   Gebietsstammdaten-API.
-- Der Vermerk «Einheitsgemeinde» ist hergeleitet; «?» heisst: Mitglieder einer Schulgemeinde im Bezirk noch nicht
+- Der Vermerk «EG» (Einheitsgemeinde) ist hergeleitet; «?» heisst: Mitglieder einer Schulgemeinde im Bezirk noch nicht
   bekannt. Bei den erfassten Gemeinden ist er geprüft (Bachenbülach/Winkel: Zugehörigkeit zur Sek Bülach noch offen).
 
 ## Ergebnis
