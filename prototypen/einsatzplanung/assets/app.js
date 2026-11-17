@@ -73,6 +73,7 @@
     sc.crossOrigin = "anonymous";
     sc.dataset.scope = "none";
     sc.dataset.max = "1000000";
+    sc.dataset.names = "true"; // auch ausgeschriebene Bezeichnungen (z. B. «Vollzeiteinheiten», «Schulpflege»)
     // nur Fachgebiete der Einsatzplanung (z. B. nicht «B» = Budget, «Abs.» bei jedem Verweis)
     sc.dataset.categories = "Behörden,Personal,Sonderpädagogik,Unterricht,Lektion,Qualität,Statistik";
     document.head.appendChild(sc);
@@ -81,7 +82,18 @@
     if (!glossarAn()) return;
     const go = () => {
       if (!window.EduksxGlossary) return false;
-      document.querySelectorAll(GLOSSAR.bereiche).forEach((el) => { if (!el.closest("[data-glossary-ignore], table, nav, header")) window.EduksxGlossary.scan(el); });
+      const laeufe = [];
+      document.querySelectorAll(GLOSSAR.bereiche).forEach((el) => { if (!el.closest("[data-glossary-ignore], table, nav, header")) laeufe.push(window.EduksxGlossary.scan(el)); });
+      // Nur erste Fundstelle je Begriff und Ansicht. data-first-only der Einbindung gilt je Seitenlebensdauer
+      // und passt nicht zum Ansichtswechsel ohne Neuladen (EduKSX-Glossary #474) – deshalb hier selbst.
+      Promise.all(laeufe).then(() => {
+        const gesehen = new Set();
+        document.querySelectorAll("main .gls-term").forEach((m) => {
+          const k = m.dataset.glsCodes || m.textContent;
+          if (!gesehen.has(k)) { gesehen.add(k); return; }
+          m.replaceWith(document.createTextNode(m.textContent));
+        });
+      }).catch(() => {});
       return true;
     };
     if (!go()) { let n = 0; const t = setInterval(() => { if (go() || ++n > 40) clearInterval(t); }, 250); }
