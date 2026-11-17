@@ -7,7 +7,7 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v2";
-  const VERSION = "0.2.0";
+  const VERSION = "0.2.1";
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
 
@@ -415,7 +415,7 @@
     return `
       <header class="kopf">
         <a class="marke" href="#/uebersicht">${ICON_FLOW}${wordmark("Flow")}</a>
-        <span class="muted small">Ablaufplanung</span>
+        <span class="muted small">Ablaufplanung / Termine und ToDo</span>
         <div class="werkzeuge">
           <span class="simtag" title="Simulierter Tag – damit Fristen und automatische Schritte ausprobiert werden können">📅 ${esc(datum(S.heute))}</span>
           <button class="btn klein" data-aktion="zeit" data-tage="1" title="Einen Tag weiter">+1 Tag</button>

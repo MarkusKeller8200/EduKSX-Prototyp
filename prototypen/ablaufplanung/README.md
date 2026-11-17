@@ -1,4 +1,4 @@
-# Prototyp: Ablaufplanung (EduKSX-Flow)
+# Prototyp: EduKSX-Flow – Ablaufplanung / Termine und ToDo
 
 **Status:** in-arbeit · **Technik:** html · **Ziel-Modul:** EduKSX-Flow
 

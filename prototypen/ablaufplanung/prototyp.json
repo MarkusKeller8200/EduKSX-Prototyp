@@ -1,9 +1,9 @@
 {
-  "name": "Ablaufplanung",
+  "name": "Ablaufplanung / Termine und ToDo",
   "produkt": "EduKSX-Flow",
   "icon": "flow",
   "beschreibung": "Abläufe wie Onboarding, Offboarding und Mutationen als Schritte planen: Fristen ab Stichtag, Reihenfolge, Zuständigkeit nach Funktionendiagramm; jeder Schritt ruft einen Vorgang aus EduKSX-Core, -Ident, -Connect, -Staffing, -Time oder -Shop auf. Jahreskalender mit wiederkehrenden Aufgaben (Quartal, KW, Termine mit Teilaufgaben), die mit Ablaufvorlagen verknüpft werden können.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "status": "in-arbeit",
   "technik": "html",
   "modul": "EduKSX-Flow",
