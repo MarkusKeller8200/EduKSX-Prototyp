@@ -1,0 +1,174 @@
+/*
+ * EduKSX-Time – Mobil-Ansicht zum Stempeln. Farben nur über die Werte in eduksx.css.
+ * Orange nur als Fläche mit dunkler Schrift; Status immer mit Symbol und Text.
+ */
+html, body { height: 100%; }
+body {
+  font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+.app {
+  max-width: 34rem; margin: 0 auto; min-height: 100%;
+  display: flex; flex-direction: column;
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+}
+
+/* Kopf */
+.app-kopf {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center; gap: .6rem;
+  padding: calc(.6rem + env(safe-area-inset-top)) 1rem .6rem;
+  background: var(--background); border-bottom: 1px solid var(--border);
+}
+.app-kopf .marke { font-size: 1.1rem; gap: .45rem; }
+.app-kopf .marke svg { width: 26px; height: 26px; }
+.app-kopf .person { margin-left: auto; text-align: right; line-height: 1.2; }
+.app-kopf .person b { display: block; font-size: .9rem; }
+.app-kopf .person span { font-size: .78rem; color: var(--muted-foreground); }
+.band {
+  background: var(--warning-soft); color: var(--foreground);
+  padding: .3rem 1rem; font-size: .78rem; border-bottom: 1px solid var(--border);
+}
+.band.offline { background: var(--muted); }
+
+.inhalt { padding: 1rem; display: grid; gap: 1rem; }
+
+/* Uhr und Status */
+.uhr { text-align: center; padding: .5rem 0 0; }
+.uhr .zeit { font-size: 3.2rem; font-weight: 650; letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.05; }
+.uhr .datum { color: var(--muted-foreground); }
+
+.status {
+  display: flex; align-items: center; gap: .75rem;
+  border: 1px solid var(--border); border-radius: var(--radius); padding: .8rem 1rem; background: var(--card);
+}
+.status .symbol {
+  flex: none; width: 2.4rem; height: 2.4rem; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700; font-size: 1.1rem;
+}
+.status.aus .symbol { background: var(--muted); color: var(--muted-foreground); }
+.status.ein .symbol { background: var(--success-soft); color: var(--success); }
+.status.pause .symbol { background: var(--warning-soft); color: var(--warning); }
+.status b { display: block; }
+.status .laufzeit { margin-left: auto; font-size: 1.35rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+
+/* Buchungsart */
+.arten { display: flex; gap: .5rem; flex-wrap: wrap; border: 0; padding: 0; margin: 0; }
+.arten legend { font-size: .85rem; color: var(--muted-foreground); margin-bottom: .35rem; }
+.arten label {
+  flex: 1 1 0; min-width: 8rem; display: flex; align-items: center; justify-content: center; gap: .4rem;
+  min-height: 2.75rem; border: 1px solid var(--input); border-radius: 999px; padding: .4rem .8rem; cursor: pointer;
+  background: var(--card); font-weight: 500;
+}
+.arten input { position: absolute; opacity: 0; pointer-events: none; }
+.arten input:checked + span { font-weight: 650; }
+.arten label:has(input:checked) { background: var(--accent); color: var(--accent-foreground); border-color: var(--ring); }
+.arten label:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* Stempeltasten */
+.tasten { display: grid; gap: .75rem; }
+.taste {
+  appearance: none; width: 100%; min-height: 4.5rem; border-radius: 1rem; border: 1px solid var(--border);
+  font: inherit; font-size: 1.25rem; font-weight: 650; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: .6rem;
+  touch-action: manipulation;
+}
+.taste:active { transform: scale(.985); }
+.taste .pfeil { font-size: 1.4rem; }
+.taste.kommen { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); min-height: 5.5rem; font-size: 1.45rem; }
+.taste.gehen { background: var(--foreground); color: var(--background); border-color: var(--foreground); }
+.taste.pause { background: var(--secondary); color: var(--secondary-foreground); }
+.taste.klein { min-height: 3rem; font-size: 1rem; font-weight: 600; background: var(--card); color: var(--foreground); }
+.tasten-zwei { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+
+/* Kennzahlen */
+.zahlen { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; }
+.zahl { border: 1px solid var(--border); border-radius: var(--radius); padding: .55rem .6rem; background: var(--card); text-align: center; }
+.zahl small { display: block; font-size: .75rem; color: var(--muted-foreground); }
+.zahl b { font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+.plus { color: var(--success); }
+.minus { color: var(--destructive); }
+
+/* Hinweise */
+.meldung {
+  display: flex; gap: .6rem; align-items: flex-start;
+  border-radius: var(--radius); padding: .7rem .85rem; border: 1px solid var(--border); font-size: .92rem;
+}
+.meldung .zeichen { flex: none; font-weight: 700; }
+.meldung.warnung { background: var(--warning-soft); }
+.meldung.warnung .zeichen { color: var(--warning); }
+.meldung.info { background: var(--info-soft); }
+.meldung.info .zeichen { color: var(--info); }
+.meldung.erfolg { background: var(--success-soft); }
+.meldung.erfolg .zeichen { color: var(--success); }
+.meldung p { margin: 0; }
+.meldung .btn { margin-top: .45rem; }
+
+/* Buchungsliste */
+.abschnitt h2 { font-size: 1rem; margin-bottom: .4rem; display: flex; align-items: baseline; gap: .5rem; }
+.abschnitt h2 .muted { font-weight: 400; font-size: .85rem; margin-left: auto; }
+.liste { list-style: none; margin: 0; padding: 0; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
+.liste li { display: flex; align-items: center; gap: .7rem; padding: .6rem .85rem; border-top: 1px solid var(--border); }
+.liste li:first-child { border-top: 0; }
+.liste .uhrzeit { font-weight: 650; font-variant-numeric: tabular-nums; min-width: 3.2rem; }
+.liste .art { flex: 1; min-width: 0; }
+.liste .art small { display: block; color: var(--muted-foreground); font-size: .78rem; }
+.liste .leer { color: var(--muted-foreground); justify-content: center; }
+.sync { font-size: .75rem; white-space: nowrap; border-radius: 999px; padding: .1rem .5rem; }
+.sync.ok { background: var(--success-soft); color: var(--success); }
+.sync.offen { background: var(--warning-soft); color: var(--warning); }
+.punkt { flex: none; width: .65rem; height: .65rem; border-radius: 50%; border: 2px solid var(--foreground); }
+.punkt.kommen, .punkt.pause_ende { background: var(--foreground); }
+
+/* Verlauf */
+.tag { display: grid; grid-template-columns: 1fr auto auto; gap: .25rem .8rem; align-items: center; }
+.tag .ist, .tag .saldo { font-variant-numeric: tabular-nums; text-align: right; }
+.tag small { grid-column: 1 / -1; color: var(--muted-foreground); }
+.woche { display: flex; justify-content: space-between; font-weight: 600; padding: .3rem .2rem; }
+
+/* Rückgängig-Leiste */
+.leiste {
+  position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(5rem + env(safe-area-inset-bottom)); z-index: 30;
+  width: min(32rem, calc(100% - 2rem));
+  display: flex; align-items: center; gap: .75rem; padding: .7rem .9rem; border-radius: var(--radius);
+  background: var(--foreground); color: var(--background); box-shadow: 0 4px 16px rgb(0 0 0 / .2);
+}
+.leiste button { margin-left: auto; background: transparent; color: inherit; border: 1px solid currentColor; border-radius: 999px; padding: .35rem .9rem; font: inherit; font-weight: 600; cursor: pointer; }
+
+.app.mit-leiste { padding-bottom: calc(9rem + env(safe-area-inset-bottom)); }
+
+/* Navigation unten */
+.tabs {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 20;
+  display: flex; justify-content: center; background: var(--background); border-top: 1px solid var(--border);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.tabs a {
+  flex: 1; max-width: 11rem; display: flex; flex-direction: column; align-items: center; gap: .1rem;
+  padding: .45rem 0 .5rem; color: var(--muted-foreground); text-decoration: none; font-size: .78rem; font-weight: 500;
+  border-top: 3px solid transparent;
+}
+.tabs a svg { width: 24px; height: 24px; }
+.tabs a[aria-current="page"] { color: var(--foreground); border-top-color: var(--brand-orange); font-weight: 650; }
+
+/* Dialog */
+dialog {
+  border: 1px solid var(--border); border-radius: var(--radius); padding: 1.1rem; width: min(26rem, calc(100% - 2rem));
+  background: var(--card); color: var(--foreground);
+}
+dialog::backdrop { background: rgb(0 0 0 / .45); }
+dialog h2 { font-size: 1.1rem; }
+dialog .feld { display: grid; gap: .3rem; margin: .8rem 0; }
+dialog input, .feld input, .feld select {
+  font: inherit; font-size: 1.1rem; padding: .55rem .7rem; border: 1px solid var(--input); border-radius: calc(var(--radius) - 2px);
+  background: var(--background); color: var(--foreground); min-height: 2.75rem;
+}
+.knoepfe { display: flex; gap: .5rem; justify-content: flex-end; flex-wrap: wrap; }
+.btn { min-height: 2.75rem; }
+
+.mehr { display: grid; gap: .6rem; }
+.mehr .feld { display: grid; gap: .3rem; }
+.folgt { list-style: none; padding: 0; margin: 0; display: grid; gap: .35rem; }
+.folgt li { display: flex; gap: .5rem; align-items: center; color: var(--muted-foreground); }
+.folgt li::before { content: "○"; }

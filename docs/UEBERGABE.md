@@ -36,6 +36,14 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-17 (13:20–13:45) – Prototyp EduKSX-Time
+
+- Neuer Prototyp `prototypen/zeiterfassung` (EduKSX-Time – Zeiterfassung / Stempeln), Vorbild: die im Intranet
+  angebundene Zeiterfassung (Kommen/Gehen, Buchungsarten, Sollzeit). Schritt 1 = installierbare Mobil-App (PWA) zum
+  Ein- und Ausstempeln (#19 → `_3 Beta-Test`). Getestet mit Handy-Ansicht (hell/dunkel), offline, Service Worker.
+- Herstellername erscheint nicht im Prototyp (Regel «keine Fremd-/Herstellernamen»).
+- Offen: weitere Schritte («der ganze Rest») je als Issue nach Freigabe; Icon «time» vorläufig, nicht im Icon-Set.
+
 ### Sitzung 2026-11-17 (05:10–05:50) – EduKSX-Codex 0.5.0
 
 - Auftrag «alle anderen Gemeinden aufnehmen» – auf Rückfrage eingegrenzt auf Dübendorf und Fehraltorf (Entscheid 2026-11-17).
