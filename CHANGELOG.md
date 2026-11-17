@@ -16,6 +16,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   im Verhältnis zum Soll, umlaufender Sekundenpunkt; in der Pause angehalten (#21).
 - EduKSX-Time 0.3.0: Uhr als Tagesachse mit Soll-Markierung («noch … bis …») und gesetzlicher Pause – nach 5 h
   Arbeit 30 Min. schraffiert, zählt nicht als Arbeitszeit, Uhr läuft weiter; gebuchte Pausen angerechnet (#22).
+- EduKSX-Time 0.3.1: gesetzliche Pause um alle gestempelten Pausen des Tages reduziert, auch spätere und die laufende;
+  ab 30 Min. gestempelter Pause entfällt die schraffierte Fläche nachträglich (#23).
 - Repository mit dem GitHub-Blueprint eingerichtet.
 - Ordnerstruktur `prototypen/<name>/` mit Vorlage `prototypen/_vorlage/` (prototyp.json, README, index.html).
 - Prototyp **EduKSX-Staffing – Einsatzplanung** (`prototypen/einsatzplanung`): Anforderungskatalog und

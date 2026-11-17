@@ -33,7 +33,8 @@ EduKSX-Ident, echte Schnittstelle.
 - Uhr als **Tagesachse** ab dem ersten Kommen (mind. 10 h, Striche alle 10 Min., lang je Stunde) mit
   **Soll-Markierung** und «noch h:mm · bis hh:mm» (#22).
 - **Gesetzliche Pause:** Nach 5 h Arbeit werden 30 Min. schraffiert angezeigt und nicht als Arbeitszeit gezählt
-  (Ist, Saldo, Verlauf); die Uhr läuft weiter. Bereits gebuchte Pausen werden angerechnet. Konstanten
+  (Ist, Saldo, Verlauf); die Uhr läuft weiter. Alle am Tag gestempelten Pausen (auch spätere und die laufende) reduzieren
+  die schraffierte Fläche; ab 30 Min. entfällt sie nachträglich (0.3.1, #23). Konstanten
   `ZWANG_AB_MIN` / `ZWANG_DAUER_MIN` in `assets/app.js`.
   **ZU PRÜFEN:** Regel mit dem anwendbaren Personalrecht abgleichen (ArG Art. 15: >5,5 h 15 Min., >7 h 30 Min., >9 h 1 h).
 

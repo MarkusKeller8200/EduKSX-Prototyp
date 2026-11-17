@@ -122,20 +122,25 @@
   }
 
   /**
-   * Zeitachse des Tages: Arbeit, gebuchte Pause (Lücken) und gesetzliche Pause. Sobald 5 Stunden gearbeitet sind und
-   * noch keine 30 Minuten Pause vorliegen, wird der Rest bis 30 Minuten als gesetzliche Pause abgezogen.
+   * Zeitachse des Tages: Arbeit, gebuchte Pause (Lücken) und gesetzliche Pause. Sobald 5 Stunden gearbeitet sind, wird
+   * die gesetzliche Pause abgezogen – reduziert um alle am Tag gestempelten Pausen, auch spätere (#23). Wer insgesamt
+   * mindestens 30 Minuten Pause stempelt, hat keine gesetzliche Pause; die schraffierte Fläche wird nachträglich kleiner.
+   * laufendePauseMin: gerade laufende gestempelte Pause (noch ohne Ende), zählt ebenfalls.
    */
-  function segmentieren(iv) {
+  function segmentieren(iv, laufendePauseMin = 0) {
+    let gestempelt = laufendePauseMin;
+    iv.forEach((x, i) => { if (i > 0 && x.von > iv[i - 1].bis) gestempelt += (x.von - iv[i - 1].bis) / M; });
+    let zwangRest = Math.max(0, ZWANG_DAUER_MIN - gestempelt);
     const seg = [];
     let arbeit = 0, pause = 0, vorher = null;
     for (const { von, bis } of iv) {
       if (vorher !== null && von > vorher) { seg.push({ typ: "pause", von: vorher, bis: von }); pause += (von - vorher) / M; }
       let cur = Math.max(von, vorher ?? von);
       while (cur < bis) {
-        if (arbeit >= ZWANG_AB_MIN && pause < ZWANG_DAUER_MIN) {
-          const ende = Math.min(bis, cur + (ZWANG_DAUER_MIN - pause) * M);
-          if (ende - cur < 1) { pause = ZWANG_DAUER_MIN; continue; }
-          seg.push({ typ: "zwang", von: cur, bis: ende }); pause += (ende - cur) / M; cur = ende;
+        if (arbeit >= ZWANG_AB_MIN && zwangRest > 0) {
+          const ende = Math.min(bis, cur + zwangRest * M);
+          if (ende - cur < 1) { zwangRest = 0; continue; }
+          seg.push({ typ: "zwang", von: cur, bis: ende }); pause += (ende - cur) / M; zwangRest -= (ende - cur) / M; cur = ende;
         } else {
           const ende = Math.min(bis, arbeit < ZWANG_AB_MIN ? cur + (ZWANG_AB_MIN - arbeit) * M : bis);
           if (ende - cur < 1) { arbeit = ZWANG_AB_MIN; continue; }
@@ -144,7 +149,7 @@
       }
       vorher = Math.max(vorher ?? bis, bis);
     }
-    return { seg, arbeit, pause };
+    return { seg, arbeit, pause, gestempelt };
   }
 
   /** Ist und Pausen eines Tages; laufender Block zählt bis jetzt (nur heute), gesetzliche Pause abgezogen. */
@@ -155,13 +160,15 @@
     if (offenAb !== null) {
       if (key === tagKey(jetzt)) iv.push({ von: offenAb, bis: Math.max(offenAb, jetzt) }); else offen = true;
     }
-    const s = segmentieren(iv);
+    const letzteB = liste.at(-1);
+    const laufend = key === tagKey(jetzt) && offenAb === null && letzteB?.typ === "pause_beginn" ? (jetzt - letzteB.zeit) / M : 0;
+    const s = segmentieren(iv, laufend);
     const soll = sollTag(key);
     const ist = s.arbeit / 60;
     const zwang = s.seg.filter((x) => x.typ === "zwang").reduce((n, x) => n + (x.bis - x.von) / 3600000, 0);
     const letztes = s.seg.at(-1);
     const zwangJetzt = offenAb !== null && key === tagKey(jetzt) && letztes?.typ === "zwang" && letztes.bis >= jetzt - 1000 ? letztes : null;
-    return { liste, ist, pause: s.pause / 60, zwang, soll, saldo: ist - soll, offen, seg: s.seg, start: iv[0]?.von ?? null, zwangJetzt };
+    return { liste, ist, pause: s.pause / 60 + laufend / 60, gestempelt: s.gestempelt / 60, zwang, soll, saldo: ist - soll, offen, seg: s.seg, start: iv[0]?.von ?? null, zwangJetzt };
   }
 
   /** Vorschau ab jetzt bei ununterbrochener Arbeit: wann ist das Soll erreicht, wo liegt die gesetzliche Pause. */
@@ -441,7 +448,7 @@
 
     // Gesetzliche Pause läuft
     if (z.art === "ein" && a.zwangJetzt) {
-      teile.push(`<div class="meldung info"><span class="zeichen" aria-hidden="true">▨</span><p><b>Gesetzliche Pause bis ${hhmm(zwangEnde(jetzt))}</b> – nach 5 Stunden Arbeit zählen ${ZWANG_DAUER_MIN} Minuten Pause nicht als Arbeitszeit. Die Uhr läuft weiter.</p></div>`);
+      teile.push(`<div class="meldung info"><span class="zeichen" aria-hidden="true">▨</span><p><b>Gesetzliche Pause bis ${hhmm(zwangEnde(jetzt))}</b> – nach 5 Stunden Arbeit zählen ${ZWANG_DAUER_MIN} Minuten Pause nicht als Arbeitszeit; gestempelte Pausen werden angerechnet. Die Uhr läuft weiter.</p></div>`);
     }
 
     // Kennzahlen heute
