@@ -80,7 +80,8 @@
       var gem = gemeindenIn(b), sch = schulenIn(b);
       var erf = D.organisationen.filter(function (o) { return o.bezirk === b; }).length;
       var det = h("details", { open: b === aktivBezirk || null, "data-bezirk": b },
-        h("summary", null, h("span", { cls: "nl", text: "Bezirk " + b }), h("span", { cls: "anz", text: gem.length })),
+        h("summary", null, h("span", { cls: "nl", text: "Bezirk " + b }), h("span", { cls: "anz", title: gem.filter(orgZuGemeinde).length + " von " + gem.length + " Gemeinden analysiert" },
+          String(gem.filter(orgZuGemeinde).length) + " / ", h("strong", { text: String(gem.length) }))),
         h("ul", null,
           h("li", null, eintrag(link("bezirk", b), "Übersicht Bezirk", r.art === "bezirk" && r.a === b, erf ? h("span", { cls: "anz", text: erf + " ✓" }) : null)),
           h("li", { cls: "zweig", "aria-hidden": "true", text: "Politische Gemeinden" }),

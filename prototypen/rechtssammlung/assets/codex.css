@@ -4,6 +4,7 @@
 .navi a { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
 .navi .nl { overflow: hidden; text-overflow: ellipsis; }
 .navi .anz { font-size: .72rem; color: var(--muted-foreground); white-space: nowrap; }
+.navi summary .anz strong { color: var(--foreground); font-weight: 700; }
 .navi .ok { font-size: .75rem; color: var(--success); font-weight: 700; }
 .navi .suche { padding: .25rem .4rem .5rem; }
 .navi .suche input { width: 100%; box-sizing: border-box; }
