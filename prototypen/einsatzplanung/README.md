@@ -32,7 +32,7 @@ und dunkel. Änderungen bleiben im Browser gespeichert; «↺ Testdaten» setzt 
 | Freigaben | Freigabe, Sammelfreigabe, Änderung nach Freigabe, Vergleich, Anstellung, Verlauf |
 | VZE-Tool (VSA) | Das Excel-Tool des Volksschulamts laden (oder das hinterlegte anonymisierte Muster `muster/VZE-Tool_Muster_VSA-2.19.xlsx`) und mit der Planung befüllen – exakt im Original (nur Eingabezellen, Formatierung und Formeln unverändert), Vorschau der Zellbelegung; Datei bleibt im Browser |
 | Begriffe | Abkürzungen werden mit EduKSX-Glossary erklärt (Einbindung 1.0.0 mit Prüfsumme, oben «Begriffe an/aus») |
-| Hilfe und Gesetze | Lehrpersonalgesetz (LPG) und Lehrpersonalverordnung (LPVO) mit Suche; Verweise aus Regeln, Warnungen und Parametern führen direkt zur Bestimmung |
+| Hilfe und Gesetze | Lehrpersonalgesetz (LPG), Lehrpersonalverordnung (LPVO) und Vollzugsverordnung zum Personalgesetz (VVO) mit Suche; Verweise aus Regeln, Warnungen und Parametern führen direkt zur Bestimmung |
 | Abläufe | Jahresablauf mit Fristen, Pensenumfrage, Stellvertretungen, Personalgespräche, Tagesstrukturen |
 
 ## Ergebnis

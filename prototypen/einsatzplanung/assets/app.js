@@ -87,7 +87,7 @@
     if (!go()) { let n = 0; const t = setInterval(() => { if (go() || ++n > 40) clearInterval(t); }, 250); }
   }
 
-  // ---------------------------------------------------------------- Gesetzliche Grundlagen (LPG, LPVO)
+  // ---------------------------------------------------------------- Gesetzliche Grundlagen (LPG, LPVO, VVO)
   const RECHT = window.STAFFING_RECHT || {};
   const pAnker = (kurz, nr, ueb) => `${kurz}-${ueb ? "ueb" + ueb + "-" : ""}${String(nr).replace(/\s+/g, "")}`;
   function paragraph(kurz, nr) {
@@ -657,7 +657,7 @@
           ${zeileDl("Kürzel", esc(p.kuerzel || "–"))}
           ${zeileDl("Geburtsdatum", datum(p.geburtsdatum))}
           ${zeileDl(`Alter am ${datum(stichtag())}`, alterAm(p, stichtag()))}
-          ${zeileDl("Ferienanspruch / Netto-Jahresarbeitszeit", `${n.ferientage} Tage · ${zahl(n.stunden)} h bei 100 %`)}
+          ${zeileDl("Ferienanspruch / Netto-Jahresarbeitszeit", `${n.ferientage} Tage · ${zahl(n.stunden)} h bei 100 % <span class="small">(${R("LPVO", "13")}, ${R("VVO", "79")})</span>`)}
           ${zeileDl("Neuanstellung", ja(p.neu))}
           ${zeileDl("Berufseinführung", `${ja(p.berufseinfuehrung)}${p.berufseinfuehrung ? " (+1,5 h je WL, " + R("LPVO", "7", "Abs. 4") + ")" : ""}`)}
           ${zeileDl("Quereinstieg (Studium)", ja(p.quest))}
@@ -665,7 +665,7 @@
         <section class="karte"><h2>Anstellung und Finanzierung</h2><div class="feldliste">
           ${zeileDl("Vereinbarter Beschäftigungsgrad", `<input type="number" min="0" max="100" step="1" value="${p.bgSoll != null ? p.bgSoll : ""}" data-aktion="p-feld" data-id="${id}" data-feld="bgSoll" ${d}> %`)}
           ${r.festProzent ? "" : zeileDl("Kantonal (Berufsauftrag)", zahl(r.kantonalProzent, 1) + " %") + zeileDl("Kommunal (Berufsauftrag)", zahl(r.kommunalProzent, 1) + " %")}
-          ${zeileDl("Weitere Anstellungen (ausserhalb Berufsauftrag)", zahl(r.weitereProzent, 1) + " %")}
+          ${zeileDl("Weitere Anstellungen (ausserhalb Berufsauftrag)", zahl(r.weitereProzent, 1) + " %" + (r.weitereProzent ? ` <span class="small">(${R("VVO", "144")})</span>` : ""))}
           ${zeileDl("<strong>Total</strong>", `<strong>${zahl(r.total, 1)} %</strong>`)}
           ${zeileDl("Zusätzlich entschädigt", `${zahl(r.entschaedigtH)} h · ${zahl((r.entschaedigtH / n.stunden) * 100, 1)} % (${R("LPVO", "2 f")})`)}
           ${zeileDl("Pensum Vorjahr", p.pensumVorjahr != null ? zahl(p.pensumVorjahr) + " %" : "–")}
@@ -705,7 +705,7 @@
         ${n ? `<ul class="small">${e.map((x) => `<li>${datum(x.datum)} · ${esc(x.titel)}${x.notiz ? ` <span class="muted">– ${esc(x.notiz)}</span>` : ""}${istSL() ? ` <button class="btn klein" data-aktion="dossier-weg" data-id="${p.id}" data-i="${x.id}" aria-label="Eintrag ${esc(x.titel)} entfernen">✕</button>` : ""}</li>`).join("")}${g.map((x) => `<li>${datum(x.datum)} · ${esc(x.art)} <span class="muted">– ${esc(x.status)} (<a href="#/gespraeche">Personalgespräche</a>)</span></li>`).join("")}</ul>` : '<p class="small muted">keine Einträge</p>'}</div></details>`;
     }).join("");
     return `<div class="bereichskopf"><h2>Personaldossier</h2>${istSL() ? `<button class="btn" data-aktion="dossier-neu" data-id="${p.id}">+ Eintrag aus Vorlage</button>` : ""}</div>
-      <p class="small muted">Nur Verweise und Metadaten; die Dokumente selbst liegen später im Dokumentenspeicher von EduKSX. Sichtbar für Schulleitung und Schulverwaltung.</p>${gruppen}`;
+      <p class="small muted">Nur Verweise und Metadaten; die Dokumente selbst liegen später im Dokumentenspeicher von EduKSX. Sichtbar für Schulleitung und Schulverwaltung. Führung, Gliederung, Aufbewahrung und Einsicht: ${RR(["VVO", "21"], ["VVO", "22"], ["VVO", "23"], ["VVO", "27"])}; Mitarbeitendenbeurteilung: ${RR(["LPG", "20"], ["VVO", "136"])}.</p>${gruppen}`;
   }
 
   const BEREICHE = ["Schule", "Zusammenarbeit", "Weiterbildung", "Flex"];
@@ -897,7 +897,7 @@
         <td>${darfWeiter ? `<button class="btn klein primaer" data-aktion="sv-weiter" data-id="${a.id}" ${naechster === "geplant" && !a.vertretung ? "disabled title=\"Zuerst Stellvertretung wählen\"" : ""}>${naechster === "unterschrieben" ? "✍ Unterschreiben" : "→ " + esc(naechster)}</button>` : ""}
           ${istSL() && i >= 1 ? `<button class="btn klein" data-aktion="rapport" data-id="${a.id}">+ Rapport</button>` : ""}</td></tr>`;
     }).join("");
-    return `<div class="seitenkopf"><div><h1>Stellvertretungen</h1><p class="muted">Ausfälle erfassen, Vikariate planen, Formulare unterschreiben und weitergeben. Gründe nur als Kategorie, ohne Diagnose. Vikariate aus dem Gestaltungspool höchstens 14 Schulwochen je Einsatz; Kurzvikariate liegen ausserhalb des Berufsauftrags. Grundlage: ${RR(["LPG", "5", "Abs. 2"], ["LPG", "25"], ["LPVO", "30"], ["LPVO", "31"], ["LPVO", "2 c", "Abs. 4 lit. d"], ["LPVO", "27"], ["LPVO", "28"], ["LPVO", "29"])}.</p></div>
+    return `<div class="seitenkopf"><div><h1>Stellvertretungen</h1><p class="muted">Ausfälle erfassen, Vikariate planen, Formulare unterschreiben und weitergeben. Gründe nur als Kategorie, ohne Diagnose. Vikariate aus dem Gestaltungspool höchstens 14 Schulwochen je Einsatz; Kurzvikariate liegen ausserhalb des Berufsauftrags. Grundlage: ${RR(["LPG", "5", "Abs. 2"], ["LPG", "25"], ["LPVO", "30"], ["LPVO", "31"], ["LPVO", "2 c", "Abs. 4 lit. d"], ["LPVO", "27"], ["LPVO", "28"], ["LPVO", "29"])}; Urlaub, Krankheit und Unfall nach allgemeinem Personalrecht: ${RR(["VVO", "84"], ["VVO", "96"], ["VVO", "99"])}.</p></div>
       <div class="aktionen">${istSL() ? '<button class="btn primaer" data-aktion="ausfall-neu">+ Ausfall erfassen</button>' : ""}</div></div>
       <div class="tabelle-wrap"><table><thead><tr><th>Person</th><th>Grund</th><th>Zeitraum</th><th class="zahl">WL</th><th>Stellvertretung</th><th>Ablauf</th><th>Quelle / Rapport</th><th>Aktion</th></tr></thead><tbody>${zeilen}</tbody></table></div>
       <p class="small muted" style="margin-top:.75rem">Unterschrift über EduKSX-Sign (Signaturstufe ZU PRÜFEN); Meldung an den Kanton über EduKSX-Connect, sofern eine Schnittstelle besteht. Im Prototyp nur angedeutet.</p>`;
@@ -1026,7 +1026,7 @@
         ${feld("klpMindestlektionen", "Klassenlehrperson: Mindest-WL", "Sekundarstufe")}
         ${feld("kustodieMaxStunden", "Kustodie im Berufsauftrag bis h", `darüber Entschädigung · ${R("LPVO", "2 f")}`)}
       </div>
-      <div class="tabelle-wrap" style="max-width:640px"><table><thead><tr><th>Alter</th><th class="zahl">Ferientage</th><th class="zahl">Netto-Jahresarbeitszeit 100 %</th></tr></thead><tbody>${p.nettoJahresarbeitszeit.map((x, i, arr) => `<tr><td>${i === 0 ? "bis 20" : i === arr.length - 1 ? "ab 60" : (arr[i - 1].bisAlter + 1) + "–" + x.bisAlter}</td><td class="zahl">${x.ferientage}</td><td class="zahl">${zahl(x.stunden)} h</td></tr>`).join("")}<tr><td colspan="2">Brutto (52 × 42 h)</td><td class="zahl">${zahl(p.bruttoJahresarbeitszeit)} h</td></tr></tbody></table></div>
+      <div class="tabelle-wrap" style="max-width:640px"><table><thead><tr><th>Alter</th><th class="zahl">Ferientage</th><th class="zahl">Netto-Jahresarbeitszeit 100 %</th></tr></thead><tbody>${p.nettoJahresarbeitszeit.map((x, i, arr) => `<tr><td>${i === 0 ? "bis 20" : i === arr.length - 1 ? "ab 60" : (arr[i - 1].bisAlter + 1) + "–" + x.bisAlter}</td><td class="zahl">${x.ferientage}</td><td class="zahl">${zahl(x.stunden)} h</td></tr>`).join("")}<tr><td colspan="2">Brutto (52 × 42 h)</td><td class="zahl">${zahl(p.bruttoJahresarbeitszeit)} h</td></tr></tbody></table></div><p class="small muted">Ferienanspruch nach Alter: ${R("VVO", "79")}, für Lehrpersonen ab Beginn des Schuljahres (${R("LPVO", "13")}).</p>
       <h2 style="margin-top:1.25rem">Lektionentafeln Sekundarstufe</h2><div class="spalten">${tafeln}</div>`;
   };
 
@@ -1153,7 +1153,8 @@
       const danach = ganz.slice(pos + m.length, pos + m.length + 70).split("§")[0];
       let ziel = kurz;
       if (/\bLPG\b|Lehrpersonalgesetz|Lehrerpersonalgesetz/.test(danach)) ziel = "LPG";
-      else if (/Volksschul|Personalgesetz|Personalverordnung|VVO|Verordnung (über|vom)|Übergangsordnung|Berufseinführung|Obligationenrecht|OR\b|Mittelschul|Vollzugs/.test(danach)) return m;
+      else if (/\bVVO\b|Vollzugsverordnung zum Personalgesetz/.test(danach)) ziel = "VVO";
+      else if (/Volksschul|Personalgesetz|Personalverordnung|VVO|Verordnung (über|vom)|Übergangsordnung|Berufseinführung|Obligationenrecht|OR\b|Mittelschul|Vollzugs|[a-zäöü]gesetz|Bundes/.test(danach)) return m;
       if (!paragraph(ziel, nr)) return m;
       return `${vor}<a class="gesetz" data-glossary-ignore href="#/hilfe/${ziel}/${nr.replace(/\s+/g, "")}">${nr}</a>`;
     });
@@ -1169,6 +1170,10 @@
     "LPVO-9": "Beschäftigungsgrad Schulleitung Pensum", "LPVO-10": "Arbeitszeit Pensenvereinbarung Absenzen 1/12",
     "LPVO-10a": "Pauschale Schule 60 Stunden", "LPVO-10b": "Pauschale Zusammenarbeit 50 Stunden", "LPVO-10c": "Pauschale Weiterbildung 30 Stunden",
     "LPVO-10f": "Klassenlehrperson KLP 100 Stunden", "LPVO-11": "Arbeitszeitsaldo 300 Stunden", "LPVO-23": "MAB Mitarbeitendenbeurteilung jährlich",
+    "VVO-21": "Personaldossier Führung", "VVO-22": "Personaldossier Gliederung Inhalt", "VVO-23": "Personaldossier Aufbewahrung", "VVO-27": "Einsichtsrecht Personaldossier",
+    "VVO-79": "Ferienanspruch Alter Netto-Jahresarbeitszeit", "VVO-84": "Urlaub Abwesenheit", "VVO-92": "Unbezahlter Urlaub", "VVO-96": "Mutterschaftsurlaub Stellvertretung",
+    "VVO-99": "Lohnfortzahlung Krankheit Unfall Stellvertretung", "VVO-136": "Mitarbeiterbeurteilung MAB", "VVO-137": "Mitarbeiterbeurteilung Verfahren", "VVO-139": "Austrittsgespräch Arbeitszeugnis",
+    "VVO-15": "Kündigungsfrist Freistellung", "VVO-144": "Nebenbeschäftigung weitere Anstellung", "VVO-125": "Überzeit",
     "LPVO-30": "Vikariat Stellvertretung", "LPVO-31": "Vikariat Lohn Lektionenansatz", "LPVO-1a": "Schuljahr 1. August",
   };
   seiten.hilfe = function (q, kurz, nr) {
@@ -1183,6 +1188,7 @@
           <li><strong>Personen und Pensen</strong> – Beschäftigungsgrad aus dem Berufsauftrag (${R("LPG", "18")}–${R("LPG", "18 c")}, ${R("LPVO", "7")}, ${R("LPVO", "10 a")}–${R("LPVO", "10 f")}); Mindestpensum und 60-%-Regel (${R("LPG", "6")}).</li>
           <li><strong>Freigaben</strong> – die Schulleitung legt den Beschäftigungsgrad im Rahmen des bewilligten Stellenplans fest (${R("LPVO", "9")}), die Gemeinde stellt an (${R("LPG", "7")}).</li>
           <li><strong>VZE-Tool (VSA)</strong> – Stellenplan an das Volksschulamt melden (${R("LPVO", "2", "Abs. 5")}).</li>
+          <li><strong>Allgemeines Personalrecht</strong> – wo die LPVO darauf verweist, gilt die Vollzugsverordnung zum Personalgesetz: Ferienanspruch (${R("LPVO", "13")}, ${R("VVO", "79")}), Urlaub (${R("LPVO", "27")}, ${R("VVO", "84")}–${R("VVO", "98")}), Lohnfortzahlung (${R("VVO", "99")}), Personaldossier (${R("VVO", "21")}–${R("VVO", "27")}), Mitarbeiterbeurteilung (${R("VVO", "136")}).</li>
         </ol>
         <p class="small muted">Verweise in der Anwendung (z. B. ${R("LPG", "6", "Abs. 2")}) öffnen die Bestimmung hier in der Hilfe.</p></section>
         <div class="karten" style="margin-top:1rem">${Object.values(RECHT).map((g) => `<a class="karte" href="#/hilfe/${g.kurz}" style="text-decoration:none;color:inherit"><div class="titel">LS ${esc(g.nummer)} · Stand ${esc(g.stand)}</div><div class="zahl" style="font-size:1.2rem">${esc(g.titel)}</div><div class="small muted">${g.abschnitte.reduce((a, x) => a + x.paragraphen.filter((p) => p.nr && !p.uebergang).length, 0)} Paragraphen</div></a>`).join("")}</div>`;
@@ -1203,13 +1209,13 @@
       inhalt = `<div class="spalten" style="grid-template-columns:minmax(0,260px) minmax(0,1fr);align-items:start">
         <nav class="karte" aria-label="Inhalt ${esc(aktiv)}" style="position:sticky;top:5rem;max-height:75vh;overflow:auto"><h2>Inhalt</h2><ol style="padding-left:1rem;margin:0">${inhaltVz}</ol></nav>
         <div>
-          <div class="seitenkopf" style="margin-bottom:.5rem"><div><h2 style="font-size:1.3rem">${esc(g.titel)}</h2><p class="muted small">LS ${esc(g.nummer)} · Stand ${esc(g.stand)} · aufbereitet aus der Zürcher Gesetzessammlung, ohne Fussnoten${aktiv === "LPVO" ? " und ohne Anhang (Lohntabellen)" : ""}. Massgebend ist die <a href="${esc(g.url)}" target="_blank" rel="noopener">amtliche Fassung</a>.</p></div></div>
+          <div class="seitenkopf" style="margin-bottom:.5rem"><div><h2 style="font-size:1.3rem">${esc(g.titel)}</h2><p class="muted small">LS ${esc(g.nummer)} · Stand ${esc(g.stand)} · aufbereitet aus der Zürcher Gesetzessammlung, ohne Fussnoten${aktiv === "LPVO" ? " und ohne Anhang (Lohntabellen)" : ""}.${aktiv === "VVO" ? " Gilt für Lehrpersonen, soweit LPG und LPVO darauf verweisen oder nichts anderes regeln (z. B. §§ 118–134 nicht anwendbar, " + R("LPVO", "10") + ")." : ""} Massgebend ist die <a href="${esc(g.url)}" target="_blank" rel="noopener">amtliche Fassung</a>.</p></div></div>
           <div class="formzeile"><label class="feld">Im ${esc(aktiv)} suchen<input type="search" data-aktion="hilfe-suche" placeholder="z. B. Gestaltungspool, Klassenlehrperson" style="min-width:18rem"></label><span class="small muted" id="hilfe-treffer"></span></div>
           ${text}
         </div></div>`;
     }
-    return `<div class="seitenkopf"><div><h1>Hilfe und gesetzliche Grundlagen</h1><p class="muted">Lehrpersonalgesetz (LPG) und Lehrpersonalverordnung (LPVO) des Kantons Zürich – mit Verweisen aus der Anwendung.</p></div></div>
-      <div class="formzeile" role="tablist">${tab("", "Übersicht")}${tab("LPG", "Lehrpersonalgesetz (LPG)")}${tab("LPVO", "Lehrpersonalverordnung (LPVO)")}</div>${inhalt}`;
+    return `<div class="seitenkopf"><div><h1>Hilfe und gesetzliche Grundlagen</h1><p class="muted">Lehrpersonalgesetz (LPG), Lehrpersonalverordnung (LPVO) und Vollzugsverordnung zum Personalgesetz (VVO) des Kantons Zürich – mit Verweisen aus der Anwendung.</p></div></div>
+      <div class="formzeile" role="tablist">${tab("", "Übersicht")}${tab("LPG", "Lehrpersonalgesetz (LPG)")}${tab("LPVO", "Lehrpersonalverordnung (LPVO)")}${RECHT.VVO ? tab("VVO", "Vollzugsverordnung Personalgesetz (VVO)") : ""}</div>${inhalt}`;
   };
 
   // ---------------------------------------------------------------- Dialog, Ansage, Export

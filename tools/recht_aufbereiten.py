@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Gesetzestexte (Zürcher Gesetzessammlung, PDF) für die Hilfe von EduKSX-Staffing aufbereiten.
 
-    python3 tools/recht_aufbereiten.py LPG.pdf LPVO.pdf
+    python3 tools/recht_aufbereiten.py LPG.pdf LPVO.pdf VVO.pdf
 
 Erzeugt prototypen/einsatzplanung/assets/recht.js (window.STAFFING_RECHT) mit Abschnitten, Paragraphen,
 Randtiteln und Absätzen. Fussnoten und der Anhang (Lohntabellen) werden weggelassen; massgebend bleibt die
@@ -85,7 +85,11 @@ def parse(pfad, kurz):
             continue
         if re.match(r'^\(vom \d', text) and par is None:
             continue
-        m = re.match(r'^§ ?(\d+ ?[a-z]?)\.(?:\s|$)', text) or re.match(r'^§§ ?(\d+ ?[a-z]? und \d+ ?[a-z]?)\.(?:\s|$)', text)
+        m = (re.match(r'^§ ?(\d+ ?[a-z]?)\.(?:\s|$)', text) or re.match(r'^§§ ?(\d+ ?[a-z]? und \d+ ?[a-z]?)\.(?:\s|$)', text)
+             or re.match(r'^§§ ?(\d+ ?[a-z]?[–-]\d+ ?[a-z]?)\.(?:\s|$)', text))
+        # Verweis am Zeilenanfang («… gemäss / § 28.») ist kein neuer Paragraph
+        if m and par and par['absaetze'] and re.search(r'(gemäss|nach|und|sowie|vgl\.|Abs\. \d+)$', par['absaetze'][-1]['text'].strip()):
+            m = None
         if m and toks[0][0] == 'W' and toks[0][1] in ('§', '§§'):
             nr = m.group(1).replace(' ', ' ')
             par = {'nr': nr, 'titel': None, 'absaetze': [], 'seite': si, 'top': top}
@@ -130,6 +134,14 @@ def parse(pfad, kurz):
                 a['text'] = a['text'].replace('jeden ganzen Monat um / gekürzt', 'jeden ganzen Monat um 1/12 gekürzt')
             p['absaetze'] = [a for a in p['absaetze'] if a['text']]
     abschnitte = [a for a in abschnitte if a['paragraphen'] or a['titel']]
+    # zweizeilige Abschnittstitel zusammenfügen
+    zus = []
+    for a in abschnitte:
+        if zus and not zus[-1]['paragraphen'] and zus[-1]['titel'].endswith(',') and a['titel'] and not re.match(r'^([IVX]+|[A-Z]|\d+)\. ', a['titel']):
+            zus[-1]['titel'] += ' ' + a['titel']; zus[-1]['paragraphen'] = a['paragraphen']
+        else:
+            zus.append(a)
+    abschnitte = zus
     import subprocess
     txt = subprocess.run(['pdftotext', pfad, '-'], capture_output=True, text=True).stdout
     m = re.search(r'(\d{1,2})\. ?(\d{1,2})\. ?(\d{2}) - (\d+)', txt)
@@ -151,8 +163,9 @@ def _alt_main():
 QUELLEN = {
     "LPG": {"nummer": "412.31", "url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_31-1999_05_10-2000_10_01-118.html"},
     "LPVO": {"nummer": "412.311", "url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-132.html"},
+    "VVO": {"nummer": "177.111", "url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-177_111-1999_05_19-1999_07_01-132.html"},
 }
-KORREKTUREN = {"Überführungins": "Überführung ins"}
+KORREKTUREN = {"Überführungins": "Überführung ins", "Personal managementund": "Personalmanagement- und", "bis herigen": "bisherigen"}
 
 
 def nachbearbeiten(d):
@@ -170,11 +183,11 @@ def nachbearbeiten(d):
 
 
 def main(argv):
-    if len(argv) != 2:
+    if len(argv) not in (2, 3):
         print(__doc__)
         return 1
     daten = {}
-    for pfad, kurz in zip(argv, ("LPG", "LPVO")):
+    for pfad, kurz in zip(argv, ("LPG", "LPVO", "VVO")):
         d = nachbearbeiten(parse(pfad, kurz))
         d.update(QUELLEN[kurz])
         daten[kurz] = d

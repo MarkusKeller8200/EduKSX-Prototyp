@@ -17,7 +17,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - Abkürzungen erklärt EduKSX-Glossary (Einbindung 1.0.0 mit SRI, nur ausgewählte Bereiche und Fachgebiete, abschaltbar).
 - Hinterlegtes, anonymisiertes VZE-Tool (VSA 2.19, Musterhausen) zum Ausprobieren, Knopf «Hinterlegtes Muster
   laden»; `tools/test_muster.py` prüft Muster auf Namen und Metadaten.
-- Hilfe mit LPG (Stand 1.1.2022) und LPVO (Stand 1.4.2026), Suche und direkten Verweisen aus der Anwendung
+- Hilfe mit LPG (Stand 1.1.2022), LPVO (Stand 1.4.2026) und VVO (Stand 1.4.2026, Verweise aus der LPVO verlinkt), Suche und direkten Verweisen aus der Anwendung
   (`assets/recht.js`, erzeugt mit `tools/recht_aufbereiten.py`).
 - Einstiegsseite (Menü) für GitHub Pages (`tools/seite_bauen.py`, Workflow `seite`), Kontrastprüfung der CI-Farben.
 - EduKSX-Staffing: Datenmodell für Personen, Klassen und Einsätze erweitert (ANFORDERUNGEN § 18): mehrere Personen
