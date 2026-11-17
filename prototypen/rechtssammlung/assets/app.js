@@ -114,6 +114,7 @@
         h("li", null, eintrag(link("gemeinden"), "Alle 160 Gemeinden", r.art === "gemeinden")),
         h("li", null, eintrag(link("schulgemeinden"), "Alle " + D.schulgemeinden.length + " Schulgemeinden", r.art === "schulgemeinden")),
         h("li", null, eintrag(link("matrix"), "Struktur-Matrix", r.art === "matrix")),
+        h("li", null, eintrag(link("grundlagen"), "Grundlagen (Leitfaden, ZH-Lex)", r.art === "grundlagen")),
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Bezirke" })),
       h("div", { cls: "suche" }, such),
       liste);
@@ -139,6 +140,7 @@
     });
     var zeilen = [["CMS", "cms"], ["Menüpfad", function (o) { return o.menu_pfad.join(" › "); }],
       ["Rubriken / Dokumente", function (o) { return o.anzahl_rubriken + " / " + o.anzahl_dokumente; }],
+      ["Leitfaden-Prüfung", function (o) { return lfZusammenfassung(o); }],
       ["Ordnertiefe", "max_tiefe"], ["Nummerierung", "nummerierung"]];
     var erfasst = D.gemeinden.filter(function (g) { return g.org; }).length;
     var schulAufgaben = D.gemeinden.filter(function (g) { return /^Einheitsgemeinde/.test(g.einheit || ""); }).length;
@@ -159,7 +161,8 @@
         h("thead", null, h("tr", null, h("th"), D.organisationen.map(function (o) { return h("th", { scope: "col", text: o.kurz }); }))),
         h("tbody", null, zeilen.map(function (z) {
           return h("tr", null, h("th", { scope: "row", text: z[0] }), D.organisationen.map(function (o) {
-            return h("td", { text: typeof z[1] === "function" ? z[1](o) : String(o[z[1]]) });
+            var v = typeof z[1] === "function" ? z[1](o) : String(o[z[1]]);
+            return typeof v === "string" ? h("td", { text: v }) : h("td", null, v);
           }));
         }))))
     ];
@@ -239,8 +242,76 @@
             ["Nummerierung", o.nummerierung], ["Umfang", o.anzahl_rubriken + " Rubriken · " + o.anzahl_dokumente + " Dokumente · Ordnertiefe " + o.max_tiefe],
             ["Stand", o.stand]])),
         h("div", { cls: "karte" }, h("h2", { text: "Befunde" }), h("ul", null, o.befunde.map(function (b) { return h("li", { text: b }); })))),
+      leitfadenKarte(o),
       h("h2", { text: "Struktur der Rechtssammlung" }),
       h("div", { cls: "karte" }, h("ul", { cls: "struktur" }, o.sections.map(function (s, i) { return baum(o, s, [i], 1); })))];
+  }
+
+  // ------------------------------------------------------------------ Leitfaden
+  var LF_SYM = { ja: ["erfolg", "✓", "erfüllt"], unsicher: ["warnung", "?", "prüfen"], nein: ["fehler", "✗", "nicht erfüllt"], info: ["info", "ℹ", "Hinweis"] };
+  function lfBadge(st) { var x = LF_SYM[st]; return badge(x[0], x[1], x[2]); }
+  function lfZusammenfassung(o) {
+    var z = { ja: 0, unsicher: 0, nein: 0 };
+    (o.leitfaden || []).forEach(function (p) { if (z[p.status] !== undefined) z[p.status]++; });
+    return h("span", null, badge("erfolg", "✓", String(z.ja)), " ", badge("warnung", "?", String(z.unsicher)), " ", badge("fehler", "✗", String(z.nein)));
+  }
+  function leitfadenKarte(o) {
+    var arten = Object.keys(o.arten || {}).sort(function (a, b) { return o.arten[b] - o.arten[a]; });
+    return [h("h2", { text: "Leitfaden-Prüfung" }),
+      h("div", { cls: "karte" },
+        h("p", { cls: "small muted" }, "Automatische Prüfung gegen den ", h("a", { href: link("grundlagen"), text: "Leitfaden systematische Rechtssammlung" }),
+          " – nur anhand von Titeln und Ablageorten. Ein Anhaltspunkt, keine rechtliche Beurteilung."),
+        h("div", { cls: "tabelle-wrap" }, h("table", null,
+          h("thead", null, h("tr", null, ["Ziff.", "Prüfpunkt", "Ergebnis", "Befund"].map(function (t) { return h("th", { scope: "col", text: t }); }))),
+          h("tbody", null, (o.leitfaden || []).map(function (p) {
+            return h("tr", null, h("td", { text: p.ziffer }), h("td", { text: p.titel }), h("td", null, lfBadge(p.status)), h("td", { text: p.text }));
+          })))),
+        h("h3", { text: "Dokumentarten (Einordnung nach Leitfaden Ziff. 5–8)" }),
+        h("ul", null, arten.map(function (a) { return h("li", null, h("strong", { text: String(o.arten[a]) }), " " + D.arten[a]); })))];
+  }
+  function grundlagen() {
+    var L = D.leitfaden;
+    var pdf = { titel: L.titel, url: L.ablage_pdf };
+    function tab(kopfzeile, zeilen) {
+      return h("div", { cls: "tabelle-wrap" }, h("table", null,
+        h("thead", null, h("tr", null, kopfzeile.map(function (t) { return h("th", { scope: "col", text: t }); }))),
+        h("tbody", null, zeilen.map(function (z) { return h("tr", null, z.map(function (c, i) { return h(i ? "td" : "th", i ? { text: c } : { scope: "row", text: c }); })); }))));
+    }
+    // Zuordnung kommunale Sachgebiete → LS-Ordner (Orientierung nach Leitfaden Ziff. 9)
+    var ls = { "1": "1–2 (101–184)", "2": "3–4 (211–351)", "3": "4 (281–351)", "4": "5–8 (410–440)", "5": "9 (511–554), 14 (861 Feuerpolizei)",
+      "6": "10 (611–691)", "7": "11–12 (700–782)", "8": "13 (810–857)", "9": "14 (861–954)" };
+    return [kopf("Grundlagen", L.titel + " · " + L.herausgeber,
+        [h("button", { type: "button", cls: "btn", onclick: function () { pdfVorschau({ pdf_vorschau: true }, pdf); }, text: "Leitfaden ansehen" }), " ",
+         h("a", { cls: "btn", href: L.ablage_docx, download: "", text: "Original (Word) herunterladen" })]),
+      h("p", { cls: "meldung info" }, "Der Leitfaden ist in diesem Prototyp abgelegt (unverändertes Original von zh.ch, dazu ein PDF für die Vorschau). Quelle: ",
+        extern(L.quelle, "zh.ch › Gemeindeorganisation › Systematische Rechtssammlung"), "."),
+      h("h2", { text: "Rechtsgrundlagen" }),
+      h("ul", null, L.rechtsgrundlagen.map(function (r) { return h("li", null, extern(r.url, r.titel + " (" + r.kurz + ", LS " + r.ls + ")"), " – " + r.stelle); }),
+        h("li", null, extern("https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html#zhlex_ls", "Zürcher Gesetzessammlung (ZH-Lex, Loseblattsammlung LS)")),
+        h("li", null, extern(L.quelle, "Mustergemeindeordnungen für politische Gemeinden und Schulgemeinden"), " (Gemeindeamt)")),
+      h("h2", { text: "Anforderungen an die Rechtssammlung" }),
+      tab(["Ziff.", "Anforderung"], L.anforderungen),
+      h("h2", { text: "Systematik politische Gemeinden (Anhang 1)" }),
+      tab(["Nr.", "Sachgebiet", "Beispiele", "LS-Ordner Kanton"], L.anhang1.map(function (a) { return [a[0], a[1], a[2], ls[a[0]]]; })),
+      h("h2", { text: "Systematik Schulgemeinden (Anhang 2)" }),
+      tab(["Nr.", "Sachgebiet", "Beispiele"], L.anhang2),
+      h("p", { cls: "small muted", text: "Für politische Gemeinden mit Schulaufgaben (Einheitsgemeinden) gehören die Schul-Erlasse ins Sachgebiet 4. Musterbeispiele gemäss Leitfaden: Gemeinden Meilen und Dürnten." }),
+      h("h2", { text: "Kantonale Systematik: 14 Ordner der Loseblattsammlung (LS)" }),
+      tab(["Ordner", "LS-Nummern", "Sachgebiete"], L.ls_ordner),
+      h("h2", { text: "Leitfaden-Prüfung im Vergleich" }),
+      h("div", { cls: "tabelle-wrap" }, h("table", null,
+        h("thead", null, h("tr", null, h("th", { scope: "col", text: "Prüfpunkt" }), D.organisationen.map(function (o) { return h("th", { scope: "col" }, h("a", { href: link("org", o.id), text: o.kurz })); }))),
+        h("tbody", null, pruefpunkte().map(function (t) {
+          return h("tr", null, h("th", { scope: "row", text: t }), D.organisationen.map(function (o) {
+            var p = (o.leitfaden || []).filter(function (x) { return x.titel === t; })[0];
+            return h("td", { title: p ? p.text : "" }, p ? lfBadge(p.status) : h("span", { cls: "muted", text: "–" }));
+          }));
+        }))))];
+  }
+  function pruefpunkte() {
+    var t = [];
+    D.organisationen.forEach(function (o) { (o.leitfaden || []).forEach(function (p) { if (t.indexOf(p.titel) < 0) t.push(p.titel); }); });
+    return t;
   }
 
   function rubrik(o, pfadText) {
@@ -371,7 +442,7 @@
     function bauen() {
       huelle.textContent = "";
       var zeilen = M.zeilen.filter(function (z) {
-        if (!filter.behoerde && /^Behördenarbeit/.test(z.menu)) return false;
+        if (!filter.behoerde && /^Gehört nicht in die SR/.test(z.menu)) return false;
         var hat = orgs.some(function (o) { return (M.zellen[z.key] || {})[o.id]; });
         if (filter.leer && !hat) return false;
         if (nurIds && !hat && !/^1 /.test(z.menu)) return false;
@@ -398,7 +469,7 @@
     var cbBeh = h("input", { type: "checkbox", checked: "checked" }); cbBeh.addEventListener("change", function () { filter.behoerde = cbBeh.checked; bauen(); });
     bauen();
     return [h("div", { cls: "formzeile" }, h("label", { cls: "feld" }, "Filtern ", such),
-        h("label", null, cbLeer, " nur Zeilen mit Treffern"), h("label", null, cbBeh, " Behördenarbeit zeigen")),
+        h("label", null, cbLeer, " nur Zeilen mit Treffern"), h("label", null, cbBeh, " «Gehört nicht in die SR» zeigen")),
       h("p", { cls: "small legende" }, badge("erfolg", "✓", "vorhanden"), " ", badge("warnung", "?", "unsicher (ähnlicher Titel, kombinierter Erlass, falscher Link …)"), " ",
         badge("neutral", "–", "fehlt"), " · Hinter dem Symbol der Link zum Dokument (später zur EduKSX-Dokumentenablage)."),
       huelle];
@@ -431,6 +502,7 @@
     else if (r.art === "schulgemeinden") inhalt = alleSchulgemeinden();
     else if (r.art === "sg") inhalt = sgAnsicht(r.a);
     else if (r.art === "matrix") inhalt = matrix();
+    else if (r.art === "grundlagen") inhalt = grundlagen();
     else if (r.art === "org" && ORG[r.a]) inhalt = !r.b ? organisation(ORG[r.a]) : r.b.indexOf("ansicht-") === 0 ? ansicht(ORG[r.a], r.b) : rubrik(ORG[r.a], r.b);
     else inhalt = nichtGefunden();
     var rahmen = document.getElementById("rahmen");

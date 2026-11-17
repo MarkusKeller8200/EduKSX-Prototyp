@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.3.0 – Generator.
+"""EduKSX-Codex Prototyp 0.4.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -802,6 +802,7 @@ def norm(t):
 BEHOERDE = r"beschluss|beschluesse|protokoll|verhandlungsbericht|traktand|abnahme|einladung|ankuendigung|praesentation|beleuchtend|formularsatz|wahl|konstituierung|interessenbindung"
 ERLASS = r"reglement|verordnung|statut|ordnung|vertrag"
 # (Menü, Untermenü, Dokument, sicher-Muster, unsicher-Muster, Sammelzeile)
+NICHT_SR = "Gehört nicht in die SR (Leitfaden Ziff. 7)"
 KATALOG = [
  ("1 Gemeinde – Behörden – Verwaltung", "Organisation", "Gemeindeordnung", r"gemeindeordnung|\(go\)", None, False),
  ("1 Gemeinde – Behörden – Verwaltung", "Organisation", "Organisationsreglement / -statut / Geschäftsordnung Exekutive", r"organisationsreglement|organisationsstatut|organisations und verwaltungsreglement|geschaeftsordnung(?! planungsgruppe| stiftung)|\borgr\b|\borgg\b|orss", r"geschaeftsreglement (schulpflege|gemeinderat)", False),
@@ -843,7 +844,7 @@ KATALOG = [
  ("6 Finanzen – Steuern – Gebühren", "Haushalt", "Finanz- und Aufgabenplan", r"aufgabenplan|investitionsprogramm", None, True),
  ("6 Finanzen – Steuern – Gebühren", "Haushalt", "Steuern", r"steuer", None, True),
  ("7 Raumplanung – Bauen – Umwelt", "Bauen", "Bau- und Zonenordnung", r"bau und zonenordnung|\bbzo\b", None, False),
- ("7 Raumplanung – Bauen – Umwelt", "Bauen", "Zonen- und Kernzonenpläne", r"zonenplan", None, True),
+ (NICHT_SR, "Raumpläne – Hinweis genügt (ÖREB-Kataster)", "Zonen- und Kernzonenpläne", r"zonenplan", None, True),
  ("7 Raumplanung – Bauen – Umwelt", "Bauen", "Gebühren Bauwesen", r"(gebuehren|tarif)\w* (im )?(kommunalen )?bauwesen|gebuehren im bauwesen", None, False),
  ("7 Raumplanung – Bauen – Umwelt", "Bauen", "Regionale Planungsgruppe", r"planungsgruppe|regionalkonferenz|\bzpw\b|\bzpp\b", None, True),
  ("7 Raumplanung – Bauen – Umwelt", "Ver- und Entsorgung", "Wasserversorgung", r"wasserversorg|\bwvvo\b|\bwv\b|gebuehrenblatt wasser|seewasserwerk", None, True),
@@ -858,19 +859,20 @@ KATALOG = [
  ("9 Wirtschaft – Landwirtschaft – Gewerbe", "Wirtschaft", "Markt / Gewerbe", r"markt|gewerbe", None, True),
  ("Übergreifend", "Zusammenarbeit", "Statuten Zweckverbände / Anstalten", r"statuten|anstaltsvertrag|verbandsordnung|zweckverband", None, True),
  ("Übergreifend", "Zusammenarbeit", "Anschluss- und Zusammenarbeitsverträge", r"anschlussvertrag|zusammenarbeitsvertrag|leistungsvereinbarung|vereinbarung|vertrag", None, True),
- ("Behördenarbeit (kein Bestandteil der Rechtssammlung)", "Gemeindeversammlung", "Unterlagen / Einladungen", r"gemeindeversammlung|einladung|ankuendigung|beleuchtend|formularsatz|praesentation", None, True),
- ("Behördenarbeit (kein Bestandteil der Rechtssammlung)", "Gemeindeversammlung", "Protokolle und Beschlüsse GV", r"protokoll gv|protokoll gemeindeversammlung|gemeindeversammlungsbeschluesse|beschluss gemeindeversammlung|beschluesse gemeindeversammlung|^protokoll$|^beschluesse$", None, True),
- ("Behördenarbeit (kein Bestandteil der Rechtssammlung)", "Behörde", "Verhandlungsberichte", r"verhandlungsbericht", None, True),
- ("Behördenarbeit (kein Bestandteil der Rechtssammlung)", "Behörde", "Öffentliche Beschlüsse", r"beschluss|zirkularbeschluss|protokollauszug", None, True),
- ("Behördenarbeit (kein Bestandteil der Rechtssammlung)", "Behörde", "Wahlen und Konstituierung", r"wahl|konstituierung|interessenbindung", None, True),
+ (NICHT_SR, "Gemeindeversammlung", "Unterlagen / Einladungen", r"gemeindeversammlung|einladung|ankuendigung|beleuchtend|formularsatz|praesentation", None, True),
+ (NICHT_SR, "Gemeindeversammlung", "Protokolle und Beschlüsse GV", r"protokoll gv|protokoll gemeindeversammlung|gemeindeversammlungsbeschluesse|beschluss gemeindeversammlung|beschluesse gemeindeversammlung|^protokoll$|^beschluesse$", None, True),
+ (NICHT_SR, "Behörde", "Verhandlungsberichte", r"verhandlungsbericht", None, True),
+ (NICHT_SR, "Behörde", "Öffentliche Beschlüsse", r"beschluss|zirkularbeschluss|protokollauszug", None, True),
+ (NICHT_SR, "Behörde", "Wahlen und Konstituierung", r"wahl|konstituierung|interessenbindung", None, True),
 ]
 JAHRE = list(range(2027, 2019, -1))
+BEHOERDEN_ZEILEN = {55, 56, 57, 58, 59}
 
 def matrix():
     zeilen = [{"menu": m, "unter": u, "dok": d, "key": f"k{i}", "sammel": s} for i, (m, u, d, *_ , s) in enumerate(KATALOG)]
     for art in ("Jahresrechnung", "Budget"):
         for j in JAHRE:
-            zeilen.append({"menu": "6 Finanzen – Steuern – Gebühren", "unter": "Jahresrechnungen" if art == "Jahresrechnung" else "Budgets", "dok": f"{art} {j}", "key": f"{art[0]}{j}", "sammel": False})
+            zeilen.append({"menu": NICHT_SR, "unter": "Jahresrechnungen (Beschluss)" if art == "Jahresrechnung" else "Budgets", "dok": f"{art} {j}", "key": f"{art[0]}{j}", "sammel": False})
     reihen = {z["key"]: i for i, z in enumerate(zeilen)}
     zellen, rest = {}, {}
     for o in ORGS:
@@ -902,7 +904,7 @@ def matrix():
                 if not getroffen:
                     treffer = []
                     for i, (_, _, _, stark, schwach, _) in enumerate(KATALOG):
-                        ist_behoerde_zeile = KATALOG[i][0].startswith("Behördenarbeit")
+                        ist_behoerde_zeile = i in BEHOERDEN_ZEILEN
                         if behoerde and not ist_behoerde_zeile: continue
                         if not behoerde and ist_behoerde_zeile and not re.search(r"gemeindeversammlung|protokoll|beschlu", titel): continue
                         st = "ja" if re.search(stark, titel) else "unsicher" if schwach and re.search(schwach, titel) else None
@@ -929,7 +931,152 @@ def matrix():
         for s in o["sections"]: besuche(s, s["titel"])
     # Zeilen ohne Treffer bei allen Organisationen weglassen (ausser Katalog-Pflichtzeilen der Rubrik 1)
     zeilen = [z for z in zeilen if z["key"] in zellen or z["menu"].startswith("1 ")]
+    zeilen.sort(key=lambda z: 2 if z["menu"] == NICHT_SR else 1 if z["menu"] == "Übergreifend" else 0)  # stabil: Reihenfolge innerhalb bleibt
     return {"zeilen": zeilen, "zellen": zellen, "nicht_zugeordnet": rest}
+
+# ---------------------------------------------------------------- Leitfaden systematische Rechtssammlung (Gemeindeamt/VZGV 2018/2019)
+LEITFADEN = {
+ "titel": "Leitfaden zum Aufbau einer systematischen Rechtssammlung",
+ "herausgeber": "Gemeindeamt Kanton Zürich mit VZGV, Juni 2018, Ergänzung Februar 2019",
+ "quelle": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+ "original": "https://www.zh.ch/content/dam/zhweb/bilder-dokumente/themen/politik-staat/gemeinden/gemeindeorganisation/leitfaden_systematische_rechtssammlung.docx",
+ "ablage_docx": "quellen/leitfaden_systematische_rechtssammlung.docx",
+ "ablage_pdf": "quellen/leitfaden_systematische_rechtssammlung.pdf",
+ "rechtsgrundlagen": [
+   {"kurz": "GG", "titel": "Gemeindegesetz", "ls": "131.1", "stelle": "§ 7 Abs. 2 – Recht in einer systematisch aufgebauten Rechtssammlung veröffentlichen", "url": "http://www.zhlex.zh.ch/Erlass.html?Open&Ordnr=131.1"},
+   {"kurz": "VGG", "titel": "Gemeindeverordnung", "ls": "131.11", "stelle": "§ 2 – Inhalt, Gliederung nach Sachgebieten, Veröffentlichung im Internet", "url": "http://www.zhlex.zh.ch/Erlass.html?Open&Ordnr=131.11"}],
+ "anforderungen": [
+   ("3", "Recht nach Sachgebieten gliedern – logisch, übersichtlich; eine alphabetische Liste genügt nicht"),
+   ("3", "Für kleinere und mittlere Gemeinden höchstens neun Sachgebiete; jedes Dokument genau einem Sachgebiet"),
+   ("3", "Jedes Dokument mit eindeutiger Nummer, die mit der Ziffer des Sachgebiets beginnt"),
+   ("3", "Gliederung starr halten, vorab festlegen, im Internet veröffentlichen"),
+   ("3", "Nur aktuell geltendes Recht; aufgehobene Erlasse entfernen, Revisionen einbauen (Nachführungspflicht)"),
+   ("3", "Vollständig; vor Veränderung durch Unberechtigte geschützt; spätestens ab 1.1.2022"),
+   ("5", "Bezeichnung: Gemeindeerlass = Verordnung (Ausnahme Gemeindeordnung, BZO = Ordnung), Behördenerlass = Reglement"),
+   ("6", "In die SR: alle Erlasse und rechtsetzenden interkommunalen Verträge (Anschluss-, Zusammenarbeitsverträge, Zweckverbandsstatuten, Anstaltsordnungen)"),
+   ("7", "Nicht in die SR: Verfügungen/Beschlüsse (z. B. Budget-, Kredit-, Wahlbeschluss), Allgemeinverfügungen, Raumpläne, Verwaltungsverordnungen, nicht rechtsetzende Verträge"),
+   ("7", "Raumpläne: Hinweis genügt (Richtpläne mit Festsetzungsdatum, Nutzungspläne über den ÖREB-Kataster)"),
+   ("8", "Generell-abstrakte «Beschlüsse» (z. B. Haushaltsgleichgewicht) gehören in die SR; Konzepte/Leitbilder nur, wenn als «nichtrechtsetzend» gekennzeichnet"),
+   ("9", "Systematik nach Kanton/Bund (Anhang 1 bzw. 2), nicht nach Ressorts, Verwaltungsabteilungen oder Archivplan"),
+   ("10", "Zweckverbände und gemeinsame Anstalten: Recht im Internet, alphabetisch genügt"),
+   ("Anhang 1", "Sachgebiet «Schule» auch in politischen Gemeinden ohne Schulaufgaben führen"),
+ ],
+ "anhang1": [("1", "Gemeinde – Behörden – Verwaltung – Bevölkerung", "Organisationserlasse, Personalrecht, Entschädigung, Kompetenzen, Publikationen, Datenschutz, Archiv, Informatik"),
+             ("2", "Zivilrecht – Familienrecht – Grundbuch – Notariat – Schuldbetreibung & Konkurs", "Kindes- und Erwachsenenschutz, Zivilstandswesen, Friedensrichter"),
+             ("3", "Strafrecht – Opferhilfe – Gewaltschutz", ""),
+             ("4", "Schule & Bildung – Sport – Freizeit – Kultur", "Kindergarten, Primar- und Sekundarschule, Bibliothek, Vereine, Benutzung Schulliegenschaften"),
+             ("5", "Öffentliche Ordnung & Sicherheit: Polizei – Zivilschutz – Feuerwehr & Feuerpolizei – Tierschutz", "Polizeiverordnung, Schiessanlagen, Hundehaltung"),
+             ("6", "Finanzen – Steuern – Gebühren", "allgemeine, themenübergreifende Gebührenerlasse"),
+             ("7", "Raumplanung – Bauen – Umwelt – Energie – Verkehr", "BZO, Beschaffung, Entsorgung, Versorgung, Strassen, Parkierung, Verkehr"),
+             ("8", "Soziales – Gesundheit – Arbeit", "Sozialhilfe, Ergänzungsleistungen, Asyl, Friedhof, Pflege, Spitex, Spital"),
+             ("9", "Wirtschaft – Landwirtschaft – Gewerbe", "Jagd, Fischerei, Forst, Chilbi, Markt")],
+ "anhang2": [("1", "Gemeinde – Behörden – Verwaltung", "Organisationsstatut, Organisationserlasse, Entschädigung Schulpflege, Personalrecht, Informationsverwaltung"),
+             ("2", "Schulbetrieb: Kindergarten, Primar- & Sekundarschule", "Hausordnung, Jokertage, Dispensation, Klassenlager, Sonderschule, Schulpsychologischer Dienst"),
+             ("3", "Schulergänzende Angebote", "Musikschule, Freifächer, Bibliothek, Aufgabenhilfe, Tagesstrukturen, Schülertransport, Schulweg"),
+             ("4", "Sport und Freizeit", "Schwimmreglement, Benutzung Sportanlagen, Gebühren Sportanlagen, freiwillige Lager"),
+             ("5", "Finanzen – Gebühren", "allgemeine, themenübergreifende Gebührenerlasse")],
+ "ls_ordner": [("1", "101–176", "Verfassung – Kantonsgebiet – Gemeinden – Bürgerrecht – Politische Rechte – Behörden"), ("2", "177–184", "Staatspersonal – Kirchen – Religionsgemeinschaften"),
+   ("3", "211–255", "Gerichtsorganisation – Zivilrecht – Notariat – Grundbuch"), ("4", "281–351", "Schuldbetreibung und Konkurs – Strafrecht – Strafvollzug – Opferhilfe – Gewaltschutz"),
+   ("5", "410–412", "Bildung – Volksschule"), ("6", "413", "Mittelschulen – Berufsbildung"), ("7", "414", "Fachhochschulen"), ("8", "415–440", "Universität – Dokumentation – Kultur"),
+   ("9", "511–554", "Militär – Bevölkerungsschutz – Polizei"), ("10", "611–691", "Finanzhaushalt – Steuern – Gebühren"), ("11", "700–715", "Raumplanung – Baurecht – Umweltschutz"),
+   ("12", "720–782", "Beschaffungswesen – Strassen – Wasserwirtschaft – Energie – Verkehr – Enteignung"), ("13", "810–857", "Gesundheit – Arbeit – Sozialversicherung – Fürsorge"),
+   ("14", "861–954", "Feuerpolizei – Landwirtschaft – Wald und Jagd – Industrie und Gewerbe – Handel – Banken")],
+}
+ARTEN = {"gemeindeerlass": "Gemeindeerlass (Verordnung/Ordnung)", "behoerdenerlass": "Behördenerlass (Reglement)", "vertrag": "Rechtsetzender Vertrag / Statuten",
+         "nicht_rechtsetzend": "Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …)", "raumplan": "Raumplan (Hinweis genügt)",
+         "nicht_sr": "Gehört nicht in die SR (Beschluss, Budget, Protokoll …)", "unklar": "Unklar – prüfen"}
+
+def art(d, pfad):
+    """Einordnung nach Leitfaden Ziff. 5–8 und Anhang 3 – nur anhand Titel und Ablageort (Anhaltspunkt, keine Rechtsprüfung)."""
+    t, pf = norm(d["titel"]), norm(pfad)
+    if re.search(r"zonenplan|richtplan|verkehrsplan|gestaltungsplan|quartierplan|ergaenzungsplan|quartiererhaltungszone", t): return "raumplan"
+    if re.search(r"jahresrechnung|\bbudget|voranschlag|formularsatz|rechnung 20|pruefbericht|revisionsbericht", t) and not re.search(r"verordnung|reglement", t): return "nicht_sr"
+    if (re.search(BEHOERDE, t) or re.search(r"beschl|verhandlungsbericht|gemeindeversammlung", pf)) and not re.search(r"reglement|verordnung|statut|ordnung|vertrag", t):
+        return "nicht_sr"
+    if re.search(r"konzept|merkblatt|leitbild|leitfaden|anleitung|formular|antrag|gesuch|bestaetigung|elterninformation|lieder|linksammlung|flyer|abc der|kresse|leistungsvereinbarung|richtlinie|angebot|konstituierung|organigramm|verzeichnis der informationsbestaende|funktionendiagramm|interessenbindung", t):
+        return "nicht_rechtsetzend"
+    if re.search(r"organisationsstatut", t): return "behoerdenerlass"
+    if re.search(r"statuten|anschlussvertrag|zusammenarbeitsvertrag|anstaltsvertrag|vertrag|vereinbarung|verbandsordnung|stiftungsurkunde", t): return "vertrag"
+    if re.search(r"verordnung|gemeindeordnung|zonenordnung|\bgo\b|\bbzo\b|\bevo\b|\bpvo\b|\bgebvo\b|\bpolvo\b|\bavo\b|\bsevo\b|\bwvvo\b", t): return "gemeindeerlass"
+    if re.search(r"reglement|ordnung|tarif|bestimmungen|statut", t): return "behoerdenerlass"
+    return "unklar"
+
+def leitfaden_pruefung(o):
+    """Prüfpunkte je Organisation aus dem Leitfaden. Status: ja / unsicher / nein / info."""
+    ist_pg = o["typ"] == "Politische Gemeinde"
+    docs = [(d, s["titel"] + " " + pfad) for s in o["sections"] for d, pfad in _alle(s, "")]
+    n = len(docs) or 1
+    arten = {}
+    for d, pf in docs:
+        a = art(d, pf); d["art"] = a; arten[a] = arten.get(a, 0) + 1
+    P = []
+    def p(ziffer, titel, status, text): P.append({"ziffer": ziffer, "titel": titel, "status": status, "text": text})
+    # Ziff. 3 – Gliederung nach Sachgebieten
+    nummeriert = [s for s in o["sections"] if re.match(r"^\s*(SR\s*-\s*)?\d", s["titel"])]
+    if len(o["sections"]) >= 3 and len(nummeriert) >= len(o["sections"]) - 1:
+        p("3", "Nach Sachgebieten gegliedert", "ja", f"{len(o['sections'])} Sachgebiete/Rubriken, nummeriert.")
+    elif len(o["sections"]) >= 3:
+        p("3", "Nach Sachgebieten gegliedert", "unsicher", f"{len(o['sections'])} Rubriken, aber ohne Sachgebietsziffern.")
+    else:
+        p("3", "Nach Sachgebieten gegliedert", "nein", "Keine Gliederung nach Sachgebieten (nur eine Liste/Tabelle).")
+    # Ziff. 3 – höchstens neun Sachgebiete
+    p("3", "Höchstens neun Sachgebiete", "ja" if len(o["sections"]) <= 9 else "nein", f"{len(o['sections'])} Rubriken auf oberster Ebene.")
+    # Ziff. 9 / Anhang – Systematik
+    ziel = LEITFADEN["anhang1"] if ist_pg else LEITFADEN["anhang2"]
+    def kern(x): return set(w for w in re.findall(r"[a-zäöü]{5,}", x.lower()))
+    treffer = sum(1 for nr, tit, _ in ziel if any(kern(tit) & kern(s["titel"]) for s in o["sections"]))
+    anteil = treffer / len(ziel)
+    p("9", "Systematik nach Leitfaden (Anhang 1 bzw. 2)",
+      "ja" if anteil >= .8 else "unsicher" if anteil >= .4 else "nein",
+      f"{'Anhang 1 (politische Gemeinde)' if ist_pg else 'Anhang 2 (Schulgemeinde)'}: {treffer} von {len(ziel)} empfohlenen Sachgebieten erkennbar.")
+    # Ziff. 3 – eindeutige Nummer mit Sachgebietsziffer
+    mit_nr = 0
+    for s in o["sections"]:
+        sz = (re.match(r"^\s*(?:SR\s*-\s*)?0?(\d)", s["titel"]) or [None, None])[1]
+        for d, _ in _alle(s, ""):
+            nr = d.get("nummer") or (re.match(r"^\s*(\d{3}(?:\.\d+)*)", d["titel"]) or [None, ""])[1] or ""
+            if nr and sz and nr.lstrip("0").startswith(sz): mit_nr += 1
+    q = mit_nr / n
+    p("3", "Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer)", "ja" if q >= .9 else "unsicher" if q >= .4 else "nein", f"{mit_nr} von {len(docs)} Dokumenten ({q:.0%}).")
+    # Ziff. 7 – nur Erlasse und rechtsetzende Verträge
+    fremd = arten.get("nicht_sr", 0)
+    p("7", "Keine Beschlüsse, Budgets, Rechnungen, Protokolle", "ja" if fremd == 0 else "unsicher" if fremd / n <= .1 else "nein",
+      "Keine gefunden." if fremd == 0 else f"{fremd} von {len(docs)} Dokumenten gehören nicht in die SR ({fremd / n:.0%}).")
+    rp = arten.get("raumplan", 0)
+    p("7", "Raumpläne nur als Hinweis", "info" if rp else "ja", f"{rp} Raumpläne (Zonen-/Kernzonen-/Richtpläne) als Dokument abgelegt – zulässig, Hinweis auf ÖREB-Kataster genügt." if rp else "Keine Raumpläne abgelegt.")
+    # Ziff. 8 – nicht rechtsetzende Dokumente gekennzeichnet
+    nr_ = arten.get("nicht_rechtsetzend", 0)
+    p("8", "Nicht rechtsetzende Dokumente gekennzeichnet", "ja" if nr_ == 0 else "unsicher",
+      "Keine gefunden." if nr_ == 0 else f"{nr_} Konzepte/Merkblätter/Richtlinien o. Ä. ohne Kennzeichnung «nichtrechtsetzend».")
+    # Ziff. 3 – nur geltendes Recht
+    aufg = {"pg-meilen": mei_aufgehoben, "pg-winkel": win_aufgehoben}.get(o["id"], 0)
+    p("3", "Nur geltendes Recht (keine aufgehobenen Erlasse)", "unsicher" if aufg else "info",
+      f"{aufg} aufgehobene Erlasse stehen weiterhin als Zeile in der Liste." if aufg else "Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist).")
+    # Ziff. 6 – interkommunale Verträge
+    v = arten.get("vertrag", 0)
+    p("6", "Rechtsetzende interkommunale Verträge enthalten", "ja" if v else ("info" if not ist_pg else "unsicher"), f"{v} Verträge/Statuten." if v else "Keine Verträge oder Statuten gefunden.")
+    # Ziff. 5 – Bezeichnung
+    ge, be = arten.get("gemeindeerlass", 0), arten.get("behoerdenerlass", 0)
+    p("5", "Bezeichnung der Erlasse (Verordnung / Reglement)", "info", f"{ge} als Verordnung/Ordnung, {be} als Reglement o. Ä. bezeichnet, {arten.get('unklar', 0)} unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar.")
+    # Anhang 1 – Sachgebiet Schule
+    if ist_pg:
+        s4 = next((s for s in o["sections"] if re.match(r"^\s*0?4\b", s["titel"])), None)
+        einheit = o.get("einheit", "")
+        schul = 0
+        if s4:
+            schul = sum(1 for d, _ in _alle(s4, "") if re.search(r"schul|primar|sekundar|kindergarten|hort|lager", norm(d["titel"])))
+        if einheit.startswith("Einheitsgemeinde"):
+            p("Anhang 1", "Sachgebiet 4 «Schule» in der politischen Gemeinde", "ja" if schul >= 2 else "unsicher",
+              f"{schul} Schul-Erlasse im Sachgebiet 4." + ("" if schul >= 2 else " Die Schule ist Teil der Gemeinde – ihre Erlasse gehören in diese SR; prüfen, ob sie nur auf der Schul-Website stehen."))
+        else:
+            p("Anhang 1", "Sachgebiet 4 «Schule» in der politischen Gemeinde", "ja" if s4 else "unsicher", "Sachgebiet 4 vorhanden (auch ohne Schulaufgaben zu führen)." if s4 else "Kein Sachgebiet 4.")
+    o["leitfaden"] = P
+    o["arten"] = arten
+    return P
+
+def _alle(n, pfad):
+    for d in n.get("dokumente", []): yield d, pfad
+    for k in n.get("kinder", []): yield from _alle(k, pfad + " › " + k["titel"])
 
 # ---------------------------------------------------------------- Übersicht
 WM = ('<span class="wm" role="img" aria-label="EduKSX-Codex"><span aria-hidden="true"><span class="v">E</span><span class="n">du</span>'
@@ -948,7 +1095,8 @@ def render_daten(gemeinden):
         if o["typ"] == "Politische Gemeinde":
             g = next((x for x in gem if x["gemeinde"] == o["sitz"]), None)
             if g: o["einheit"] = g["einheit"]
-    daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(),
+    for o in ORGS: leitfaden_pruefung(o)
+    daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN,
              "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
     return ("/* Erzeugt von tools/build.py – nicht von Hand bearbeiten. */\nwindow.CODEX = "
             + json.dumps(daten, ensure_ascii=False, separators=(",", ":")) + ";\n")
@@ -976,7 +1124,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.3.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.4.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -984,7 +1132,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.1.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.4.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),
@@ -1003,6 +1151,13 @@ def render_md():
             for k in n["kinder"]: tree(k, lvl+1)
         for s in o["sections"]: tree(s, 0)
         L += ["", "### Befunde", ""] + [f"- {b}" for b in o["befunde"]]
+        SYM = {"ja": "✓ erfüllt", "unsicher": "? prüfen", "nein": "✗ nicht erfüllt", "info": "ℹ Hinweis"}
+        L += ["", "### Leitfaden-Prüfung (automatisch, Anhaltspunkt)", "", "| Ziff. | Prüfpunkt | Ergebnis | Befund |", "|---|---|---|---|"]
+        L += [f"| {p['ziffer']} | {p['titel']} | {SYM[p['status']]} | {p['text']} |" for p in o.get("leitfaden", [])]
+        L += ["", "Dokumentarten: " + ", ".join(f"{ARTEN[k]} {v}" for k, v in sorted(o.get("arten", {}).items(), key=lambda x: -x[1]))]
+    L += ["", "## Grundlage: Leitfaden systematische Rechtssammlung", "",
+          f"{LEITFADEN['titel']} ({LEITFADEN['herausgeber']}), abgelegt unter `quellen/`. Quelle: {LEITFADEN['quelle']}", "",
+          "| Ziff. | Anforderung |", "|---|---|"] + [f"| {z} | {t} |" for z, t in LEITFADEN["anforderungen"]]
     L += ["", "## Nächste Schritte", "",
           "1. Website-URL jeder der 160 Gemeinden aus der Gebietsstammdaten-API bzw. dem Gemeindeverzeichnis ergänzen (data/gemeinden-zh.csv).",
           "2. CMS automatisch erkennen (i-web, Escola, WordPress, …) und je CMS einen Crawler-Adapter schreiben – die vier Piloten decken bereits drei Plattformen ab.",
@@ -1012,7 +1167,6 @@ def render_md():
 
 def main():
     gem = list(csv.DictReader(open(ROOT/"data/gemeinden-zh.csv", encoding="utf-8")))
-    (ROOT/"data/rechtssammlungen.json").write_text(json.dumps({"stand": STAND, "organisationen": ORGS}, ensure_ascii=False, indent=1), encoding="utf-8")
     (ROOT/"demo").mkdir(exist_ok=True)
     for o in ORGS:
         nachbau = RENDER[o["renderer"]](o)
@@ -1020,9 +1174,10 @@ def main():
         (ROOT/f"demo/{o['id']}-iframe.html").write_text(iframe_variante(o, nachbau), encoding="utf-8")
     (ROOT/"index.html").write_text(render_index(gem), encoding="utf-8")
     (ROOT/"assets/daten.js").write_text(render_daten(gem), encoding="utf-8")
+    (ROOT/"data/rechtssammlungen.json").write_text(json.dumps({"stand": STAND, "organisationen": ORGS}, ensure_ascii=False, indent=1), encoding="utf-8")
     (ROOT/"docs").mkdir(exist_ok=True)
     (ROOT/"docs/evaluation.md").write_text(render_md(), encoding="utf-8")
-    for o in ORGS: print(f"{o['id']:15} {o['anzahl_rubriken']:2} Rubriken {o['anzahl_dokumente']:4} Dokumente Tiefe {o['max_tiefe']}")
+    for o in ORGS: print(f"{o['id']:22} {o['anzahl_rubriken']:2} Rub {o['anzahl_dokumente']:4} Dok | " + " ".join(p["status"][0] for p in o["leitfaden"]) + " | " + str(o["arten"]))
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,6 @@
 # Prototyp: Rechtssammlung
 
-**Status:** in-arbeit · **Version:** 0.3.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
+**Status:** in-arbeit · **Version:** 0.4.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
 
 ## Frage
 
@@ -29,6 +29,7 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 | `data/rechtssammlungen.json` | Normalisiertes Datenmodell (Rubrik → Unterordner → Dokument) |
 | `data/gemeinden-zh.csv` | 160 politische Gemeinden mit Website (aus Verwaltungs-E-Mail), CMS, Status |
 | `data/raw/` | Rohdaten aus den Websites |
+| `quellen/` | Leitfaden systematische Rechtssammlung (Original von zh.ch und PDF für die Vorschau), Herkunft in `quellen/README.md` |
 | `tools/build.py` | Generator: Datenmodell, Schulgemeinden (60) mit Einheitsgemeinde-Herleitung, Struktur-Matrix, Nachbauten |
 
 ## Erfasst (Stand 17.11.2026)
@@ -49,6 +50,14 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 | Politische Gemeinde Hochfelden | Politik › Gesetzessammlung | 77 |
 
 ## Quellen
+
+- **Leitfaden zum Aufbau einer systematischen Rechtssammlung** (Gemeindeamt Kanton Zürich mit VZGV, Juni 2018,
+  Ergänzung Februar 2019), abgelegt in `quellen/`. Daraus abgeleitet: Ansicht «Grundlagen» und die automatische
+  Leitfaden-Prüfung je Organisation (Gliederung, höchstens 9 Sachgebiete, Nummern, nur Erlasse und rechtsetzende
+  Verträge, Kennzeichnung nicht rechtsetzender Dokumente, Systematik Anhang 1/2). Die Prüfung stützt sich nur auf
+  Titel und Ablageorte und ist ein Anhaltspunkt, keine rechtliche Beurteilung.
+- Rechtsgrundlagen: Gemeindegesetz (GG, LS 131.1) § 7 Abs. 2, Gemeindeverordnung (VGG, LS 131.11) § 2; Systematik der
+  Zürcher Gesetzessammlung (ZH-Lex, 14 Ordner der Loseblattsammlung).
 
 - Schulgemeinden und Zahl der Gemeinden mit Schulaufgaben: Gemeindeamt Kanton Zürich, «Verzeichnis der Gemeinden des
   Kantons Zürich», Stand 1. Juli 2026 (8 Volksschul-, 24 Primarschul-, 28 Sekundarschulgemeinden; 114 politische

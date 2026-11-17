@@ -1,6 +1,6 @@
 # EduKSX-Codex – Evaluation systematischer Rechtssammlungen
 
-Prototyp 0.1.0 · Stand 17.11.2026
+Prototyp 0.4.0 · Stand 17.11.2026
 
 ## Vergleich
 
@@ -81,6 +81,24 @@ Prototyp 0.1.0 · Stand 17.11.2026
 - Keine Erlassnummern, kein Inkraftsetzungsdatum als Feld; Datum steckt teils im Titel.
 - Uneinheitliche Präfixe («1-», «1 -», «7-»).
 - Zweckverbands-Statuten und Verträge sind mit kommunalen Erlassen vermischt (fachlich korrekt gem. Leitfaden, aber ohne Kennzeichnung).
+
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ✓ erfüllt | 9 Sachgebiete/Rubriken, nummeriert. |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 9 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✓ erfüllt | Anhang 1 (politische Gemeinde): 9 von 9 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✗ nicht erfüllt | 0 von 39 Dokumenten (0%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ✓ erfüllt | Keine gefunden. |
+| 7 | Raumpläne nur als Hinweis | ℹ Hinweis | 3 Raumpläne (Zonen-/Kernzonen-/Richtpläne) als Dokument abgelegt – zulässig, Hinweis auf ÖREB-Kataster genügt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ? prüfen | 1 Konzepte/Merkblätter/Richtlinien o. Ä. ohne Kennzeichnung «nichtrechtsetzend». |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ✓ erfüllt | 17 Verträge/Statuten. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 13 als Verordnung/Ordnung, 3 als Reglement o. Ä. bezeichnet, 2 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+| Anhang 1 | Sachgebiet 4 «Schule» in der politischen Gemeinde | ✓ erfüllt | Sachgebiet 4 vorhanden (auch ohne Schulaufgaben zu führen). |
+
+Dokumentarten: Rechtsetzender Vertrag / Statuten 17, Gemeindeerlass (Verordnung/Ordnung) 13, Behördenerlass (Reglement) 3, Raumplan (Hinweis genügt) 3, Unklar – prüfen 2, Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …) 1
 
 ## Primarschule Trüllikon
 
@@ -331,6 +349,23 @@ Prototyp 0.1.0 · Stand 17.11.2026
 - Doppelter Eintrag Verhandlungsbericht 2023_03_20 (zwei Dateien gleichen Namens).
 - Tippfehler in Dateinamen («Trüllion», «Urnenabstimmunt»), Budget 2026 als «2026_12_08» datiert.
 
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ✓ erfüllt | 9 Sachgebiete/Rubriken, nummeriert. |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 9 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✓ erfüllt | Anhang 2 (Schulgemeinde): 4 von 5 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✗ nicht erfüllt | 15 von 190 Dokumenten (8%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ✗ nicht erfüllt | 171 von 190 Dokumenten gehören nicht in die SR (90%). |
+| 7 | Raumpläne nur als Hinweis | ✓ erfüllt | Keine Raumpläne abgelegt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ? prüfen | 1 Konzepte/Merkblätter/Richtlinien o. Ä. ohne Kennzeichnung «nichtrechtsetzend». |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ✓ erfüllt | 2 Verträge/Statuten. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 4 als Verordnung/Ordnung, 8 als Reglement o. Ä. bezeichnet, 4 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+
+Dokumentarten: Gehört nicht in die SR (Beschluss, Budget, Protokoll …) 171, Behördenerlass (Reglement) 8, Gemeindeerlass (Verordnung/Ordnung) 4, Unklar – prüfen 4, Rechtsetzender Vertrag / Statuten 2, Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …) 1
+
 ## Sekundarschule Kreis Marthalen (SKM)
 
 - **Typ / Bezirk:** Sekundarschulgemeinde, Andelfingen
@@ -422,6 +457,23 @@ Prototyp 0.1.0 · Stand 17.11.2026
 - Systematik 100–105 weicht von den 9 Sachgebieten des kantonalen Leitfadens ab.
 - Keine Dateigrössen/Daten; Pflege rein manuell im Seiteneditor.
 
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ✓ erfüllt | 7 Sachgebiete/Rubriken, nummeriert. |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 7 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✓ erfüllt | Anhang 2 (Schulgemeinde): 5 von 5 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ? prüfen | 28 von 50 Dokumenten (56%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ✗ nicht erfüllt | 35 von 50 Dokumenten gehören nicht in die SR (70%). |
+| 7 | Raumpläne nur als Hinweis | ✓ erfüllt | Keine Raumpläne abgelegt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ? prüfen | 2 Konzepte/Merkblätter/Richtlinien o. Ä. ohne Kennzeichnung «nichtrechtsetzend». |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ℹ Hinweis | Keine Verträge oder Statuten gefunden. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 3 als Verordnung/Ordnung, 4 als Reglement o. Ä. bezeichnet, 6 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+
+Dokumentarten: Gehört nicht in die SR (Beschluss, Budget, Protokoll …) 35, Unklar – prüfen 6, Behördenerlass (Reglement) 4, Gemeindeerlass (Verordnung/Ordnung) 3, Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …) 2
+
 ## Sekundarschule Bülach
 
 - **Typ / Bezirk:** Sekundarschulgemeinde, Bülach
@@ -460,6 +512,23 @@ Prototyp 0.1.0 · Stand 17.11.2026
 - Gebührenverordnung/-tarif liegen unter «Gemeinde - Behörden - Verwaltung» statt «Finanzen und Gebühren».
 - Inhalte werden per JavaScript nachgeladen → für Suchmaschinen und einfache Crawler unsichtbar.
 - Upload-Datum ≠ Inkraftsetzung; Inkraftsetzung nur im Titel.
+
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ? prüfen | 5 Rubriken, aber ohne Sachgebietsziffern. |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 5 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✓ erfüllt | Anhang 2 (Schulgemeinde): 4 von 5 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✗ nicht erfüllt | 0 von 12 Dokumenten (0%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ✓ erfüllt | Keine gefunden. |
+| 7 | Raumpläne nur als Hinweis | ✓ erfüllt | Keine Raumpläne abgelegt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ✓ erfüllt | Keine gefunden. |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ℹ Hinweis | Keine Verträge oder Statuten gefunden. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 6 als Verordnung/Ordnung, 4 als Reglement o. Ä. bezeichnet, 2 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+
+Dokumentarten: Gemeindeerlass (Verordnung/Ordnung) 6, Behördenerlass (Reglement) 4, Unklar – prüfen 2
 
 ## Politische Gemeinde Meilen
 
@@ -664,6 +733,24 @@ Prototyp 0.1.0 · Stand 17.11.2026
 - 2 aufgehobene Erlasse bleiben als Zeile stehen («Aufgehoben.»), ohne Dokument.
 - Links führen auf Detailseiten statt direkt auf das PDF – ein Klick mehr.
 
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ✓ erfüllt | 9 Sachgebiete/Rubriken, nummeriert. |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 9 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✓ erfüllt | Anhang 1 (politische Gemeinde): 9 von 9 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✓ erfüllt | 164 von 164 Dokumenten (100%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ? prüfen | 1 von 164 Dokumenten gehören nicht in die SR (1%). |
+| 7 | Raumpläne nur als Hinweis | ℹ Hinweis | 19 Raumpläne (Zonen-/Kernzonen-/Richtpläne) als Dokument abgelegt – zulässig, Hinweis auf ÖREB-Kataster genügt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ? prüfen | 15 Konzepte/Merkblätter/Richtlinien o. Ä. ohne Kennzeichnung «nichtrechtsetzend». |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ? prüfen | 2 aufgehobene Erlasse stehen weiterhin als Zeile in der Liste. |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ✓ erfüllt | 34 Verträge/Statuten. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 21 als Verordnung/Ordnung, 64 als Reglement o. Ä. bezeichnet, 10 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+| Anhang 1 | Sachgebiet 4 «Schule» in der politischen Gemeinde | ✓ erfüllt | 16 Schul-Erlasse im Sachgebiet 4. |
+
+Dokumentarten: Behördenerlass (Reglement) 64, Rechtsetzender Vertrag / Statuten 34, Gemeindeerlass (Verordnung/Ordnung) 21, Raumplan (Hinweis genügt) 19, Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …) 15, Unklar – prüfen 10, Gehört nicht in die SR (Beschluss, Budget, Protokoll …) 1
+
 ## Politische Gemeinde Bachenbülach
 
 - **Typ / Bezirk:** Politische Gemeinde, Bülach
@@ -734,6 +821,24 @@ Prototyp 0.1.0 · Stand 17.11.2026
 - Tippfehler im Titel «Verodnung über die Wasserversorgungsanlagen».
 - Einheitsgemeinde Primarstufe (laut Gemeindeverzeichnis keine Primarschulgemeinde); Sekundarstufe vermutlich Sek Bülach – zu prüfen.
 
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ✓ erfüllt | 9 Sachgebiete/Rubriken, nummeriert. |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 9 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✓ erfüllt | Anhang 1 (politische Gemeinde): 9 von 9 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✗ nicht erfüllt | 0 von 26 Dokumenten (0%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ✓ erfüllt | Keine gefunden. |
+| 7 | Raumpläne nur als Hinweis | ✓ erfüllt | Keine Raumpläne abgelegt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ✓ erfüllt | Keine gefunden. |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ? prüfen | Keine Verträge oder Statuten gefunden. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 14 als Verordnung/Ordnung, 11 als Reglement o. Ä. bezeichnet, 1 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+| Anhang 1 | Sachgebiet 4 «Schule» in der politischen Gemeinde | ? prüfen | 0 Schul-Erlasse im Sachgebiet 4. Die Schule ist Teil der Gemeinde – ihre Erlasse gehören in diese SR; prüfen, ob sie nur auf der Schul-Website stehen. |
+
+Dokumentarten: Gemeindeerlass (Verordnung/Ordnung) 14, Behördenerlass (Reglement) 11, Unklar – prüfen 1
+
 ## Schule Bachenbülach (Primarstufe der Gemeinde)
 
 - **Typ / Bezirk:** Schule der Einheitsgemeinde, Bülach
@@ -789,6 +894,23 @@ Prototyp 0.1.0 · Stand 17.11.2026
 
 - Keine Rechtssammlung im Sinne des Leitfadens: Erlasse (ORSS, Elternbeitragsreglement, Ferienhortreglement) stehen zwischen Formularen und Liedern.
 - Diese Erlasse fehlen in der Rechtssammlung der Gemeinde.
+
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ? prüfen | 9 Rubriken, aber ohne Sachgebietsziffern. |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 9 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✗ nicht erfüllt | Anhang 2 (Schulgemeinde): 0 von 5 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✗ nicht erfüllt | 0 von 27 Dokumenten (0%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ✓ erfüllt | Keine gefunden. |
+| 7 | Raumpläne nur als Hinweis | ✓ erfüllt | Keine Raumpläne abgelegt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ? prüfen | 19 Konzepte/Merkblätter/Richtlinien o. Ä. ohne Kennzeichnung «nichtrechtsetzend». |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ℹ Hinweis | Keine Verträge oder Statuten gefunden. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 0 als Verordnung/Ordnung, 5 als Reglement o. Ä. bezeichnet, 3 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+
+Dokumentarten: Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …) 19, Behördenerlass (Reglement) 5, Unklar – prüfen 3
 
 ## Politische Gemeinde Höri
 
@@ -869,6 +991,24 @@ Prototyp 0.1.0 · Stand 17.11.2026
 - Gemischte Nummerformate (721.1.0 neben 721.2).
 - Primarstufe bei der Primarschulgemeinde Höri, Sekundarstufe bei der Sekundarschule Bülach.
 
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ✓ erfüllt | 9 Sachgebiete/Rubriken, nummeriert. |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 9 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✓ erfüllt | Anhang 1 (politische Gemeinde): 9 von 9 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✓ erfüllt | 49 von 49 Dokumenten (100%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ✓ erfüllt | Keine gefunden. |
+| 7 | Raumpläne nur als Hinweis | ✓ erfüllt | Keine Raumpläne abgelegt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ✓ erfüllt | Keine gefunden. |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ✓ erfüllt | 16 Verträge/Statuten. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 19 als Verordnung/Ordnung, 13 als Reglement o. Ä. bezeichnet, 1 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+| Anhang 1 | Sachgebiet 4 «Schule» in der politischen Gemeinde | ✓ erfüllt | Sachgebiet 4 vorhanden (auch ohne Schulaufgaben zu führen). |
+
+Dokumentarten: Gemeindeerlass (Verordnung/Ordnung) 19, Rechtsetzender Vertrag / Statuten 16, Behördenerlass (Reglement) 13, Unklar – prüfen 1
+
 ## Primarschulgemeinde Höri
 
 - **Typ / Bezirk:** Primarschulgemeinde, Bülach
@@ -894,6 +1034,23 @@ Prototyp 0.1.0 · Stand 17.11.2026
 - Nur vier Grunderlasse; weitere Reglemente (z. B. Elternrat) liegen an anderen Stellen der Website.
 - Keine Gliederung nach Sachgebieten, keine Nummern.
 - Menüpunkt heisst «Rechtsgrundlagen», nicht «Rechtssammlung».
+
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ✗ nicht erfüllt | Keine Gliederung nach Sachgebieten (nur eine Liste/Tabelle). |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 1 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✗ nicht erfüllt | Anhang 2 (Schulgemeinde): 0 von 5 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✗ nicht erfüllt | 0 von 4 Dokumenten (0%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ✓ erfüllt | Keine gefunden. |
+| 7 | Raumpläne nur als Hinweis | ✓ erfüllt | Keine Raumpläne abgelegt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ✓ erfüllt | Keine gefunden. |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ℹ Hinweis | Keine Verträge oder Statuten gefunden. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 3 als Verordnung/Ordnung, 1 als Reglement o. Ä. bezeichnet, 0 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+
+Dokumentarten: Gemeindeerlass (Verordnung/Ordnung) 3, Behördenerlass (Reglement) 1
 
 ## Politische Gemeinde Winkel
 
@@ -994,6 +1151,24 @@ Prototyp 0.1.0 · Stand 17.11.2026
 - Schul-Reglemente (z. B. Reglement Ferienbetreuung) liegen auf der Website der Schule.
 - Seiten-Adresse heisst «gesetzessammlung», Menüpunkt «Rechtssammlung».
 
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ✓ erfüllt | 9 Sachgebiete/Rubriken, nummeriert. |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 9 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✓ erfüllt | Anhang 1 (politische Gemeinde): 9 von 9 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✓ erfüllt | 46 von 46 Dokumenten (100%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ✓ erfüllt | Keine gefunden. |
+| 7 | Raumpläne nur als Hinweis | ✓ erfüllt | Keine Raumpläne abgelegt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ? prüfen | 5 Konzepte/Merkblätter/Richtlinien o. Ä. ohne Kennzeichnung «nichtrechtsetzend». |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ✓ erfüllt | 11 Verträge/Statuten. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 18 als Verordnung/Ordnung, 10 als Reglement o. Ä. bezeichnet, 2 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+| Anhang 1 | Sachgebiet 4 «Schule» in der politischen Gemeinde | ? prüfen | 1 Schul-Erlasse im Sachgebiet 4. Die Schule ist Teil der Gemeinde – ihre Erlasse gehören in diese SR; prüfen, ob sie nur auf der Schul-Website stehen. |
+
+Dokumentarten: Gemeindeerlass (Verordnung/Ordnung) 18, Rechtsetzender Vertrag / Statuten 11, Behördenerlass (Reglement) 10, Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …) 5, Unklar – prüfen 2
+
 ## Schule Winkel (Primarstufe der Gemeinde)
 
 - **Typ / Bezirk:** Schule der Einheitsgemeinde, Bülach
@@ -1021,6 +1196,23 @@ Prototyp 0.1.0 · Stand 17.11.2026
 
 - Keine Rechtssammlung; einziges Erlass-artiges Dokument ist das «Reglement Ferienbetreuung».
 - Seite «Informationen › Dokumente» zeigt öffentlich keine Dokumente.
+
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ✗ nicht erfüllt | Keine Gliederung nach Sachgebieten (nur eine Liste/Tabelle). |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 1 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✗ nicht erfüllt | Anhang 2 (Schulgemeinde): 0 von 5 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✗ nicht erfüllt | 0 von 7 Dokumenten (0%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ✓ erfüllt | Keine gefunden. |
+| 7 | Raumpläne nur als Hinweis | ✓ erfüllt | Keine Raumpläne abgelegt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ? prüfen | 6 Konzepte/Merkblätter/Richtlinien o. Ä. ohne Kennzeichnung «nichtrechtsetzend». |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ℹ Hinweis | Keine Verträge oder Statuten gefunden. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 0 als Verordnung/Ordnung, 1 als Reglement o. Ä. bezeichnet, 0 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+
+Dokumentarten: Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …) 6, Behördenerlass (Reglement) 1
 
 ## Politische Gemeinde Hochfelden
 
@@ -1157,6 +1349,45 @@ Prototyp 0.1.0 · Stand 17.11.2026
 - Einheitsgemeinde Primarstufe: Primarschul-Erlasse unter «40 Primarschule»; die Gemeindeordnung der Sekundarschule steht unter «41 Sekundarschule» (Fremderlass).
 - Dateinamen teils mit «.pdf» im Titel, einer ohne Nummer (Gebührenverordnung).
 - Menüpunkt heisst «Gesetzessammlung», Seitentitel «Systematische Rechtssammlung (SR)».
+
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ✓ erfüllt | 9 Sachgebiete/Rubriken, nummeriert. |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 9 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✓ erfüllt | Anhang 1 (politische Gemeinde): 9 von 9 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✓ erfüllt | 76 von 77 Dokumenten (99%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ? prüfen | 1 von 77 Dokumenten gehören nicht in die SR (1%). |
+| 7 | Raumpläne nur als Hinweis | ℹ Hinweis | 1 Raumpläne (Zonen-/Kernzonen-/Richtpläne) als Dokument abgelegt – zulässig, Hinweis auf ÖREB-Kataster genügt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ? prüfen | 7 Konzepte/Merkblätter/Richtlinien o. Ä. ohne Kennzeichnung «nichtrechtsetzend». |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ✓ erfüllt | 21 Verträge/Statuten. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 21 als Verordnung/Ordnung, 23 als Reglement o. Ä. bezeichnet, 3 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+| Anhang 1 | Sachgebiet 4 «Schule» in der politischen Gemeinde | ✓ erfüllt | 2 Schul-Erlasse im Sachgebiet 4. |
+
+Dokumentarten: Behördenerlass (Reglement) 23, Gemeindeerlass (Verordnung/Ordnung) 21, Rechtsetzender Vertrag / Statuten 21, Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …) 7, Unklar – prüfen 3, Gehört nicht in die SR (Beschluss, Budget, Protokoll …) 1, Raumplan (Hinweis genügt) 1
+
+## Grundlage: Leitfaden systematische Rechtssammlung
+
+Leitfaden zum Aufbau einer systematischen Rechtssammlung (Gemeindeamt Kanton Zürich mit VZGV, Juni 2018, Ergänzung Februar 2019), abgelegt unter `quellen/`. Quelle: https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html
+
+| Ziff. | Anforderung |
+|---|---|
+| 3 | Recht nach Sachgebieten gliedern – logisch, übersichtlich; eine alphabetische Liste genügt nicht |
+| 3 | Für kleinere und mittlere Gemeinden höchstens neun Sachgebiete; jedes Dokument genau einem Sachgebiet |
+| 3 | Jedes Dokument mit eindeutiger Nummer, die mit der Ziffer des Sachgebiets beginnt |
+| 3 | Gliederung starr halten, vorab festlegen, im Internet veröffentlichen |
+| 3 | Nur aktuell geltendes Recht; aufgehobene Erlasse entfernen, Revisionen einbauen (Nachführungspflicht) |
+| 3 | Vollständig; vor Veränderung durch Unberechtigte geschützt; spätestens ab 1.1.2022 |
+| 5 | Bezeichnung: Gemeindeerlass = Verordnung (Ausnahme Gemeindeordnung, BZO = Ordnung), Behördenerlass = Reglement |
+| 6 | In die SR: alle Erlasse und rechtsetzenden interkommunalen Verträge (Anschluss-, Zusammenarbeitsverträge, Zweckverbandsstatuten, Anstaltsordnungen) |
+| 7 | Nicht in die SR: Verfügungen/Beschlüsse (z. B. Budget-, Kredit-, Wahlbeschluss), Allgemeinverfügungen, Raumpläne, Verwaltungsverordnungen, nicht rechtsetzende Verträge |
+| 7 | Raumpläne: Hinweis genügt (Richtpläne mit Festsetzungsdatum, Nutzungspläne über den ÖREB-Kataster) |
+| 8 | Generell-abstrakte «Beschlüsse» (z. B. Haushaltsgleichgewicht) gehören in die SR; Konzepte/Leitbilder nur, wenn als «nichtrechtsetzend» gekennzeichnet |
+| 9 | Systematik nach Kanton/Bund (Anhang 1 bzw. 2), nicht nach Ressorts, Verwaltungsabteilungen oder Archivplan |
+| 10 | Zweckverbände und gemeinsame Anstalten: Recht im Internet, alphabetisch genügt |
+| Anhang 1 | Sachgebiet «Schule» auch in politischen Gemeinden ohne Schulaufgaben führen |
 
 ## Nächste Schritte
 

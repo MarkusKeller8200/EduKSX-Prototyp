@@ -36,6 +36,16 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-17 (04:40–05:10) – EduKSX-Codex 0.4.0
+
+- Leitfaden systematische Rechtssammlung geprüft (identisch mit zh.ch, Stand 14.10.2025) und unter
+  `prototypen/rechtssammlung/quellen/` abgelegt; Ansicht «Grundlagen» mit GG/VGG-Links (ZH-Lex), Anforderungen,
+  Anhang 1/2 und LS-Ordnern; Leitfaden-Prüfung je Organisation; Matrix-Gruppe «Gehört nicht in die SR» (#14 → `_3 Beta-Test`).
+- Befund: Nur Meilen, Höri und Winkel nummerieren jedes Dokument mit Sachgebietsziffer; PS Trüllikon und SKM führen
+  überwiegend Beschlüsse/Protokolle/Rechnungen in der SR (Leitfaden Ziff. 7: gehört nicht hinein).
+- Offen: Prüfregeln fachlich abnehmen (Schwellen, Einordnung Konzept/Merkblatt); ZH-Lex-Deep-Links je Erlass nur über
+  die Kurz-URL `zhlex.zh.ch/Erlass.html?Open&Ordnr=…` stabil.
+
 ### Sitzung 2026-11-17 (03:45–04:40) – EduKSX-Codex 0.3.0
 
 - Erfasst: Meilen, Bachenbülach (+ Schule), Höri (+ Primarschulgemeinde), Winkel (+ Schule), Hochfelden (#8).
