@@ -29,12 +29,19 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
 - **Laufende Abläufe:** Start mit Kontext (Name, Funktion, Stichtag …), Vorschau der Fristen und entfallenden Schritte;
   danach Aufgabenliste je Rolle, automatische Schritte (laufen bei erreichter Frist), Rückmeldungen, Fehler mit
   «Erneut versuchen», Mitteilungen an informierte Rollen, Aufrufprotokoll.
+- **Jahreskalender:** wiederkehrende und einmalige Ereignisse (Quartal, Kalenderwoche, Datum, Zeitraum) mit
+  Zuständigkeit (A/E/V/M), Teilaufgaben und Status. Ansichten Zeitleiste (Bereiche × Kalenderwochen, Kalender- oder
+  Schuljahr), Liste und Quartale (wie die Jahresplanung auf dem Flipchart); Filter nach Bereich, Zuständigkeit, Quelle.
+  Ein Ereignis kann mit einer **Ablaufvorlage verknüpft** werden; «Ablauf starten» übernimmt das Datum des Ereignisses
+  als Stichtag (Beispiel: Vorlage «Beschaffung Geräte»). Anstehende Termine erscheinen in Übersicht und «Meine Aufgaben».
 - **Simulation:** simulierter Tag (+1, +7, nächste Frist), Module als «nicht erreichbar» schalten, Rollenwechsel.
 
 ## Grundlagen
 
 - Prozessliste der Arbeitsgruppe (Onboarding, Offboarding, Mutationen, Gruppen) – Schritte und Zuständigkeiten.
 - Funktionendiagramm einer Primarschule im Kanton Zürich (Muster), Auszug Personal und ICT.
+- Jahresplanung ICT-Prozesse inkl. DigiLex (Stand 27.05.2026, Flipchart der Arbeitsgruppe), Master-Checkliste
+  ICT-Jahreszyklus und Jahreskalender einer Fachstelle ICT (Kalenderwochen) – für den Kalender.
 - Zielsysteme ohne Hersteller-/Produktnamen (Office-Konto, Schulverwaltungssoftware, Lehrmittelportal, Notfall-App).
 
 ## Offene Fragen (ZU PRÜFEN)
@@ -43,6 +50,9 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
 - Regeln, wann was gesperrt wird (Offboarding): im Prototyp Sperre am Tag nach dem letzten Arbeitstag.
 - Welches Modul führt Schlüssel und Geräte (im Prototyp EduKSX-Shop)?
 - Vikariate und Schulsozialarbeit (Zugriff auf SuS-Daten) als eigene Vorlagen.
+- Jahresplanung: Rolle «LB» (Bezeichnung offen); Zuordnung der Spalten zu den Flow-Rollen (TICTS/PICTS/VT → ICT,
+  LB → Ressortvorstand) für «Meine Termine».
+- Kalender: Teilaufgaben als eigene Ablaufschritte führen? Automatisch starten, wenn ein verknüpftes Ereignis näher rückt?
 - Digitale Aktenführung ab 1.1.2029: Aufrufprotokoll als Teil des Personaldossiers?
 
 ## Ergebnis

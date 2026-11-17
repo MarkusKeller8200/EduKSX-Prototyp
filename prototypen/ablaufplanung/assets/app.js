@@ -6,8 +6,8 @@
 (function () {
   "use strict";
 
-  const SPEICHER = "eduksx-flow-prototyp-v1";
-  const VERSION = "0.1.0";
+  const SPEICHER = "eduksx-flow-prototyp-v2";
+  const VERSION = "0.2.0";
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
 
@@ -42,6 +42,9 @@
       aufrufe: [],
       hinweise: [],
       erreichbar: Object.fromEntries(D.MODULE.map((m) => [m.key, true])),
+      ereignisse: kopie(D.EREIGNISSE),
+      kalErledigt: {},
+      kal: { modus: "kalender", jahr: Number(isoHeute().slice(0, 4)), bereich: "", rolle: "", quelle: "", nurFlow: false, nurOffen: false },
       zaehler: 1,
     };
     S = st;
@@ -58,6 +61,7 @@
       });
     });
     motor();
+    KAL.vorbelegen();
     return st;
   }
   let S = null;
@@ -286,6 +290,7 @@
     vorgaenge: ico('<path d="M8 4H5a1 1 0 0 0-1 1v3M16 4h3a1 1 0 0 1 1 1v3M8 20H5a1 1 0 0 1-1-1v-3M16 20h3a1 1 0 0 0 1-1v-3"/><path d="M9 12h6M12 9v6"/>'),
     funktionendiagramm: ico('<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/><path d="M13 13l2 2 3-3"/>'),
     protokoll: ico('<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h6M9 16h6"/>'),
+    kalender: ico('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M7 14h3M14 14h3M7 17.5h3"/>'),
   };
   const NAVI = [
     ["uebersicht", "Übersicht"],
@@ -294,6 +299,7 @@
     ["laeufe", "Laufende Abläufe"],
     ["neu", "Ablauf starten"],
     ["gruppe", "Planung"],
+    ["kalender", "Jahreskalender"],
     ["vorlagen", "Ablaufvorlagen"],
     ["vorgaenge", "Vorgänge der Module"],
     ["funktionendiagramm", "Funktionendiagramm"],
@@ -475,6 +481,7 @@
         <div class="karte"><div class="zahl">${fehler.length}</div><div class="titel">${fehler.length ? "✕ " : ""}fehlgeschlagene Aufrufe</div></div>
       </div>
       <section><h2>Abläufe</h2><div class="tabelle-wrap"><table><thead><tr><th>Person</th><th>Ablauf</th><th>Stichtag</th><th>Fortschritt</th><th>Nächster Schritt</th></tr></thead><tbody>${zeilen || `<tr><td colspan="5" class="muted">Noch keine Abläufe.</td></tr>`}</tbody></table></div></section>
+      <section style="margin-top:1.25rem"><h2>Jahreskalender: als Nächstes</h2>${kalListe(KAL.demnaechst(28, false).slice(0, 6))}<p class="small"><a href="#/kalender">Zum Jahreskalender</a></p></section>
       <section style="margin-top:1.25rem"><h2>Offene Aufgaben je Rolle</h2><p class="small muted">Wer zuständig ist, folgt aus der Vorlage bzw. dem Funktionendiagramm (V = operativer Lead).</p>
         <div class="karten">${jeRolle.map(([r, n]) => `<div class="karte"><div class="zahl">${n}</div><div class="titel">${rolleBadge(r)} ${esc(ROLLEN[r])}</div></div>`).join("") || `<p class="muted">Keine offenen Aufgaben.</p>`}</div></section>`;
   }
@@ -491,8 +498,14 @@
       <div class="seitenkopf"><div><h1>Meine Aufgaben</h1><p class="muted">Rolle: ${rolleBadge(S.rolle)} ${esc(ROLLEN[S.rolle])}. Aufgaben entstehen, sobald die Vorgänger eines Schritts erledigt sind. Automatische Schritte erscheinen hier nur, wenn ein Aufruf fehlschlägt.</p></div></div>
       <section><h2>Zu erledigen (${meine.length})</h2><div class="tabelle-wrap"><table><thead><tr><th>Status</th><th>Schritt</th><th>Frist</th><th>Aufruf</th><th></th></tr></thead><tbody>${meine.map((x) => zeile(x, true)).join("") || `<tr><td colspan="5" class="muted">Nichts zu erledigen. 🎉</td></tr>`}</tbody></table></div></section>
       <section style="margin-top:1.25rem"><h2>Demnächst (21 Tage)</h2><div class="tabelle-wrap"><table><thead><tr><th>Status</th><th>Schritt</th><th>Frist</th><th>Aufruf</th><th></th></tr></thead><tbody>${bald.map((x) => zeile(x, false)).join("") || `<tr><td colspan="5" class="muted">Keine anstehenden Schritte.</td></tr>`}</tbody></table></div></section>
+      <section style="margin-top:1.25rem"><h2>Termine aus dem Jahreskalender</h2><p class="small muted">Ereignisse der nächsten 4 Wochen (und überfällige), bei denen ${esc(ROLLEN[S.rolle])} laut Jahresplanung entscheidet oder verantwortlich ist.</p>${kalListe(KAL.demnaechst(28, true))}</section>
       <section style="margin-top:1.25rem"><h2>Zur Information</h2><p class="small muted">Mitteilungen an ${esc(ROLLEN[S.rolle])} – entspricht «I» im Funktionendiagramm bzw. «Kommunikation an» in der Prozessliste.</p>
         <ul class="infoliste">${info.map((h) => `<li><span class="small muted">${datumKurz(h.tag)}</span> ${esc(h.text)} <a class="small" href="#/lauf/${h.lauf}">Ablauf</a></li>`).join("") || `<li class="muted">Keine Mitteilungen.</li>`}</ul></section>`;
+  }
+
+  function kalListe(liste) {
+    if (!liste.length) return `<p class="muted small">Keine anstehenden Ereignisse.</p>`;
+    return `<ul class="infoliste">${liste.map((o) => `<li><button class="link" data-aktion="kal-oeffnen" data-id="${o.ev.id}" data-von="${o.von}">${esc(o.ev.titel)}</button> <span class="small muted">${KAL.wann(o)}</span> ${KAL.statusBadge(o)} ${o.ev.flow ? `<span class="badge violett" title="Mit Ablaufvorlage verknüpft">⇢ ${esc((vorlageVon(o.ev.flow) || { titel: "Ablauf" }).titel)}</span>` : ""}</li>`).join("")}</ul>`;
   }
 
   function seiteLaeufe() {
@@ -520,7 +533,7 @@
     const aufrufe = S.aufrufe.filter((a) => a.lauf === l.id);
     return `
       <div class="seitenkopf"><div><div class="small muted"><a href="#/laeufe">Laufende Abläufe</a> › ${esc(l.id)}</div><h1>${esc(l.titel)}: ${esc(l.kontext.person)}</h1>
-        <p class="muted">Vorlage Version ${l.version}, gestartet ${datumKurz(l.gestartet)} · ${esc(l.stichtagName)}: ${datum(l.kontext.stichtag)}</p></div></div>
+        <p class="muted">Vorlage Version ${l.version}, gestartet ${datumKurz(l.gestartet)} · ${esc(l.stichtagName)}: ${datum(l.kontext.stichtag)}${l.ereignisTitel ? ` · aus dem <a href="#/kalender/liste">Jahreskalender</a>: ${esc(l.ereignisTitel)}` : ""}</p></div></div>
       <div class="spalten" style="grid-template-columns: 2fr 1fr; margin-bottom:1rem">
         <div class="karte"><div class="titel muted small">Fortschritt</div><div class="zahl">${p} %</div>${balken(p)}<div class="small muted">${e} von ${n} Schritten erledigt oder übersprungen${l.abgeschlossen ? " · ✓ abgeschlossen am " + datumKurz(l.abgeschlossen) : ""}</div></div>
         <div class="karte"><div class="titel muted small">Kontext (Eingaben beim Start)</div><div class="feldliste">${kontext}</div></div>
@@ -556,6 +569,7 @@
     const knapp = E.stichtag && v.schritte.some((s) => bedingungErfuellt(s.bedingung, probe) && addTage(E.stichtag, s.tage) < S.heute);
     return `
       <div class="seitenkopf"><div><h1>Ablauf starten</h1><p class="muted">Vorlage wählen, Angaben erfassen – ${wordmark("Flow")} rechnet die Fristen vom Stichtag aus und lässt Schritte weg, deren Bedingung nicht zutrifft.</p></div></div>
+      ${START_EREIGNIS[v.id] ? `<p class="meldung info">Aus dem Jahreskalender: <strong>${esc(START_EREIGNIS[v.id].titel)}</strong> – Stichtag vom Ereignis übernommen.</p>` : ""}
       <div class="formzeile"><label class="feld">Vorlage<select data-aktion="start-vorlage">${frei.map((x) => `<option value="${x.id}" ${x.id === v.id ? "selected" : ""}>${esc(x.titel)} (v${x.version})</option>`).join("")}</select></label></div>
       <div class="karte" style="margin-bottom:1rem"><p class="small muted">${esc(v.beschreibung)}</p><div class="formzeile">${v.felder.map(feld).join("")}</div>
         ${knapp ? `<p class="meldung warnung">⚠ Einzelne Fristen liegen schon in der Vergangenheit – diese Schritte sind ab Start überfällig.</p>` : ""}
@@ -563,10 +577,20 @@
       <h2>Vorschau</h2><div class="tabelle-wrap"><table><thead><tr><th class="zahl">#</th><th>Schritt</th><th>Wer</th><th>Frist</th><th>Aufruf</th><th>Plan</th></tr></thead><tbody>${zeilen}</tbody></table></div>`;
   }
   const START_EINGABE = {};
+  const START_EREIGNIS = {};
+  /** Start aus dem Jahreskalender: Stichtag = Datum des Ereignisses, Herkunft merken. */
+  function startVorbereiten(v, stichtag, key, titel) {
+    const e = startVorgabe(v);
+    e.stichtag = stichtag;
+    if (v.id === "beschaffung") e.person = titel;
+    START_EINGABE[v.id] = e;
+    START_EREIGNIS[v.id] = { key, titel };
+  }
   function startVorgabe(v) {
     const e = {};
     v.felder.forEach((f) => { e[f.key] = f.typ === "auswahl" ? f.werte[0] : f.typ === "datum" ? addTage(S.heute, 60) : f.typ === "zahl" ? 100 : ""; });
     if (v.id === "mutation") { e.pensumAlt = 100; e.pensum = 80; }
+    if (v.id === "beschaffung") { e.person = "Tablets 1. Klassen"; e.menge = 25; e.stichtag = addTage(S.heute, 120); }
     return e;
   }
 
@@ -813,7 +837,7 @@
     const [seite, a, b] = route();
     const inhalt = {
       uebersicht: seiteUebersicht, aufgaben: seiteAufgaben, laeufe: seiteLaeufe, lauf: () => seiteLauf(a, b), neu: () => seiteNeu(a),
-      vorlagen: seiteVorlagen, vorlage: () => seiteVorlage(a, b), vorgaenge: seiteVorgaenge, funktionendiagramm: seiteFunktionendiagramm, protokoll: seiteProtokoll,
+      vorlagen: seiteVorlagen, vorlage: () => seiteVorlage(a, b), kalender: () => KAL.seite(a), vorgaenge: seiteVorgaenge, funktionendiagramm: seiteFunktionendiagramm, protokoll: seiteProtokoll,
     }[seite] || seiteUebersicht;
     document.getElementById("app").innerHTML = rahmen(seite, inhalt());
     document.title = "EduKSX-Flow (Prototyp)";
@@ -847,7 +871,9 @@
       case "starten": {
         const v = vorlageVon(el.dataset.vorlage);
         const lauf = laufAnlegen(v, START_EINGABE[v.id]);
+        if (START_EREIGNIS[v.id]) { lauf.ereignis = START_EREIGNIS[v.id].key; lauf.ereignisTitel = START_EREIGNIS[v.id].titel; }
         delete START_EINGABE[v.id];
+        delete START_EREIGNIS[v.id];
         motor(); speichern(); location.hash = "#/lauf/" + lauf.id; ansage("Ablauf gestartet."); break;
       }
       case "vorlage-neu": {
@@ -874,7 +900,7 @@
       case "freigeben": { const v = vorlageVon(a); v.status = "freigegeben"; speichern(); render(); ansage(`Version ${v.version} freigegeben.`); break; }
       case "dlg-abbrechen": ev.preventDefault(); document.getElementById("dlg").close(); EDIT = null; break;
       case "dlg-speichern": ev.preventDefault(); if (dialogSpeichern()) { document.getElementById("dlg").close(); speichern(); render(); } break;
-      default: break;
+      default: KAL.klick(ak, el); break;
     }
   });
   document.addEventListener("keydown", (ev) => {
@@ -886,6 +912,7 @@
     if (el.dataset.e && EDIT && ["fd", "modul", "vorgang", "b-feld"].includes(el.dataset.e)) { dialogLesen(el.dataset.e); dialogZeichnen(); return; }
     if (el.dataset.e === "tage" && EDIT) { dialogLesen(); dialogZeichnen(); return; }
     const ak = el.dataset.aktion;
+    if ((ak && ak.startsWith("kal-")) || el.dataset.neuZeichnen) { KAL.aenderung(ak || "", el); return; }
     if (ak === "rolle") { S.rolle = el.value; speichern(); render(); ansage("Rolle: " + ROLLEN[S.rolle]); }
     if (ak === "erreichbar") { S.erreichbar[el.dataset.key] = el.checked; weiter(); }
     if (ak === "start-vorlage") location.hash = "#/neu/" + el.value;
@@ -900,6 +927,10 @@
   document.addEventListener("close", (ev) => { if (ev.target.id === "dlg") EDIT = null; }, true);
   window.addEventListener("hashchange", () => { render(); const m = document.getElementById("inhalt"); if (m) m.focus(); });
 
+  const KAL = window.FLOW_KALENDER({
+    D, esc, addTage, tageZwischen, datumKurz, kopie, rolleBadge, ansage, frage, ROLLEN,
+    S: () => S, vorlageVon, fortschritt, speichern, render, startVorbereiten,
+  });
   S = laden() || neuerZustand();
   try { if (localStorage.getItem("eduksx-thema") === "dunkel") document.documentElement.classList.add("dark"); } catch (e) { /* */ }
   motor();
