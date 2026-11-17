@@ -20,6 +20,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   ab 30 Min. gestempelter Pause entfällt die schraffierte Fläche nachträglich (#23).
 - EduKSX-Time 0.3.2: Pausenmodus mit eigener Tastenfarbe und Kaffeetasse («Pause beenden – weiterarbeiten») (#24).
 - EduKSX-Time 0.3.3: markantere Symbole für Kommen und Gehen (Tür mit Pfeil hinein/hinaus) (#25).
+- EduKSX-Time 0.3.4: Gehen-Pfeil nach links; eigene Farbe je Zustand – Kommen grün, Pause bernstein, Gehen rot,
+  Statuskarte mit farbigem Rand (#26).
 - Repository mit dem GitHub-Blueprint eingerichtet.
 - Ordnerstruktur `prototypen/<name>/` mit Vorlage `prototypen/_vorlage/` (prototyp.json, README, index.html).
 - Prototyp **EduKSX-Staffing – Einsatzplanung** (`prototypen/einsatzplanung`): Anforderungskatalog und

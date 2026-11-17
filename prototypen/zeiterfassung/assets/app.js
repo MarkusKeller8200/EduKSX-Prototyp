@@ -28,9 +28,9 @@
   // Kaffeetasse = Pause, Pfeil in die Tasse hinein bzw. Play = weiterarbeiten
   const SYMBOL_TASSE = '<svg class="symbol-svg" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5c-.6.8-.6 1.7 0 2.5M12 3.5c-.6.8-.6 1.7 0 2.5"/></svg>';
   const SYMBOL_WEITER = '<svg class="symbol-svg" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>';
-  // Kommen = Pfeil durch die offene Tür hinein, Gehen = Pfeil aus der Tür hinaus
+  // Kommen = Pfeil nach rechts in die Tür hinein, Gehen = Pfeil nach links aus der Tür hinaus
   const SYMBOL_KOMMEN = '<svg class="symbol-svg tuer" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.5h4.5a1.5 1.5 0 0 1 1.5 1.5v14a1.5 1.5 0 0 1-1.5 1.5H14"/><path d="M3 12h11"/><path d="M10 7.5 14.5 12 10 16.5"/></svg>';
-  const SYMBOL_GEHEN = '<svg class="symbol-svg tuer" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3.5H5.5A1.5 1.5 0 0 0 4 5v14a1.5 1.5 0 0 0 1.5 1.5H10"/><path d="M9 12h12"/><path d="M16.5 7.5 21 12l-4.5 4.5"/></svg>';
+  const SYMBOL_GEHEN = '<svg class="symbol-svg tuer" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3.5h4.5a1.5 1.5 0 0 1 1.5 1.5v14a1.5 1.5 0 0 1-1.5 1.5H14"/><path d="M15 12H3"/><path d="M7.5 7.5 3 12l4.5 4.5"/></svg>';
   const WOCHENTAGE = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
 
   // ---------- Hilfen ----------
@@ -448,7 +448,7 @@
         <button class="taste gehen" data-aktion="gehen">${SYMBOL_GEHEN} Gehen</button></div>`;
     } else if (z.art === "pause") {
       tasten = `<button class="taste pause-ende" data-aktion="pause_ende"><span class="tasse-gross">${SYMBOL_TASSE}</span><span class="zweizeilig"><span>Pause beenden</span><small>${SYMBOL_WEITER} weiterarbeiten</small></span></button>
-        <button class="taste klein" data-aktion="gehen">${SYMBOL_GEHEN} Gehen (Feierabend)</button>`;
+        <button class="taste klein gehen-klein" data-aktion="gehen">${SYMBOL_GEHEN} Gehen (Feierabend)</button>`;
     }
     if (tasten) teile.push(`<div class="tasten">${tasten}</div>`);
 

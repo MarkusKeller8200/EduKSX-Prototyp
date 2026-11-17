@@ -48,6 +48,7 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 - EduKSX-Time 0.3.1: gesetzliche Pause um alle gestempelten Pausen des Tages reduziert (#23 → `_3 Beta-Test`).
 - EduKSX-Time 0.3.2: Pausentaste mit eigener Farbe und Kaffeetasse (#24 → `_3 Beta-Test`).
 - EduKSX-Time 0.3.3: Symbole Kommen/Gehen als Tür mit Pfeil (#25 → `_3 Beta-Test`).
+- EduKSX-Time 0.3.4: Gehen-Pfeil nach links, Farbe je Zustand (Kommen grün, Pause bernstein, Gehen rot) (#26 → `_3 Beta-Test`).
 - Offen: Stempeln per NFC-Tag (Idee, noch kein Issue – Antwort Projektleitung ausstehend).
 - Offen: weitere Schritte («der ganze Rest») je als Issue nach Freigabe; Icon «time» vorläufig, nicht im Icon-Set.
 

@@ -40,6 +40,7 @@ EduKSX-Ident, echte Schnittstelle.
 
 - 0.3.2: Im Pausenmodus eigene Tastenfarbe und Kaffeetasse («Pause beenden – weiterarbeiten», #24).
 - 0.3.3: Markantere Symbole für Kommen und Gehen (Tür mit Pfeil hinein/hinaus, #25).
+- 0.3.4: Gehen-Pfeil nach links; Farbe je Zustand – Kommen grün, Pause bernstein, Gehen rot (#26).
 
 ## Starten
 

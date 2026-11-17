@@ -95,6 +95,9 @@ body {
   flex: none; width: 2.4rem; height: 2.4rem; border-radius: 50%;
   display: grid; place-items: center; font-weight: 700; font-size: 1.1rem;
 }
+.status.aus { border-left: 5px solid var(--input); }
+.status.ein { border-left: 5px solid var(--success); }
+.status.pause { border-left: 5px solid var(--warning); }
 .status.aus .symbol { background: var(--muted); color: var(--muted-foreground); }
 .status.ein .symbol { background: var(--success-soft); color: var(--success); }
 .status.pause .symbol { background: var(--warning-soft); color: var(--warning); }
@@ -124,9 +127,11 @@ body {
 }
 .taste:active { transform: scale(.985); }
 .taste .pfeil { font-size: 1.4rem; }
-.taste.kommen { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); min-height: 5.5rem; font-size: 1.45rem; }
-.taste.gehen { background: var(--foreground); color: var(--background); border-color: var(--foreground); }
-.taste.pause { background: var(--secondary); color: var(--secondary-foreground); }
+/* Jeder Zustand eine eigene Farbe (Statusfarben, Kontrast AA hell/dunkel):
+   Kommen grün (→ eingestempelt), Pause bernstein hell, Pause beenden bernstein voll, Gehen rot (→ ausgestempelt). */
+.taste.kommen { background: var(--success); color: var(--background); border-color: var(--success); min-height: 5.5rem; font-size: 1.45rem; }
+.taste.gehen { background: var(--destructive); color: var(--background); border-color: var(--destructive); }
+.taste.pause { background: var(--warning-soft); color: var(--warning); border-color: var(--warning); }
 .taste .symbol-svg { width: 1.5rem; height: 1.5rem; flex: none; }
 .taste .symbol-svg.tuer { width: 1.9rem; height: 1.9rem; }
 .taste.kommen .symbol-svg.tuer { width: 2.4rem; height: 2.4rem; }
@@ -143,6 +148,7 @@ body {
 @keyframes dampf { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
 @media (prefers-reduced-motion: reduce) { .taste.pause-ende .tasse-gross .symbol-svg { animation: none; } }
 .taste.klein { min-height: 3rem; font-size: 1rem; font-weight: 600; background: var(--card); color: var(--foreground); }
+.taste.klein.gehen-klein { color: var(--destructive); border-color: var(--destructive); }
 .tasten-zwei { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
 
 /* Kennzahlen */
