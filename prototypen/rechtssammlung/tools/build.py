@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.1.0 – Generator.
+"""EduKSX-Codex Prototyp 0.3.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -205,6 +205,199 @@ ORGS = [
   "sections": sb_secs},
 ]
 
+# ---------------------------------------------------------------- Erweiterung 17.11.2026: weitere Gemeinden
+RAW = ROOT / "data" / "raw"
+def lade(name): return json.loads((RAW / name).read_text(encoding="utf-8"))
+
+def iweb_gk(raw, basis):
+    """i-web mit Unterseiten je Sachgebiet: Tabellen Nummer | Titel | Gültig seit (Meilen, Winkel)."""
+    secs, aufgehoben = [], 0
+    for eintrag in raw:
+        titel, items = eintrag[0], eintrag[-1]
+        sec = {"titel": titel, "nummer": titel.split()[0], "kinder": [], "dokumente": []}
+        ziel = sec
+        for it in items:
+            if it[0] == "G":
+                ziel = {"titel": it[1], "kinder": [], "dokumente": []}; sec["kinder"].append(ziel)
+            elif it[0] == "X":
+                aufgehoben += 1
+            else:
+                nr, tit, datum = (it[1].split("¦") + ["", "", ""])[:3]
+                ref = it[2] if it[2].startswith("/") else "/_rte/information/" + it[2]
+                ziel["dokumente"].append(doc(tit, basis + ref, nummer=nr, datum=datum, typ="Seite mit PDF"))
+        secs.append(sec)
+    return secs, aufgehoben
+
+def dam_tree(raw, basis):
+    """Ordnerablage mit Ebenen (Bachenbülach, Höri): Ordner [id, eltern, name], Dateien [ordner, titel, grösse, pfad]."""
+    knoten = {fid: {"titel": name, "kinder": [], "dokumente": [], "_p": par} for fid, par, name in raw["f"]}
+    wurzel = {"titel": "", "kinder": [], "dokumente": []}
+    for fid, k in knoten.items():
+        (knoten[k["_p"]]["kinder"] if k["_p"] in knoten else wurzel["kinder"]).append(k)
+    for par, titel, gr, pfad in raw["d"]:
+        url = pfad[1:] if pfad.startswith("@") else basis + pfad
+        (knoten.get(par) or wurzel)["dokumente"].append(doc(titel, url, groesse=gr, typ=(pfad.split("?")[0].rsplit(".", 1)[-1] if "." in pfad else "")))
+    def sauber(k):
+        k.pop("_p", None); [sauber(x) for x in k["kinder"]]; return k
+    for k in knoten.values(): sauber(k)
+    if wurzel["dokumente"]:
+        wurzel["kinder"].insert(0, {"titel": "Ohne Ordner", "kinder": [], "dokumente": wurzel["dokumente"]})
+    return wurzel["kinder"]
+
+def contao_akkordeon(raw):
+    secs, ziel = [], None
+    for it in raw["items"]:
+        if it[0] == "T":
+            sec = {"titel": it[1], "nummer": it[1].split()[0], "kinder": [], "dokumente": []}; secs.append(sec); ziel = sec
+        elif it[0] == "H":
+            ziel = {"titel": it[1], "kinder": [], "dokumente": []}; secs[-1]["kinder"].append(ziel)
+        else:
+            nr = it[1].split("_", 1)[0] if re.match(r"^\d", it[1]) else ""
+            ziel["dokumente"].append(doc(it[1], raw["base"] + it[3], groesse=it[2], nummer=nr, typ="PDF"))
+    return secs
+
+mei_secs, mei_aufgehoben = iweb_gk(lade("pg-meilen.json"), "https://www.meilen.ch")
+win_secs, win_aufgehoben = iweb_gk(lade("pg-winkel.json"), "https://www.winkel.ch")
+bb_raw = lade("bachenbuelach.json")
+bb_secs = dam_tree(bb_raw["rs"], bb_raw["base"])
+bbs_secs = dam_tree(bb_raw["schule"], bb_raw["base"])
+hoe_secs = dam_tree(lade("pg-hoeri.json"), "https://www.hoeri.ch/public/upload/assets/")
+hoch_secs = contao_akkordeon(lade("pg-hochfelden.json"))
+PSH = "https://www.schulehoeri.ch/download.php?action=download&doc_id={}&download_type=3"
+psh_secs = [{"titel": "Rechtsgrundlagen", "kinder": [], "dokumente": [doc(n, PSH.format(i), typ="pdf", groesse=g, datum=d) for n, g, d, i in [
+    ("Schulgemeindeordnung 2022", "212.18 KB", "26.01.2022", "bazv2ytfgah3htanhcbl0mrx3quy1h2zpy8l"),
+    ("Organisationsstatut", "7.2 MB", "16.07.2018", "ulv25ub7l48403qjrzje7gcukh81zkznhwle"),
+    ("Entschädigungsverordnung", "177.28 KB", "11.03.2024", "SgwknTGKauhC0k3mcYTMeYId80ouKx4OORsJo86EZKF9rDAZ"),
+    ("Personalverordnung Primarschule Höri", "364.89 KB", "02.10.2024", "xavi3KIOLlkxPfbEtDpGbrTJxyqj2IvbeeVY6KLiZZVD0le2")]]}]
+SW = "https://www.schule-winkel.ch/download.php?action=download&doc_id={}&download_type=3"
+sw_secs = [{"titel": "Betreuung › Dokumente", "kinder": [], "dokumente": [doc(n, SW.format(i), typ="pdf", groesse=g, datum=d) for n, g, d, i in [
+    ("Betriebskonzept Schulergänzende Betreuung", "216.02 KB", "27.05.2025", "ewZOtmLQDZNpSC1OYYmwqaINLxEDWcZlG5RMnU19E3x36fUp"),
+    ("ABC der Betreuung inkl. Tarife", "98.6 KB", "12.05.2025", "821nvbt6564sn7jcj0h2xt0ab7hhq8tnajkl"),
+    ("Reglement Ferienbetreuung", "257.21 KB", "16.02.2026", "1Myi4HT0NTF2naxrpARhM67DORNbbDNWByQ9Y9wiNf6XI0eF"),
+    ("Merkblatt Flexibles Betreuungsmodell", "125.32 KB", "12.05.2025", "f33rlxh5br6xsg44zqka6876c5xmp3kpwygu"),
+    ("Bestätigung des Arbeitgebers", "69.68 KB", "15.04.2023", "whtp2bkg4xxutk1v0vbrv2cwmfvxjewmqgfy"),
+    ("Anleitung Escola-App", "1.38 MB", "12.05.2025", "82fbVRWT2qxdkRU8kuodll5BpIf7USd1B7T4WevA277IzTxL"),
+    ("Merkblatt zur Ermittlung des massgebenden Einkommens", "70.86 KB", "24.11.2025", "4nI94swxel1tnUIkHpPezE1CZ2XpRXT16tXM81Lyc4tMGhy8")]]}]
+
+NEU = [
+ {"id": "pg-meilen", "name": "Politische Gemeinde Meilen", "kurz": "Meilen", "typ": "Politische Gemeinde", "bezirk": "Meilen",
+  "gemeinden": ["Meilen"], "sitz": "Meilen", "website": "https://www.meilen.ch", "rs_url": "https://www.meilen.ch/rechtssammlung",
+  "cms": "i-web / icms (Innovative Web AG)", "menu_pfad": ["Verwaltung", "Rechtssammlung", "1–9 Sachgebiet (je eine Unterseite)"],
+  "weitere_einstiege": ["Bildung / Schule › Schule Meilen (eigene Website)"], "renderer": "iweb_gk",
+  "struktur": "Neun Unterseiten je Sachgebiet; je Untergruppe eine Tabelle Nummer | Titel | Gültig seit. Jeder Eintrag führt auf eine Detailseite mit dem PDF.",
+  "nummerierung": "Vollständige Erlassnummern nach Leitfaden (z. B. 100.1, 110.111) mit Inkraftsetzungsdatum",
+  "css": ["https://www.meilen.ch/dist/meilen/2026/css/main.a1f5a5f377089a42d2a4.css"],
+  "theme": {"font": "Roboto", "text": "#071327", "primary": "#009992", "button": "#009992", "surface": "#f2f4f3", "dark": "#071327"},
+  "nav": ["Verwaltung", "Politik", "Leben", "Bildung / Schule", "Freizeit"], "einheit": "Einheitsgemeinde",
+  "befunde": ["Vorbildlich: einheitliche Erlassnummern und «Gültig seit» bei jedem Erlass.",
+              "Einheitsgemeinde: die Erlasse der Schule stehen im Sachgebiet 4 der Gemeinde-Rechtssammlung (400.x «Reglement der Schule betr. …»).",
+              f"{mei_aufgehoben} aufgehobene Erlasse bleiben als Zeile stehen («Aufgehoben.»), ohne Dokument.",
+              "Links führen auf Detailseiten statt direkt auf das PDF – ein Klick mehr."],
+  "sections": mei_secs},
+ {"id": "pg-bachenbuelach", "name": "Politische Gemeinde Bachenbülach", "kurz": "Bachenbülach", "typ": "Politische Gemeinde", "bezirk": "Bülach",
+  "gemeinden": ["Bachenbülach"], "sitz": "Bachenbülach", "website": "https://www.bachenbuelach.ch",
+  "rs_url": "https://www.bachenbuelach.ch/verwaltung/systematische-rechtssammlung.html/397",
+  "cms": "Gemeinde-CMS mit Dokumentablage (Ordnerbaum)", "menu_pfad": ["Verwaltung", "Systematische Rechtssammlung"],
+  "weitere_einstiege": ["Schule › Service › Reglemente und Dokumente (eigene Ablage der Schule)"], "renderer": "dam",
+  "struktur": "Aufklappbarer Ordnerbaum (Ebene 1 = Sachgebiet 01–09, Ebene 2 = Untergruppe) mit Dateiname | Grösse | Format und «Ordnerinhalt herunterladen».",
+  "nummerierung": "Sachgebiete 01–09 und Untergruppen (10, 11 …); Dateien ohne Erlassnummer, Abkürzung in Klammer (GO, EVO …)",
+  "css": ["https://www.bachenbuelach.ch/public/templates/31/1518-normalize_3223-basics_3103-application_3124-layout.css"],
+  "theme": {"font": "Roboto", "heading": "Roboto Condensed", "text": "#333333", "primary": "#373a3d", "button": "#373a3d", "surface": "#f4f4f4", "dark": "#373a3d"},
+  "nav": ["Porträt", "Politik", "Verwaltung", "Freizeit / Kultur", "Schule"], "einheit": "Einheitsgemeinde Primarstufe",
+  "befunde": ["Keine Schul-Erlasse in der Rechtssammlung: Organisationsreglement Schule, Elternbeitrags- und Hortreglemente liegen nur in der Schul-Ablage.",
+              "Fehleinordnung: Geschäftsreglement Kinder-/Jugendkommission und Rabattreglement unter «02 Zivilrecht».",
+              "Gemeindeordnung liegt unter «11 Gemeinderat», das Organisationsreglement unter «10 Gemeinde».",
+              "Tippfehler im Titel «Verodnung über die Wasserversorgungsanlagen».",
+              "Einheitsgemeinde Primarstufe (laut Gemeindeverzeichnis keine Primarschulgemeinde); Sekundarstufe vermutlich Sek Bülach – zu prüfen."],
+  "sections": bb_secs},
+ {"id": "schule-bachenbuelach", "name": "Schule Bachenbülach (Primarstufe der Gemeinde)", "kurz": "Schule Bachenbülach", "typ": "Schule der Einheitsgemeinde", "bezirk": "Bülach",
+  "gemeinden": ["Bachenbülach"], "sitz": "Bachenbülach", "website": "https://www.bachenbuelach.ch/schule",
+  "rs_url": "https://www.bachenbuelach.ch/organisation/reglemente-und-dokumente.html/295",
+  "cms": "Gemeinde-CMS mit Dokumentablage (Ordnerbaum)", "menu_pfad": ["Schule", "Service", "Reglemente und Dokumente"],
+  "weitere_einstiege": [], "renderer": "dam",
+  "struktur": "Ordnerbaum der Schule: Reglemente/Konzepte/Merkblätter, Hort, Freizeitkurse, Anmeldung u. a. – gemischt mit Formularen und Elterninformationen.",
+  "nummerierung": "keine",
+  "css": ["https://www.bachenbuelach.ch/public/templates/31/1518-normalize_3223-basics_3103-application_3124-layout.css"],
+  "theme": {"font": "Roboto", "heading": "Roboto Condensed", "text": "#333333", "primary": "#373a3d", "button": "#373a3d", "surface": "#f4f4f4", "dark": "#373a3d"},
+  "nav": ["Porträt", "Politik", "Verwaltung", "Freizeit / Kultur", "Schule"], "einheit": "Einheitsgemeinde Primarstufe",
+  "befunde": ["Keine Rechtssammlung im Sinne des Leitfadens: Erlasse (ORSS, Elternbeitragsreglement, Ferienhortreglement) stehen zwischen Formularen und Liedern.",
+              "Diese Erlasse fehlen in der Rechtssammlung der Gemeinde."],
+  "sections": bbs_secs},
+ {"id": "pg-hoeri", "name": "Politische Gemeinde Höri", "kurz": "Höri", "typ": "Politische Gemeinde", "bezirk": "Bülach",
+  "gemeinden": ["Höri"], "sitz": "Höri", "website": "https://www.hoeri.ch", "rs_url": "https://www.hoeri.ch/politik-verwaltung/verwaltung/rechtssammlung.html/50",
+  "cms": "Gemeinde-CMS mit Dokumentablage (Ordnerbaum, per AJAX)", "menu_pfad": ["Politik & Verwaltung", "Verwaltung", "Rechtssammlung"],
+  "weitere_einstiege": ["Bildung › Kindergarten/Primarschule Höri (eigene Website)", "Bildung › Sekundarschule Bülach"], "renderer": "dam",
+  "struktur": "Aufklappbarer Ordnerbaum mit den 9 Sachgebieten; Dateien direkt im Sachgebiet, Inhalte werden per AJAX nachgeladen.",
+  "nummerierung": "Erlassnummer im Dateinamen (100.1, 120.1.1 …)",
+  "css": ["https://www.hoeri.ch/public/templates/1/8-normalize_899-basics_900-application_932-layout_897-nav_883-responsive.css"],
+  "theme": {"font": "Inter", "text": "#000000", "primary": "#005bbb", "button": "#005bbb", "surface": "#f4f4f4", "dark": "#333333"},
+  "nav": ["Politik & Verwaltung", "Leben & Wohnen", "Bildung", "Freizeit"], "einheit": "keine Einheitsgemeinde",
+  "befunde": ["Saubere Nummerierung nach Leitfaden, aber keine Untergruppen-Ordner (alle Dateien direkt im Sachgebiet).",
+              "Gemischte Nummerformate (721.1.0 neben 721.2).",
+              "Primarstufe bei der Primarschulgemeinde Höri, Sekundarstufe bei der Sekundarschule Bülach."],
+  "sections": hoe_secs},
+ {"id": "ps-hoeri", "name": "Primarschulgemeinde Höri", "kurz": "Primarschule Höri", "typ": "Primarschulgemeinde", "bezirk": "Bülach",
+  "gemeinden": ["Höri"], "sitz": "Höri", "website": "https://www.schulehoeri.ch",
+  "rs_url": "https://www.schulehoeri.ch/organisation/schulpflege/rechtsgrundlagen/p-183568/",
+  "cms": "Escola-Schulplattform (Dokumentablage per AJAX)", "menu_pfad": ["Organisation", "Schulpflege", "Rechtsgrundlagen"],
+  "weitere_einstiege": ["Elternrat › Reglement", "Informationen › Elternrechte/-Pflichten"], "renderer": "escola_tables",
+  "struktur": "Eine Dokumenttabelle «Rechtsgrundlagen» (Name, Typ, Grösse, Datum).",
+  "nummerierung": "keine",
+  "css": ["https://www.schulehoeri.ch/inc/customers/hoeri/css/main.css?8"],
+  "theme": {"font": "Roboto", "text": "#000000", "primary": "#5a9556", "button": "#397c34", "surface": "#eef4ee", "dark": "#397c34"},
+  "nav": ["Schule", "Organisation", "Informationen", "Elternrat", "Kontakt"], "einheit": "",
+  "befunde": ["Nur vier Grunderlasse; weitere Reglemente (z. B. Elternrat) liegen an anderen Stellen der Website.",
+              "Keine Gliederung nach Sachgebieten, keine Nummern.", "Menüpunkt heisst «Rechtsgrundlagen», nicht «Rechtssammlung»."],
+  "sections": psh_secs},
+ {"id": "pg-winkel", "name": "Politische Gemeinde Winkel", "kurz": "Winkel", "typ": "Politische Gemeinde", "bezirk": "Bülach",
+  "gemeinden": ["Winkel"], "sitz": "Winkel", "website": "https://www.winkel.ch", "rs_url": "https://www.winkel.ch/gesetzessammlung",
+  "cms": "i-web / icms (Innovative Web AG)", "menu_pfad": ["Verwaltung", "Rechtssammlung", "1–9 Sachgebiet (je eine Unterseite)"],
+  "weitere_einstiege": ["Primarschule (eigene Website schule-winkel.ch)"], "renderer": "iweb_gk",
+  "struktur": "Wie Meilen: neun Unterseiten je Sachgebiet mit Tabellen Nummer | Titel | Gültig seit, Detailseite je Erlass.",
+  "nummerierung": "Vollständige Erlassnummern nach Leitfaden mit Inkraftsetzungsdatum",
+  "css": ["https://www.winkel.ch/dist/winkel/2024/css/main.a8473739849e6cf571e1.css"],
+  "theme": {"font": "Arial", "text": "#000000", "primary": "#a01c1e", "button": "#a01c1e", "surface": "#f8f8f8", "dark": "#333333"},
+  "nav": ["Verwaltung", "Politik", "Leben", "Bildung", "Freizeit"], "einheit": "Einheitsgemeinde Primarstufe",
+  "befunde": ["Einheitsgemeinde Primarstufe, aber keine Schul-Erlasse in der Rechtssammlung (Sachgebiet 4 enthält nur Betreuung, Bibliothek, Vereine).",
+              "Schul-Reglemente (z. B. Reglement Ferienbetreuung) liegen auf der Website der Schule.",
+              "Seiten-Adresse heisst «gesetzessammlung», Menüpunkt «Rechtssammlung»."],
+  "sections": win_secs},
+ {"id": "schule-winkel", "name": "Schule Winkel (Primarstufe der Gemeinde)", "kurz": "Schule Winkel", "typ": "Schule der Einheitsgemeinde", "bezirk": "Bülach",
+  "gemeinden": ["Winkel"], "sitz": "Winkel", "website": "https://www.schule-winkel.ch", "rs_url": "https://www.schule-winkel.ch/betreuung/dokumente/p-1158/",
+  "cms": "Escola-Schulplattform (Dokumentablage per AJAX)", "menu_pfad": ["Betreuung", "Dokumente"],
+  "weitere_einstiege": ["Informationen › Dokumente (öffentlich leer)"], "renderer": "escola_tables",
+  "struktur": "Einzelne Dokumenttabellen ohne Überschriften auf der Seite «Betreuung › Dokumente».",
+  "nummerierung": "keine",
+  "css": ["https://www.schule-winkel.ch/inc/customers/winkel/css/main.css"],
+  "theme": {"font": "Roboto", "text": "rgba(0,0,0,.75)", "primary": "#a01c1e", "button": "#a01c1e", "surface": "#f4f4f4", "dark": "#333333"},
+  "nav": ["Schule", "Informationen", "Betreuung", "Kontakt"], "einheit": "Einheitsgemeinde Primarstufe",
+  "befunde": ["Keine Rechtssammlung; einziges Erlass-artiges Dokument ist das «Reglement Ferienbetreuung».",
+              "Seite «Informationen › Dokumente» zeigt öffentlich keine Dokumente."],
+  "sections": sw_secs},
+ {"id": "pg-hochfelden", "name": "Politische Gemeinde Hochfelden", "kurz": "Hochfelden", "typ": "Politische Gemeinde", "bezirk": "Bülach",
+  "gemeinden": ["Hochfelden"], "sitz": "Hochfelden", "website": "https://www.hochfelden.ch", "rs_url": "https://www.hochfelden.ch/politik/gesetzessammlung",
+  "cms": "Contao", "menu_pfad": ["Politik", "Gesetzessammlung"],
+  "weitere_einstiege": ["Bildung › Schulwesen › Schule Hochfelden (eigene Website)"], "renderer": "contao",
+  "struktur": "Eine Seite mit Akkordeon je Sachgebiet (1–9); darin Untergruppen (H3) und Downloadlisten mit Dateigrösse.",
+  "nummerierung": "Erlassnummer im Dateinamen (100.1_…), Untergruppen nach Leitfaden",
+  "css": ["https://www.hochfelden.ch/assets/css/styles.css"],
+  "theme": {"font": "Verdana", "heading": "Hind", "text": "#555555", "primary": "#f2c400", "button": "#3c3e40", "surface": "#f4f4f4", "dark": "#3c3e40"},
+  "nav": ["Aktuelles", "Politik", "Verwaltung", "Leben", "Bildung", "Freizeit"], "einheit": "Einheitsgemeinde Primarstufe",
+  "befunde": ["Gut strukturiert: Sachgebiet › Untergruppe › Erlass mit Nummer und Grösse.",
+              "Einheitsgemeinde Primarstufe: Primarschul-Erlasse unter «40 Primarschule»; die Gemeindeordnung der Sekundarschule steht unter «41 Sekundarschule» (Fremderlass).",
+              "Dateinamen teils mit «.pdf» im Titel, einer ohne Nummer (Gebührenverordnung).",
+              "Menüpunkt heisst «Gesetzessammlung», Seitentitel «Systematische Rechtssammlung (SR)»."],
+  "sections": hoch_secs},
+]
+ORGS += NEU
+# Einbettung (X-Frame-Options / frame-ancestors am 17.11.2026 geprüft) und PDF-Vorschau
+EINBETTBAR = {"skm-marthalen"}
+for o in ORGS:
+    o["einbettbar"] = o["id"] in EINBETTBAR
+    o["pdf_vorschau"] = o["id"] in EINBETTBAR
+    o.setdefault("renderer", {"pg-truellikon": "iweb", "ps-truellikon": "escola_tree", "skm-marthalen": "wp", "sek-buelach": "escola_tables_sb"}.get(o["id"], ""))
+    o.setdefault("einheit", {"pg-truellikon": "keine Einheitsgemeinde"}.get(o["id"], ""))
+
 def walk(node):
     yield from node.get("dokumente", [])
     for k in node.get("kinder", []): yield from walk(k)
@@ -280,10 +473,10 @@ footer{{background:{t['primary']};color:#fff;padding:30px 0;font-size:14px}}
 <main class="wrap grid"><aside>
 <a href="#">Online Schalter</a><a href="#">Dienstleistungen A-Z</a><a href="#">Entsorgung</a><a href="#">Schutz / Sicherheit</a><a href="#">Mobilität</a>
 <a class="on" href="#">Rechtssammlung</a><a href="#">Windkraftanlagen</a><a href="#">Deponiestandort Birchbüel</a></aside>
-<div>{''.join(f'<h3>{esc(c)}</h3>' for c in PGT_CATS)}
+<div><!--CX-->{''.join(f'<h3>{esc(c)}</h3>' for c in PGT_CATS)}
 <h2>Dokumente</h2><div class="filter"><input id="q" type="search" placeholder="Filtern" aria-label="Filtern"></div>
 <table><thead><tr><th>Name</th><th>Download</th></tr></thead><tbody id="tb">{trs}</tbody></table>
-<div class="pager"><span id="info"></span><span id="pg"></span></div></div></main>
+<div class="pager"><span id="info"></span><span id="pg"></span></div><!--/CX--></div></main>
 <footer><div class="wrap">{esc(o['name'])} · Nachbau des Layouts für EduKSX-Codex</div></footer>"""
     js = """<script>
 const rows=[...document.querySelectorAll('#tb tr')],q=document.getElementById('q');let p=0;const N=20;
@@ -333,7 +526,7 @@ details{{margin:4px 0 4px 6px}} summary{{cursor:pointer;font-weight:600;padding:
 <nav class="menu"><a href="#">Schule</a><a href="#">Organisation</a><a href="#">Information</a><a href="#">Angebote</a><a class="on" href="#">Download</a><a href="#">Services</a></nav></div></header>
 <div class="hero"></div>
 <div class="cw"><nav class="sub"><a href="#">Links</a><a href="#">Dokumente</a><a href="#">Konzepte und Merkblätter</a><a href="#">Ferienplan</a><a href="#">Stundenpläne</a><a class="on" href="#">Systematische Rechtssammlung</a></nav>
-<main><div class="crumbs">Home › Download › <b>Systematische Rechtssammlung</b></div><h1 class="pt">Systematische Rechtssammlung</h1>{secs}</main></div>
+<main><div class="crumbs">Home › Download › <b>Systematische Rechtssammlung</b></div><h1 class="pt">Systematische Rechtssammlung</h1><!--CX-->{secs}<!--/CX--></main></div>
 <footer id="footer">{esc(o['name'])} · Nachbau des Layouts für EduKSX-Codex</footer>"""
     return page(o, css, body)
 
@@ -362,7 +555,7 @@ h4{{font-weight:400;font-size:18px;color:#0a0a0a;margin:0}}
 <div id="Top_bar"><div class="container">{logo(o)}
 <nav id="menu"><a href="#">Home</a><a href="#">Organisation</a><a href="#">Schulisches Umfeld</a><a href="#">Information</a><a class="on" href="#">Schulgemeinde</a><a href="#">Kontakt</a></nav></div></div>
 <div id="Subheader"><div class="container"><h1>Systematische Rechtssammlung</h1></div></div>
-<main class="container">{secs}</main>
+<main class="container"><!--CX-->{secs}<!--/CX--></main>
 <footer id="Footer"><div class="container">{esc(o['name'])} · Nachbau des Layouts für EduKSX-Codex</div></footer>"""
     return page(o, css, body)
 
@@ -393,12 +586,350 @@ table.docs a{{color:{t['primary']};text-decoration:none}} table.docs a:hover{{te
 <nav><a href="#">Schule Hinterbirch</a><a href="#">Schule Mettmenriet</a><a href="#">Schulpflege</a><a class="on" href="#">Schulverwaltung</a></nav></div></header>
 <div class="band"><div class="holder"><h1>Systematische Rechtssammlung</h1></div></div>
 <div class="holder cw"><nav class="sub"><a href="#">Kontakt</a><a href="#">Team</a><a href="#">Formulare</a><a class="on" href="#">Systematische Rechtssammlung</a></nav>
-<main><p>Das Gemeindegesetz vom 20. April 2015 verpflichtet alle Gemeinden, ihr Recht in einer systematisch aufgebauten Rechtssammlung zu veröffentlichen. In der systematischen Rechtssammlung der Sekundarschule Bülach finden sich sämtliche aktuell gültigen rechtssetzenden Verordnungen und Reglemente der Schulbehörde.</p>
-{secs}<p style="margin-top:22px"><a href="https://www.bws-buelach.ch/agenda/infos/reglemente.html" target="_blank" rel="noopener" style="color:{t['primary']}">Link zu BWS Bülach / Reglemente</a></p></main></div>
+<main><!--CX--><p>Das Gemeindegesetz vom 20. April 2015 verpflichtet alle Gemeinden, ihr Recht in einer systematisch aufgebauten Rechtssammlung zu veröffentlichen. In der systematischen Rechtssammlung der Sekundarschule Bülach finden sich sämtliche aktuell gültigen rechtssetzenden Verordnungen und Reglemente der Schulbehörde.</p>
+{secs}<p style="margin-top:22px"><a href="https://www.bws-buelach.ch/agenda/infos/reglemente.html" target="_blank" rel="noopener" style="color:{t['primary']}">Link zu BWS Bülach / Reglemente</a></p><!--/CX--></main></div>
 <footer id="footer"><div class="holder">{esc(o['name'])} · Nachbau des Layouts für EduKSX-Codex</div></footer>"""
     return page(o, css, body)
 
-RENDER = {"pg-truellikon": render_iweb, "ps-truellikon": render_escola_tree, "skm-marthalen": render_wp, "sek-buelach": render_escola_tables}
+
+# --- generische Kopf-/Fusszeile für weitere Nachbauten
+def kopf_html(o, cls=""):
+    t = o["theme"]; nav = "".join(f'<a href="#"{" class=on" if n == o["menu_pfad"][0] else ""}>{esc(n)}</a>' for n in o.get("nav", []))
+    return f'<header class="hdr {cls}"><div class="wrap">{logo(o)}<nav>{nav}</nav></div></header>'
+def basis_css(o):
+    t = o["theme"]; hf = t.get("heading", t["font"])
+    return f"""
+body{{font-family:'{t['font']}',Arial,sans-serif;color:{t['text']};font-size:16px;line-height:1.55}}
+h1,h2,h3{{font-family:'{hf}','{t['font']}',Arial,sans-serif}}
+.wrap{{max-width:1200px;margin:0 auto;padding:0 20px}}
+.hdr{{border-bottom:1px solid #e3e3e3;background:#fff}} .hdr .wrap{{display:flex;align-items:center;justify-content:space-between;min-height:88px;gap:20px}}
+.hdr nav a{{margin-left:22px;color:{t['text']};text-decoration:none;font-weight:600;font-size:15px}} .hdr nav a.on{{color:{t['primary']};border-bottom:3px solid {t['primary']};padding-bottom:4px}}
+.band{{background:{t.get('surface','#f4f4f4')};padding:28px 0 20px}} .crumb{{font-size:13px;opacity:.75}} .band h1{{margin:6px 0 0;font-size:34px}}
+.grid{{display:grid;grid-template-columns:250px 1fr;gap:36px;padding:30px 20px 60px}}
+aside a{{display:block;padding:8px 0;border-bottom:1px solid #e3e3e3;color:{t['text']};text-decoration:none;font-size:15px}} aside a.on{{color:{t['primary']};font-weight:700}}
+footer.fuss{{background:{t.get('dark','#333')};color:#fff;padding:26px 0;font-size:14px}}
+@media(max-width:800px){{.grid{{grid-template-columns:1fr}} aside,.hdr nav{{display:none}}}}"""
+def gerust(o, aside, inhalt, crumb):
+    return f"""{kopf_html(o)}
+<section class="band"><div class="wrap"><div class="crumb">Home › {' › '.join(map(esc, crumb))}</div><h1>{esc(crumb[-1] if crumb else 'Rechtssammlung')}</h1></div></section>
+<main class="wrap grid"><aside>{aside}</aside><div><!--CX-->{inhalt}<!--/CX--></div></main>
+<footer class="fuss"><div class="wrap">{esc(o['name'])} · Nachbau des Layouts für EduKSX-Codex</div></footer>"""
+
+def render_iweb_gk(o):
+    """i-web mit Unterseiten je Sachgebiet (Meilen, Winkel): Sachgebiet-Menü links, Tabellen Nummer | Titel | Gültig seit."""
+    t = o["theme"]
+    aside = "".join(f'<a href="#sg{i}" data-sg="{i}"{" class=on" if i == 0 else ""}>{esc(s["titel"])}</a>' for i, s in enumerate(o["sections"]))
+    def tab(docs):
+        return ('<table class="erl"><tbody>' + "".join(
+            f'<tr><td class="nr">{dl(d, "", d.get("nummer", ""))}</td><td>{dl(d)}</td><td class="dt">{dl(d, "", d.get("datum", ""))}</td></tr>' for d in docs) + "</tbody></table>")
+    teile = ""
+    for i, s in enumerate(o["sections"]):
+        inner = (tab(s["dokumente"]) if s["dokumente"] else "") + "".join(
+            f'<table class="erl kopf"><tbody><tr><td><b>{esc(k["titel"])}</b></td><td class="dt"><b>Gültig seit</b></td></tr></tbody></table>{tab(k["dokumente"])}' for k in s["kinder"])
+        teile += f'<section class="sg" id="sg{i}"{"" if i == 0 else " hidden"}><h2>{esc(s["titel"])}</h2>{inner or "<p>Keine Erlasse.</p>"}</section>'
+    css = basis_css(o) + f"""
+.erl{{width:100%;border-collapse:collapse;margin:0 0 6px}} .erl td{{padding:9px 8px;border-bottom:1px solid #e3e3e3;vertical-align:top}}
+.erl td.nr{{width:12%;white-space:nowrap}} .erl td.dt{{width:18%;white-space:nowrap}} .erl.kopf td{{border-bottom:2px solid {t['text']};padding-top:18px}}
+.erl a{{color:{t['text']};text-decoration:none}} .erl a:hover{{color:{t['primary']};text-decoration:underline}} h2{{font-size:26px;margin:0 0 10px}}"""
+    js = """<script>document.querySelectorAll('aside a[data-sg]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();
+document.querySelectorAll('aside a').forEach(x=>x.classList.remove('on'));a.classList.add('on');
+document.querySelectorAll('section.sg').forEach(s=>s.hidden=s.id!=='sg'+a.dataset.sg);}));</script>"""
+    return page(o, css, gerust(o, aside, teile, o["menu_pfad"][:2]), js)
+
+def render_dam(o):
+    """Ordnerablage mit aufklappbaren Ebenen (Bachenbülach, Höri)."""
+    t = o["theme"]; zeilen = []
+    def ordner(n, ebene, eltern):
+        fid = f"f{len(zeilen)}"
+        zeilen.append(f'<tr class="ord" data-id="{fid}" data-p="{eltern}"{"" if ebene == 1 else " hidden"}><td class="l{ebene}"><button type="button" class="tog" aria-expanded="false">'
+                      f'<span class="ic">▸</span> 📁 <span class="vh">Ebene {ebene}: </span>{esc(n["titel"])}</button></td><td></td><td></td></tr>')
+        for k in n["kinder"]: ordner(k, ebene + 1, fid)
+        for d in n["dokumente"]:
+            zeilen.append(f'<tr class="dat" data-p="{fid}" hidden><td class="l{ebene + 1}">📄 {dl(d)}</td><td>{esc(d.get("groesse", ""))}</td><td>{esc(d.get("typ", ""))}</td></tr>')
+    for s in o["sections"]: ordner(s, 1, "")
+    inhalt = f'<p>Die systematische Rechtssammlung ist nach Sachgebieten geordnet.</p><table class="dms"><thead><tr><th>Dateiname</th><th>Grösse</th><th>Format</th></tr></thead><tbody>{"".join(zeilen)}</tbody></table>'
+    aside = "".join(f'<a href="#"{" class=on" if n == o["menu_pfad"][-1] else ""}>{esc(n)}</a>' for n in o["menu_pfad"])
+    css = basis_css(o) + f"""
+.dms{{width:100%;border-collapse:collapse}} .dms th{{text-align:left;border-bottom:2px solid {t['text']};padding:8px}} .dms td{{padding:7px 8px;border-bottom:1px solid #e6e6e6}}
+.dms td:nth-child(n+2){{white-space:nowrap;width:90px;opacity:.75}} .tog{{background:none;border:0;font:inherit;color:inherit;cursor:pointer;padding:0;text-align:left;font-weight:600}}
+.l2{{padding-left:28px!important}} .l3{{padding-left:52px!important}} .l4{{padding-left:76px!important}} .vh{{position:absolute;left:-9999px}}
+.dms a{{color:{t['primary']};text-decoration:none}} .dms a:hover{{text-decoration:underline}}"""
+    js = """<script>document.querySelectorAll('.tog').forEach(b=>b.addEventListener('click',()=>{const tr=b.closest('tr'),id=tr.dataset.id,auf=b.getAttribute('aria-expanded')!=='true';
+b.setAttribute('aria-expanded',auf);b.querySelector('.ic').textContent=auf?'▾':'▸';
+const zu=p=>document.querySelectorAll('tr[data-p="'+p+'"]').forEach(r=>{r.hidden=true;if(r.dataset.id){const t=r.querySelector('.tog');t.setAttribute('aria-expanded','false');t.querySelector('.ic').textContent='▸';zu(r.dataset.id);}});
+if(auf)document.querySelectorAll('tr[data-p="'+id+'"]').forEach(r=>r.hidden=false);else zu(id);}));</script>"""
+    return page(o, css, gerust(o, aside, inhalt, o["menu_pfad"]), js)
+
+def render_contao(o):
+    """Akkordeon je Sachgebiet mit Untergruppen und Downloadlisten (Hochfelden)."""
+    t = o["theme"]
+    teile = "".join(
+        f'<details class="acc"><summary>{esc(s["titel"])}</summary><div class="in">' + "".join(
+            f'<h3>{esc(k["titel"])}</h3><ul class="dl">' + "".join(f'<li>{dl(d)} <span>({esc(d.get("groesse", ""))})</span></li>' for d in k["dokumente"]) + "</ul>"
+            for k in s["kinder"]) + ("" if s["kinder"] else "<p>Keine Erlasse.</p>") + "</div></details>" for s in o["sections"])
+    inhalt = f'<h2>Themenbereiche</h2>{teile}'
+    aside = "".join(f'<a href="#"{" class=on" if n == "Gesetzessammlung" else ""}>{esc(n)}</a>' for n in ["Gemeinderat", "Behörden / Kommissionen", "Gemeindeversammlungen", "Abstimmungen / Wahlen", "Gesetzessammlung"])
+    css = basis_css(o) + f"""
+.band{{border-left:8px solid {t['primary']}}} h2{{font-size:24px;color:#3b3c42}}
+.acc{{border:1px solid #ddd;margin:0 0 8px;background:#fff}} .acc summary{{cursor:pointer;padding:14px 16px;font-weight:700;background:{t['dark']};color:#fff;list-style:none}}
+.acc summary::after{{content:"+";float:right;color:{t['primary']};font-size:20px;line-height:1}} .acc[open] summary::after{{content:"–"}}
+.acc .in{{padding:6px 18px 14px}} .acc h3{{font-size:17px;margin:14px 0 6px;color:#3b3c42}}
+ul.dl{{list-style:none;margin:0;padding:0}} ul.dl li{{padding:6px 0;border-bottom:1px dotted #ccc}} ul.dl li::before{{content:"⬇ ";color:{t['primary']}}}
+ul.dl a{{color:#3b3c42;text-decoration:none}} ul.dl a:hover{{text-decoration:underline}} ul.dl span{{color:#777;font-size:13px}}"""
+    return page(o, css, gerust(o, aside, inhalt, ["Politik", "Gesetzessammlung"]))
+
+def render_escola_generic(o):
+    t = o["theme"]
+    secs = "".join(
+        f'<h3>{esc(s["titel"])}</h3><table class="docs"><thead><tr><th>Name</th><th>Typ</th><th>Grösse</th><th>Datum</th></tr></thead><tbody>' + "".join(
+            f'<tr><td>{dl(d)}</td><td>{esc(d.get("typ", ""))}</td><td>{esc(d.get("groesse", ""))}</td><td>{esc(d.get("datum", ""))}</td></tr>' for d in s["dokumente"]) + "</tbody></table>"
+        for s in o["sections"])
+    aside = "".join(f'<a href="#"{" class=on" if n == o["menu_pfad"][-1] else ""}>{esc(n)}</a>' for n in o["menu_pfad"])
+    css = basis_css(o) + f"""
+.hdr{{border-top:6px solid {t['dark']}}} h3{{font-size:20px;margin:24px 0 8px}}
+table.docs{{width:100%;border-collapse:collapse;font-size:15px}} table.docs th{{text-align:left;background:{t['surface']};padding:8px 10px}}
+table.docs td{{padding:8px 10px;border-bottom:1px solid #e6e6e6}} table.docs td:nth-child(n+2){{white-space:nowrap;opacity:.6}}
+table.docs a{{color:{t['primary']};text-decoration:none}}"""
+    return page(o, css, gerust(o, aside, secs, o["menu_pfad"]))
+
+def iframe_variante(o, html_nachbau):
+    """Gleicher Seitenrahmen wie der Nachbau, Inhalt ersetzt durch das einbettbare EduKSX-Codex-Widget."""
+    t = o["theme"]
+    block = (f'<div class="cx-iframe-hinweis">Hier eingebettet: EduKSX-Codex-Widget (iFrame) – so könnte die Gemeinde die Rechtssammlung in ihre eigene Seite einbauen.</div>'
+             f'<iframe id="cx-frame" class="cx-frame" title="Rechtssammlung {esc(o["name"])}" src="../embed/index.html?org={o["id"]}" loading="lazy"></iframe>')
+    neu = re.sub(r"<!--CX-->.*?<!--/CX-->", lambda m: "<!--CX-->" + block + "<!--/CX-->", html_nachbau, count=1, flags=re.S)
+    neu = re.sub(r"<script>.*?</script>", "", neu, flags=re.S)
+    zusatz = ("<style>.cx-frame{width:100%;min-height:560px;border:0;display:block}.cx-iframe-hinweis{font:12px/1.4 system-ui,sans-serif;background:#fff7d6;border-left:4px solid #f2b705;padding:6px 10px;margin:0 0 10px}</style>"
+              "<script>window.addEventListener('message',function(e){if(e.data&&e.data.cxHoehe){document.getElementById('cx-frame').style.height=(e.data.cxHoehe+20)+'px';}});</script></body>")
+    return neu.replace("</body>", zusatz, 1).replace("Nachbau des Seitenaufbaus", "Nachbau mit eingebettetem EduKSX-Codex-Widget", 1)
+
+RENDER = {"iweb": render_iweb, "escola_tree": render_escola_tree, "wp": render_wp, "escola_tables_sb": render_escola_tables,
+          "iweb_gk": render_iweb_gk, "dam": render_dam, "contao": render_contao, "escola_tables": render_escola_generic}
+
+
+
+# ---------------------------------------------------------------- Schulgemeinden (Gemeindeverzeichnis Gemeindeamt, Stand 1.7.2026)
+ABK = [("a. A.", "am Albis"), ("a. S.", "am See"), ("a. I.", "am Irchel"), ("a. d. Th.", "an der Thur"), ("a. d. L.", "an der Limmat")]
+def lang(n):
+    for a, b in ABK: n = n.replace(a, b)
+    return n.strip()
+# (Typ, Name, Bezirk, Sitz, bekannte Mitglieder oder None = nur Sitz sicher)
+SG = [
+ ("Volksschulgemeinde", "Hittnau", "Pfäffikon", "Hittnau", None), ("Volksschulgemeinde", "Elsau - Schlatt", "Winterthur", "Elsau", ["Elsau", "Schlatt"]),
+ ("Volksschulgemeinde", "Wiesendangen", "Winterthur", "Wiesendangen", None), ("Volksschulgemeinde", "Flaachtal", "Andelfingen", "Flaach", None),
+ ("Volksschulgemeinde", "Dietlikon", "Bülach", "Dietlikon", None), ("Volksschulgemeinde", "Rorbas - Freienstein-Teufen", "Bülach", "Rorbas", ["Rorbas", "Freienstein-Teufen"]),
+ ("Volksschulgemeinde", "Unteres Rafzerfeld", "Bülach", "Wil", None), ("Volksschulgemeinde", "Wehntal", "Dielsdorf", "Niederweningen", None),
+ ("Primarschulgemeinde", "Maschwanden", "Affoltern", "Maschwanden", None), ("Primarschulgemeinde", "Wettswil a. A.", "Affoltern", "Wettswil am Albis", None),
+ ("Primarschulgemeinde", "Schwerzenbach", "Uster", "Schwerzenbach", None), ("Primarschulgemeinde", "Wila", "Pfäffikon", "Wila", None),
+ ("Primarschulgemeinde", "Dägerlen", "Winterthur", "Dägerlen", None), ("Primarschulgemeinde", "Elgg", "Winterthur", "Elgg", None),
+ ("Primarschulgemeinde", "Ellikon a. d. Th.", "Winterthur", "Ellikon an der Thur", None), ("Primarschulgemeinde", "Turbenthal", "Winterthur", "Turbenthal", None),
+ ("Primarschulgemeinde", "Andelfingen", "Andelfingen", "Andelfingen", None), ("Primarschulgemeinde", "Benken", "Andelfingen", "Benken", None),
+ ("Primarschulgemeinde", "Dachsen", "Andelfingen", "Dachsen", None), ("Primarschulgemeinde", "Laufen-Uhwiesen", "Andelfingen", "Laufen-Uhwiesen", None),
+ ("Primarschulgemeinde", "Marthalen", "Andelfingen", "Marthalen", None), ("Primarschulgemeinde", "Ossingen", "Andelfingen", "Ossingen", None),
+ ("Primarschulgemeinde", "Trüllikon", "Andelfingen", "Trüllikon", ["Trüllikon"]), ("Primarschulgemeinde", "Truttikon", "Andelfingen", "Truttikon", None),
+ ("Primarschulgemeinde", "Höri", "Bülach", "Höri", ["Höri"]), ("Primarschulgemeinde", "Bachs", "Dielsdorf", "Bachs", None),
+ ("Primarschulgemeinde", "Boppelsen", "Dielsdorf", "Boppelsen", None), ("Primarschulgemeinde", "Dänikon - Hüttikon", "Dielsdorf", "Dänikon", ["Dänikon", "Hüttikon"]),
+ ("Primarschulgemeinde", "Dielsdorf", "Dielsdorf", "Dielsdorf", None), ("Primarschulgemeinde", "Regensberg", "Dielsdorf", "Regensberg", None),
+ ("Primarschulgemeinde", "Stadel", "Dielsdorf", "Stadel", None), ("Primarschulgemeinde", "Oetwil - Geroldswil", "Dietikon", "Oetwil an der Limmat", ["Oetwil an der Limmat", "Geroldswil"]),
+ ("Sekundarschulgemeinde", "Affoltern a. A. - Aeugst a. A.", "Affoltern", "Affoltern am Albis", ["Affoltern am Albis", "Aeugst am Albis"]),
+ ("Sekundarschulgemeinde", "Bonstetten", "Affoltern", "Bonstetten", None), ("Sekundarschulgemeinde", "Hausen a. A.", "Affoltern", "Hausen am Albis", None),
+ ("Sekundarschulgemeinde", "Knonau - Maschwanden - Mettmenstetten", "Affoltern", "Knonau", ["Knonau", "Maschwanden", "Mettmenstetten"]),
+ ("Sekundarschulgemeinde", "Obfelden - Ottenbach", "Affoltern", "Obfelden", ["Obfelden", "Ottenbach"]),
+ ("Sekundarschulgemeinde", "Wädenswil", "Horgen", "Wädenswil", None),
+ ("Sekundarschulgemeinde", "Dübendorf - Schwerzenbach", "Uster", "Dübendorf", ["Dübendorf", "Schwerzenbach"]),
+ ("Sekundarschulgemeinde", "Nänikon - Greifensee", "Uster", "Greifensee", ["Greifensee"]), ("Sekundarschulgemeinde", "Uster", "Uster", "Uster", None),
+ ("Sekundarschulgemeinde", "Wila", "Pfäffikon", "Wila", None), ("Sekundarschulgemeinde", "Elgg", "Winterthur", "Elgg", None),
+ ("Sekundarschulgemeinde", "Rickenbach", "Winterthur", "Rickenbach", None), ("Sekundarschulgemeinde", "Seuzach", "Winterthur", "Seuzach", None),
+ ("Sekundarschulgemeinde", "Turbenthal - Wildberg", "Winterthur", "Turbenthal", ["Turbenthal", "Wildberg"]),
+ ("Sekundarschulgemeinde", "Andelfingen", "Andelfingen", "Andelfingen", None), ("Sekundarschulgemeinde", "Kreis Uhwiesen", "Andelfingen", "Laufen-Uhwiesen", None),
+ ("Sekundarschulgemeinde", "Kreis Marthalen", "Andelfingen", "Marthalen", ["Benken", "Marthalen", "Rheinau", "Trüllikon"]),
+ ("Sekundarschulgemeinde", "Ossingen - Truttikon", "Andelfingen", "Ossingen", ["Ossingen", "Truttikon"]),
+ ("Sekundarschulgemeinde", "Bülach", "Bülach", "Bülach", ["Bülach", "Höri", "Hochfelden"]), ("Sekundarschulgemeinde", "Embrach", "Bülach", "Embrach", None),
+ ("Sekundarschulgemeinde", "Dielsdorf", "Dielsdorf", "Dielsdorf", None), ("Sekundarschulgemeinde", "Niederhasli - Niederglatt", "Dielsdorf", "Niederhasli", ["Niederhasli", "Niederglatt"]),
+ ("Sekundarschulgemeinde", "Unteres Furttal", "Dielsdorf", "Otelfingen", None),
+ ("Sekundarschulgemeinde", "Regensdorf - Buchs - Dällikon", "Dielsdorf", "Regensdorf", ["Regensdorf", "Buchs", "Dällikon"]),
+ ("Sekundarschulgemeinde", "Rümlang - Oberglatt", "Dielsdorf", "Rümlang", ["Rümlang", "Oberglatt"]), ("Sekundarschulgemeinde", "Stadel", "Dielsdorf", "Stadel", None),
+ ("Sekundarschulgemeinde", "Birmensdorf - Aesch", "Dietikon", "Birmensdorf", ["Birmensdorf", "Aesch"]), ("Sekundarschulgemeinde", "Weiningen", "Dietikon", "Weiningen", None),
+]
+ORG_SG = {("Primarschulgemeinde", "Trüllikon"): "ps-truellikon", ("Sekundarschulgemeinde", "Kreis Marthalen"): "skm-marthalen",
+          ("Sekundarschulgemeinde", "Bülach"): "sek-buelach", ("Primarschulgemeinde", "Höri"): "ps-hoeri"}
+# Ergebnisse der Recherche vom 17.11.2026 (sicher), Rest wird hergeleitet
+UNSICHER_MITGLIED = {("Sekundarschulgemeinde", "Bülach"): ["Bachenbülach", "Winkel"]}
+STUFE_FIX = {"Bachenbülach": ("Gemeinde", None), "Winkel": ("Gemeinde", None), "Hochfelden": ("Gemeinde", "Sekundarschulgemeinde Bülach"),
+             "Meilen": ("Gemeinde", "Gemeinde")}
+
+def schulgemeinden():
+    out = []
+    for typ, name, bez, sitz, mit in SG:
+        out.append({"typ": typ, "name": f"{typ} {lang(name)}", "kurz": lang(name), "bezirk": bez, "sitz": sitz,
+                    "mitglieder": mit or [sitz], "mitglieder_sicher": mit is not None,
+                    "mitglieder_unsicher": UNSICHER_MITGLIED.get((typ, name), []), "org": ORG_SG.get((typ, name))})
+    return out
+
+def einheit(gemeinden, sgs):
+    """Je politische Gemeinde: wer trägt Primar- und Sekundarstufe? → Klammervermerk (Einheitsgemeinde …)."""
+    for g in gemeinden:
+        name = g["gemeinde"].replace(" (ZH)", "")
+        stufen = {}
+        for stufe, typen in (("primar", ("Volksschulgemeinde", "Primarschulgemeinde")), ("sek", ("Volksschulgemeinde", "Sekundarschulgemeinde"))):
+            treffer = [s for s in sgs if s["typ"] in typen and name in s["mitglieder"]]
+            vermutet = [s for s in sgs if s["typ"] in typen and name in s["mitglieder_unsicher"]]
+            vielleicht = [s for s in sgs if s["typ"] in typen and s["bezirk"] == g["bezirk"] and (not s["mitglieder_sicher"] or name in s["mitglieder_unsicher"]) and s not in treffer]
+            if treffer: stufen[stufe] = (treffer[0]["name"], True)
+            elif vermutet: stufen[stufe] = (vermutet[0]["name"], False)
+            elif vielleicht: stufen[stufe] = ("Gemeinde", False)
+            else: stufen[stufe] = ("Gemeinde", True)
+        fix = STUFE_FIX.get(name)
+        if fix:
+            if fix[0]: stufen["primar"] = (fix[0], True)
+            if fix[1]: stufen["sek"] = (fix[1], True)
+        p, s = stufen["primar"], stufen["sek"]
+        if p[0] == "Gemeinde" and s[0] == "Gemeinde": text = "Einheitsgemeinde"
+        elif p[0] == "Gemeinde": text = "Einheitsgemeinde Primarstufe"
+        elif s[0] == "Gemeinde": text = "Einheitsgemeinde Sekundarstufe"
+        else: text = "keine Einheitsgemeinde"
+        sicher = p[1] and s[1]
+        g["einheit"] = text if sicher else text + " ?"
+        g["einheit_sicher"] = sicher
+        g["schultraeger"] = {"primar": p[0], "sek": s[0]}
+    return gemeinden
+
+# ---------------------------------------------------------------- Struktur-Matrix (Menü › Untermenü › Dokument × Organisation)
+def norm(t):
+    t = t.lower()
+    for a, b in (("ä", "ae"), ("ö", "oe"), ("ü", "ue"), ("é", "e"), ("_", " "), ("-", " ")): t = t.replace(a, b)
+    return re.sub(r"\s+", " ", t)
+BEHOERDE = r"beschluss|beschluesse|protokoll|verhandlungsbericht|traktand|abnahme|einladung|ankuendigung|praesentation|beleuchtend|formularsatz|wahl|konstituierung|interessenbindung"
+ERLASS = r"reglement|verordnung|statut|ordnung|vertrag"
+# (Menü, Untermenü, Dokument, sicher-Muster, unsicher-Muster, Sammelzeile)
+KATALOG = [
+ ("1 Gemeinde – Behörden – Verwaltung", "Organisation", "Gemeindeordnung", r"gemeindeordnung|\(go\)", None, False),
+ ("1 Gemeinde – Behörden – Verwaltung", "Organisation", "Organisationsreglement / -statut / Geschäftsordnung Exekutive", r"organisationsreglement|organisationsstatut|organisations und verwaltungsreglement|geschaeftsordnung(?! planungsgruppe| stiftung)|\borgr\b|\borgg\b|orss", r"geschaeftsreglement (schulpflege|gemeinderat)", False),
+ ("1 Gemeinde – Behörden – Verwaltung", "Organisation", "Geschäftsreglemente Kommissionen/Ausschüsse", r"geschaeftsreglement", None, True),
+ ("1 Gemeinde – Behörden – Verwaltung", "Organisation", "Funktionendiagramm / Kompetenzen", r"funktionendiagramm|ausgabenkompetenz|finanzkompetenz|zustaendigkeiten|kompetenzregelung", r"rechnungsvisum", False),
+ ("1 Gemeinde – Behörden – Verwaltung", "Organisation", "Organigramm", r"organigramm", None, False),
+ ("1 Gemeinde – Behörden – Verwaltung", "Organisation", "Amtliche Publikationen / Publikationsorgan", r"publikation", r"dorfziitig", False),
+ ("1 Gemeinde – Behörden – Verwaltung", "Personal und Entschädigung", "Entschädigungsverordnung Behörden", r"entschaedigungsverordnung|entschaedigungsreglement|\bevo\b|entschaedigung (der )?behoerde", r"entschaedigung(?!s? und sold)", False),
+ ("1 Gemeinde – Behörden – Verwaltung", "Personal und Entschädigung", "Personalverordnung / -reglement", r"personalverordnung|personalreglement|\bpevo\b|\bpvo\b|personal und entschaedigungsverordnung", None, False),
+ ("1 Gemeinde – Behörden – Verwaltung", "Personal und Entschädigung", "Vollzugs-/Ausführungsbestimmungen", r"(vollzug|vollziehung|ausfuehrung)s?(bestimmungen|reglement) zur (personal|entschaedigung)|vollziehungsbestimmungen", None, False),
+ ("1 Gemeinde – Behörden – Verwaltung", "Personal und Entschädigung", "Arbeitszeit, Spesen, Weiterbildung, Urlaub", r"arbeitszeit|spesen|weiterbildung|urlaub", None, True),
+ ("1 Gemeinde – Behörden – Verwaltung", "Information und Datenschutz", "Verzeichnis der Informationsbestände", r"informationsbest", None, False),
+ ("1 Gemeinde – Behörden – Verwaltung", "Information und Datenschutz", "Informationssicherheit, Informatik, Archiv", r"informationssicherheit|internet|informatik|gever|einwohnerregister", None, True),
+ ("2 Zivilrecht", "Zusammenarbeit", "Kindes- und Erwachsenenschutz (KESB)", r"erwachsenenschutz|kesb|kesr|berufsbeist", None, True),
+ ("2 Zivilrecht", "Zusammenarbeit", "Zivilstandskreis", r"zivilstand", None, False),
+ ("2 Zivilrecht", "Zusammenarbeit", "Betreibungskreis", r"betreibung", None, False),
+ ("4 Schule – Bildung – Sport – Freizeit", "Schulbetrieb", "Klassenlager, Schulreisen, Sportlager", r"klassenlager|schulreise|skilager|wintersport|sportlager|exkursion|projektwoche", None, True),
+ ("4 Schule – Bildung – Sport – Freizeit", "Schulbetrieb", "Hausordnung / Hausregeln", r"hausordnung(?! sammelstelle)|hausregeln|aufenthaltsraum", None, False),
+ ("4 Schule – Bildung – Sport – Freizeit", "Schulbetrieb", "Elternrat / Elternmitwirkung", r"elternrat", None, False),
+ ("4 Schule – Bildung – Sport – Freizeit", "Schulbetrieb", "Bild- und Tonaufnahmen", r"foto|aufnahmen", None, False),
+ ("4 Schule – Bildung – Sport – Freizeit", "Schulbetrieb", "Schulweg / Schülertransport", r"schulweg|schuelertransport|schulbus reglement|schulbus_reglement", None, False),
+ ("4 Schule – Bildung – Sport – Freizeit", "Schulbetrieb", "Schulzahnpflege", r"zahnpflege|schulzahn|zahlnpflege", None, False),
+ ("4 Schule – Bildung – Sport – Freizeit", "Schulbetrieb", "Schulgelder / Beiträge", r"schulgeld|schulbeitr|sozialbeitr", None, True),
+ ("4 Schule – Bildung – Sport – Freizeit", "Schulbetrieb", "Mittelschulvorbereitung", r"mittelschul|gymi", None, False),
+ ("4 Schule – Bildung – Sport – Freizeit", "Betreuung", "Familien- und schulergänzende Betreuung", r"kinderbetreuung|schulergaenzende betreuung|familienergaenzend|\bkibe\b|\bfeb\b|hort|ferienbetreuung", r"betreuung", True),
+ ("4 Schule – Bildung – Sport – Freizeit", "Betreuung", "Elternbeiträge / Tarife Betreuung", r"elternbeitrag|tarife schul", None, False),
+ ("4 Schule – Bildung – Sport – Freizeit", "Anlagen und Freizeit", "Benützung / Vermietung von Anlagen", r"benuetzung|benutzung|vermietung|nutzungsreglement|nutzungsordnung|badeordnung|badereglement|betriebsreglement", None, True),
+ ("4 Schule – Bildung – Sport – Freizeit", "Anlagen und Freizeit", "Vereinsunterstützung", r"verein", None, True),
+ ("4 Schule – Bildung – Sport – Freizeit", "Anlagen und Freizeit", "Bibliothek / Musikschule", r"bibliothek|ludothek|musikschul", None, True),
+ ("5 Sicherheit", "Polizei", "Polizeiverordnung", r"polizeiverordnung|\bpolvo\b", None, False),
+ ("5 Sicherheit", "Polizei", "Ordnungsbussen", r"bussen", None, False),
+ ("5 Sicherheit", "Polizei", "Videoüberwachung", r"video", None, True),
+ ("5 Sicherheit", "Polizei", "Parkieren / Nachtparkieren", r"nachtpark|parkier|parkplatz|parkhaus|velopark", None, True),
+ ("5 Sicherheit", "Feuerwehr und Zivilschutz", "Feuerwehr", r"feuerwehr", None, True),
+ ("5 Sicherheit", "Feuerwehr und Zivilschutz", "Zivilschutz / Sicherheitsverbund", r"zivilschutz|sicherheitsverbund|sicherheits zweckverband|katastroph", None, True),
+ ("6 Finanzen – Steuern – Gebühren", "Gebühren", "Gebührenverordnung", r"gebuehrenverordnung(?! (ueber|fuer|im|der wasser))|\bgebvo\b(?! wvvo)", r"gebuehrenreglement(?! (zur|der feuerwehr|wasser|siedlung|abfall))|gebuehrenordnung", False),
+ ("6 Finanzen – Steuern – Gebühren", "Gebühren", "Gebührentarif", r"gebuehrentarif|allgemeiner gebuehrentarif", r"\btarif|gebuehren", False),
+ ("6 Finanzen – Steuern – Gebühren", "Haushalt", "Haushaltführung / HRM2 / Aktivierungsgrenze", r"hrm2|haushalt|aktivierung|globalbudget|restatement", None, True),
+ ("6 Finanzen – Steuern – Gebühren", "Haushalt", "Finanz- und Aufgabenplan", r"aufgabenplan|investitionsprogramm", None, True),
+ ("6 Finanzen – Steuern – Gebühren", "Haushalt", "Steuern", r"steuer", None, True),
+ ("7 Raumplanung – Bauen – Umwelt", "Bauen", "Bau- und Zonenordnung", r"bau und zonenordnung|\bbzo\b", None, False),
+ ("7 Raumplanung – Bauen – Umwelt", "Bauen", "Zonen- und Kernzonenpläne", r"zonenplan", None, True),
+ ("7 Raumplanung – Bauen – Umwelt", "Bauen", "Gebühren Bauwesen", r"(gebuehren|tarif)\w* (im )?(kommunalen )?bauwesen|gebuehren im bauwesen", None, False),
+ ("7 Raumplanung – Bauen – Umwelt", "Bauen", "Regionale Planungsgruppe", r"planungsgruppe|regionalkonferenz|\bzpw\b|\bzpp\b", None, True),
+ ("7 Raumplanung – Bauen – Umwelt", "Ver- und Entsorgung", "Wasserversorgung", r"wasserversorg|\bwvvo\b|\bwv\b|gebuehrenblatt wasser|seewasserwerk", None, True),
+ ("7 Raumplanung – Bauen – Umwelt", "Ver- und Entsorgung", "Siedlungsentwässerung / Abwasser", r"siedlungsentwaesserung|abwasser|\bsevo\b|\bara\b", None, True),
+ ("7 Raumplanung – Bauen – Umwelt", "Ver- und Entsorgung", "Abfall", r"abfall|kehricht", None, True),
+ ("7 Raumplanung – Bauen – Umwelt", "Natur und Landschaft", "Natur-, Landschafts- und Denkmalschutz", r"natur|landschaft|denkmal", None, True),
+ ("8 Soziales – Gesundheit", "Soziales", "Zusatzleistungen / Sozialhilfe / Asyl", r"zusatzleistung|sozialhilfe|asyl|fuersorge", None, True),
+ ("8 Soziales – Gesundheit", "Gesundheit", "Friedhof und Bestattung", r"friedhof|grabmal|bestattung", None, True),
+ ("8 Soziales – Gesundheit", "Gesundheit", "Pflege, Alter, Spitex", r"pflege(?!heim eichi)|alters|spitex|\bkzu\b|palliativ|senectute|pflegeheim", None, True),
+ ("8 Soziales – Gesundheit", "Gesundheit", "Spital", r"spital", None, True),
+ ("9 Wirtschaft – Landwirtschaft – Gewerbe", "Wirtschaft", "Forst, Jagd, Landwirtschaft", r"forst|jagd|pacht|landwirtschaft|bodenverbesserung|befoersterung", None, True),
+ ("9 Wirtschaft – Landwirtschaft – Gewerbe", "Wirtschaft", "Markt / Gewerbe", r"markt|gewerbe", None, True),
+ ("Übergreifend", "Zusammenarbeit", "Statuten Zweckverbände / Anstalten", r"statuten|anstaltsvertrag|verbandsordnung|zweckverband", None, True),
+ ("Übergreifend", "Zusammenarbeit", "Anschluss- und Zusammenarbeitsverträge", r"anschlussvertrag|zusammenarbeitsvertrag|leistungsvereinbarung|vereinbarung|vertrag", None, True),
+ ("Behördenarbeit (kein Bestandteil der Rechtssammlung)", "Gemeindeversammlung", "Unterlagen / Einladungen", r"gemeindeversammlung|einladung|ankuendigung|beleuchtend|formularsatz|praesentation", None, True),
+ ("Behördenarbeit (kein Bestandteil der Rechtssammlung)", "Gemeindeversammlung", "Protokolle und Beschlüsse GV", r"protokoll gv|protokoll gemeindeversammlung|gemeindeversammlungsbeschluesse|beschluss gemeindeversammlung|beschluesse gemeindeversammlung|^protokoll$|^beschluesse$", None, True),
+ ("Behördenarbeit (kein Bestandteil der Rechtssammlung)", "Behörde", "Verhandlungsberichte", r"verhandlungsbericht", None, True),
+ ("Behördenarbeit (kein Bestandteil der Rechtssammlung)", "Behörde", "Öffentliche Beschlüsse", r"beschluss|zirkularbeschluss|protokollauszug", None, True),
+ ("Behördenarbeit (kein Bestandteil der Rechtssammlung)", "Behörde", "Wahlen und Konstituierung", r"wahl|konstituierung|interessenbindung", None, True),
+]
+JAHRE = list(range(2027, 2019, -1))
+
+def matrix():
+    zeilen = [{"menu": m, "unter": u, "dok": d, "key": f"k{i}", "sammel": s} for i, (m, u, d, *_ , s) in enumerate(KATALOG)]
+    for art in ("Jahresrechnung", "Budget"):
+        for j in JAHRE:
+            zeilen.append({"menu": "6 Finanzen – Steuern – Gebühren", "unter": "Jahresrechnungen" if art == "Jahresrechnung" else "Budgets", "dok": f"{art} {j}", "key": f"{art[0]}{j}", "sammel": False})
+    reihen = {z["key"]: i for i, z in enumerate(zeilen)}
+    zellen, rest = {}, {}
+    for o in ORGS:
+        urls_gesehen = {}
+        def setze(key, d, status, hinweis=""):
+            c = zellen.setdefault(key, {}).setdefault(o["id"], {"status": "ja", "docs": [], "hinweise": []})
+            c["docs"].append({"titel": d["titel"], "url": d.get("url"), "ablage": None})
+            if status == "unsicher" and c["status"] == "ja" and len(c["docs"]) == 1: c["status"] = "unsicher"
+            elif status == "ja": c["status"] = "ja"
+            if hinweis: c["hinweise"].append(hinweis)
+        def besuche(n, pfad):
+            for d in n.get("dokumente", []):
+                t = norm(d["titel"] + " " + d.get("nummer", "") + " " + pfad)
+                titel = norm(d["titel"])
+                pf = norm(pfad)
+                behoerde = (re.search(BEHOERDE, titel) or re.search(r"beschl|verhandlungsbericht|gemeindeversammlung", pf)) and not re.search(ERLASS, titel)
+                getroffen = False
+                # Jahresrechnung / Budget je Jahr
+                m = re.search(r"(jahresrechnung|\bjr\b|rechnung|budget|voranschlag)\D{0,25}?(20\d\d)", titel) or (re.search(r"(20\d\d)\D{0,30}(jahresrechnung|budget|voranschlag)", titel))
+                if m and not re.search(r"beschluss|abnahme|revision|pruefbericht", titel):
+                    jahr = next(g for g in m.groups() if g and g.isdigit()); art = "B" if re.search(r"budget|voranschlag", titel) else "J"
+                    if int(jahr) in JAHRE:
+                        hinweis, st = "", "ja"
+                        url_jahre = set(re.findall(r"(20\d\d)", (d.get("url") or "").rsplit("/", 1)[-1])) - {jahr}
+                        if url_jahre and art == "J" and not re.search(jahr, (d.get("url") or "")):
+                            st, hinweis = "unsicher", f"Link zeigt auf Datei mit Jahr {', '.join(sorted(url_jahre))}"
+                        setze(f"{'Jahresrechnung'[0] if art == 'J' else 'B'}{jahr}", d, st, hinweis); getroffen = True
+                    if not getroffen: getroffen = True
+                if not getroffen:
+                    treffer = []
+                    for i, (_, _, _, stark, schwach, _) in enumerate(KATALOG):
+                        ist_behoerde_zeile = KATALOG[i][0].startswith("Behördenarbeit")
+                        if behoerde and not ist_behoerde_zeile: continue
+                        if not behoerde and ist_behoerde_zeile and not re.search(r"gemeindeversammlung|protokoll|beschlu", titel): continue
+                        st = "ja" if re.search(stark, titel) else "unsicher" if schwach and re.search(schwach, titel) else None
+                        if st: treffer.append((i, st))
+                    if any(i == 8 for i, _ in treffer): treffer = [(i, st) for i, st in treffer if i not in (6, 7)]
+                    einzel = [i for i, _ in treffer if not KATALOG[i][5]]
+                    for i, st in treffer:
+                        hinweis = ""
+                        if not d.get("url"): st, hinweis = "unsicher", "kein Link"
+                        u = d.get("url")
+                        if u and u in urls_gesehen and urls_gesehen[u] != d["titel"]:
+                            st, hinweis = "unsicher", f"gleiche Datei wie «{urls_gesehen[u]}»"
+                        if i == 0 and "sekundarschul" in titel and o["typ"] == "Politische Gemeinde":
+                            st, hinweis = "unsicher", "Gemeindeordnung der Sekundarschulgemeinde (Fremderlass)"
+                        if len(einzel) > 1 and i in einzel and st == "ja":
+                            st, hinweis = "unsicher", "kombinierter Erlass – mehreren Zeilen zugeordnet"
+                        setze(f"k{i}", d, st, hinweis); getroffen = True
+                if not getroffen and behoerde:
+                    ziel = 58 if re.search(r"beschl", pf) else 55 if re.search(r"gemeindeversammlung", pf) else 57 if "verhandlungsbericht" in pf else None
+                    if ziel is not None: setze(f"k{ziel}", d, "unsicher", "nur über den Ordner zugeordnet"); getroffen = True
+                if d.get("url"): urls_gesehen.setdefault(d["url"], d["titel"])
+                if not getroffen: rest.setdefault(o["id"], []).append({"titel": d["titel"], "url": d.get("url"), "pfad": pfad})
+            for k in n.get("kinder", []): besuche(k, pfad + " › " + k["titel"])
+        for s in o["sections"]: besuche(s, s["titel"])
+    # Zeilen ohne Treffer bei allen Organisationen weglassen (ausser Katalog-Pflichtzeilen der Rubrik 1)
+    zeilen = [z for z in zeilen if z["key"] in zellen or z["menu"].startswith("1 ")]
+    return {"zeilen": zeilen, "zellen": zellen, "nicht_zugeordnet": rest}
 
 # ---------------------------------------------------------------- Übersicht
 WM = ('<span class="wm" role="img" aria-label="EduKSX-Codex"><span aria-hidden="true"><span class="v">E</span><span class="n">du</span>'
@@ -409,9 +940,16 @@ ICON = ('<svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><rec
 
 def render_daten(gemeinden):
     bezirke = list(dict.fromkeys(g["bezirk"] for g in gemeinden))
+    sgs = schulgemeinden()
     pg = {o["sitz"]: o["id"] for o in ORGS if o["typ"] == "Politische Gemeinde"}
-    gem = [{**g, "org": pg.get(g["gemeinde"]) if g["status"] != "offen" else None} for g in gemeinden]
-    daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "organisationen": ORGS}
+    gem = [{**g, "org": pg.get(g["gemeinde"])} for g in gemeinden]
+    einheit(gem, sgs)
+    for o in ORGS:
+        if o["typ"] == "Politische Gemeinde":
+            g = next((x for x in gem if x["gemeinde"] == o["sitz"]), None)
+            if g: o["einheit"] = g["einheit"]
+    daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(),
+             "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
     return ("/* Erzeugt von tools/build.py – nicht von Hand bearbeiten. */\nwindow.CODEX = "
             + json.dumps(daten, ensure_ascii=False, separators=(",", ":")) + ";\n")
 
@@ -438,7 +976,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.2.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.3.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -476,7 +1014,10 @@ def main():
     gem = list(csv.DictReader(open(ROOT/"data/gemeinden-zh.csv", encoding="utf-8")))
     (ROOT/"data/rechtssammlungen.json").write_text(json.dumps({"stand": STAND, "organisationen": ORGS}, ensure_ascii=False, indent=1), encoding="utf-8")
     (ROOT/"demo").mkdir(exist_ok=True)
-    for o in ORGS: (ROOT/f"demo/{o['id']}.html").write_text(RENDER[o["id"]](o), encoding="utf-8")
+    for o in ORGS:
+        nachbau = RENDER[o["renderer"]](o)
+        (ROOT/f"demo/{o['id']}.html").write_text(nachbau, encoding="utf-8")
+        (ROOT/f"demo/{o['id']}-iframe.html").write_text(iframe_variante(o, nachbau), encoding="utf-8")
     (ROOT/"index.html").write_text(render_index(gem), encoding="utf-8")
     (ROOT/"assets/daten.js").write_text(render_daten(gem), encoding="utf-8")
     (ROOT/"docs").mkdir(exist_ok=True)

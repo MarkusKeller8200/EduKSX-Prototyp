@@ -41,3 +41,29 @@ ul.struktur li::before { content: "📁 "; }
   #inhalt { padding: 1rem; }
 }
 #inhalt .karte h2 { margin-top: 0; }
+/* Ansichten einer Organisation */
+.reiter { display: flex; flex-wrap: wrap; gap: .25rem; border-bottom: 1px solid var(--border); margin: .5rem 0 1rem; }
+.reiterlink { padding: .45rem .8rem; text-decoration: none; color: var(--foreground); border-bottom: 3px solid transparent; }
+.reiterlink[aria-selected="true"] { border-bottom-color: var(--brand-orange); font-weight: 600; }
+.vollframe { width: 100%; height: calc(100vh - 230px); min-height: 520px; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; }
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+.split-teil { min-width: 0; display: flex; flex-direction: column; gap: .35rem; }
+.split-kopf { display: flex; gap: .5rem; align-items: center; justify-content: space-between; }
+.vollframe.split { height: calc(100vh - 260px); }
+.split-ersatz { border: 1px dashed var(--border); border-radius: var(--radius); padding: 1rem; height: calc(100vh - 260px); min-height: 400px; background: var(--muted); }
+pre.code { white-space: pre-wrap; font-size: .8rem; background: var(--muted); padding: .6rem; border-radius: 4px; }
+/* Matrix */
+.matrix-wrap { max-height: calc(100vh - 260px); overflow: auto; }
+table.matrix { font-size: .82rem; }
+table.matrix thead th { position: sticky; top: 0; z-index: 2; background: var(--card); }
+table.matrix td, table.matrix th { vertical-align: top; }
+table.matrix tbody th { font-weight: 600; min-width: 13rem; }
+table.matrix .mz-menu th { background: var(--secondary); color: var(--secondary-foreground); text-align: left; }
+td.mz { min-width: 9.5rem; }
+ul.mz-docs { list-style: none; margin: .2rem 0 0; padding: 0; font-size: .74rem; line-height: 1.3; }
+ul.mz-docs li { margin-bottom: .15rem; }
+.mz-org { white-space: nowrap; }
+.vorschau-dialog { width: min(1000px, 95vw); }
+.vorschau-frame { width: 100%; height: 75vh; border: 0; }
+.sr-only { position: absolute; left: -9999px; }
+@media (max-width: 900px) { .split { grid-template-columns: 1fr; } }

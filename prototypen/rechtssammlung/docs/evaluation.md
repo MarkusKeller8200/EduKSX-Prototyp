@@ -4,13 +4,13 @@ Prototyp 0.1.0 · Stand 17.11.2026
 
 ## Vergleich
 
-| | Gemeinde Trüllikon | Schule Trüllikon | SKM | Sek Bülach |
-|---|---|---|---|---|
-| CMS | i-web / icms (Innovative Web AG) | Escola-Schulplattform (Ordner-Sitemap) | WordPress (Theme BeTheme) | Escola-Schulplattform (Dokumentablage per AJAX) |
-| Menüpfad | Wir für Sie › Rechtssammlung | Download › Systematische Rechtssammlung | Schulgemeinde › Systematische Rechtssammlung | Schulverwaltung › Systematische Rechtssammlung |
-| Rubriken / Dokumente | 9 / 39 | 9 / 190 | 7 / 50 | 5 / 12 |
-| Ordnertiefe | 1 | 3 | 2 | 1 |
-| Nummerierung | Sachgebiet 1–9 als Präfix im Titel, keine Erlassnummer | Erlassnummer + Datum im Dateinamen (z. B. 100.02-20220101_PST_…), Rubriken SR-00…SR-11 | Eigene Systematik 100–105 mit Unterziffern (100.1 …); Jahresrechnungen/Budgets teilen sich 104.1 bzw. 104.2 | Datum JJJJ.MM.TT als Titel-Präfix, keine Erlassnummer |
+| | Gemeinde Trüllikon | Schule Trüllikon | SKM | Sek Bülach | Meilen | Bachenbülach | Schule Bachenbülach | Höri | Primarschule Höri | Winkel | Schule Winkel | Hochfelden |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| CMS | i-web / icms (Innovative Web AG) | Escola-Schulplattform (Ordner-Sitemap) | WordPress (Theme BeTheme) | Escola-Schulplattform (Dokumentablage per AJAX) | i-web / icms (Innovative Web AG) | Gemeinde-CMS mit Dokumentablage (Ordnerbaum) | Gemeinde-CMS mit Dokumentablage (Ordnerbaum) | Gemeinde-CMS mit Dokumentablage (Ordnerbaum, per AJAX) | Escola-Schulplattform (Dokumentablage per AJAX) | i-web / icms (Innovative Web AG) | Escola-Schulplattform (Dokumentablage per AJAX) | Contao |
+| Menüpfad | Wir für Sie › Rechtssammlung | Download › Systematische Rechtssammlung | Schulgemeinde › Systematische Rechtssammlung | Schulverwaltung › Systematische Rechtssammlung | Verwaltung › Rechtssammlung › 1–9 Sachgebiet (je eine Unterseite) | Verwaltung › Systematische Rechtssammlung | Schule › Service › Reglemente und Dokumente | Politik & Verwaltung › Verwaltung › Rechtssammlung | Organisation › Schulpflege › Rechtsgrundlagen | Verwaltung › Rechtssammlung › 1–9 Sachgebiet (je eine Unterseite) | Betreuung › Dokumente | Politik › Gesetzessammlung |
+| Rubriken / Dokumente | 9 / 39 | 9 / 190 | 7 / 50 | 5 / 12 | 9 / 164 | 9 / 26 | 9 / 27 | 9 / 49 | 1 / 4 | 9 / 46 | 1 / 7 | 9 / 77 |
+| Ordnertiefe | 1 | 3 | 2 | 1 | 2 | 2 | 1 | 1 | 1 | 2 | 1 | 2 |
+| Nummerierung | Sachgebiet 1–9 als Präfix im Titel, keine Erlassnummer | Erlassnummer + Datum im Dateinamen (z. B. 100.02-20220101_PST_…), Rubriken SR-00…SR-11 | Eigene Systematik 100–105 mit Unterziffern (100.1 …); Jahresrechnungen/Budgets teilen sich 104.1 bzw. 104.2 | Datum JJJJ.MM.TT als Titel-Präfix, keine Erlassnummer | Vollständige Erlassnummern nach Leitfaden (z. B. 100.1, 110.111) mit Inkraftsetzungsdatum | Sachgebiete 01–09 und Untergruppen (10, 11 …); Dateien ohne Erlassnummer, Abkürzung in Klammer (GO, EVO …) | keine | Erlassnummer im Dateinamen (100.1, 120.1.1 …) | keine | Vollständige Erlassnummern nach Leitfaden mit Inkraftsetzungsdatum | keine | Erlassnummer im Dateinamen (100.1_…), Untergruppen nach Leitfaden |
 
 ## Politische Gemeinde Trüllikon
 
@@ -460,6 +460,703 @@ Prototyp 0.1.0 · Stand 17.11.2026
 - Gebührenverordnung/-tarif liegen unter «Gemeinde - Behörden - Verwaltung» statt «Finanzen und Gebühren».
 - Inhalte werden per JavaScript nachgeladen → für Suchmaschinen und einfache Crawler unsichtbar.
 - Upload-Datum ≠ Inkraftsetzung; Inkraftsetzung nur im Titel.
+
+## Politische Gemeinde Meilen
+
+- **Typ / Bezirk:** Politische Gemeinde, Meilen
+- **Website:** https://www.meilen.ch
+- **Rechtssammlung:** https://www.meilen.ch/rechtssammlung
+- **Menüpfad:** Verwaltung › Rechtssammlung › 1–9 Sachgebiet (je eine Unterseite)
+- **Weitere Einstiege:** Bildung / Schule › Schule Meilen (eigene Website)
+- **CMS:** i-web / icms (Innovative Web AG)
+- **Struktur:** Neun Unterseiten je Sachgebiet; je Untergruppe eine Tabelle Nummer | Titel | Gültig seit. Jeder Eintrag führt auf eine Detailseite mit dem PDF.
+- **Nummerierung:** Vollständige Erlassnummern nach Leitfaden (z. B. 100.1, 110.111) mit Inkraftsetzungsdatum
+- **Umfang:** 9 Rubriken, 164 Dokumente
+
+### Menüstruktur und Dateien
+
+- **1 Gemeinde / Behörden** (31)
+  - **10 Organisationserlasse der Organe, Behörden und Verwaltung** (31)
+    - Gemeindeordnung
+    - Organisationsreglement
+    - Beilagen zum Organisationsreglement
+    - Geschäftsreglement Schulpflege
+    - Geschäftsreglement Schulpflege: Anhänge
+    - Geschäftsreglement Bürgerrechtsbehörde
+    - Geschäftsreglement Bürgerrechtsbehörde: Anhang
+    - Geschäftsreglement Personal- und Organisationsausschuss
+    - Geschäftsreglement Polizei- und Verkehrsausschuss
+    - Geschäftsreglement Finanzausschuss
+    - Geschäftsreglement Baubehörde
+    - Geschäftsreglement Sozialbehörde
+    - Geschäftsreglement Sozialbehörde; Anhang
+    - Geschäftsreglement Grundsteuerbehörde
+    - Geschäftsreglement Baukollegium
+    - Geschäftsreglement Energie- und Klimakommission
+    - Geschäftsreglement Landschaftskommission
+    - Geschäftsreglement Sportkommission
+    - Geschäftsreglement Mobilitätskommission
+    - Geschäftsreglement Sicherheitskommission
+    - Geschäftsreglement Präventionskommission
+    - Entschädigungsverordnung
+    - Vollzugsbestimmungen zur Entschädigungsverordnung
+    - Vollzugsbestimmungen zur Entschädigungsverordnung: Anhang Feuerwehr
+    - Vollzugsbestimmungen zur Entschädigungsverordnung: Anhang Zivilschutzorganisation
+    - Vollzugsbestimmungen zur Entschädigungsverordnung: Anhang Seerettungsdienst
+    - Vollzugsbestimmungen zur Entschädigungsverordnung: Anhang Kata-Stab
+    - Richtlinien für den Beitritt von Behördenmitgliedern zur BVK
+    - Personalverordnung
+    - Personal- und Organisationsausschuss: Zuständigkeiten Personelles
+    - Bestimmungen zur Einführung des Geschäftsverwaltungs-Systems der Gemeindeverwaltung (Gever)
+- **2 Zivilrecht** (3)
+  - **20 Kindes- und Erwachsenenschutz** (3)
+    - Zweckverband Kindes- und Erwachsenenschutz Bezirk Meilen (KESB): Statuten
+    - Vertrag zwischen den Gemeinden Meilen, Männedorf, Uetikon am See und Oetwil am See betr. die Bildung eines Zivilstandskreises Männedorf
+    - Vertrag zwischen den Gemeinden Meilen, Herrliberg und Erlenbach über die Zusammenarbeit in einem Betreibungskreis
+- **3 Strafrecht** (0)
+- **4 Schule / Freizeit** (31)
+  - **40 Schule und Bildung** (31)
+    - Reglement der Schule betr. Schulgelder für Schüler aus Gemeinden im Bezirk Meilen
+    - Reglement der Schule betr. Schülertransporte
+    - Reglement der Schule betr. freiwilliger Schulsport
+    - Reglement der Schule betr. Schulbeiträge für weiterführende und externe Schulen
+    - Reglement der Schule betr. Klassenlager und mehrtägige Schulreisen
+    - Reglement der Schule betr. Skilager und Sportcamps
+    - Reglement der Schule betr. Schulzahnpflege
+    - Reglement der Schule betr. Sozialbeiträge
+    - Reglement der Schule betr. Weiterbildung
+    - Reglement der Schule betr. unbesoldete Urlaube
+    - Verein FEE: Statuten
+    - Beitragsverordnung für die familien- und schulergänzende Betreuung
+    - Ausführungsbestimmungen zur Beitragsverordnung für die familien- und schulergänzende Betreuung
+    - Angebots- und Finanzierungsgrundsätze für den Musikschulunterricht
+    - Beitragsreglement für den Musikschulunterricht
+    - Verordnung über die Benützung der Turn- und Sporthallen, Hallenbad und Aussenanlagen
+    - Hallenbad: Betriebs- und Badereglement
+    - Strandbäder: Betriebs- und Badeordnung
+    - Tennisanlage Allmend: Reglement
+    - Tennisanlage Allmend: Benützungszeiten
+    - Badeanlage Dolliker-Ländeli: Betriebs- und Badeordnung
+    - Vertrag zwischen der politischen Gemeinde Meilen und der Schulgemeinde Herrliberg betr. die Benützung des Hallenbads Meilen
+    - Vertrag zwischen der politischen Gemeinde Meilen und der Schulgemeinde Uetikon am See betr. die Benützung des Hallenbads Meilen
+    - Verordnung über die Benützung des Dorfprovisoriums
+    - Vereinbarung zwischen der politischen Gemeinde Meilen und dem Schälehuus-Club betr. die Benützung und Belegung von Räumlichkeiten im Unteren Schellenhaus, Seestrasse 717
+    - Badhüsli Seestrasse 74: Reglement für die Benützung
+    - Bibliothek: Benutzerordnung
+    - Ludothek: Benützerordnung und Informationen
+    - Stiftung Ortsmuseum: Stiftungsurkunde
+    - Gasthof zum Löwen Meilen AG: Benützungsreglement Jürg-Wille-Saal
+    - Richtlinien über finanzielle Leistungen der Gemeinde an Vereine, Institutionen und an Organisatoren von Anlässen
+- **5 Sicherheit** (19)
+  - **50 Öffentliche Ordnung allgemein** (19)
+    - Reglement über die Plakatständer
+    - Benützungsreglement Dorfplatz
+    - Videoüberwachungsreglement Parkhaus Dorfplatz
+    - Ordnung Dorfbachplatz
+    - Videoüberwachungsreglement Schulanlage Feldmeilen
+    - Polizeiverordnung
+    - Verordnung über das gemeinderechtliche Ordnungsbussenverfahren, mit Bussenliste
+    - Anschlussvertrag zwischen den Gemeinden Meilen, Herrliberg und Erlenbach betr. die Übernahme von kommunalpolizeilichen Aufgaben
+    - Bezirksgemeinden: Vereinbarung über die Zusammenarbeit und Handlungslegitimation der kommunalen Polizeikorps
+    - Anschlussvertrag zwischen den Gemeinden Meilen und Männedorf betr. die Übernahme von kommunalpolizeilichen Aufgaben
+    - Anschlussvertrag zwischen den Gemeinden Meilen und Uetikon am See betr. die Übernahme von kommunalpolizeilichen Aufgaben
+    - Reglement über die Benützung der Schiessanlage Büelen
+    - Reglement über die Benützung des Zivilschutz-Pavillons Büelen
+    - Anschlussvertrag zwischen den politischen Gemeinden Meilen und Herrliberg betr. die Schiessanlage Büelen
+    - Anschlussvertrag über die Bildung einer Zivilschutzorganisation Region Meilen
+    - Anschlussvertrag über die Bildung eines Katastrophenstabs Region Meilen
+    - Feuerwehr: Anschlussvertrag mit der politischen Gemeinde Herrliberg
+    - Anschlussvertrag zwischen den Gemeinden Meilen und Uetikon a.S. betr. die Übernahme von Seeretteraufgaben
+    - Anschlussvertrag zwischen den Gemeinden Meilen und Männedorf betr. die Übernahme von Seeretteraufgaben
+- **6 Finanzen / Steuern** (5)
+  - **60 Finanzen, Steuern, Gebühren** (5)
+    - Richtlinien über den Steuererlass
+    - Gebührenverordnung
+    - Gebührentarif der politischen Gemeinde
+    - Verzicht auf Unterstützung von Anlässen mit Gemeindepersonal
+    - HRM2; Haushaltsgleichgewicht; Aktivierungs- und Wesentlichkeitsgrenze; Abschreibungsmethode
+- **7 Bauen / Ver- / Entsorgung** (59)
+  - **70 BZO, Nutzungspläne** (59)
+    - Bau- und Zonenordnung 2020
+    - Vollzugsrichtlinien Sonderbauvorschriften für die Wohnzonen und Mischzonen (Artikel 66 bis 69 BZO)
+    - Vollzugsrichtlinie Förderung Siedlungsökologie (Art. 79 BZO)
+    - Zonenplan 1:5000
+    - Ergänzungsplan Baumschutz
+    - Kernzonenplan Feldmeilen
+    - Kernzonenplan Dorfmeilen
+    - Kernzonenplan Seidengasse
+    - Kernzonenplan Obermeilen
+    - Kernzonenplan Dollikon
+    - Kernzonenplan Weiler Untere Aebleten
+    - Kernzonenplan Weiler Grüt
+    - Kernzonenplan Weiler Burg
+    - Kernzonenplan Weiler Toggwil
+    - Quartiererhaltungszone und Waldabstandslinie Am Tobelweg
+    - Quartiererhaltungszone und Waldabstandslinie Auf der Hürnen
+    - Quartiererhaltungszone Bahnhofstrasse
+    - Zweckverband Zürcher Planungsgruppe Pfannenstiel (ZPP): Verbandsordnung
+    - Reglement zum kommunalen Mehrwertausgleichsfonds
+    - Gebührentarif im kommunalen Bauwesen
+    - Richtlinien zum Submissionswesen der politischen Gemeinde (Submissionsrichtlinien)
+    - Submissionsrichtlinien: Anhang 1
+    - Submissionsrichtlinien: Anhang 2
+    - Submissionsrichtlinien: Anhang 3
+    - Submissionsrichtlinien: Anhang 4
+    - Submissionsrichtlinien: Anhang 5
+    - Interkommunale Vereinbarung. Gründung Infrastruktur Zürichsee AG
+    - Konzessionsvertrag betr. Strom- und Wasserversorgung. Infrastruktur Zürichsee AG
+    - Aktionärbindungsvertrag. Infrastruktur Zürichsee AG
+    - Erdgas Zürich AG: Konzessionsvertrag
+    - Zweckverband Seewasserwerk Meilen-Herrliberg-Egg: Statuten
+    - Zweckverband Wasserversorgung Meilen-Egg: Statuten
+    - Wasserversorgung Goldingen-Meilen: Betriebsreglement
+    - Wasserversorgungsreglement. Infrastruktur Zürichsee AG
+    - Tarifreglement Wasserversorgung. Infrastruktur Zürichsee AG
+    - Netzkostenbeiträge Strom. Infrastruktur Zürichsee AG
+    - Ökologiefonds Reglement. Infrastruktur Zürichsee AG
+    - AGB Stromversorgung feste Kunden. Infrastruktur Zürichsee AG
+    - AGB Stromversorgung Marktkunden. Infrastruktur Zürichsee AG
+    - Publizierte Tarife. Infrastruktur Zürichsee AG
+    - Abfallverordnung
+    - Abfallreglement
+    - Abfallgebühren
+    - Zweckverband Kehrichtverwertung Zürcher Oberland (KEZO): Statuten
+    - Reglement über die Siedlungsentwässerung
+    - Gemeinderatsbeschluss betr. Reduktion der Abwassergebühren
+    - Zweckverband ARA Rorguet: Statuten
+    - Siedlungsentwässerungsverordnung
+    - Verordnung über den Schutz und die Pflege von Natur- und Landschaftsschutzobjekten von kommunaler Bedeutung
+    - Richtlinien über subventionsberechtigte Arbeiten bei der Restaurierung von Denkmalschutzobjekten
+    - Arbeitsreglement kommunaler Denkmalpfleger
+    - Reglement über die Benützung von abschliessbaren Veloparkanlagen der Gemeinde Meilen
+    - Benützungsreglement Parkhaus Dorfplatz
+    - Reglement über die Schiffsstandplätze
+    - Richtplan Siedlung und Landschaft; Bericht mit Richtplanfestlegungen
+    - Richtplan Siedlung und Landschaft; Situationsplan
+    - Verkehrsplan; Bericht mit Richtplanfestlegungen
+    - Verkehrsplan 1
+    - Verkehrsplan 2
+- **8 Soziales / Gesundheit** (14)
+  - **80 Sozialhilfe, Fürsorge, Sozialberatung** (14)
+    - Verordnung über Gemeindeleistungen zu den Zusatzleistungen AHV/IV
+    - Zweckverband Kindes- und Erwachsenenschutz Bezirk Meilen. Statuten
+    - GEWOMAG: Statuten
+    - GEWOMAG: Vermietungsreglement Überbauung Ländisch
+    - Verordnung über die Beiträge an die Mieten von Alterswohnungen Plattenstrasse 48/50
+    - Baugenossenschaft Friedberg: Statuten
+    - Baugenossenschaft Friedberg: Anforderung an Mieter
+    - Baugenossenschaft Pfannenstiel: Statuten
+    - Baugenossenschaft Pfannenstiel: Anforderung an Mieter
+    - Baugenossenschaft Zurlinden: Richtlinien für die Vermietung von Wohnungen für den Mittelstand in der Überbauung Dollikon
+    - Friedhofreglement
+    - Stiftung Alters- und Pflegeheim Meilen: Stiftungsurkunde
+    - Spital Männedorf: Interkommunale Vereinbarung Spital Männedorf AG
+    - Richtlinien für Hilfsaktionen im In- und Ausland sowie für Gemeindebeiträge
+- **9 Wirtschaft / Gewerbe** (2)
+  - **90 Forstwesen** (2)
+    - Forstrevier: Anschlussvertrag betr. Bildung eines gemeinsamen Forstreviers
+    - Reglement über die Vermietung von Marktständen
+
+### Befunde
+
+- Vorbildlich: einheitliche Erlassnummern und «Gültig seit» bei jedem Erlass.
+- Einheitsgemeinde: die Erlasse der Schule stehen im Sachgebiet 4 der Gemeinde-Rechtssammlung (400.x «Reglement der Schule betr. …»).
+- 2 aufgehobene Erlasse bleiben als Zeile stehen («Aufgehoben.»), ohne Dokument.
+- Links führen auf Detailseiten statt direkt auf das PDF – ein Klick mehr.
+
+## Politische Gemeinde Bachenbülach
+
+- **Typ / Bezirk:** Politische Gemeinde, Bülach
+- **Website:** https://www.bachenbuelach.ch
+- **Rechtssammlung:** https://www.bachenbuelach.ch/verwaltung/systematische-rechtssammlung.html/397
+- **Menüpfad:** Verwaltung › Systematische Rechtssammlung
+- **Weitere Einstiege:** Schule › Service › Reglemente und Dokumente (eigene Ablage der Schule)
+- **CMS:** Gemeinde-CMS mit Dokumentablage (Ordnerbaum)
+- **Struktur:** Aufklappbarer Ordnerbaum (Ebene 1 = Sachgebiet 01–09, Ebene 2 = Untergruppe) mit Dateiname | Grösse | Format und «Ordnerinhalt herunterladen».
+- **Nummerierung:** Sachgebiete 01–09 und Untergruppen (10, 11 …); Dateien ohne Erlassnummer, Abkürzung in Klammer (GO, EVO …)
+- **Umfang:** 9 Rubriken, 26 Dokumente
+
+### Menüstruktur und Dateien
+
+- **01 Gemeinde / Behörden / Verwaltung / Bevölkerung** (6)
+  - **10 Gemeinde** (1)
+    - Organisationsreglement Gemeinderat und Gemeindeverwaltung (ORGG)
+  - **11 Gemeinderat** (1)
+    - Gemeindeordnung (GO)
+  - **12 weitere Behörden Kommissionen** (2)
+    - Entschädigungsreglement (ESR)
+    - Entschädigungsverordnung (EVO)
+  - **13 Personal** (2)
+    - Personalreglement (PeR)
+    - Personalverordnung (PeVO)
+  - **14 Informationen Datenschutz und Informatik** (0)
+- **02 Zivilrecht / Familienrecht / Grundbuch / Notariat Schuldbetreibung & Konkurs** (4)
+  - Geschäftsreglement der Kinder- und Jugendkommission (GeR KJKO)
+  - Rabattreglement (RaR)
+  - Rabattverordnung (RaVO)
+  - Verordnung über die Erteilung des Gemeindebürgerrechts und die Verwaltungsgebühren
+- **03 Strafrecht / Opferhilfe / Gewaltschutz** (0)
+- **04 Schule & Bildung / Sport / Freizeit / Kultur** (2)
+  - **41 Sport Freizeit Kultur** (2)
+    - Reglement über die Unterstützung der Vereine (VUR)
+    - Verordnung über die Unterstützung der Vereine (VUV)
+- **05 Öffentliche Ordnung & Sicherheit: Polizei / Zivilschutz Feuerwehr & Feuerpolizei / Tierschutz** (4)
+  - Nachtparkreglement (NpR)
+  - Nachtparkverordnung (NpVO) 2015
+  - Ordnungsbussenreglement (OBR)
+  - Polizeiverordnung (PolVO)
+- **06 Finanzen / Steuern / Gebühren** (3)
+  - Gebührenblatt Wasser
+  - Gebührenreglement (GebR)
+  - Gebührenverordnung (GebVO)
+- **07 Raumplanung / Bauen / Umwelt / Energie / Verkehr** (5)
+  - **70 Raumplanung Bauen Umwelt** (1)
+    - Bau- und Zonenordnung (BZO)
+  - **71 Energie Verkehr Ver- und Entsorgung** (4)
+    - Abfallverordnung (AVO)
+    - Reglement über die Siedlungsentwässerungsanlagen (SER)
+    - Verodnung über die Wasserversorgungsanlagen (WVVO)
+    - Verordnung über die Siedlungsentwässerungsanlagen (SEVO)
+- **08 Soziales / Gesundheit / Arbeit** (2)
+  - **80 Soziales** (1)
+    - Geschäftsreglement Fürsorgekommission (FK)
+  - **81 Gesundheit** (1)
+    - Friedhofverordnung
+- **09 Wirtschaft / Landwirtschaft / Gewerbe** (0)
+  - **91 Landwirtschaft Forst** (0)
+  - **92 Gewerbe** (0)
+
+### Befunde
+
+- Keine Schul-Erlasse in der Rechtssammlung: Organisationsreglement Schule, Elternbeitrags- und Hortreglemente liegen nur in der Schul-Ablage.
+- Fehleinordnung: Geschäftsreglement Kinder-/Jugendkommission und Rabattreglement unter «02 Zivilrecht».
+- Gemeindeordnung liegt unter «11 Gemeinderat», das Organisationsreglement unter «10 Gemeinde».
+- Tippfehler im Titel «Verodnung über die Wasserversorgungsanlagen».
+- Einheitsgemeinde Primarstufe (laut Gemeindeverzeichnis keine Primarschulgemeinde); Sekundarstufe vermutlich Sek Bülach – zu prüfen.
+
+## Schule Bachenbülach (Primarstufe der Gemeinde)
+
+- **Typ / Bezirk:** Schule der Einheitsgemeinde, Bülach
+- **Website:** https://www.bachenbuelach.ch/schule
+- **Rechtssammlung:** https://www.bachenbuelach.ch/organisation/reglemente-und-dokumente.html/295
+- **Menüpfad:** Schule › Service › Reglemente und Dokumente
+- **Weitere Einstiege:** 
+- **CMS:** Gemeinde-CMS mit Dokumentablage (Ordnerbaum)
+- **Struktur:** Ordnerbaum der Schule: Reglemente/Konzepte/Merkblätter, Hort, Freizeitkurse, Anmeldung u. a. – gemischt mit Formularen und Elterninformationen.
+- **Nummerierung:** keine
+- **Umfang:** 9 Rubriken, 27 Dokumente
+
+### Menüstruktur und Dateien
+
+- **Ohne Ordner** (2)
+  - Antrag Jokertage
+  - Gesuch Dispensation
+- **Schule: Reglemente, Konzepte, Merkblätter** (5)
+  - Konzept Schulische Sozialpädagogik SSP
+  - Merkblatt Escola App für Eltern
+  - Merkblatt Klassenzuteilungen
+  - Organisationsreglement Schule (ORSS)
+  - Ufzgi-Club Konzept
+- **Hort: Reglemente, Konzepte** (9)
+  - Betriebsreglement
+  - Eingewöhnungskonzept
+  - Elternbeitragsreglement
+  - Ferienhortreglement
+  - Kinderrestaurant - Konzept
+  - Merkblatt unregelmässige Hortbesuche
+  - Tarife Schul- & Ferienhort
+  - Verhaltenskodex Schulhort
+  - Verpflichtungserklärung Verhaltenskodex
+- **Freizeitkurse Schule** (2)
+  - Freizeitkurse Angebot SJ 26_27 1. Semester
+  - Freizeitkurse Schule Bachenbülach - Konzept
+- **Anmeldung Schule** (3)
+  - Anmeldeformular für Eintritt in 1. Kiga
+  - Anmeldeformular Zuzüger
+  - Elterninformation zum Start in den Kindergarten 2026
+- **Ferien-/Freizeitangebote weitere Anbieter** (1)
+  - Flyer Ferienpass Gemeinde
+- **Räbeliechtli** (2)
+  - Räbeliechtli Konzept
+  - Räbeliechtli Lieder
+- **Externe Schulevaluation** (1)
+  - 250822 Bericht Primarschule Halden
+- **Frühe Förderung** (2)
+  - Kresse säen Anleitung
+  - Linksammlung
+
+### Befunde
+
+- Keine Rechtssammlung im Sinne des Leitfadens: Erlasse (ORSS, Elternbeitragsreglement, Ferienhortreglement) stehen zwischen Formularen und Liedern.
+- Diese Erlasse fehlen in der Rechtssammlung der Gemeinde.
+
+## Politische Gemeinde Höri
+
+- **Typ / Bezirk:** Politische Gemeinde, Bülach
+- **Website:** https://www.hoeri.ch
+- **Rechtssammlung:** https://www.hoeri.ch/politik-verwaltung/verwaltung/rechtssammlung.html/50
+- **Menüpfad:** Politik & Verwaltung › Verwaltung › Rechtssammlung
+- **Weitere Einstiege:** Bildung › Kindergarten/Primarschule Höri (eigene Website); Bildung › Sekundarschule Bülach
+- **CMS:** Gemeinde-CMS mit Dokumentablage (Ordnerbaum, per AJAX)
+- **Struktur:** Aufklappbarer Ordnerbaum mit den 9 Sachgebieten; Dateien direkt im Sachgebiet, Inhalte werden per AJAX nachgeladen.
+- **Nummerierung:** Erlassnummer im Dateinamen (100.1, 120.1.1 …)
+- **Umfang:** 9 Rubriken, 49 Dokumente
+
+### Menüstruktur und Dateien
+
+- **1 Gemeinde, Behörden, Bevölkerung, Verwaltung** (5)
+  - 100.1 Gemeindeordnung Politische Gemeinde (GO)
+  - 100.2 Organisationsreglement (OrgR)
+  - 110.1 Verordnung über die Entschädigung der Behörden, Kommissionen und Funktionärinnen bzw. Funktionäre im Nebenamt (Entschädigungsverordnung; EVO)
+  - 120.1.1 Vollzugsreglement zur Personalverordnung der politischen Gemeinde Höri
+  - 120.1 Personalverordnung der politischen Gemeinde Höri (PVO)
+- **2 Zivilrecht, Familienrecht, Grundbuch, Notariat, Schuldbetreibung und Konkurs** (4)
+  - 200.1 Anschlussvertrag KESB Bülach-Nord
+  - 200.2 Zusammenarbeitsvertrag Berufsbeistandschaft Bülach
+  - 210.1 Zusammenarbeitsvertrag Zivilstandskreis Bülach
+  - 220.1 Zusammenarbeitsvertrag Betreibungskreis Bülach
+- **3 Strafrecht, Opferhilfe, Gewaltschutz** (0)
+- **4 Schule und Bildung, Sport, Freizeit, Kultur** (3)
+  - 410.1.1 Vollzugsreglement familienergänzende Kinderbetreuung der politischen Gemeinde Höri (Vollzugsreglement FEB)
+  - 410.1 Verordnung familienergänzende Kinderbetreuung der politischen Gemeinde Höri (VO FEB)
+  - 420.1 Reglement Vereinsunterstützung
+- **5 Öffentliche Ordnung und Sicherheit: Polizei, Zivilschutz, Feuerwehr, Feuerpolizei, Tierschutz** (9)
+  - 510.1 Polizeiverordnung
+  - 500.1 Reglement über die Videoüberwachung auf öffentlichem Grund
+  - 510.2 Bussenreglement mit Bussenliste
+  - 520.1 Anschlussvertrag Sicherheitsverbund Bülach-Rafzerfeld
+  - 530.2 Nutzungsreglement für die Schützenstube (Schützenhaus Höri-Hochfelden)
+  - 540.1 Zweckverbandsstatuten Feuerwehr Höri-Hochfelden
+  - 540.2 Tarifreglement Zweckverband Feuerwehr Höri-Hochfelden
+  - 540.3 Entschädigung- und Soldreglement Zweckverband Feuerwehr Höri-Hochfelden
+  - 540.4 Geschäftsreglement Zweckverband Feuerwehr Höri-Hochfelden
+- **6 Finanzen , Steuern, Gebühren** (2)
+  - 600.1.1 Gebührenreglement zur Gebührenverordnung der Politischen Gemeinde
+  - 600.1 Gebührenverordnung Politische Gemeinde (GebVO)
+- **7 Raumplanung, Bauen, Umwelt, Energie, Verkehr** (20)
+  - 700.1 Bau- und Zonenordnung
+  - 710.3 Statuten Zweckverband Planungsgruppe Zürcher Unterland
+  - 710.5 Verordnung über die Errichtung von Radio- und Fernseh-Aussenantennenanlagen
+  - 710.6 Kompetenzregelung für die Bewilligung und Kontrolle von Beförderungsanlagen
+  - 721.1.1 Gebührenverordnung über die Wasserversorgung
+  - 721.1.2 Gebührenreglement Wasserversorgung (Tarife)
+  - 721.1.0 Verordnung über die Wasserversorgung
+  - 721.2 Reglement der Betriebskommission der WV Höri-Hochfelden-Neerach-Niederglatt
+  - 721.3 Anschlussvertrag Wasserversorgung Hochfelden
+  - 721.4 Anschlussvertrag Wasserversorgung Neerach
+  - 721.5 Anschlussvertrag Wasserversorgung Niederglatt
+  - 730.1.1 Vollzugsreglement zur Abfallverordnung
+  - 730.1.2 Gebührenreglement zur Abfallverordnung
+  - 730.1.0 Abfallverordnung
+  - 730.2 Anschlussvertrag Interessengemeinschaft Kehrichtsackgebühren Zürcher Unterland
+  - 731.1 Anschlussvertrag Stadt Bülach Abnahme und Reinigung des Abwassers
+  - 732.1.1 Verordnung über die Gebühren an Siedlungsentwässerungsanlagen
+  - 732.1.2 Gebührenreglement Siedlungsentwässerungsanlagen (Tarife)
+  - 732.1.0 Verordnung über die Siedlungsentwässerungsanlagen
+  - 740.1 Parkierungs- und Parkkartenverordnung
+- **8 Soziales, Gesundheit, Arbeit** (6)
+  - 820.1 Anschlussvertrag Alters- und Pflegeheim Eichi Niederglatt
+  - 820.2 Anstaltsvertrag Interkommunale Anstalt KZU
+  - 831.1 Aktionärbindungsvertrag Spital Bülach AG
+  - 840.1 Zweckverbandsstatuten Friedhof Bülach
+  - 840.2 Friedhofverordnung Friedhof Bülach
+  - 840.3 Organisations- und Geschäftsreglement Friedhof Zweckverband Bülach
+- **9 Wirtschaft, Landwirtschaft, Gewerbe** (0)
+
+### Befunde
+
+- Saubere Nummerierung nach Leitfaden, aber keine Untergruppen-Ordner (alle Dateien direkt im Sachgebiet).
+- Gemischte Nummerformate (721.1.0 neben 721.2).
+- Primarstufe bei der Primarschulgemeinde Höri, Sekundarstufe bei der Sekundarschule Bülach.
+
+## Primarschulgemeinde Höri
+
+- **Typ / Bezirk:** Primarschulgemeinde, Bülach
+- **Website:** https://www.schulehoeri.ch
+- **Rechtssammlung:** https://www.schulehoeri.ch/organisation/schulpflege/rechtsgrundlagen/p-183568/
+- **Menüpfad:** Organisation › Schulpflege › Rechtsgrundlagen
+- **Weitere Einstiege:** Elternrat › Reglement; Informationen › Elternrechte/-Pflichten
+- **CMS:** Escola-Schulplattform (Dokumentablage per AJAX)
+- **Struktur:** Eine Dokumenttabelle «Rechtsgrundlagen» (Name, Typ, Grösse, Datum).
+- **Nummerierung:** keine
+- **Umfang:** 1 Rubriken, 4 Dokumente
+
+### Menüstruktur und Dateien
+
+- **Rechtsgrundlagen** (4)
+  - Schulgemeindeordnung 2022
+  - Organisationsstatut
+  - Entschädigungsverordnung
+  - Personalverordnung Primarschule Höri
+
+### Befunde
+
+- Nur vier Grunderlasse; weitere Reglemente (z. B. Elternrat) liegen an anderen Stellen der Website.
+- Keine Gliederung nach Sachgebieten, keine Nummern.
+- Menüpunkt heisst «Rechtsgrundlagen», nicht «Rechtssammlung».
+
+## Politische Gemeinde Winkel
+
+- **Typ / Bezirk:** Politische Gemeinde, Bülach
+- **Website:** https://www.winkel.ch
+- **Rechtssammlung:** https://www.winkel.ch/gesetzessammlung
+- **Menüpfad:** Verwaltung › Rechtssammlung › 1–9 Sachgebiet (je eine Unterseite)
+- **Weitere Einstiege:** Primarschule (eigene Website schule-winkel.ch)
+- **CMS:** i-web / icms (Innovative Web AG)
+- **Struktur:** Wie Meilen: neun Unterseiten je Sachgebiet mit Tabellen Nummer | Titel | Gültig seit, Detailseite je Erlass.
+- **Nummerierung:** Vollständige Erlassnummern nach Leitfaden mit Inkraftsetzungsdatum
+- **Umfang:** 9 Rubriken, 46 Dokumente
+
+### Menüstruktur und Dateien
+
+- **1 Gemeinde / Behörden** (8)
+  - **10 Organisationserlasse der Organe, Behörden und Verwaltung** (4)
+    - Gemeindeordnung
+    - Organisations- und Verwaltungsreglement
+    - Reglement über die amtlichen Publikationen
+    - Reglement Dorfziitig
+  - **11 Entschädigung von Behörden** (2)
+    - Entschädigungsverordnung
+    - Ausführungsbestimmungen zur Entschädigungsverordnung
+  - **13 Personalrecht** (2)
+    - Personalverordnung
+    - Ausführungsbestimmungen zur Personalverordnung
+- **2 Zivilrecht** (2)
+  - **20 Kindes- und Erwachsenenschutz** (2)
+    - Anschlussvertrag der Stadt Bülach mit der Gemeinde Winkel betreffend Organisation von Berufsbeiständen zur Führung von Massnahmen des Erwachsenenschutzes
+    - Anschlussvertrag Kindes- und Erwachsenenschutzkreis Bülach Nord
+- **3 Strafrecht** (0)
+- **4 Schule / Freizeit** (5)
+  - **41 Familienergänzende Einrichtungen** (2)
+    - Verordnung über die familienergänzende Kinderbetreuung
+    - Ausführungsbestimmungen zur Verordnung über die familienergänzende Kinderbetreuung
+  - **44 Freizeit** (1)
+    - Benutzerordnung der Gemeinde- und Schulbibliothek
+  - **45 Kultur** (1)
+    - Haus- und Benützungsordnung für Schützenstube Winkel
+  - **46 Vereine** (1)
+    - Leistungsvereinbarung zwischen der Gemeinde und dem InteressenVerein der Winkler Vereine
+- **5 Sicherheit** (5)
+  - **51 Polizei** (2)
+    - Polizeiverordnung
+    - Reglement Videoüberwachung
+  - **53 Feuerwehrkommission** (2)
+    - Statuten des Feuerwehrzweckverbands Bachenbülach-Winkel
+    - Gebührenreglement der Feuerwehr Bachenbülach-Winkel
+  - **54 Zivilschutz** (1)
+    - Anschlussvertrag des Sicherheitsverbund Zürcher Unterland
+- **6 Finanzen / Steuern** (2)
+  - **60 Gebühren** (2)
+    - Gebührenverordnung
+    - Allgemeiner Gebührentarif
+- **7 Bauen / Ver- / Entsorgung** (15)
+  - **70 BZO, Nutzungspläne** (2)
+    - Bau- und Zonenordnung / Parkplatzverordnung
+    - Statuten des Zweckverbands der Planungsgruppe Zürcher Unterland
+  - **71 Baubewilligungswesen** (1)
+    - Gebührentarif Bauwesen
+  - **74 Versorgung Wasser** (4)
+    - Verordnung über die Wasserversorgungsanlagen
+    - Verordnung über die Gebühren für Wasserversorgungsanlagen
+    - Anschluss- und Benützungsgebühren in der Wasserversorgung
+    - Statuten der Gruppenwasserversorgung Vororte und Glattal
+  - **75 Entsorgung Abfall / Wasser** (6)
+    - Abfallverordnung
+    - Hausordnung Sammelstelle Rüti
+    - Verordnung über die Siedlungsentwässerungsanlagen
+    - Verordnung über die Gebühren für Siedlungsentwässerungsanlagen
+    - Anschluss- und Benützungsgebühren in der Siedlungsentwässerung
+    - Anschlussvertrag der Stadt Bülach mit der Gemeinde Winkel betreffend Abwasserreinigungsanlage Furt
+  - **76 Natur und Landschaft** (2)
+    - Verordnung über den Schutz und die Pflege der kommunalen Natur- und Landschaftsschutzobjekte
+    - Kommunale Naturschutzverordnung «Riet am See»
+- **8 Soziales / Gesundheit** (9)
+  - **80 Sozialhilfe, Fürsorge, Sozialberatung** (1)
+    - Leistungsvereinbarung zwischen der Stadt Bülach und der Gemeinde Winkel betreffend Durchführung der Zusatzleistungen zur AHV/IV
+  - **81 Asyl** (2)
+    - Leistungsvereinbarung zwischen der Gemeinde Winkel und der AOZ betreffend Fallführung von Asylsuchenden
+    - Asylorganisation Zürich AOZ, Zusatz zur Leistungsvereinbarung betreffend Fallführung von Personen mit Schutzstatus S
+  - **84 Friedhof und Bestattungswesen** (2)
+    - Statuten des Friedhofzweckverbands Bülach
+    - Friedhofverordnung
+  - **85 Pflege** (2)
+    - Anstaltsvertrag der Interkommunalen Anstalt KZU Kompetenzzentrum Pflege und Gesundheit
+    - Leistungsvereinbarung zwischen dem KZU und der Gemeinde Winkel zum Betrieb der Pflegewohnung Winkel
+  - **86 Spital** (1)
+    - Interkommunale Vereinbarung zur Spital Bülach AG
+  - **87 Abhängigkeitserkrankungen** (1)
+    - Statuten der Fachstelle für Abhängigkeitserkrankungen Bezirk Bülach
+- **9 Wirtschaft / Gewerbe** (0)
+
+### Befunde
+
+- Einheitsgemeinde Primarstufe, aber keine Schul-Erlasse in der Rechtssammlung (Sachgebiet 4 enthält nur Betreuung, Bibliothek, Vereine).
+- Schul-Reglemente (z. B. Reglement Ferienbetreuung) liegen auf der Website der Schule.
+- Seiten-Adresse heisst «gesetzessammlung», Menüpunkt «Rechtssammlung».
+
+## Schule Winkel (Primarstufe der Gemeinde)
+
+- **Typ / Bezirk:** Schule der Einheitsgemeinde, Bülach
+- **Website:** https://www.schule-winkel.ch
+- **Rechtssammlung:** https://www.schule-winkel.ch/betreuung/dokumente/p-1158/
+- **Menüpfad:** Betreuung › Dokumente
+- **Weitere Einstiege:** Informationen › Dokumente (öffentlich leer)
+- **CMS:** Escola-Schulplattform (Dokumentablage per AJAX)
+- **Struktur:** Einzelne Dokumenttabellen ohne Überschriften auf der Seite «Betreuung › Dokumente».
+- **Nummerierung:** keine
+- **Umfang:** 1 Rubriken, 7 Dokumente
+
+### Menüstruktur und Dateien
+
+- **Betreuung › Dokumente** (7)
+  - Betriebskonzept Schulergänzende Betreuung
+  - ABC der Betreuung inkl. Tarife
+  - Reglement Ferienbetreuung
+  - Merkblatt Flexibles Betreuungsmodell
+  - Bestätigung des Arbeitgebers
+  - Anleitung Escola-App
+  - Merkblatt zur Ermittlung des massgebenden Einkommens
+
+### Befunde
+
+- Keine Rechtssammlung; einziges Erlass-artiges Dokument ist das «Reglement Ferienbetreuung».
+- Seite «Informationen › Dokumente» zeigt öffentlich keine Dokumente.
+
+## Politische Gemeinde Hochfelden
+
+- **Typ / Bezirk:** Politische Gemeinde, Bülach
+- **Website:** https://www.hochfelden.ch
+- **Rechtssammlung:** https://www.hochfelden.ch/politik/gesetzessammlung
+- **Menüpfad:** Politik › Gesetzessammlung
+- **Weitere Einstiege:** Bildung › Schulwesen › Schule Hochfelden (eigene Website)
+- **CMS:** Contao
+- **Struktur:** Eine Seite mit Akkordeon je Sachgebiet (1–9); darin Untergruppen (H3) und Downloadlisten mit Dateigrösse.
+- **Nummerierung:** Erlassnummer im Dateinamen (100.1_…), Untergruppen nach Leitfaden
+- **Umfang:** 9 Rubriken, 77 Dokumente
+
+### Menüstruktur und Dateien
+
+- **1 Gemeinde - Behörden - Verwaltung - Bevölkerung** (11)
+  - **10 Organisationserlasse der Organe, Behörden und Verwaltung** (3)
+    - 100.1_Gemeindeordnung (GO)_2026
+    - 100.2_Organisationsreglement Gemeinderat (OrgR)_2026_final.pdf
+    - 100.3_Richtlinien über die Protokollgenehmigung von Gemeindeversammlungen
+  - **11 Entschädigung von Behörden** (1)
+    - 110.1_Entschädigungsverordnung (EVO)_2026
+  - **12 Personalrecht** (4)
+    - 120.1_Personalverordnung (PVO)_2026
+    - 120.11_Arbeitszeitreglement_2026
+    - 120.12_Spesenreglement_2026
+    - 122.1_Anschlussvertrag BVK Personalvorsorge Kanton Zürich
+  - **13 Datensicherheit/-schutz, Informations-/Geschäftsverwaltung, Archivierung und Informatik** (3)
+    - 130.1_Reglement über die Nutzung von Internet, E-Mail und Telefon
+    - 130.2_Verzeichnis der Informationsbestände (VIB)
+    - 130.3_Einwohnerregister_Festlegung Indikatoren und Merkmale
+- **2 Zivilrecht - Familienrecht - Grundbuch - Notariat - Schuldbetreibung und Konkurs** (4)
+  - **20 Kindes- und Erwachsenenschutz** (2)
+    - 200.1_Anschlussvertrag Kindes- und Erwachsenenschutz Bülach Nord (KESB)
+    - 200.2_Anschlussvertrag Organisation von Berufsbeiständen
+  - **21 Zivilstandswesen** (1)
+    - 210.1_Zusammenarbeitsvertrag Zivilstandskreis Bülach
+  - **22 Gemeindeammann- und Betreibungsamt** (1)
+    - 220.1_Zusammenarbeitsvertrag Betreibungskreis Bülach
+- **3 Strafrecht - Opferhilfe - Gewaltschutz** (0)
+- **4 Schule und Bildung - Sport - Freizeit - Kultur** (6)
+  - **40 Primarschule** (1)
+    - 401.1_Entschädigungsverordnung
+  - **41 Sekundarschule** (1)
+    - 410.1_Schulgemeindeordnung_Sekundarschule
+  - **42 Familien- und schulergänzende Einrichtungen** (1)
+    - 420.1_Verordnung über die familienergänzende Kinderbetreuung im Vorschulalter
+  - **43 Sport- und Freizeitanlagen** (2)
+    - 430.1_Benützungsreglement für die Mehrzweckhalle Wisacher
+    - 430.2_Forsthaus Nutzungsreglement.pdf
+  - **44 Vereine** (1)
+    - 440.1_Reglement zur Vereinsunterstützung
+- **5 Öffentliche Ordnung und Sicherheit: Polizei - Zivilschutz - Feuerwehr und Feuerpolizei - Tierschutz** (11)
+  - **50 Öffentliche Ordnung allgemein** (2)
+    - 500.1_Reglement zur Videoüberwachung
+    - 500.11_Anhang zum Reglement zur Videoüberwachung
+  - **51 Polizei** (3)
+    - 510.1_Polizeiverordnung
+    - 510.2_Verordnung über das gemeinderechtliche Ordnungsbussenverfahren
+    - 511.1_Nachtparkverordnung
+  - **52 Militär** (1)
+    - 520.1_Nutzungsreglement für die Schützenstube Höri-Hochfelden
+  - **53 Feuerwehr** (4)
+    - 530.1_Statuten Zweckverband Feuerwehr Höri-Hochfelden
+    - 530.2_Geschäftsreglement Zweckverband Feuerwehr Höri-Hochfelden
+    - 530.3_Entschädigungs- und Soldreglement Zweckverband Feuerwehr Höri-Hochfelden
+    - 530.4_Tarifreglement Zweckverband Feuerwehr Höri-Hochfelden
+  - **54 Zivilschutz** (1)
+    - 540.1_Anschlussvertrag Sicherheitsverbund Zürcher Unterland.pdf
+- **6 Finanzen - Steuern - Gebühren** (3)
+  - **60 Gebühren** (3)
+    - Gebührenverordnung (GebVO)_2026
+    - 600.11_Gebührentarif (GebTarif)_2026
+    - 601.1_Richtlinien über die Aktivierungs- und Wesentlichkeitsgrenze
+- **7 Raumplanung - Bauen - Umwelt - Energie - Verkehr** (19)
+  - **70 Bau- und Zonenordnung, Nutzungspläne** (6)
+    - 700.1_Bau- und Zonenordnung
+    - 700.11_Zonenplan
+    - 700.2_Allgemeine Bedingungen zur Baubewilligung
+    - 700.3_Verordnung über die Gebühren im Bauwesen
+    - 701.1_Statuten Planungsgruppe Zürcher Unterland
+    - 701.2_Geschäftsordnung Planungsgruppe Zürcher Unterland
+  - **71 Natur und Landschaft** (3)
+    - 710.1_Naturschutzverordnung
+    - 710.11_Entschädigungsreglement zur Naturschutzverordnung
+    - 710.12_Beitragsreglement zur Naturschutzverordnung
+  - **72 Wasserversorgung** (5)
+    - 720.1_Wasserversorgungsreglement
+    - 720.11_Tarifordnung zum Wasserversorgungsreglement
+    - 720.12_Werkvorschriften zum Wasserversorgungsreglement
+    - 721.1_Anschlussvertrag an die Wasserversorgung Höri
+    - 721.11_Reglement der Betriebskommission der WV Höri-Hochfelden-Neerach-Niederglatt
+  - **73 Abwasserentsorgung** (2)
+    - 730.1_Verordnung über die Siedlungsentwässerungsanlagen
+    - 730.11_Verordnung über die Gebühren für Siedlungsentwässerungsanlagen
+  - **74 Abfallbewirtschaftung** (3)
+    - 740.1_Verordnung über die Abfallbewirtschaftung
+    - 740.11_Gebührenreglement zur Verordnung über die Abfallbewirtschaftung
+    - 741.1_Anschlussvertrag IGKSG
+- **8 Soziales - Gesundheit - Arbeit** (21)
+  - **80 Friedhof und Bestattungswesen** (4)
+    - 800.1_Friedhofverordnung
+    - 800.11_Grabmalreglement zur Friedhofverordnung
+    - 800.12_Gebühren- und Kostenübernahmereglement.pdf
+    - 801.1_Statuten Friedhofzweckverband Bülach
+  - **81 Pflege und Spitex** (11)
+    - 810.1_Leistungsvereinbarung Stiftung Alterszentrum Bülach (SARB)
+    - 810.11_Leistungsvereinbarung Stiftung Alterszentrum Bülach (SARB) Psychiatrie-Leistungen
+    - 810.2_Statuten Stiftung Alterszentrum Bülach
+    - 810.3_Geschäftsordnung Stiftung Alterszentrum Bülach
+    - 812.1_KZU Kompetenzzentrum Anstaltsvertrag
+    - 812.2_KZU Kompetenzzentrum_Grundleistungsvereinbarung_2026
+    - 812.3_KZU Kompetenzzentrum Tarifordnung
+    - 813.1_Leistungsvereinbarung Palliaviva_Palliative Care.pdf
+    - 813.2_Statuten Verband Palliative Care
+    - 814.1_Leistungsverbeinbarung kispex-Leistungen
+    - 815.1_Pro Senectute_Leistungsvereinbarung Assessment für Zusatzleistungern zur AHV_2026
+  - **82 Spital** (6)
+    - 820.1_Interkommunale Vereinbarung (IKV) Spital Bülach AG
+    - 820.2_Aktionärsbindungsvertrag (ABV) Spital Bülach AG
+    - 820.3_Statuten der Spital Bülach AG
+    - 821.1_Vertrag Kranken- und Verunfalltentransporte Spital Bülach
+    - 822.1_Aktionärsbindungsvertrag MRI-Zentrum Spital Bülach AG
+    - 822.2_Statuten MRI-Zentrum Spital Bülach AG
+- **9 Wirtschaft - Landwirtschaft - Gewerbe** (2)
+  - **90 Landwirtschaft** (1)
+    - 900.1_Unterhaltsordnung für Bodenverbesserungsanlagen
+  - **91 Forst** (1)
+    - 910.1_Vereinbarung mit der Stadt Bülach betreffend die Beförsterung
+
+### Befunde
+
+- Gut strukturiert: Sachgebiet › Untergruppe › Erlass mit Nummer und Grösse.
+- Einheitsgemeinde Primarstufe: Primarschul-Erlasse unter «40 Primarschule»; die Gemeindeordnung der Sekundarschule steht unter «41 Sekundarschule» (Fremderlass).
+- Dateinamen teils mit «.pdf» im Titel, einer ohne Nummer (Gebührenverordnung).
+- Menüpunkt heisst «Gesetzessammlung», Seitentitel «Systematische Rechtssammlung (SR)».
 
 ## Nächste Schritte
 

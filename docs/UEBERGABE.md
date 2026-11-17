@@ -36,6 +36,17 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-17 (03:45–04:40) – EduKSX-Codex 0.3.0
+
+- Erfasst: Meilen, Bachenbülach (+ Schule), Höri (+ Primarschulgemeinde), Winkel (+ Schule), Hochfelden (#8).
+- Alle 60 Schulgemeinden nach Gemeindeverzeichnis (Stand 1.7.2026), Vermerk Einheitsgemeinde je Gemeinde im Menü (#9).
+- Struktur-Matrix mit Erkennung ähnlicher Dokumente (#10); Ansichten Nachbau / iFrame-Variante / Original ⟷ Nachbau,
+  Widget `embed/` (#11); PDF-Vorschau (#12). Alle → `_3 Beta-Test`.
+- Befund 2026-11-17: Nur SKM erlaubt Einbettung; i-web sendet `X-Frame-Options: DENY`, Escola `frame-ancestors 'self'`,
+  übrige `SAMEORIGIN` → Original im geteilten Fenster nur bei SKM, sonst Fenster nebeneinander; PDF-Vorschau ebenso.
+- Offen: Mitgliedschaft Bachenbülach/Winkel in der Sek Bülach bestätigen; Mitglieder regionaler Schulgemeinden
+  (Vermerk «?»); CMS-Namen vs. Regel «keine Fremd-/Herstellernamen» (Entscheid Projektverantwortliche:r).
+
 ### Sitzung 2026-11-17 (03:20–03:45) – Prototyp EduKSX-Codex
 
 - Neuer Prototyp `prototypen/rechtssammlung` (EduKSX-Codex): Evaluation der Rechtssammlungen von PG Trüllikon,

@@ -1,6 +1,6 @@
 # Prototyp: Rechtssammlung
 
-**Status:** in-arbeit · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
+**Status:** in-arbeit · **Version:** 0.3.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
 
 ## Frage
 
@@ -19,17 +19,19 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 
 | Pfad | Zweck |
 |---|---|
-| `index.html` | Übersicht im EduKSX-Auftritt mit Menü links: Bezirk › Politische Gemeinden / Schulgemeinden › Rubriken der Rechtssammlung |
-| `assets/app.js`, `assets/codex.css` | Menü und Ansichten (Übersicht, Bezirk, Gemeinde, Organisation, Rubrik) |
-| `assets/daten.js` | Daten für die Übersicht (erzeugt von `tools/build.py`) |
-| `demo/*.html` | Je eine nachgebaute Rechtssammlungs-Seite im Stil der Original-Website |
+| `index.html` | Übersicht im EduKSX-Auftritt mit Menü links: Bezirk › Politische Gemeinden (Vermerk Einheitsgemeinde) / Schulgemeinden › Rubriken |
+| `assets/app.js`, `assets/codex.css` | Menü und Ansichten: Übersicht, Bezirk, Gemeinde, Schulgemeinden, Organisation (Steckbrief, Nachbau, iFrame-Variante, Original ⟷ Nachbau, Matrix-Spalte), Rubrik mit PDF-Vorschau, Struktur-Matrix |
+| `assets/daten.js` | Daten für Übersicht und Widget (erzeugt von `tools/build.py`) |
+| `embed/` | Einbettbares Widget (`embed/index.html?org=<id>`): Sachgebiet › Unterordner › Dokument, Suche, PDF-Vorschau, meldet seine Höhe per `postMessage` |
+| `demo/<id>.html` | Nachbau der Original-Seite (Schrift, Farben, Aufbau; ohne Logos) |
+| `demo/<id>-iframe.html` | Gleicher Nachbau, Inhalt durch das Widget im iFrame ersetzt |
 | `docs/evaluation.md` | Evaluation mit Menüstruktur und vollständiger Dateiliste je Organisation |
 | `data/rechtssammlungen.json` | Normalisiertes Datenmodell (Rubrik → Unterordner → Dokument) |
-| `data/gemeinden-zh.csv` | 160 politische Gemeinden nach Bezirk mit Erfassungsstatus |
+| `data/gemeinden-zh.csv` | 160 politische Gemeinden mit Website (aus Verwaltungs-E-Mail), CMS, Status |
 | `data/raw/` | Rohdaten aus den Websites |
-| `tools/build.py` | Generator (nur Python-Standardbibliothek) |
+| `tools/build.py` | Generator: Datenmodell, Schulgemeinden (60) mit Einheitsgemeinde-Herleitung, Struktur-Matrix, Nachbauten |
 
-## Pilot (Stand 17.11.2026)
+## Erfasst (Stand 17.11.2026)
 
 | Organisation | Menüpfad | Dokumente |
 |---|---|---|
@@ -37,6 +39,24 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 | Primarschule Trüllikon | Download › Systematische Rechtssammlung | 190 |
 | Sekundarschule Kreis Marthalen | Schulgemeinde › Systematische Rechtssammlung | 50 |
 | Sekundarschule Bülach | Schulverwaltung › Systematische Rechtssammlung | 12 |
+| Politische Gemeinde Meilen (Einheitsgemeinde) | Verwaltung › Rechtssammlung › 1–9 | 164 |
+| Politische Gemeinde Bachenbülach | Verwaltung › Systematische Rechtssammlung | 26 |
+| Schule Bachenbülach (Primarstufe der Gemeinde) | Schule › Service › Reglemente und Dokumente | 27 |
+| Politische Gemeinde Höri | Politik & Verwaltung › Verwaltung › Rechtssammlung | 49 |
+| Primarschulgemeinde Höri | Organisation › Schulpflege › Rechtsgrundlagen | 4 |
+| Politische Gemeinde Winkel | Verwaltung › Rechtssammlung › 1–9 | 46 |
+| Schule Winkel (Primarstufe der Gemeinde) | Betreuung › Dokumente | 7 |
+| Politische Gemeinde Hochfelden | Politik › Gesetzessammlung | 77 |
+
+## Quellen
+
+- Schulgemeinden und Zahl der Gemeinden mit Schulaufgaben: Gemeindeamt Kanton Zürich, «Verzeichnis der Gemeinden des
+  Kantons Zürich», Stand 1. Juli 2026 (8 Volksschul-, 24 Primarschul-, 28 Sekundarschulgemeinden; 114 politische
+  Gemeinden mit Schulaufgaben).
+- Websites: Domain der Verwaltungs-E-Mail aus «Liste Politische Gemeinden» (Gemeindeamt); BFS-Nummern über die
+  Gebietsstammdaten-API.
+- Der Vermerk «Einheitsgemeinde» ist hergeleitet; «?» heisst: Mitglieder einer Schulgemeinde im Bezirk noch nicht
+  bekannt. Bei den erfassten Gemeinden ist er geprüft (Bachenbülach/Winkel: Zugehörigkeit zur Sek Bülach noch offen).
 
 ## Ergebnis
 
@@ -47,4 +67,8 @@ Noch offen. Erste Erkenntnisse in `docs/evaluation.md` (Befunde je Organisation,
 - Die Daten sind öffentlich publizierte Erlasse und Dokumentnamen der Organisationen, keine Personendaten.
 - Demo-Seiten übernehmen Schrift, Farben und Seitenaufbau der Originale, aber **keine Logos**; sie tragen den Hinweis
   «keine offizielle Seite» und `noindex`. Die Original-Stylesheets sind nur als Kommentar referenziert.
+- Einbettung geprüft (17.11.2026): Nur die SKM-Website erlaubt das Einbetten in fremde Seiten; alle anderen senden
+  `X-Frame-Options` bzw. `frame-ancestors`. Darum zeigt «Original ⟷ Nachbau» dort einen Knopf, der beide Seiten als
+  Fenster nebeneinander öffnet, und die PDF-Vorschau funktioniert vorerst nur bei der SKM – nach Übernahme der
+  Dokumente in die EduKSX-Dokumentenablage für alle.
 - Version in `prototyp.json` erhöhen, wenn sich der Prototyp ändert.
