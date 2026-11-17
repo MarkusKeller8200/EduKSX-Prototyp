@@ -1,0 +1,1972 @@
+{
+ "stand": "17.11.2026",
+ "organisationen": [
+  {
+   "id": "pg-truellikon",
+   "name": "Politische Gemeinde Trüllikon",
+   "kurz": "Gemeinde Trüllikon",
+   "typ": "Politische Gemeinde",
+   "bezirk": "Andelfingen",
+   "website": "https://www.truellikon.ch",
+   "rs_url": "https://www.truellikon.ch/rechtssammlung",
+   "cms": "i-web / icms (Innovative Web AG)",
+   "menu_pfad": [
+    "Wir für Sie",
+    "Rechtssammlung"
+   ],
+   "weitere_einstiege": [
+    "Wir für Sie › Online Schalter › Reglemente A-Z"
+   ],
+   "struktur": "Flache Dokumenttabelle (DataTables, 20 pro Seite, Filterfeld); die 9 Sachgebiete stehen nur als Textliste darüber, die Zuordnung erfolgt über die Ziffer im Dateititel («5 - …»).",
+   "nummerierung": "Sachgebiet 1–9 als Präfix im Titel, keine Erlassnummer",
+   "css": [
+    "https://www.truellikon.ch/dist/truellikon/2025/css/cssvars.9dec850ebdd5679837cb.css",
+    "https://www.truellikon.ch/compiled/modules/css/modules.43ebf1179fb267780051.css",
+    "https://www.truellikon.ch/dist/truellikon/2025/css/main.9e2210af21a02619a5be.css"
+   ],
+   "theme": {
+    "font": "Montserrat",
+    "text": "#000000",
+    "primary": "#b62314",
+    "button": "#cc3322",
+    "surface": "#f4f4f4",
+    "logo": "https://www.truellikon.ch/dist/truellikon/2025/images/logo.be5b44f027b10d2833ba.png"
+   },
+   "befunde": [
+    "Kategorien 2 (Zivilrecht) wird mit Verträgen bespielt, 3 und 4 enthalten je nur ein PDF mit dem Namen des Sachgebiets (vermutlich Platzhalter «keine Erlasse»).",
+    "Keine Erlassnummern, kein Inkraftsetzungsdatum als Feld; Datum steckt teils im Titel.",
+    "Uneinheitliche Präfixe («1-», «1 -», «7-»).",
+    "Zweckverbands-Statuten und Verträge sind mit kommunalen Erlassen vermischt (fachlich korrekt gem. Leitfaden, aber ohne Kennzeichnung)."
+   ],
+   "sections": [
+    {
+     "titel": "1: Gemeinde - Behörden - Verwaltung - Bevölkerung",
+     "nummer": "1",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "Entschädigungsverordnung EVO",
+       "url": "https://www.truellikon.ch/_doc/5751847",
+       "groesse": "43 kB",
+       "typ": "PDF",
+       "original_titel": "1- Entschädigungsverordnung EVO"
+      },
+      {
+       "titel": "Gemeindeordnung",
+       "url": "https://www.truellikon.ch/_doc/5751850",
+       "groesse": "6.77 MB",
+       "typ": "PDF",
+       "original_titel": "1- Gemeindeordnung"
+      },
+      {
+       "titel": "Geschäftsordnung des Gemeinderats vom 18.08.2026",
+       "url": "https://www.truellikon.ch/_doc/7193332",
+       "groesse": "233 kB",
+       "typ": "PDF",
+       "original_titel": "1- Geschäftsordnung des Gemeinderats vom 18.08.2026"
+      },
+      {
+       "titel": "Statuten GVP",
+       "url": "https://www.truellikon.ch/_doc/5751856",
+       "groesse": "37 kB",
+       "typ": "PDF",
+       "original_titel": "1- Statuten GVP"
+      },
+      {
+       "titel": "Statuten GVPA",
+       "url": "https://www.truellikon.ch/_doc/5751859",
+       "groesse": "243 kB",
+       "typ": "PDF",
+       "original_titel": "1- Statuten GVPA"
+      },
+      {
+       "titel": "Personalverordnung",
+       "url": "https://www.truellikon.ch/_doc/5751862",
+       "groesse": "48 kB",
+       "typ": "PDF",
+       "original_titel": "1- Personalverordnung"
+      }
+     ]
+    },
+    {
+     "titel": "2: Zivilrecht - Familienrecht - Grundbuch - Notariat",
+     "nummer": "2",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "Anschlussvertrag Kindes- und Erwachsenenschutzkreis Winterthur-Andelfingen",
+       "url": "https://www.truellikon.ch/_doc/5751865",
+       "groesse": "9.31 MB",
+       "typ": "PDF",
+       "original_titel": "2 - Anschlussvertrag Kindes- und Erwachsenenschutzkreis Winterthur-Andelfingen"
+      },
+      {
+       "titel": "Vertrag über die Zusammenarbeit der Gemeinden im Betreibungskreis Andelfingen",
+       "url": "https://www.truellikon.ch/_doc/5751868",
+       "groesse": "5.88 MB",
+       "typ": "PDF",
+       "original_titel": "2 - Vertrag über die Zusammenarbeit der Gemeinden im Betreibungskreis Andelfingen"
+      },
+      {
+       "titel": "Vertrag über die Zusammenarbeit im Zivilstandskreis Andelfingen",
+       "url": "https://www.truellikon.ch/_doc/5751871",
+       "groesse": "330 kB",
+       "typ": "PDF",
+       "original_titel": "2- Vertrag über die Zusammenarbeit im Zivilstandskreis Andelfingen"
+      }
+     ]
+    },
+    {
+     "titel": "3: Strafrecht - Opferhilfe - Gewaltschutz",
+     "nummer": "3",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "Strafrecht - Opferhilfe - Gewaltschutz",
+       "url": "https://www.truellikon.ch/_doc/5751883",
+       "groesse": "76 kB",
+       "typ": "PDF",
+       "original_titel": "3 - Strafrecht - Opferhilfe - Gewaltschutz"
+      }
+     ]
+    },
+    {
+     "titel": "4: Schule & Bildung - Sport - Freizeit - Kultur",
+     "nummer": "4",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "Schule & Bildung - Sport - Freizeit - Kultur",
+       "url": "https://www.truellikon.ch/_doc/5751886",
+       "groesse": "76 kB",
+       "typ": "PDF",
+       "original_titel": "4 - Schule & Bildung - Sport - Freizeit - Kultur"
+      }
+     ]
+    },
+    {
+     "titel": "5: Öffentliche Ordnung & Sicherheit: Polizei - Zivilschutz Feuerwehr & Feuerpolizei - Tierschutz",
+     "nummer": "5",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "Elternbeitragsreglement",
+       "url": "https://www.truellikon.ch/_doc/5751889",
+       "groesse": "74 kB",
+       "typ": "PDF",
+       "original_titel": "5 - Elternbeitragsreglement"
+      },
+      {
+       "titel": "Polizeiverordnung vom 01.04.2015",
+       "url": "https://www.truellikon.ch/_doc/7074544",
+       "groesse": "61 kB",
+       "typ": "PDF",
+       "original_titel": "5 - Polizeiverordnung vom 01.04.2015"
+      },
+      {
+       "titel": "KIBE Verordnung",
+       "url": "https://www.truellikon.ch/_doc/5751892",
+       "groesse": "46 kB",
+       "typ": "PDF",
+       "original_titel": "5 - KIBE Verordnung"
+      },
+      {
+       "titel": "Sicherheits-Zweckverband Weinland - Statuten",
+       "url": "https://www.truellikon.ch/_doc/5751895",
+       "groesse": "2.77 MB",
+       "typ": "PDF",
+       "original_titel": "5 - Sicherheits-Zweckverband Weinland - Statuten"
+      },
+      {
+       "titel": "Zweckverband Feuerwehr Weinland - Zusammenarbeitsvertrag",
+       "url": "https://www.truellikon.ch/_doc/5751901",
+       "groesse": "938 kB",
+       "typ": "PDF",
+       "original_titel": "5 - Zweckverband Feuerwehr Weinland - Zusammenarbeitsvertrag"
+      },
+      {
+       "titel": "Zweckverband Feuerwehr Weinland - Statuten in Kraft per 01.01.2023",
+       "url": "https://www.truellikon.ch/_doc/6276400",
+       "groesse": "2.54 MB",
+       "typ": "PDF",
+       "original_titel": "5 - Zweckverband Feuerwehr Weinland - Statuten in Kraft per 01.01.2023"
+      }
+     ]
+    },
+    {
+     "titel": "6: Finanzen - Steuern - Gebühren",
+     "nummer": "6",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "Gebührentarif",
+       "url": "https://www.truellikon.ch/_doc/5751904",
+       "groesse": "90 kB",
+       "typ": "PDF",
+       "original_titel": "6 - Gebührentarif"
+      },
+      {
+       "titel": "Gebührenverordnung",
+       "url": "https://www.truellikon.ch/_doc/5751907",
+       "groesse": "128 kB",
+       "typ": "PDF",
+       "original_titel": "6 - Gebührenverordnung"
+      }
+     ]
+    },
+    {
+     "titel": "7: Raumplanung - Bauen - Umwelt - Energie - Verkehr",
+     "nummer": "7",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "Abfallverordnung",
+       "url": "https://www.truellikon.ch/_doc/5751913",
+       "groesse": "21 kB",
+       "typ": "PDF",
+       "original_titel": "7 - Abfallverordnung"
+      },
+      {
+       "titel": "Bau- und Zonenordnung",
+       "url": "https://www.truellikon.ch/_doc/5751916",
+       "groesse": "158 kB",
+       "typ": "PDF",
+       "original_titel": "7 - Bau- und Zonenordnung"
+      },
+      {
+       "titel": "Friedhof- und Bestattungsverordnung",
+       "url": "https://www.truellikon.ch/_doc/5751919",
+       "groesse": "61 kB",
+       "typ": "PDF",
+       "original_titel": "7 - Friedhof- und Bestattungsverordnung"
+      },
+      {
+       "titel": "Verordnung über die Gebühren für Wasserversorgungsanlagen (GebVO WVVO)",
+       "url": "https://www.truellikon.ch/_doc/5751922",
+       "groesse": "44 kB",
+       "typ": "PDF",
+       "original_titel": "7 - Verordnung über die Gebühren für Wasserversorgungsanlagen (GebVO WVVO)"
+      },
+      {
+       "titel": "GWK (Gruppenwasserversorgung Kohlfirst) - Statuten",
+       "url": "https://www.truellikon.ch/_doc/5751925",
+       "groesse": "1020 kB",
+       "typ": "PDF",
+       "original_titel": "7 - GWK (Gruppenwasserversorgung Kohlfirst) - Statuten"
+      },
+      {
+       "titel": "KEWY (Kehrichtorganisation Wyland) - Statuten",
+       "url": "https://www.truellikon.ch/_doc/5751928",
+       "groesse": "77 kB",
+       "typ": "PDF",
+       "original_titel": "7 - KEWY (Kehrichtorganisation Wyland) - Statuten"
+      },
+      {
+       "titel": "RK ZNO (Regionalkonferenz Zürich-Nordost) - Statuten",
+       "url": "https://www.truellikon.ch/_doc/5751931",
+       "groesse": "105 kB",
+       "typ": "PDF",
+       "original_titel": "7 - RK ZNO (Regionalkonferenz Zürich-Nordost) - Statuten"
+      },
+      {
+       "titel": "SEVO Verordnung über die Siedlungsentwässerungsanlagen",
+       "url": "https://www.truellikon.ch/_doc/5751934",
+       "groesse": "319 kB",
+       "typ": "PDF",
+       "original_titel": "7 - SEVO Verordnung über die Siedlungsentwässerungsanlagen"
+      },
+      {
+       "titel": "SEVO GebVo (Verordnung über die Gebühren für Siedlungsentwässerungsanlagen)",
+       "url": "https://www.truellikon.ch/_doc/5751937",
+       "groesse": "1.57 MB",
+       "typ": "PDF",
+       "original_titel": "7 - SEVO GebVo (Verordnung über die Gebühren für Siedlungsentwässerungsanlagen)"
+      },
+      {
+       "titel": "Vertrag Betriebe Abfalldeponie",
+       "url": "https://www.truellikon.ch/_doc/5751940",
+       "groesse": "276 kB",
+       "typ": "PDF",
+       "original_titel": "7 - Vertrag Betriebe Abfalldeponie"
+      },
+      {
+       "titel": "WVVO (Verordnung über die Wasserversorgungsanlagen)",
+       "url": "https://www.truellikon.ch/_doc/5751943",
+       "groesse": "68 kB",
+       "typ": "PDF",
+       "original_titel": "7 - WVVO (Verordnung über die Wasserversorgungsanlagen)"
+      },
+      {
+       "titel": "Zonenplan Rudolfingen",
+       "url": "https://www.truellikon.ch/_doc/5751946",
+       "groesse": "216 kB",
+       "typ": "PDF",
+       "original_titel": "7- Zonenplan Rudolfingen"
+      },
+      {
+       "titel": "Zonenplan Trüllikon",
+       "url": "https://www.truellikon.ch/_doc/5751952",
+       "groesse": "224 kB",
+       "typ": "PDF",
+       "original_titel": "7 - Zonenplan Trüllikon"
+      },
+      {
+       "titel": "Zonenplan Wildensbuch",
+       "url": "https://www.truellikon.ch/_doc/5751958",
+       "groesse": "198 kB",
+       "typ": "PDF",
+       "original_titel": "7 - Zonenplan Wildensbuch"
+      },
+      {
+       "titel": "ZPW (Zweckverband Zürcher Planungsgruppe Weinland) - Statuten",
+       "url": "https://www.truellikon.ch/_doc/5751961",
+       "groesse": "334 kB",
+       "typ": "PDF",
+       "original_titel": "7- ZPW (Zweckverband Zürcher Planungsgruppe Weinland) - Statuten"
+      },
+      {
+       "titel": "Zweckverband ARA Weinland - Statuten",
+       "url": "https://www.truellikon.ch/_doc/5751964",
+       "groesse": "163 kB",
+       "typ": "PDF",
+       "original_titel": "7 - Zweckverband ARA Weinland - Statuten"
+      }
+     ]
+    },
+    {
+     "titel": "8: Soziales - Gesundheit - Arbeit",
+     "nummer": "8",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "ZPBW (Zweckverband für Pflege & Betreuung Weinland (Mitte) - Statuten",
+       "url": "https://www.truellikon.ch/_doc/5751967",
+       "groesse": "579 kB",
+       "typ": "PDF",
+       "original_titel": "8 - ZPBW (Zweckverband für Pflege & Betreuung Weinland (Mitte) - Statuten"
+      },
+      {
+       "titel": "Zusammenarbeitsvertrag betreffend Mandatsführung KESR",
+       "url": "https://www.truellikon.ch/_doc/5751970",
+       "groesse": "772 kB",
+       "typ": "PDF",
+       "original_titel": "8 - Zusammenarbeitsvertrag betreffend Mandatsführung KESR"
+      }
+     ]
+    },
+    {
+     "titel": "9: Wirtschaft - Landwirtschaft - Gewerbe",
+     "nummer": "9",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "Jagdpachtvertrag Revier Trüllikon 2025 bis 2033",
+       "url": "https://www.truellikon.ch/_doc/6949573",
+       "groesse": "2.6 MB",
+       "typ": "PDF",
+       "original_titel": "9 - Jagdpachtvertrag Revier Trüllikon 2025 bis 2033"
+      },
+      {
+       "titel": "Richtlinien Pachtlandvergabe landwirtschaftliche Flächen 2012",
+       "url": "https://www.truellikon.ch/_doc/7119016",
+       "groesse": "552 kB",
+       "typ": "PDF",
+       "original_titel": "9 - Richtlinien Pachtlandvergabe landwirtschaftliche Flächen 2012"
+      }
+     ]
+    }
+   ],
+   "stand": "17.11.2026",
+   "anzahl_dokumente": 39,
+   "anzahl_rubriken": 9,
+   "max_tiefe": 1
+  },
+  {
+   "id": "ps-truellikon",
+   "name": "Primarschule Trüllikon",
+   "kurz": "Schule Trüllikon",
+   "typ": "Primarschulgemeinde",
+   "bezirk": "Andelfingen",
+   "website": "https://www.schule-truellikon.ch",
+   "rs_url": "https://www.schule-truellikon.ch/links-und-download/systematische-rechtssammlung/p-122/",
+   "cms": "Escola-Schulplattform (Ordner-Sitemap)",
+   "menu_pfad": [
+    "Download",
+    "Systematische Rechtssammlung"
+   ],
+   "weitere_einstiege": [
+    "Information › Regelungen und Konzepte",
+    "Download › Konzepte und Merkblätter"
+   ],
+   "struktur": "Ordner-Sitemap: Rubriken «SR - 00» bis «SR - 11» mit bis zu zwei Unterordner-Ebenen; Dokumente direkt als Links (ohne Grösse/Datum).",
+   "nummerierung": "Erlassnummer + Datum im Dateinamen (z. B. 100.02-20220101_PST_…), Rubriken SR-00…SR-11",
+   "css": [
+    "https://www.schule-truellikon.ch/inc/css/css_for_all.min.css?38",
+    "https://www.schule-truellikon.ch/inc/customers/truellikon/css/main.css?2",
+    "https://www.schule-truellikon.ch/inc/customers/truellikon/css/overwrite.css?10"
+   ],
+   "theme": {
+    "font": "Montserrat",
+    "text": "#001514",
+    "primary": "#ed1b24",
+    "button": "#ed1b24",
+    "surface": "#f5f5f5",
+    "logo": "https://www.schule-truellikon.ch/inc/customers/truellikon/images/logo-header.svg"
+   },
+   "befunde": [
+    "Rechtssammlung enthält weit mehr als Erlasse: Gemeindeversammlungen, Budgets/Rechnungen ab 2015, Verhandlungsberichte und Beschlüsse – nur rund 17 der 190 Dokumente sind Erlasse.",
+    "«21 - Reglemente» erscheint als eigene Top-Rubrik statt unter SR-02 (SR-02 fehlt).",
+    "Leere Rubriken: SR-03, SR-04, SR-09 und Ordner «10 - Organisationserlasse».",
+    "Doppelter Eintrag Verhandlungsbericht 2023_03_20 (zwei Dateien gleichen Namens).",
+    "Tippfehler in Dateinamen («Trüllion», «Urnenabstimmunt»), Budget 2026 als «2026_12_08» datiert."
+   ],
+   "sections": [
+    {
+     "titel": "SR - 00 - Gemeindeversammlung",
+     "kinder": [
+      {
+       "titel": "2023_06_07 - Gemeindeversammlung",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "2023_06_07_PST_Jahresrechnung_2022",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=ppxn3a3hj2260y7ju11u1eutaptgf6q20t8k&download_type=3"
+        },
+        {
+         "titel": "2023_06_07_PST_Gemeindeversammlung_Ankündigung",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=xj38g72sgau734te6cnxng1rgshazwxql2ur&download_type=3"
+        },
+        {
+         "titel": "2023_06_07_PST_Gemeindeversammung_Einladung_Stimmberechtigte",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=b51sm268q7zr866j605ynhyp574he3cy8qec&download_type=3"
+        }
+       ]
+      },
+      {
+       "titel": "2023_12_07 - Gemeindeversammlung",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "2023_12_07_PST_Gemeindeversammlung_Ankündigung.",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=bjdfp3IWmbFKkcVtxapB3P3nbRkJOgygxcHexcNC5hc7fppn&download_type=3"
+        },
+        {
+         "titel": "2023_12_07_PST_Formularsatz_Budget_2024",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=7KPp3wdCNKYZHk7BwPyhXhbtJd60bECoh5WcZhMbSG3e7Jwd&download_type=3"
+        }
+       ]
+      },
+      {
+       "titel": "2024_06_17 - Gemeindeversammlung",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "2024_06_17_PST_Gemeindeversammung_Einladung_Stimmberechtigte",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=BzVCrmD1cO4Hl7ybefi5VFT08AiaNE5AHN7lvN8wc9vxEi1I&download_type=3"
+        },
+        {
+         "titel": "2024_06_17_PST_Jahresrechnung_2023",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=FDrMWOw1Z1NcuXVyuCFei7Ct7Fr9OXEducJsgRt13q9jfpga&download_type=3"
+        },
+        {
+         "titel": "2024_06_17_PST_979.01_Kostenkontrolle Anschluss Kiga & Lehrerhaus_05.04.24",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=iZGUTNx4MXV3fJofrEhuL9IXMWg8mPmRcHkf4xRyR7PCfHjQ&download_type=3"
+        },
+        {
+         "titel": "2024_06_05_PST_GV_17_06_2024_Anfrage_Artikel_17_Sonderschulung_Antwort_V2",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=3db16L9oauuRSWYNG77M2eXO9DGecjA1lvivPQALfq9alCQ0&download_type=3"
+        },
+        {
+         "titel": "2024_06_17_PST_Präsentation_GV_V006_Presse",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=9mBlAP5WPIyzDrJeFApY4VIz6O5CzKeH0dOV7sQjLrw2GNoH&download_type=3"
+        }
+       ]
+      },
+      {
+       "titel": "2024_10_02 - Vorberatende Gemeindeversammlung",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "2024_05_21_PST_Vorprojekt_Schulhaussanierung",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=Vn0BesJVH0LRohpimDgZNoqk0rt726igDQUYf3PzkqsK8sGO&download_type=3"
+        },
+        {
+         "titel": "2024_10_02_PST_Ausserordentliche_Gemeindeversammlung_Ankündigung",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=Y0hrqxEAPn6IymqxEMFcecdVtvKxqErqq1kDeLbd5uoyZyYu&download_type=3"
+        },
+        {
+         "titel": "2024_10_02_PST_Vorberatende_Gemeindeversammlung_Einladung_V004",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=yOgeLReTo9XlvDc511dOjNv0SFatdynX1WzHgwSiLkOCYMvN&download_type=3"
+        },
+        {
+         "titel": "2024_11_24_PST_Beleuchtender_Bericht_Urnenabstimmung_24_11_2024_V021",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=k5Xpw9giBDvfsVY21rS13tJGyJe9VXpgI0wy5MLEK3tRru6T&download_type=3"
+        },
+        {
+         "titel": "2024_11_24_PST_Merkblatt_Varianten_Urnenabstimmunt_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=LuYi9zlFPABqiQvTCePzBfoNJAe0xcLWPlQWgbrRSay35ndK&download_type=3"
+        }
+       ]
+      },
+      {
+       "titel": "2024_12_05 - Gemeindeversammlung",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "2024_12_05_PST_Formularsatz_Budget_2025",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=PDosnxeM5B2WuXdcVJ4X5ESNH00pKy41MxjNHgU2gWn7FlZO&download_type=3"
+        },
+        {
+         "titel": "2024_12_05_PST_Gemeindeversammlung_Ankündigung.",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=AzVTkrYb2ylil2mafCt96Xzb4arZMJrcRbVHhCybQQiAXioQ&download_type=3"
+        },
+        {
+         "titel": "2024_12_05_PST_Gemeindeversammung_Einladung_Stimmberechtigte",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=aJQ0SOTABIJakKvKwRQ9ZfvAhu1B2gklr7t7jXQ4qKZf4Qpy&download_type=3"
+        }
+       ]
+      },
+      {
+       "titel": "2025_06_17 - Gemeindeversammlung",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "2025_06_17_PST_Ankündigung_Gemeindeversammlung",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=78Xnx4YgVbNXVK3cZP9TgLDiMoluecKpQZmL9sW0aPhDc5WM&download_type=3"
+        },
+        {
+         "titel": "2025_06_17_PST_Einladung_Stimmberechtigten_def",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=GND8JXU9w2rVbxsG6sZuMSZAI2HPocsye7O432UGbks9jvwg&download_type=3"
+        },
+        {
+         "titel": "2025_06_17_PST_Jahresrechnung_2024",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=7uyfNBTlaOlKyDRyrohVRMqJaIgCFK9ll9z4E4TUGWk32wMH&download_type=3"
+        }
+       ]
+      },
+      {
+       "titel": "2025_12_08 - Gemeindeversammlung",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "2025_12_08_PST_Ankündigung_Gemeindeversammlung_8.12.2025",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=rxznFn3s68kGus9LSQFNxIY2Sw3NqOIRpHQuX2IU1me2b05o&download_type=3"
+        },
+        {
+         "titel": "2026_12_08_PST_Formularsatz_Budget_2026",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=Fo853HIgttStVEGjfpGUpHMVymQhwwkmcIl1KSVgqHp2IJ3r&download_type=3"
+        },
+        {
+         "titel": "2025_12_08_Beschlüsse_Gemeindeversammlungen.",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=toIEU93K8qD2OBQeHU4f7uo81vFaxQ8GZLnn86oM8RuU8gVI&download_type=3"
+        }
+       ]
+      },
+      {
+       "titel": "2026_06_23 - Gemeindeversammlung",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "2026_06_23_PST_Ankündigung_Gemeindeversammlung.",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=8QDvZ04l164kkjgloRd0hfH1M6EeOu6ATTYTnNKL5t5xZXdq&download_type=3"
+        },
+        {
+         "titel": "2026_06_23_PST_Jahresrechnung_2025",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=UySdmWWcMBL3Q4hnBTsbFdK3j4rc841gMIwcUZYLIYuwbDR5&download_type=3"
+        },
+        {
+         "titel": "2026_06_23_PST_Einladung_Stimmberechtigten_def",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=esZe2Y7UdmmLYAx3MgiRiJjr6GT28l3U1goasmmKts0zhowb&download_type=3"
+        }
+       ]
+      }
+     ],
+     "dokumente": []
+    },
+    {
+     "titel": "SR - 01 - Gemeinde - Behörde - Verwaltung",
+     "kinder": [
+      {
+       "titel": "10 - Organisationserlasse der Organe, Behörden und Verwaltung",
+       "kinder": [
+        {
+         "titel": "100 - Allgemeines",
+         "kinder": [],
+         "dokumente": [
+          {
+           "titel": "100.02-20220101_PST_Schulgemeindeordnung_ab_01.01.2022",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=lqemkujvxutqnh027ntbsua6mjx51a3bybxe&download_type=3"
+          },
+          {
+           "titel": "100.10-20111108_PST_Organisationsstatut_Version_V1",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=a4amt1f62tg1qrr860tjyplbrhmtc6ljj620&download_type=3"
+          },
+          {
+           "titel": "100.11-20250801_PST_Funktionendiagramm_PS_Trüllikon_V2",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=VbcSJnea7WaHuNi2g4DFwYDBwAG6O7kRh1owQ354LWOE38qv&download_type=3"
+          },
+          {
+           "titel": "100.24-20240102_PST_Ausgabenkompetenzen_02_2024_V002",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=jOjR31KmR7kZl8UPRbYfUKAVZ9E1qnpWlgrYYawHDZfnk1rE&download_type=3"
+          },
+          {
+           "titel": "Interessenbindung Legislatur__2026_2030",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=717K3vdcVLz1b9f1Cnk0uyq6f2hLWnjWjFDncsxUKDEzAbjK&download_type=3"
+          },
+          {
+           "titel": "20260813 Konstituierung Schulpflege",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=xDa5Ge4EOJ0lmwAR6suxkjCFuQwAMrqjAkMWCVGu6SvhYYao&download_type=3"
+          }
+         ]
+        }
+       ],
+       "dokumente": []
+      },
+      {
+       "titel": "11 - Entschädigung Behörde",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "110.01-20091207_PST_Personal- und Entschädigungsverordnung_PEVO_V0001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=a1whmth66xhyajc5h0whfgvwyrsjf6vy7uvm&download_type=3"
+        },
+        {
+         "titel": "110.02-20220607_PST_Anpassung_Entschaedigung_Behörde",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=kpem88he23f5f6cx5vn25um8vx6ylkxf1835&download_type=3"
+        }
+       ]
+      },
+      {
+       "titel": "13 - Personalrecht",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "130.01-20091022_PST_PEVO_Personal-_Entschädigungsverordnung",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=hz3euwrh1f0mf3bnbeefazjyzjhec6h08my4&download_type=3"
+        }
+       ]
+      }
+     ],
+     "dokumente": []
+    },
+    {
+     "titel": "21 - Reglemente",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "210.01-20240608_PST_Reglement_Elternrat_V003",
+       "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=4f56wazg2033zmkm10hfbj5ahgvjznh7n3g8&download_type=3"
+      },
+      {
+       "titel": "210.06-20170328_PST_Reglement_Schulzahnpflege_2017",
+       "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=gkbcfm1szc52hzukthvcw54h7c03ec2t1gzy&download_type=3"
+      },
+      {
+       "titel": "210.10-20230201_PST_Reglement_Aufnahmen_Fotos_V004",
+       "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=e4bsn02hkw26gej8berwlpzq44hu2sufmhz2&download_type=3"
+      },
+      {
+       "titel": "210.11-20230831_PST_Vermietungsreglement_2023",
+       "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=FHww2HY1TpDOQRwfWLVmK2oWyJ7GpJcK9Wc9T3n6YiT3QhSs&download_type=3"
+      }
+     ]
+    },
+    {
+     "titel": "SR - 03 - Schulergänzende Angebote",
+     "kinder": [],
+     "dokumente": []
+    },
+    {
+     "titel": "SR - 04 - Sport und Freizeit",
+     "kinder": [],
+     "dokumente": []
+    },
+    {
+     "titel": "SR - 05 - Finanzen - Steuern - Gebühren",
+     "kinder": [
+      {
+       "titel": "51 - Finanzpolitische Entscheide",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "510.01-20171207_PST_HRM2-Verzicht_Neubewertung_Restatement_V2",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=uj0qyqx7fusa2qx4yf06hp2vavhtzn7nu0mt&download_type=3"
+        },
+        {
+         "titel": "510.02-20181126_PST_Finanz-_und_ Aufgabenplan_2018-2022",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=7j1z2unwnf4mj2emppgtw76xw030jfwk876v&download_type=3"
+        }
+       ]
+      },
+      {
+       "titel": "52 - Gebührenordnung",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "520.01-20190415_PST_Gebuehrenverordnung_der_PS_per_01_08_2019",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=hmxahtka72c4eakaqzlkqtau5fm5gb31tcaq&download_type=3"
+        },
+        {
+         "titel": "520.02-20230801_PST_Gebührenreglement neu ab 01_08_2023.",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=T2V6ybbDu4QXY3jLA8P1c89U8ZeWwXk1D12BFqTpbnbsBbV1&download_type=3"
+        }
+       ]
+      },
+      {
+       "titel": "54 - Budget",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "2015_Primarschule_Trüllikon_Voranschlag_2015",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=pe7k6ztjeyjnsctyf14wwb8pgk472ef6vy8r&download_type=3"
+        },
+        {
+         "titel": "2016_Primarschule_Trüllikon_Voranschlag_2016",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=fqf8e6fwjml5qx2srkvz26vj6y8lw7wcwahe&download_type=3"
+        },
+        {
+         "titel": "2017_Primarschule_Trüllikon_Voranschlag_2017",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=nzpgvrzl6g0b0bh68wyph37szpkgf4c28hze&download_type=3"
+        },
+        {
+         "titel": "2018_Primarschule_Trüllikon_Voranschlag_2018",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=nlqkvrz4cahfslhhun1vwqelyjp20urv6hs6&download_type=3"
+        },
+        {
+         "titel": "2019_Primarschule_Trüllikon_Budget_2019",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=04hgzn6vvjhgkzn5un8h46a4tbq66ey2u4nl&download_type=3"
+        },
+        {
+         "titel": "2020_Primarschule_Trüllikon_Budget_2020",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=5h7u5bphhew557mzqxwh04thjywe23jjtqjh&download_type=3"
+        },
+        {
+         "titel": "2021_Primarschule_Trüllikon_Budget_2021",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=31wjqmpuavwc6eneyhb37htterpm7h27k8u5&download_type=3"
+        },
+        {
+         "titel": "2022_Primarschule_Trüllikon_Budget_2022",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=u8f63p7ynp35ssc3vzh2m2y1t6yzseh6njhh&download_type=3"
+        },
+        {
+         "titel": "2023_Primarschule_Trüllikon_Budget_2023",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=ph4j43t2cwgqmt4wb6w3z1l6z4hmjbml2ezm&download_type=3"
+        },
+        {
+         "titel": "2024_Primarschule_Trüllikon_Budget_2024",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=v1TyH4sIt1xcNYshEuBwTOu4mDapqIbhhIF2F6SAgEEubGgH&download_type=3"
+        },
+        {
+         "titel": "2025_Primarschule_Trüllikon_Budget_2025",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=q2RzRv72UZ6qD70mxctQz0PED0elHqVOoVSzB8RKeeLxah1e&download_type=3"
+        },
+        {
+         "titel": "2026_Primarschule_Trüllikon_Budget_2026",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=Hk3ptOvBkCjI2lM0N1A7ApWe3YKDJmmZMen2gZqX62M6ujc1&download_type=3"
+        },
+        {
+         "titel": "2027 Primarschule_Trüllion_Budget_2027",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=QxYqLs8p6Brz0nkgfZZnYQaQmoDFJR0CXqLMa4x1TGrnQpoR&download_type=3"
+        }
+       ]
+      },
+      {
+       "titel": "55 - Rechnung",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "2015_Primarschule_Trüllikon_Jahresrechnung_2015",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=ka0sbwvytulr0z8xknzzc07pvbynahvbz0c4&download_type=3"
+        },
+        {
+         "titel": "2016_Primarschule_Trüllikon_Jahresrechnung_2016",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=b132whm4we2y8y7gsgrz2j17p5j2fuvbqhck&download_type=3"
+        },
+        {
+         "titel": "2017_Primarschule_Trüllikon_Jahresrechnung_2017",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=u6vw5z13eqn7kteu1cl6r3q3z4e2esj1e68g&download_type=3"
+        },
+        {
+         "titel": "2018_Primarschule_Trüllikon_Jahresrechnung_2018",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=zaphh6wk77q0jr1rk2us5ga7k6c3qehau8fz&download_type=3"
+        },
+        {
+         "titel": "2019_Primarschule_Trüllikon_Jahresrechnung_2019",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=c0e4zyhz3ty60aef2xfbp6funhyhnk7s3ype&download_type=3"
+        },
+        {
+         "titel": "2020_Primarschule_Trüllikon_Jahresrechnung_2020",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=7n4guck2cx314cg8hbue2k4p36k7xrwzgcv7&download_type=3"
+        },
+        {
+         "titel": "2021_Primarschule_Trüllikon_Jahresrechnung_2021",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=sku43b0xv3z004q5eqfzbzp6t70vt7mkt6u2&download_type=3"
+        },
+        {
+         "titel": "2022_Primarschule_Trüllikon_Jahresrechnung_2022",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=une0c5wevhqra1nnz7vmlw6ggsh5ktg2axmz&download_type=3"
+        },
+        {
+         "titel": "2023_Primarschule_Trüllion_Jahresrechnung_2023",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=r2ZWhT1g13nvwzcBmDf7nhMZXddMnMh69Y93I6eeeToRA5jv&download_type=3"
+        },
+        {
+         "titel": "2024_Primarschule_Trüllion_Jahresrechnung_2024",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=lv4vL6TKtl9p6gFOH6ZCeF38KK5aGJuALzm2QXkZCXkrdvet&download_type=3"
+        },
+        {
+         "titel": "2025_Primarschule_Trüllikon_Jahresrechnung_2025",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=CfXwqJmlYjhzYlB7Djk0JzbVryUxCsxRESaiVONDyyspV44j&download_type=3"
+        }
+       ]
+      },
+      {
+       "titel": "56 - Revision",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "20201208_Protokollauszug_Beschluss_Sitzung_32_Schlussbericht_Geldrevision",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=nf4bnvsnley7atsb2heskpcchzbmfzkqmbwe&download_type=3"
+        }
+       ]
+      }
+     ],
+     "dokumente": []
+    },
+    {
+     "titel": "SR - 09 - Weitere Dokumente",
+     "kinder": [],
+     "dokumente": []
+    },
+    {
+     "titel": "SR - 10 - Verhandlungsberichte",
+     "kinder": [
+      {
+       "titel": "Legislatur 2022 - 2026",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "2022_08_31_PST_02_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V004",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=rb5bgbbuhabe7l0knwzpp2ayks3pwhwhv2jw&download_type=3"
+        },
+        {
+         "titel": "2022_09_19_PST_03_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V002",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=j7jb26rzlva7mhce30rr36l7h4kl21nywjwn&download_type=3"
+        },
+        {
+         "titel": "2022_10_24_PST_04_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V004",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=k4pksxn1y4w7v506z6cuhfc0ehwpzxgv7mw0&download_type=3"
+        },
+        {
+         "titel": "2022_11_14_PST_05_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=s8ybw16zww0vkwzjsflz5h6k4ch2ehsy0x03&download_type=3"
+        },
+        {
+         "titel": "2022_12_12_PST_06_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V003",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=a1kf07hc3x7l8gtgz0jl6xhljg577q3sfchv&download_type=3"
+        },
+        {
+         "titel": "2023_01_16_PST_07_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V003",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=bfhwg6l454hhgkt1e7hb3e45vwsprh8n2v7u&download_type=3"
+        },
+        {
+         "titel": "2023_02_13_PST_08_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V002",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=kmh6f0pm1y0m1pw4gxwuw51035fr1q8v4wwh&download_type=3"
+        },
+        {
+         "titel": "2023_03_20_PST_09_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V002",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=sgpezp25w8j7brzezs6anuugz76vgaphww2k&download_type=3"
+        },
+        {
+         "titel": "2023_03_20_PST_09_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V002",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=7lvgghctayn34kpyf0h5pznxw7paxjgmh6e8&download_type=3"
+        },
+        {
+         "titel": "2023_04_17_PST_10_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V002",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=2hhfkl2sue61mzq47kvvnyq1pnm4ejc1hepj&download_type=3"
+        },
+        {
+         "titel": "2023_05_16_PST_11_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V002",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=zvhpzmbh5lrneshx04tanh1pyut0geyy3g6t&download_type=3"
+        },
+        {
+         "titel": "2023_06_08_PST_12_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=jb6jxtzl7kbhbs64ujbylkf3na8zmqzee222&download_type=3"
+        },
+        {
+         "titel": "2023_07_04_PST_13_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=2ahcfyenb6nhuwx1smzqzpj60cx2sa75e5m5&download_type=3"
+        },
+        {
+         "titel": "2023_08_29_PST_14_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=7w3ylzvkpuvj78ckyh85xvvk71n8atc7q2ha&download_type=3"
+        },
+        {
+         "titel": "2023_09_18_PST_15_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=5htbzuxec7e507wsnqu17tf1b0he7yh7hkwk&download_type=3"
+        },
+        {
+         "titel": "2023_10_23_PST_16_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=h6h4fl77esh3kqa333ghny5xhf6fhk5s2jqw&download_type=3"
+        },
+        {
+         "titel": "2023_11_20_PST_17_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=mQC5QWRRwOc3vZvwPhLB8JQJyxndfBXQYGIqJFAjVBSzGfEk&download_type=3"
+        },
+        {
+         "titel": "2023_12_18_PST_18_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=OxmyafThtzmQfqghS3Ta3mj722hkwwLjIF7d7zomrJGNA2GF&download_type=3"
+        },
+        {
+         "titel": "2024_01_22_PST_19_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=fnyVr7GSQ1T09SkbZ6qXVaYisqRbDbZjDWxigJ5pWM6M9myu&download_type=3"
+        },
+        {
+         "titel": "2024_02_12_PST_20_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V002",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=qiV0N0FBpLRKN1VuAsUUIj3DkcBKndZ63mwS31jgQYghxZwi&download_type=3"
+        },
+        {
+         "titel": "2024_03_11_PST_21_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V002",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=kZdHcnDMQIYM3JGEM9Y9nfJj96bI15qgroyXhEtoMtM5i17W&download_type=3"
+        },
+        {
+         "titel": "2024_04_15_PST_22_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V002",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=l2sl9j1kFB6PS0iWqduPniYY76RCu4jih5SdIu6WDWvnxIxz&download_type=3"
+        },
+        {
+         "titel": "2024_05_27_PST_23_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=5duyeJV0UzLSnzDy0QCo0BTbOPZ4xZaEdLKvhM5CmqRjC8ue&download_type=3"
+        },
+        {
+         "titel": "2024_06_18_PST_24_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=uexs5g1n98venasPK1rYuwaLyIXr7sD9pVGahmdnIk4bfOKW&download_type=3"
+        },
+        {
+         "titel": "2024_07_08_PST_25_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=73ksVfnRuncEyok1ip6qqyAUH0CEDU0lqufFXhiZ3zK5D3GY&download_type=3"
+        },
+        {
+         "titel": "2024_08_26_PST_26_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=YehQYQ8rPCtkLSysA1rPvQW3MsunPOO95ntFwJLXyRe1QQfh&download_type=3"
+        },
+        {
+         "titel": "2024_09_23_PST_27_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=82SHIy2UBUABtCYTMiQ0OlKMuxlzAMDOZaEOH7Qp9nU9WzZT&download_type=3"
+        },
+        {
+         "titel": "2024_10_28_PST_28_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=eKrP8qo2XLUE66TDwI52xiV7pVvPNkTUxyycrQsl1G2PHpI2&download_type=3"
+        },
+        {
+         "titel": "2024_12_16_PST_29_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=5nFOn3AwszVPW7OEUAzfFNHbtV98SoNFsL3wBFue3iXlZvy3&download_type=3"
+        },
+        {
+         "titel": "2025_01_13_PST_30_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=V8dEoP1XbkGfqto7MZ0xltmgKrPV4CQlcNWJaavYhBoSyMvb&download_type=3"
+        },
+        {
+         "titel": "2025_02_10_PST_31_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=VSxUyBTIdJmwIEF3b1qw21VBb6njUSmHRNQj2ksZzY9gzJjx&download_type=3"
+        },
+        {
+         "titel": "2025_03_17_PST_32_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V002",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=sqVgYsGzIWKN80BsrELq5RyAne1z4SV9aUU9BJydjOnQhibP&download_type=3"
+        },
+        {
+         "titel": "2025_04_14_PST_33_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=YdH4pBNnOm8jVehZqHtcLKR2pzj2Q2S9PE3Gy3ZqPc8NBNcV&download_type=3"
+        },
+        {
+         "titel": "2025_05_19_PST_34_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=394UgiTDu6iVwY8vvITFSAuE4EgIPG1cuTRcw2ozaeKoLduq&download_type=3"
+        },
+        {
+         "titel": "2025_06_30_PST_35_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=xfvXNZllOneIjU22mqdRIJ34C7Xpyl6gRndHsWTWOD0Am3EO&download_type=3"
+        },
+        {
+         "titel": "2025_09_22_PST_36_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=juhY4iM0RCkdgXLWxotRJbYOrjH12Dq5VRujU1EP07qMb4Bo&download_type=3"
+        },
+        {
+         "titel": "2025_10_20_PST_37_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=xXPvA910xO6Yzm4BXGEMV1mLjRLWR3Ku6ciQU6Z5qrqOQvhn&download_type=3"
+        },
+        {
+         "titel": "2025_12_01_PST_38_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V002",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=odTK8sTcpmDs6cYOI5JK3lPxap9100Cedh2rkAK883Ask2GL&download_type=3"
+        },
+        {
+         "titel": "2026_02_09_PST_39_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=sqKSIvYrHgdTRV9zkm5JAZ5Cn1R4SPdT70BSVwLe9ZYeaanQ&download_type=3"
+        },
+        {
+         "titel": "2026_03_23_PST_40_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=S2S8ewVGHW88AIURHUxPNAyQjQJdguV4SgrdzlEtYmEDiFMi&download_type=3"
+        },
+        {
+         "titel": "2026_04_13_PST_41_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=GRwfzSShycTGlejjfrIqffILC79MJyfzLqn204SjK4vJevDk&download_type=3"
+        },
+        {
+         "titel": "2026_05_18_PST_42_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=QM0LfVToFf1fcgBeYJ6HMrZ1XyTHxWrXs5AXLn2BkWsw3TdH&download_type=3"
+        },
+        {
+         "titel": "2026 06_22_PST_43_Ordentliche_Sitzung_Verhandlungsbericht_OEFFENTLICH_V001",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=qhJIt9QPACjx9j1NzHMz4uoxB3uEycp6kOkF1zPwAWSnYW0L&download_type=3"
+        }
+       ]
+      },
+      {
+       "titel": "Legislatur 2026 - 2030",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "Verhandlungsbericht 1_2026_08_13",
+         "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=l5UUszFZim9KOW9NLB8bj08J9vi5dyGTFecFxEsr5E9nBYap&download_type=3"
+        }
+       ]
+      }
+     ],
+     "dokumente": []
+    },
+    {
+     "titel": "SR - 11 - Öffentliche Beschlüsse",
+     "kinder": [
+      {
+       "titel": "Legislatur 2022-2026",
+       "kinder": [
+        {
+         "titel": "2022",
+         "kinder": [],
+         "dokumente": [
+          {
+           "titel": "2022_08_31_PST_02-02_Beschluss_Schlussbericht_Fachstelle_für_Schulbeurteilung.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=rjhb9mVUxSx4BgpFU9pjPXSfo3Cvr1feHhdfNWCcD7rBUglF&download_type=3"
+          },
+          {
+           "titel": "2022_08_31_PST_02-02_Beschluss_Vertrag_Schulbus_Truttikon_SJ22_23_NEU",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=fef5pQ3xk7tnzT6NtRCX7EJuKF9KyA9FPzoEBDQQWojTZ51e&download_type=3"
+          },
+          {
+           "titel": "2022_09_19_PST_03-01_SSA_Präventationskonzept_SKM.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=kyzd5t93Jfg6hW2YAeUoEXNW9VnHJ857jD6vHJe7YwF1CEZQ&download_type=3"
+          },
+          {
+           "titel": "2022_09_19_PST_03-02_Beschluss_Rhythmik-KiGa_SJ23_24",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=sjdJK0Rpm5vUATEO0Je6v1Zqxv7gQ4zJWukPHfvmQjxrmE3a&download_type=3"
+          },
+          {
+           "titel": "2022_09_19_PST_03-03_Beschluss_Wegfall Flötenu_SJ23_24.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=vHgk6TePGWAzefYcLqFY6W72sVhccVaNUvCPfhxZdLSJIuAH&download_type=3"
+          },
+          {
+           "titel": "2022_09_19_PST_03-05_Abnahme_Budget_2023",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=fkqDjM8VeUzNO4LxsJmppgpgsTAVS3Ya4l4sQyAkE9ou6rvf&download_type=3"
+          },
+          {
+           "titel": "2022_09_19_PST_03-06_Abnahme_Investitionsprogramm_2022-2030",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=hoi5lmbODtOOxi89B2WcNkjHJGMusaBPwd4R5r5LSwE639Gl&download_type=3"
+          },
+          {
+           "titel": "2022_10_24_PST_04-01_Einführung Gemeinde News APP_analog pol. Gemeinde.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=sH6fIbTZZhPJxtWkE1Z6fuZqYsK7ARuM1BXdnmK8SoPwRN7p&download_type=3"
+          },
+          {
+           "titel": "2022_10_24_PST_04-06_Vereinbarung Zusammenarbeit Gemeindearbeiter_Schule",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=uY191RkvRDFqiHD5NlMxdgXjRXNplTBiwhdXyHniEyjvqle0&download_type=3"
+          },
+          {
+           "titel": "2022_10_24_PST_04-10_Neuorganisation Musikunterricht",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=jhJDoXnPUrqpONMb2wneCAXlH5PRH1lipF4eF0Vfgu0nY4Fz&download_type=3"
+          },
+          {
+           "titel": "2022_10_24_PST_04_11_Hausaufgabenstunden_SJ22_23_Lohn",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=wtZ9sL3zXpbSAKQ8bEm0sd2NUPhtfDHUJ82Dv0wIlB13oWHW&download_type=3"
+          },
+          {
+           "titel": "2022_10_24_PST_04-12_Finanzen_Klassenkassen",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=mIuiTpVSH10q5kObdvy6CBalfheFIakC1hqSSGnBfQdAceBZ&download_type=3"
+          },
+          {
+           "titel": "2022_10_24_PST_04-13_Fernwärme.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=ZWNxQKOmCs2MaQa8b35ojC0WbmCZRo4cdSZeOgXioW1ZprBr&download_type=3"
+          },
+          {
+           "titel": "2022_10_24_PST_04_13_Liegenschaften_Verpflichtungskredit_Wernwärmenetz.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=g8awdwLAKRiXPVYM6U5Z0i7H4P5Y1gfDflwRbvTcs05yxHHJ&download_type=3"
+          },
+          {
+           "titel": "2022_10_24_PST_04-14_Gemeindeversammlung_Traktanden_07_12_2022",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=FxwKawos4FDLgL9EhYmAIMCBjMNUBDRIW11T4tScm5gco6hq&download_type=3"
+          },
+          {
+           "titel": "2022_11_14_PST_05-02_Projektauftrag _Alamierung light",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=2vlMMQeaEXXKg8D8z161eJlG6fu84h6FXoMn75LH1JfZKF0w&download_type=3"
+          },
+          {
+           "titel": "2022_11_14_PST_05-03_Betriebsversicherung_Mobiliar_2023",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=07TmlvvcmrjQsAhyacRwq9IUa7Slkj4K3IH3Po6t0OLP5PA8&download_type=3"
+          },
+          {
+           "titel": "2022_11_14_PST_05-04_Gemeindeamt Prüfbericht Jahresrechnung 2021.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=JkOhkKToiwcrT6nOJr2v0CeawPaqIeRgRcmDQAr0fpNyBBf6&download_type=3"
+          },
+          {
+           "titel": "2022_11_14_PST_05-05_Verpflichungskredit_Mieteinnahmen MSWN",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=WxUSyPKXTbZCI08xvidndxJpczPyr9b1KAWrsws9KVP3RzUy&download_type=3"
+          },
+          {
+           "titel": "2022_11_14_PST_05-06_Verpflichtungskredit_Mieteinnahmenverzicht TV Trüllikon.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=ERxNdy3bTUQj8GdEpOfW0vQS0ObAoRobyvSuowRg07eVkvD7&download_type=3"
+          },
+          {
+           "titel": "2022_11_14_PST_05-07_Versand_Dokumente_Protokollauszüge_neu digital.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=pUivz63Sc1aQ1Dxj4KPRcNsjUeZbZFI7n5erpTh1id6HgnOF&download_type=3"
+          },
+          {
+           "titel": "2022_12_12_PST_06-02_Fortführung_Lerntherape_Konzept.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=UGr8lTPpGbi5sUYpNXwVaJQ30hBIWUUajr1T3IlPwjMuHW64&download_type=3"
+          },
+          {
+           "titel": "2022_12_12_PST_06-03_Verpflichtungsskredit_Mieteinnahmen Bibliothek",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=a65lhBzDkiICZWd9ul4ERPdROMjo6SRnGgiywuSHApQbengi&download_type=3"
+          },
+          {
+           "titel": "2022_12_12_PST_06-04_Entschädigung_Reinigungspersonal 2023.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=u3qIeXr1qoc37zjDT6C7jBjxh7N4nIcbFybs7a2HwawBWHI6&download_type=3"
+          },
+          {
+           "titel": "2022_12_12_PST_06-05_Kommunal Angestellte_Jahreslohn in 12 Raten",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=3gB6HVK5BR1aa0y3GiCFcGmF1f2NTngdyx7ekbENUhMeleMF&download_type=3"
+          },
+          {
+           "titel": "2022_12_12_PST_06-06_Abnahme Revisionsbericht_Löhne_Entschädigungen.p",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=5vx7QLsgjqyjLbUvvhn0RHbGyzIoRj7HZds8vknQyEYNicnb&download_type=3"
+          },
+          {
+           "titel": "2022_12_12_PST_06-07_Regelung_Stunden-_Spesenabrechnung",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=l1fmiM0QcoLLtcg1xH2N0YJ7WpMLAGvGOKOdG2VvgekAKiS7&download_type=3"
+          },
+          {
+           "titel": "2022_12_12_PST_06-08_Entschädigung PEVO_01_01_2023.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=29xUHXuE9moRtPKqNqbFKNLZFs9BPO703tmSm5uw8xJMMzYb&download_type=3"
+          }
+         ]
+        },
+        {
+         "titel": "2023",
+         "kinder": [],
+         "dokumente": [
+          {
+           "titel": "2023_10_23_PST_16-02_Flurstrasse_Pfannenstil_–_Uebernahme_sign.p",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=NWvH1ml4UhvB0ZptpQ8op5fOcWNP1J3Ux7J9V7s7lrd26X8H&download_type=3"
+          },
+          {
+           "titel": "2023_10_23_PST_16-03_Traktanden_Gemeindeversammlung_07.12.2023_sign",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=MCkYwqTsNvqUt5zTmqosfOb1UdbXcZm7uS1N6xNsyNb7DIjp&download_type=3"
+          },
+          {
+           "titel": "2023_11_20_PST_17-02_Verpflichtungskredit_Schuhaussanierung_sign",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=1KUUpERdLxlxSmwLhL1MbRIWwAcM2VAeHdjoS4CKD2hxCV7j&download_type=3"
+          },
+          {
+           "titel": "2023_11_20_PST_17-03_Verpflichtungskredit_Schliesssystem-Brandschutz_sign",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=rgje8qYCbrm6eir7kndpTZb4k64uG3SbGKn6hqfpnn9nJzQe&download_type=3"
+          },
+          {
+           "titel": "2023_11_20_PST_17-04_Festdarlehen-ZKB_sign",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=xt1aKGmR3VL7krDUKR1mJ4gnCLthOH1YRkFypIRgRfJDOYfR&download_type=3"
+          },
+          {
+           "titel": "2023_11_20_PST_17-06_Teuerungsausgleich-2024–kommunale-Anstellungen–1.6_sign.pdf",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=lMoiZIw9kTuX57MrGV66p9iN3YFnwyYSVJ7O89xpLRlc1dH4&download_type=3"
+          },
+          {
+           "titel": "2023_12_18_PST_18-05_Beschluss_Projektauftrag_Elternzusammenarbeit",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=6kymXxmW8MJ8cbdxetBbu1wxwIYbJ2ouwQFDBZGIgMbXP3Wa&download_type=3"
+          },
+          {
+           "titel": "2023_12_18_PST_18-06_Beschluss_Vertrag_Unternehmerlizenz_Schulbus_Knöpfel.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=PorT9iyjIpcUzld7FMwS82yqgnqwS3X8ZJJWaAw1w42U2tX9&download_type=3"
+          },
+          {
+           "titel": "2023_12_18_PST_18_08_Beschluss_Energiebezug_Fernwärme_Mietobjekt_Lehrerhaus.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=wbCK0HkJWBiYj5aFEyoENP5PWyQxYoJXC2KUCuf4UkPBrjCw&download_type=3"
+          },
+          {
+           "titel": "2023_12_18_PST_18-10_Beschluss_Anpassung_Entschädigung_PEVO_2024.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=m5ZkY4Ev4kCokSUHE9CYDQlKi9D0EA8oKz1xw4uXa0JcfisG&download_type=3"
+          },
+          {
+           "titel": "2023_12_21_PST_Zirkularbeschluss_Neubewertung_Liegenschaften",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=OxgvGwkFweHvmtqD81woIxkqTMnlitDx1rW4WWlnMZbSjf6H&download_type=3"
+          }
+         ]
+        },
+        {
+         "titel": "2024",
+         "kinder": [],
+         "dokumente": [
+          {
+           "titel": "2024_12_16_PST_29-07_Beschluss_EntschaedigungPEVOab01.01.2025",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=TN36iBR71KCb3XQh89fitY7xk0uYPU1YjPGitwU9U5j4zLr2&download_type=3"
+          },
+          {
+           "titel": "2024_02_12_PST_18-06_Protokollauszug_Bauabrechnung_Fernwärme.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=Q6xna6Avitne1iXEhuvFsBjU3RhULkuzDENZGXBCQ6sFHgx4&download_type=3"
+          },
+          {
+           "titel": "2024_02_12_PST_Finanzkompetenzen_Behörden_Mitarbeiter.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=Mla7bT4fHZM3vpp0yIfoXpaFydaokhH7cugZHc17wXfnKoZM&download_type=3"
+          },
+          {
+           "titel": "2024_10_16_PST_27-1_01_Beschluss_Wahlempfehlung_Variante-Energie_Sanierung_ohne_vis",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=NIkyvxktqkGt1bsVTrpHhDz95suF6awZrDwHRdKLgj9Dc0Xl&download_type=3"
+          },
+          {
+           "titel": "2024_10_16_PST_27-1_02_Beschluss_Traktanden_GV_241205_ohne_vis",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=yTk0DhSnElFCDpvfNvKt4wqyOzsYzDJzzgKqOans77C9fOPh&download_type=3"
+          },
+          {
+           "titel": "2024_12_16_PST_29-02_Beschluss_IT-Firewall-Ersatz",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=DFVuyi1XqnnwfJtEwFN9DMSekFSpP2ZApZXAiYW9hmvbVwcA&download_type=3"
+          },
+          {
+           "titel": "2024_12_16_PST_29-04_-Beschluss_AbnahmeGeldverkehrspruefung2024",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=HhhrFZQPfGxQJjKBTLrO5eqLzP0iW2tnXGGktOVS1WrAZ41I&download_type=3"
+          }
+         ]
+        },
+        {
+         "titel": "2025",
+         "kinder": [],
+         "dokumente": [
+          {
+           "titel": "2025_01_13_PST_30-01_Beschluss_ErhoehungSSA-Pensum",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=QFijDlzxLS5XlyAxC7Us8hNxZREvKF34RKN3glDvN6M026lh&download_type=3"
+          },
+          {
+           "titel": "2025_01_13_PST_30-02_Beschluss_SchulhaussanierungVarianteBasis",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=VcD24XS7DrP85bRlle4hIZbHvw9FNoonRb7bB5Mr2PtJpAiw&download_type=3"
+          },
+          {
+           "titel": "2025_01_13_PST_30-03_Beschluss_AbnahmeBezirksratsbeschluss_JR2023",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=qEvmfHPWjfWFhEQgxzhEq8UnIFixjJYkDleEktFaOCkdiQ1x&download_type=3"
+          },
+          {
+           "titel": "2025_02_10_PST_31-01_ZirkularbeschlussBrandschutzmassnahmen",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=hrpnfqeYBOYmYbQMwpfiI8v6heoxNadyTCBFkRA0UUvfbXeL&download_type=3"
+          },
+          {
+           "titel": "2025_03_17_PST_32-01_Beschluss_Funktionendiagramm",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=vCFM7Rhr1rMI4rL6RsnI1brxJHQjgbS0OZMwZpNKYqueQkb1&download_type=3"
+          },
+          {
+           "titel": "2025_03_17_PST_32-06_Beschluss_AbnahmeJahresrechnung2024",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=CVqR19sIpMpRFm00E3HHenAjaWLsOKypUX0GBjzjnDfuxOeP&download_type=3"
+          },
+          {
+           "titel": "2025_04_14_PST_33-04_Beschluss_technRevJahresrgn2024",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=iwRaXGGl8NUyYqKAbNxLVDdu0pcetMO1JVA1zvRdIiPlaXGn&download_type=3"
+          },
+          {
+           "titel": "2025_04_14_PST_33-07_Beschluss_ReglementSchulweg-bus_StellenbeschriebLenkende",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=nIa395xH0g5TaAJEfs2RXOw3YtXJP9zXi3O4AAdexTClqdJZ&download_type=3"
+          },
+          {
+           "titel": "2025_05_19_PST_34-02_AbnahmeVergabeentscheideArchitektur-undBaumeisterleistungen",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=t20uDpOwS616owjfFb2uqolmiGkmuuj8iDJntPYzPUzw64g6&download_type=3"
+          },
+          {
+           "titel": "2025_05_19_PST_34-03_FestlegungTraktandenSchulgemeindeversammlungJuni2025",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=7W5IBWnNk8SjAzkfxD9GFy5PhIYo5CYm7E876ocMo13x9NLF&download_type=3"
+          },
+          {
+           "titel": "2025_06_30_PST_35-05_Beschluss_TarifeSchulbusMiete-andereSchulgemeinden",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=cktejYTNBfXISLvUsxse2iXpFDvWLzZ5RfNciqrUMhIm8kaS&download_type=3"
+          },
+          {
+           "titel": "2025_06_30_PST_35-06_Beschluss_SchenkungWandbehang",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=NQ0qNb0eOcIeL7YpGJAWAKFaH6SEDIpCp9fjrGQMWL8V9ph7&download_type=3"
+          },
+          {
+           "titel": "2025_06_30_PST_35-07_Beschluss_ElektronischesSiegel_DeepSign",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=JdvxWJ2UCFe3g0wucudnrLyz9JUv69OF1UDN83T4l5ARpxRV&download_type=3"
+          },
+          {
+           "titel": "2025_06_30_PST_35-10_Beschluss_Einfuehrung-off-Schulzahnpflege-Gutschein",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=fm9NnLP2TfWjdRtPI1PzgD2xQ0vLMhrBejKUOb9RZcmm4qnP&download_type=3"
+          },
+          {
+           "titel": "2025_06_30_PST_35-11_Beschluss_VSA-Reduktion-IF-Mindestangebot",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=dO2DcFW7yQtiR1qy1zrRDOvPJNSDdHsZIEOzjHPOQ4BELtgL&download_type=3"
+          },
+          {
+           "titel": "20250801_Funktionendiagramm_PSTrüllikon_V2.",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=0c4LpHHC3FTKN9wKAsv8omG7pqOLUDLv5MdBsWm96lPUnnWK&download_type=3"
+          },
+          {
+           "titel": "Schulweg_Schulbus_Reglement_2025_V1",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=etnOGcg3IaBKVkPETm4vSi7b3ju1GIFgatwN0XjwcoB4ybGh&download_type=3"
+          }
+         ]
+        },
+        {
+         "titel": "2026",
+         "kinder": [],
+         "dokumente": [
+          {
+           "titel": "202602_Beschluss Abnahme Beschluss Bezirksrat Andelfingen",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=77YlBhs1rzID0h1JFWidKPoNJEQ5r8DSXXFbGKuhcc3vNhgD&download_type=3"
+          },
+          {
+           "titel": "202602_Beschluss VZE Abnahme",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=FLIJQ5nBbecBVAgjsgQUT1qCM5HeMUhGKmd2iEVwwvlxAlkZ&download_type=3"
+          },
+          {
+           "titel": "202604_Beschluss Baurechnung Brandschutzmassnahmen",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=wTOcVUZIHLhHgetgKH7Euz7GEJSHjvygDhvtFIm5NU7099G3&download_type=3"
+          },
+          {
+           "titel": "202604_Beschluss Ersatz Hochsprungmatte",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=LBILGJHvQCuD7k081hibthELAYEnOZjuABEtEBIv5Djp311j&download_type=3"
+          },
+          {
+           "titel": "202604_Beschluss Jahresrechnung 2025",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=yGfB7F6EVaNmVcICAK7OaBCmNDfLYtAbP7mSB91NPeeauE3W&download_type=3"
+          },
+          {
+           "titel": "202604_Beschluss Mangelbehebung Fallschutzmaterial",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=YwhdnKFB1lYIAy4sMOig8igHlPUYc3IR31MMRmzupgwaIrG3&download_type=3"
+          },
+          {
+           "titel": "202605_Beschluss Aufgabenbeschriebe Ressort",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=RNAcjppzMGPpIPBGjkSzSbKQIBTlQXwgPs16GED5jG7R9VN1&download_type=3"
+          },
+          {
+           "titel": "202605_Beschluss Schulprogramm 2627",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=2HMFxcAd4rZB3AV8FHhmKkV2d3QAluQZIpEwCvGGDRJhUIrs&download_type=3"
+          },
+          {
+           "titel": "202605_Beschluss Traktanden Gemeindeversammlung",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=MXOZ99qsGmXlvrJAZVUVAnzmJ1iKr7VYH9irb6bNpzl6UjlU&download_type=3"
+          },
+          {
+           "titel": "20260622_Beschluss Baukostenabrechnung Ersatz Wasserleitung",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=ygA4ShuoY7RWUA1x4bFRwAszO8ffSKq4a2SAdAwvsShP1ktg&download_type=3"
+          },
+          {
+           "titel": "20260622_Beschluss IncaMail",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=bmmDtmPz5ahdZZavFKfLOcBtTcEdn4dy3swfQfwrD4lBl5UW&download_type=3"
+          },
+          {
+           "titel": "20260622_Beschluss Kreditkarte",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=T6AtEXJxrfNqtqWbCoF0G4UGG2bkkQvGIhUmocI6SPRshp4E&download_type=3"
+          },
+          {
+           "titel": "20260622_Beschluss Leitlinie zur Informationssicherheit",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=LwoOjSMVZ1ubVjj8oulqeYAhJynLPEq3Keeu77pcqyfRe68o&download_type=3"
+          }
+         ]
+        }
+       ],
+       "dokumente": []
+      },
+      {
+       "titel": "Legislatur 2026 - 2030",
+       "kinder": [
+        {
+         "titel": "2026",
+         "kinder": [],
+         "dokumente": [
+          {
+           "titel": "PST_04_Beschluss_Traktanden_Gemeindeversammlung_20261019",
+           "url": "https://www.schule-truellikon.ch/download.php?action=download&doc_id=X1GGdeOrHKYOTjt9QvzCvYK7jib1vwwLBETyVMNM3mfbdjof&download_type=3"
+          }
+         ]
+        }
+       ],
+       "dokumente": []
+      }
+     ],
+     "dokumente": []
+    }
+   ],
+   "stand": "17.11.2026",
+   "anzahl_dokumente": 190,
+   "anzahl_rubriken": 9,
+   "max_tiefe": 3
+  },
+  {
+   "id": "skm-marthalen",
+   "name": "Sekundarschule Kreis Marthalen (SKM)",
+   "kurz": "SKM",
+   "typ": "Sekundarschulgemeinde",
+   "bezirk": "Andelfingen",
+   "website": "https://www.skmarthalen.ch",
+   "rs_url": "https://skmarthalen.ch/systematische-rechtssammlung/",
+   "cms": "WordPress (Theme BeTheme)",
+   "menu_pfad": [
+    "Schulgemeinde",
+    "Systematische Rechtssammlung"
+   ],
+   "weitere_einstiege": [
+    "Schulgemeinde › Gemeindeordnung (direkter PDF-Link)",
+    "Schulgemeinde › Beschlüsse",
+    "Information › Informationen A – Z"
+   ],
+   "struktur": "Eine redaktionelle Seite: H2 = Sachgebiet (100–105, Archiv), H4 = Erlass mit Nummer, darunter ein «PDF»-Button.",
+   "nummerierung": "Eigene Systematik 100–105 mit Unterziffern (100.1 …); Jahresrechnungen/Budgets teilen sich 104.1 bzw. 104.2",
+   "css": [
+    "https://skmarthalen.ch/wp-content/themes/betheme/css/be.css?ver=29.0.5",
+    "https://skmarthalen.ch/wp-content/uploads/betheme/css/post-16.css"
+   ],
+   "theme": {
+    "font": "Lato",
+    "heading": "Montserrat",
+    "text": "#626262",
+    "primary": "#0266bc",
+    "button": "#0266bc",
+    "surface": "#f7f7f7",
+    "logo": "https://skmarthalen.ch/wp-content/uploads/2020/08/SKM-e1597839968144.jpg"
+   },
+   "befunde": [
+    "104.1 «Jahresrechnung 2022» verlinkt auf die Datei der Jahresrechnung 2024.",
+    "102.2 «Mittelschulvorbereitung» hat keinen Link (href=\"#\").",
+    "101.1 und 101.2 zeigen auf dieselbe Datei (Hausregeln.pdf).",
+    "Systematik 100–105 weicht von den 9 Sachgebieten des kantonalen Leitfadens ab.",
+    "Keine Dateigrössen/Daten; Pflege rein manuell im Seiteneditor."
+   ],
+   "sections": [
+    {
+     "titel": "100 Gemeinde - Behörden - Verwaltung",
+     "nummer": "100",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "100.1 Schulgemeindeordnung",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2021/01/Gemeindeordnung-SKM.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "100.2 Entschädigungsverordnung",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2022/09/Entschaedigungsverordnung-SKM.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "100.3 Organisationsstatut",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2026/08/Organisationsstatut-SKM-Endversion-01.07.24-Anhang1-30.06.2026.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "100.4 Organigramm",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2026/07/Organigramm-SKM-2026-2030.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "100.5 Konstituierung",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2026/07/Konstituierung-2026-2030.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "100.6 Zweckverband Andelfingen",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2021/01/Zweckverband-Afi.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "100.7 Reglement für Rechnungsvisum",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2021/12/Reglement-fuer-Rechnungsvisum.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "100.8 Verzeichnis der Informationsbestände",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2021/12/Verzeichnis-der-Informationenbestaende.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "100.9 Personalverordnung",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2023/06/Personalverordnung-neu-1.1.2023.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "100.10 Weiterbildungsreglement",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2023/10/Weiterbildungsreglement-SKM-unterzeichnet.pdf",
+       "typ": "PDF"
+      }
+     ]
+    },
+    {
+     "titel": "101 Schulbetrieb und Unterricht",
+     "nummer": "101",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "101.1 Hausordnung",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2021/01/Hausregeln.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "101.2 Benutzung Aufenthaltsraum",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2021/01/Hausregeln.pdf",
+       "typ": "PDF"
+      }
+     ]
+    },
+    {
+     "titel": "102 Schulergänzende Angebote",
+     "nummer": "102",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "102.1 Schulzahnpflege",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2021/01/Reglement-ueber-die-Schulzahlnpflege.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "102.2 Mittelschulvorbereitung",
+       "url": null,
+       "typ": "PDF"
+      }
+     ]
+    },
+    {
+     "titel": "103 Sport und Freizeit",
+     "nummer": "103",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "103.1 Benutzung Räumlichkeiten und Anlagen",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2024/12/Benuetzungsreglement-Raeumlichkeiten-und-Anlagen-SKM-1.1.2025-unterzeichnet.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "103.2 Gebühren Schulräume u. Sporthalle",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2024/12/Gebuehrenreglement-V1-01.01.25.pdf",
+       "typ": "PDF"
+      }
+     ]
+    },
+    {
+     "titel": "104 Finanzen",
+     "nummer": "104",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "104.1 Jahresrechnung 2025",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2026/07/2025-JR-Formularsatz-FINAL.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "104.1 Jahresrechnung 2024",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2025/06/Jahresrechnung-2024-final-1.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "104.1 Jahresrechnung 2023",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2024/05/Jahresrechnung-2023.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "104.1 Jahresrechnung 2022",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2025/06/Jahresrechnung-2024-final.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "104.1 Jahresrechnung 2021",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2022/09/Jahresrechnung-2021-mit-Beschluss.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "104.1 Jahresrechnung 2020",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2023/01/JR20abgenommen.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "104.2 Budget 2026",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2026/01/Budget-2026.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "104.2 Budget 2025",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2024/11/Budget-2025.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "104.2 Budget 2024",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2023/12/Budget-2024.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "104.2 Budget 2023",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2024/06/Budget-2023-Formularsatz-vollstaendig-29.10.2022.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "104.2 Budget 2022",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2023/01/Budget-2022.pdf",
+       "typ": "PDF"
+      }
+     ]
+    },
+    {
+     "titel": "105 Beschlüsse",
+     "nummer": "105",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "105.1 Publikationsorgan",
+       "url": "https://www.skmarthalen.ch/wp-content/uploads/2022/10/Auszug-Publikationsorgan.pdf",
+       "typ": "PDF"
+      },
+      {
+       "titel": "Sammlung aller Beschlüsse",
+       "url": "https://www.skmarthalen.ch/beschluesse/",
+       "typ": "PDF"
+      }
+     ]
+    },
+    {
+     "titel": "Archiv",
+     "kinder": [
+      {
+       "titel": "Schulgemeindeversammlung 19. November 2025",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "Protokoll",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2026/06/2025_11_19_Protokoll-GV-SKM.pdf",
+         "typ": "PDF"
+        },
+        {
+         "titel": "Beschlüsse",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2026/06/Beschluss_Gemeindeversammlung-251119.pdf",
+         "typ": "PDF"
+        }
+       ]
+      },
+      {
+       "titel": "Schulgemeindeversammlung 11. Juni 2025",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "Protokoll",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2025/06/2025_06_11_Protokoll-GV-SKM.pdf",
+         "typ": "PDF"
+        },
+        {
+         "titel": "Beschlüsse",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2025/06/Beschluss_Gemeindeversammlung-250611.pdf",
+         "typ": "PDF"
+        }
+       ]
+      },
+      {
+       "titel": "Schulgemeindeversammlung 19. November 2024",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "Protokoll",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2024/11/0461_001.pdf",
+         "typ": "PDF"
+        },
+        {
+         "titel": "Beschlüsse",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2024/11/Beschluss_Gemeindeversammlung-241119.pdf",
+         "typ": "PDF"
+        }
+       ]
+      },
+      {
+       "titel": "Schulgemeindeversammlung 12. Juni 2024",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "Protokoll",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2024/06/2024_06_12-Protokoll-GV-SKM.pdf",
+         "typ": "PDF"
+        },
+        {
+         "titel": "Beschlüsse",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2024/06/Beschluss_Gemeindeversammlung-240612.pdf",
+         "typ": "PDF"
+        }
+       ]
+      },
+      {
+       "titel": "Schulgemeindeversammlung 20. November 2023",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "Protokoll",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2023/11/2023_11_20-Protokoll-GV-SKM.pdf",
+         "typ": "PDF"
+        },
+        {
+         "titel": "Beschlüsse",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2023/11/Beschluss_Gemeindeversammlung-231120.pdf",
+         "typ": "PDF"
+        }
+       ]
+      },
+      {
+       "titel": "Schulgemeindeversammlung 14. Juni 2023",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "Protokoll",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2023/06/2023_06_14-Protokoll-GV-SKM.pdf",
+         "typ": "PDF"
+        },
+        {
+         "titel": "Beschlüsse",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2023/06/Beschluss_Gemeindeversammlung-230614.pdf",
+         "typ": "PDF"
+        }
+       ]
+      },
+      {
+       "titel": "Schulgemeindeversammlung vom 16.11.2022",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "Protokoll",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2022/11/2022_11_16-Protokoll-GV-SKM-1.pdf",
+         "typ": "PDF"
+        },
+        {
+         "titel": "Beschlüsse",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2022/11/2022_11_16_Gemeindeversammlungsbeschluesse-1.pdf",
+         "typ": "PDF"
+        }
+       ]
+      },
+      {
+       "titel": "Schulgemeindeversammlung vom 08.06.2022",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "Protokoll",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2022/06/Protokoll_Gemeindeversammlung_220608.pdf",
+         "typ": "PDF"
+        },
+        {
+         "titel": "Beschlüsse",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2022/06/Beschluss_Gemeindeversammlung-220608.pdf",
+         "typ": "PDF"
+        }
+       ]
+      },
+      {
+       "titel": "Schulgemeindeversammlung vom 17.11.2021",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "Protokoll",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2021/11/2021_11_17_Protokoll_SKM_GV.pdf",
+         "typ": "PDF"
+        },
+        {
+         "titel": "Beschlüsse",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2021/11/2021_11_17_Gemeindeversammlungsbeschluesse.pdf",
+         "typ": "PDF"
+        }
+       ]
+      },
+      {
+       "titel": "Schulgemeindeversammlung vom 02.06.2021",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "Protokoll",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2022/10/Protokoll-GV-02.06.2021.pdf",
+         "typ": "PDF"
+        },
+        {
+         "titel": "Beschlüsse",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2022/10/2021_06_02_Gemeindeversammlungsbeschluesse.pdf",
+         "typ": "PDF"
+        }
+       ]
+      },
+      {
+       "titel": "Wahlergebnisse",
+       "kinder": [],
+       "dokumente": [
+        {
+         "titel": "Gesamterneuerungswahlen 2022 - 2026",
+         "url": "https://www.skmarthalen.ch/wp-content/uploads/2022/03/Wahlergebnisse_Erneuerungswahl-Amtsdauer-2022-2026.pdf",
+         "typ": "PDF"
+        }
+       ]
+      }
+     ],
+     "dokumente": []
+    }
+   ],
+   "stand": "17.11.2026",
+   "anzahl_dokumente": 50,
+   "anzahl_rubriken": 7,
+   "max_tiefe": 2
+  },
+  {
+   "id": "sek-buelach",
+   "name": "Sekundarschule Bülach",
+   "kurz": "Sek Bülach",
+   "typ": "Sekundarschulgemeinde",
+   "bezirk": "Bülach",
+   "website": "https://www.sekbuelach.ch",
+   "rs_url": "https://www.sekbuelach.ch/schulverwaltung/systematische-rechtssammlung/p-5984/",
+   "cms": "Escola-Schulplattform (Dokumentablage per AJAX)",
+   "menu_pfad": [
+    "Schulverwaltung",
+    "Systematische Rechtssammlung"
+   ],
+   "weitere_einstiege": [
+    "Externer Link: BWS Bülach › Reglemente"
+   ],
+   "struktur": "Einleitungstext + 5 Rubriken (H3), je eine dynamisch nachgeladene Dokumenttabelle mit Name, Typ, Grösse, Upload-Datum.",
+   "nummerierung": "Datum JJJJ.MM.TT als Titel-Präfix, keine Erlassnummer",
+   "css": [
+    "https://www.sekbuelach.ch/inc/customers/buelach/css/main.css?14"
+   ],
+   "theme": {
+    "font": "Open Sans",
+    "text": "rgba(0,0,0,.75)",
+    "primary": "#00aeef",
+    "button": "#00aeef",
+    "surface": "#f2f2f2",
+    "dark": "#000000",
+    "logo": "https://www.sekbuelach.ch/inc/customers/buelach/images/logo-alt.svg"
+   },
+   "befunde": [
+    "Schlank und rein auf Erlasse beschränkt (12 Dokumente) – inhaltlich am nächsten am Leitfaden.",
+    "Gebührenverordnung/-tarif liegen unter «Gemeinde - Behörden - Verwaltung» statt «Finanzen und Gebühren».",
+    "Inhalte werden per JavaScript nachgeladen → für Suchmaschinen und einfache Crawler unsichtbar.",
+    "Upload-Datum ≠ Inkraftsetzung; Inkraftsetzung nur im Titel."
+   ],
+   "sections": [
+    {
+     "titel": "Gemeinde - Behörden - Verwaltung",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "2022.01.01 Gemeindeordnung",
+       "url": "https://www.sekbuelach.ch/download.php?action=download&doc_id=xlze8mgxuwety5k0upenlh60zuyq6m52r6hp&download_type=3",
+       "typ": "pdf",
+       "groesse": "704.01 KB",
+       "datum": "07.02.2022"
+      },
+      {
+       "titel": "2026.04.01 Geschäftsordnung ab 01.04.2026 def_signed",
+       "url": "https://www.sekbuelach.ch/download.php?action=download&doc_id=YZKIG9oNMiMYBxqP76Kbvo4hN63JUbp96wyaGeI4uNWQfBQ9&download_type=3",
+       "typ": "pdf",
+       "groesse": "342.74 KB",
+       "datum": "23.09.2026"
+      },
+      {
+       "titel": "2024.03.07 Anpassung RPK Entschädigung ab 01.01.2024",
+       "url": "https://www.sekbuelach.ch/download.php?action=download&doc_id=AcJqRg5El0mSYjzwGp1u3AEITmKmSE5nqGKgEmU2wHZmCyGe&download_type=3",
+       "typ": "pdf",
+       "groesse": "259.56 KB",
+       "datum": "23.09.2026"
+      },
+      {
+       "titel": "2022.08.01 Personalverordnung",
+       "url": "https://www.sekbuelach.ch/download.php?action=download&doc_id=rgmc5x7p8ngpqhks6wyxupshmhv5ms5wq3ue&download_type=3",
+       "typ": "pdf",
+       "groesse": "436.54 KB",
+       "datum": "22.07.2022"
+      },
+      {
+       "titel": "2022.08.01 Personalverordnung Vollziehungsbestimmungen",
+       "url": "https://www.sekbuelach.ch/download.php?action=download&doc_id=ttx68hjqwnjh3fv8abespaftk2y5ju305hlh&download_type=3",
+       "typ": "pdf",
+       "groesse": "687.15 KB",
+       "datum": "22.07.2022"
+      },
+      {
+       "titel": "2010.08.16 Entschädigungsverordnung",
+       "url": "https://www.sekbuelach.ch/download.php?action=download&doc_id=a1qk77n6v6aepujzyytkgbm3rr4xurn15vma&download_type=3",
+       "typ": "pdf",
+       "groesse": "87.76 KB",
+       "datum": "07.02.2022"
+      },
+      {
+       "titel": "2024.06.06 Gebührenverordnung",
+       "url": "https://www.sekbuelach.ch/download.php?action=download&doc_id=qDqUFet41k4BPonigmBHtftDgkmUiv6shGsJO8sTfp5nTHed&download_type=3",
+       "typ": "pdf",
+       "groesse": "5.22 MB",
+       "datum": "23.09.2026"
+      },
+      {
+       "titel": "2024.06.11 Gebührentarif",
+       "url": "https://www.sekbuelach.ch/download.php?action=download&doc_id=BXAr0ioanUDZQCqnYP05OdzlXHmi8xITMP3i2Rd7togtSkNT&download_type=3",
+       "typ": "pdf",
+       "groesse": "197.75 KB",
+       "datum": "23.09.2026"
+      }
+     ]
+    },
+    {
+     "titel": "Schulbetrieb",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "2018 Reglement Klassenlager, Wintersportlager, Projektwochen, Exkursionen und Schulreisen",
+       "url": "https://www.sekbuelach.ch/download.php?action=download&doc_id=n5x3mshs2g08ve3e1ww08t74hm52p1mr8hsz&download_type=3",
+       "typ": "pdf",
+       "groesse": "4.48 MB",
+       "datum": "07.02.2022"
+      }
+     ]
+    },
+    {
+     "titel": "Infrastruktur, Sport und Freizeit",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "2011.04.12 Reglement VideoüberwachungSchulanlagen",
+       "url": "https://www.sekbuelach.ch/download.php?action=download&doc_id=22qng7pvfwrf5tlyb3h718z68uyychy8h7lh&download_type=3",
+       "typ": "pdf",
+       "groesse": "84.32 KB",
+       "datum": "07.02.2022"
+      }
+     ]
+    },
+    {
+     "titel": "Finanzen und Gebühren",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "2023.08.01 Erlass ueber die Haushaltfuehrung mit Globalbudget",
+       "url": "https://www.sekbuelach.ch/download.php?action=download&doc_id=9t5ie5Lp9V9jMMxgadST4bCX7OEA37oE1JGtmIhp7aLRFUn2&download_type=3",
+       "typ": "pdf",
+       "groesse": "237.87 KB",
+       "datum": "07.11.2023"
+      }
+     ]
+    },
+    {
+     "titel": "BWS - Anhang zur Personalverordnung",
+     "kinder": [],
+     "dokumente": [
+      {
+       "titel": "2022.08.01 Personalverordnung Anhang BWS",
+       "url": "https://www.sekbuelach.ch/download.php?action=download&doc_id=f8hvlasbk2hpwbbt1nn45hye4sra2n328ys1&download_type=3",
+       "typ": "pdf",
+       "groesse": "229.38 KB",
+       "datum": "22.07.2022"
+      }
+     ]
+    }
+   ],
+   "stand": "17.11.2026",
+   "anzahl_dokumente": 12,
+   "anzahl_rubriken": 5,
+   "max_tiefe": 1
+  }
+ ]
+}

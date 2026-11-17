@@ -12,6 +12,7 @@ Ablage für Prototypen der EduKSX-Plattform: Klickprototypen und lauffähige Ver
 |---|---|---|---|---|---|
 | [Ablaufplanung](prototypen/ablaufplanung/) | Abläufe wie Onboarding, Offboarding und Mutationen als Schritte planen: Fristen ab Stichtag, Reihenfolge, Zuständigkeit nach Funktionendiagramm; jeder Schritt ruft einen Vorgang aus EduKSX-Core, -Ident, -Connect, -Staffing, -Time oder -Shop auf. | 0.1.0 | in-arbeit | html | EduKSX-Flow |
 | [Einsatzplanung](prototypen/einsatzplanung/) | Pensen, Ressourcen und Berufsauftrag planen, Stellenplan und VZE nach den Vorgaben des Kantons Zürich, Anstellungsfreigaben, Pensenumfrage, Stellvertretungen, Personalgespräche und Tagesstrukturen. | 0.1.0 | in-arbeit | html | EduKSX-Staffing |
+| [Rechtssammlung](prototypen/rechtssammlung/) | Systematische Rechtssammlungen der Zürcher Gemeinden und Schulgemeinden erfassen und vergleichen: Menüpfad, Aufbau, Dateien und Befunde je Organisation, Liste aller 160 politischen Gemeinden und je eine nachgebaute Demo-Seite im Stil der Original-Website. | 0.1.0 | in-arbeit | html | EduKSX-Codex |
 <!-- prototypen:ende -->
 
 Die Tabelle erzeugt `python3 tools/pruefen.py --schreiben` aus den `prototyp.json` der einzelnen Ordner.

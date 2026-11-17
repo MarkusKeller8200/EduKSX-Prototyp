@@ -36,6 +36,13 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-17 (03:20–03:45) – Prototyp EduKSX-Codex
+
+- Neuer Prototyp `prototypen/rechtssammlung` (EduKSX-Codex): Evaluation der Rechtssammlungen von PG Trüllikon,
+  PS Trüllikon, SKM Marthalen und Sek Bülach, Gemeindeliste (160), 4 Demo-Seiten; Einstiegsseite mit Icon «codex» (vorläufig). Issue #6 → `_3 Beta-Test`.
+- Entscheid 2026-11-17: Demo-Seiten übernehmen Schrift, Farben und Aufbau der Originale, aber keine Logos; Hinweis «keine offizielle Seite» und `noindex`, weil öffentlich auf GitHub Pages.
+- Offen: CMS-Namen (i-web, Escola, WordPress) stehen als Evaluationsdaten im Prototyp – mit Regel «keine Fremd-/Herstellernamen» abgleichen.
+
 ### Sitzung JJJJ-MM-TT (hh:mm–) – Thema
 
 - …
