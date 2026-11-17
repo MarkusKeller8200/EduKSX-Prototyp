@@ -10,6 +10,7 @@ Ablage für Prototypen der EduKSX-Plattform: Klickprototypen und lauffähige Ver
 <!-- prototypen:start -->
 | Prototyp | Beschreibung | Version | Status | Technik | Ziel-Modul |
 |---|---|---|---|---|---|
+| [Ablaufplanung](prototypen/ablaufplanung/) | Abläufe wie Onboarding, Offboarding und Mutationen als Schritte planen: Fristen ab Stichtag, Reihenfolge, Zuständigkeit nach Funktionendiagramm; jeder Schritt ruft einen Vorgang aus EduKSX-Core, -Ident, -Connect, -Staffing, -Time oder -Shop auf. | 0.1.0 | in-arbeit | html | EduKSX-Flow |
 | [Einsatzplanung](prototypen/einsatzplanung/) | Pensen, Ressourcen und Berufsauftrag planen, Stellenplan und VZE nach den Vorgaben des Kantons Zürich, Anstellungsfreigaben, Pensenumfrage, Stellvertretungen, Personalgespräche und Tagesstrukturen. | 0.1.0 | in-arbeit | html | EduKSX-Staffing |
 <!-- prototypen:ende -->
 
