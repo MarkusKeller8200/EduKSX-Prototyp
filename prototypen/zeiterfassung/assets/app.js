@@ -25,6 +25,9 @@
     pause_ende: { name: "Pause beendet", pfeil: "▸" },
     gehen: { name: "Gehen", pfeil: "←" },
   };
+  // Kaffeetasse = Pause, Pfeil in die Tasse hinein bzw. Play = weiterarbeiten
+  const SYMBOL_TASSE = '<svg class="symbol-svg" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5c-.6.8-.6 1.7 0 2.5M12 3.5c-.6.8-.6 1.7 0 2.5"/></svg>';
+  const SYMBOL_WEITER = '<svg class="symbol-svg" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>';
   const WOCHENTAGE = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
 
   // ---------- Hilfen ----------
@@ -400,7 +403,7 @@
       const seit = z.letzte.typ === "pause_ende" ? "wieder seit" : "seit";
       status = `<div class="status ein" role="status"><span class="symbol" aria-hidden="true">✓</span><div><b>Eingestempelt</b><span class="muted">${e(ARTEN[z.letzte.art]?.name)} ${seit} ${hhmm(z.letzte.zeit)}</span></div></div>`;
     } else if (z.art === "pause") {
-      status = `<div class="status pause" role="status"><span class="symbol" aria-hidden="true">॥</span><div><b>In der Pause</b><span class="muted">seit ${hhmm(z.letzte.zeit)}</span></div></div>`;
+      status = `<div class="status pause" role="status"><span class="symbol" aria-hidden="true">${SYMBOL_TASSE}</span><div><b>In der Pause</b><span class="muted">seit ${hhmm(z.letzte.zeit)}</span></div></div>`;
     } else {
       status = `<div class="status aus" role="status"><span class="symbol" aria-hidden="true">○</span><div><b>Nicht eingestempelt</b><span class="muted">${a.liste.length ? `Zuletzt gegangen um ${hhmm(z.letzte.zeit)}` : "Guten Tag – bereit zum Stempeln"}</span></div></div>`;
     }
@@ -438,10 +441,10 @@
     if (z.art === "aus") {
       tasten = `<button class="taste kommen" data-aktion="kommen"><span class="pfeil" aria-hidden="true">→</span> Kommen</button>`;
     } else if (z.art === "ein") {
-      tasten = `<div class="tasten-zwei"><button class="taste pause" data-aktion="pause_beginn"><span class="pfeil" aria-hidden="true">॥</span> Pause</button>
+      tasten = `<div class="tasten-zwei"><button class="taste pause" data-aktion="pause_beginn">${SYMBOL_TASSE} Pause</button>
         <button class="taste gehen" data-aktion="gehen"><span class="pfeil" aria-hidden="true">←</span> Gehen</button></div>`;
     } else if (z.art === "pause") {
-      tasten = `<button class="taste kommen" data-aktion="pause_ende"><span class="pfeil" aria-hidden="true">▸</span> Pause beenden</button>
+      tasten = `<button class="taste pause-ende" data-aktion="pause_ende"><span class="tasse-gross">${SYMBOL_TASSE}</span><span class="zweizeilig"><span>Pause beenden</span><small>${SYMBOL_WEITER} weiterarbeiten</small></span></button>
         <button class="taste klein" data-aktion="gehen"><span aria-hidden="true">←</span> Gehen (Feierabend)</button>`;
     }
     if (tasten) teile.push(`<div class="tasten">${tasten}</div>`);

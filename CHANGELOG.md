@@ -18,6 +18,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Arbeit 30 Min. schraffiert, zählt nicht als Arbeitszeit, Uhr läuft weiter; gebuchte Pausen angerechnet (#22).
 - EduKSX-Time 0.3.1: gesetzliche Pause um alle gestempelten Pausen des Tages reduziert, auch spätere und die laufende;
   ab 30 Min. gestempelter Pause entfällt die schraffierte Fläche nachträglich (#23).
+- EduKSX-Time 0.3.2: Pausenmodus mit eigener Tastenfarbe und Kaffeetasse («Pause beenden – weiterarbeiten») (#24).
 - Repository mit dem GitHub-Blueprint eingerichtet.
 - Ordnerstruktur `prototypen/<name>/` mit Vorlage `prototypen/_vorlage/` (prototyp.json, README, index.html).
 - Prototyp **EduKSX-Staffing – Einsatzplanung** (`prototypen/einsatzplanung`): Anforderungskatalog und

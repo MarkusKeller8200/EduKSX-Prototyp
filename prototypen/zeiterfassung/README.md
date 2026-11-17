@@ -38,6 +38,8 @@ EduKSX-Ident, echte Schnittstelle.
   `ZWANG_AB_MIN` / `ZWANG_DAUER_MIN` in `assets/app.js`.
   **ZU PRÜFEN:** Regel mit dem anwendbaren Personalrecht abgleichen (ArG Art. 15: >5,5 h 15 Min., >7 h 30 Min., >9 h 1 h).
 
+- 0.3.2: Im Pausenmodus eigene Tastenfarbe und Kaffeetasse («Pause beenden – weiterarbeiten», #24).
+
 ## Starten
 
 Über GitHub Pages (Einstiegsseite › EduKSX-Time) auf dem Handy öffnen und installieren. Lokal braucht der Service
