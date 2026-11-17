@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.4.0 – Generator.
+"""EduKSX-Codex Prototyp 0.5.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -390,6 +390,105 @@ NEU = [
   "sections": hoch_secs},
 ]
 ORGS += NEU
+due_secs, due_aufgehoben = iweb_gk(lade("pg-duebendorf.json"), "https://www.duebendorf.ch")
+feh_secs, feh_aufgehoben = iweb_gk(lade("pg-fehraltorf.json"), "https://www.fehraltorf.ch")
+for _s in due_secs + feh_secs:   # «G»-Zeilen ohne Erlasse (z. B. leere Sachgebiete) bleiben als leere Rubrik stehen
+    _s["kinder"] = [k for k in _s["kinder"] if k["dokumente"]]
+PSD = "https://www.schule-duebendorf.ch/_doc/{}"
+psd_secs = [{"titel": "Dokumente", "kinder": [], "dokumente": [doc(n, PSD.format(i), typ="pdf", groesse=g) for n, i, g in [
+    ("Allgemeine Richtlinie Informationsicherheitund Datenschutz Primarschule Dübendorf", 524434, "176 kB"),
+    ("Finanzreglement Primarschule Dübendorf 01.09.2026", 521068, "189 kB"),
+    ("Funktionendiagramm Primarschule Dübendorf 01.09", 521326, "44 kB"),
+    ("Geschäftsreglement 01.09.2026", 521071, "156 kB"),
+    ("Kommunikationskonzept", 395185, "674 kB"),
+    ("Konzept sonderpädagogischer Hort - Dezember 2025", 497989, "321 kB"),
+    ("Reglement Projektorganisation Primarschule 01.09.2026", 521074, "121 kB"),
+    ("Reglement Videoüberwachung", 422053, "1.23 MB"),
+    ("Schularealordnung", 395188, "480 kB"),
+    ("Reglement Ausschuss Sonderpädagogik Primarschule D", 529648, "91 kB")]]}]
+SDS = "https://www.sek-ds.ch/download.php?action=download&download_type=3&doc_id={}"
+_sds = {
+ "1 Gemeinde – Behörden – Verwaltung": [("1.1 Gemeindeordnung", "S5nrIkGfWsdhjAGDK2VgOql4gxXhKptfKiQ85iO7OZyLv15Y"), ("1.2 Behördenverzeichnis", "vJjDxXrbZ1aHessitnWugYrqZwRzy8UVoBEnqNnaf1Qovt3H"),
+   ("1.3 Organisationsstatut", "ZgCbPBL8wopkxzPvj3lZeQQ6gYzwDSM0byOdNKKTTrIkrFN5"), ("1.4 Organigramm", "XWWR8Bs6S9GUBNi0DXXcBGKClMlgTZ1aB1I9iGFJMefouX4k"),
+   ("1.5 Personalverordnung", "KvYjxhGfFAZYNwzmKq9spZ6qsRvVO6fwtpclpg3xwp2SUucG"), ("1.6 Ausführungsbestimmungen zur Personalverordnung", "goI8dYJcJxBYloJiVSym493cizFckU9yibtiT98hWcr4U76T"),
+   ("1.7 Leitbild", "yryI0d41Ymt4v9EWGolP0rdL9df86gP6Yr33FLnETRYXOevg"), ("1.8 Verordnung Entschädigung Behörde, Kommissionen", "1ARiHNL2ytGB3MU2YkE5D7PLzOrHkdydq9ksvQdurE0rnFVY")],
+ "2 Schulbetrieb Sekundarschule": [("2.1 Reglement Absenzen, Dispensationen und Jokertage", "25tmHhoGslNC5Ga8M9ulztTewXzrYOl5r8Xh5bvPiWp5VYAR"), ("2.2 Reglement Berufsvorbereitungsjahr", "UeJTIT3eIveWYKn2GwOwLkocsAeOQH1lJBp71Zi3oB9DOlJW"),
+   ("2.3 Reglement Elternmitwirkung", "LrDD9Al2mQdeFHTFCQA1vHXmCRU8150aPsNri6JjCdVblOZM"), ("2.4 Hausordnung Grüze 1-7, 2025", "v2mrcxlqZEbrMfpl2wFatnfbUqNSzcI2Ld8hGG5NoKpkZnKp"),
+   ("2.5 Hausordnung Stägenbuck 2023", "OgiglR0QiRZ6xEGu9EYHUb779fDJEImvZ37jnh6C0ijYEoSv"), ("2.6 Nutzungsreglement Schüler iPad", "gTkgQvPyZyX84kQmuIyUYa141Ss9Uvy0QV0XoE6GNONg4IUD"),
+   ("2.7 Prozessablauf Querversetzungen innerhalb der SSDS", "KMYhXjUyCMCQq1WP1LYnsLaXKG0ZCvFb5CzdMSaKZcF2XVvk"), ("2.8 Konzept Sonderpädagogik", "8r4wYLk59Q0cP27ISiBXoJYtCHR97Ea3TP4YJnWeNQYbVZ26"),
+   ("2.9 Anschlussvertrag Schulpsychologischer Dienst", "XcILCddhloNiCJXAXruEm4E6kbmIWC0m6MJYl8YRM8mHd7VH")],
+ "3 Schulergänzende Angebote": [("3.1 Konzept LIFT", "Tee5clLeWjhy2wsDckTakZayK6sobVO7tdXZ1H9b0GHsimyU"), ("3.2 Reglement Tagesstrukturen", "UeYzrr2hl2y4NDozTWGmpLYNy6PJHlAEmOidCD6zRWjqFQip"),
+   ("3.3 Reglement Ufzgi-Club", "yZjTA3q3P4GgSP0yXltEfXRBqUQskGmpfcyKIFkUhWgizjJ4")],
+ "4 Sport und Freizeit": [("4.1 Benützerreglement für Schulräume", "HmCc6EIvhuc4lkJLVY6N3iW7Rwz2kw6vLK2MdLs6irwim7re"), ("4.2 Benützerreglement für Schulräume - Tarife", "x8jT9J39NVKnGPsNyd20JndCbgBb9wwDPnQIkCjDGy9Kt9pL"),
+   ("4.3 Reglement Klassenlager, Schulreisen, Lager u. weiteres", "kaAGbCcLEC9blSWoCrj2Oeo9uWn4kXkR5vEmus4sBunWlPqz")],
+ "5 Finanzen – Gebühren": [("5.1 Gebührenverordnung", "U5be3ffJWyJ4idfUcaqVBDKCYvfp87eB649dt3e56l3AzIIM"), ("5.2 Gebührentarif", "9nn3i2wMJciyKOpYLV5rH5uPcWnrsCM6eKzE5z0wkgNlbZVI"),
+   ("5.3 Finanzreglement (gültig ab 1. März 2025)", "Lr0mQxGvGUWKeGMxqn2WDTnZ3iJ5cSLvSJRVHlmH5ntuHvZo")],
+ "6 Öffentliche Ordnung & Sicherheit": [("6.1 Videoüberwachung Reglement", "sjCAKYvI8YZvSbWcD6I7cGRkGgYaKO4HYM3HNbMY3TVn9l5e")],
+}
+sds_secs = [{"titel": t, "nummer": t.split()[0], "kinder": [], "dokumente": [doc(n, SDS.format(i), typ="pdf", nummer=n.split()[0]) for n, i in docs]} for t, docs in _sds.items()]
+
+NEU2 = [
+ {"id": "pg-duebendorf", "name": "Politische Gemeinde Dübendorf", "kurz": "Dübendorf", "typ": "Politische Gemeinde", "bezirk": "Uster",
+  "gemeinden": ["Dübendorf"], "sitz": "Dübendorf", "website": "https://www.duebendorf.ch", "rs_url": "https://www.duebendorf.ch/gesetzessammlung",
+  "cms": "i-web / icms (Innovative Web AG)", "menu_pfad": ["Politik", "Gesetzessammlung", "1–9 Sachgebiet (je eine Unterseite)"],
+  "weitere_einstiege": ["Verwaltung › Bildung › Primarschule (eigene Website schule-duebendorf.ch)", "Sekundarschule Dübendorf-Schwerzenbach (eigene Website sek-ds.ch)"],
+  "renderer": "iweb_gk",
+  "struktur": "Wie Meilen/Winkel: neun Unterseiten je Sachgebiet, Untergruppen (Zehner bzw. Hunderter) mit Tabellen Nummer | Titel | Gültig seit; Detailseite je Erlass.",
+  "nummerierung": "Vollständige Erlassnummern nach Leitfaden (z. B. 100.1, 600.211) mit Inkraftsetzungsdatum",
+  "css": ["https://www.duebendorf.ch/dist/duebendorf/2025/css/main.fb611fe9a92ed9f69515.css"],
+  "theme": {"font": "Barlow", "text": "#39393c", "primary": "#05192d", "button": "#ffff00", "surface": "#f3f5fa", "dark": "#080817"},
+  "nav": ["Aktuelles", "Politik", "Verwaltung", "Dienstleistungen", "Leben", "Wirtschaft", "Karriere"], "einheit": "",
+  "befunde": ["Gleicher Aufbau wie Meilen und Winkel: Erlassnummer mit Sachgebietsziffer und «Gültig seit» bei jedem Erlass.",
+              "Primarstufe gehört zur Stadt (Geschäftsordnung Primarschulpflege 104.1 in der Stadt-SR); die übrigen Primarschul-Erlasse stehen aber nur auf der Schul-Website.",
+              "Sachgebiete 3 Strafrecht und 9 Wirtschaft/Gewerbe sind leer.",
+              "Mit «Kommunikationskonzept» (150.1), «Gesamtverkehrskonzept» (780.1) und einer Richtlinie (160.1) stehen nicht rechtsetzende Dokumente ohne Kennzeichnung in der SR.",
+              "Menüpunkt «Gesetzessammlung» unter Politik."],
+  "sections": due_secs},
+ {"id": "schule-duebendorf", "name": "Primarschule Dübendorf (Primarstufe der Stadt)", "kurz": "Primarschule Dübendorf", "typ": "Schule der Einheitsgemeinde", "bezirk": "Uster",
+  "gemeinden": ["Dübendorf"], "sitz": "Dübendorf", "website": "https://www.schule-duebendorf.ch", "rs_url": "https://www.schule-duebendorf.ch/rechtssammlung",
+  "cms": "i-web / icms (Innovative Web AG)", "menu_pfad": ["Organisation", "Rechtssammlung"],
+  "weitere_einstiege": ["Downloads je Schuleinheit (Birchlen, Dorf, Flugfeld …)"], "renderer": "escola_tables",
+  "struktur": "Eine Seite «Rechtssammlung» mit einer alphabetischen Dokumentliste (Titel, PDF, Grösse), ohne Sachgebiete.",
+  "nummerierung": "keine",
+  "css": ["https://www.schule-duebendorf.ch/dist/duebendorf-primarschule/2020/css/main.bbfa513b4a33aeead507.css"],
+  "theme": {"font": "Source Sans Pro", "text": "#000000", "primary": "#1f6f99", "button": "#93ceec", "surface": "#eef7fc", "dark": "#000000"},
+  "nav": ["Organisation", "Schulen", "Angebote", "Aktuelles"], "einheit": "Einheitsgemeinde Primarstufe",
+  "befunde": ["Alphabetische Liste ohne Sachgebiete und Nummern – genügt dem Leitfaden nicht (Ziff. 3).",
+              "Gemischt: Reglemente neben Konzepten, Funktionendiagramm und Richtlinie.",
+              "Die Primarstufe gehört zur Stadt: diese Erlasse gehörten ins Sachgebiet 4 der Stadt-SR."],
+  "sections": psd_secs},
+ {"id": "ssg-duebendorf-schwerzenbach", "name": "Sekundarschulgemeinde Dübendorf-Schwerzenbach", "kurz": "Sek Dübendorf-Schwerzenbach", "typ": "Sekundarschulgemeinde", "bezirk": "Uster",
+  "gemeinden": ["Dübendorf", "Schwerzenbach"], "sitz": "Dübendorf", "website": "https://www.sek-ds.ch",
+  "rs_url": "https://www.sek-ds.ch/informationen/systematische-rechtssammlung/p-80/",
+  "cms": "Escola-Schulplattform", "menu_pfad": ["Informationen", "Systematische Rechtssammlung"],
+  "weitere_einstiege": [], "renderer": "escola_tables",
+  "struktur": "Eine Seite mit sechs Sachgebieten (Überschriften 1–6) und je einer Downloadliste.",
+  "nummerierung": "Sachgebiet.Laufnummer im Titel (1.1, 2.4 …), Sachgebiete nach Leitfaden Anhang 2 plus «6 Öffentliche Ordnung & Sicherheit»",
+  "css": ["https://www.sek-ds.ch/inc/css/base/responsive/tables.css"],
+  "theme": {"font": "Arial", "heading": "IBM Plex Sans", "text": "#666666", "primary": "#0066cc", "button": "#0066cc", "surface": "#f2f7fc", "dark": "#0066cc"},
+  "nav": ["Über uns", "Schule Grüze 1-4", "Schule Grüze 5-7", "Schule Stägenbuck", "Informationen"], "einheit": "",
+  "befunde": ["Sachgebiete 1–5 folgen dem Leitfaden (Anhang 2), dazu ein eigenes Sachgebiet 6 für Videoüberwachung.",
+              "Nicht rechtsetzende Dokumente in der SR: Behördenverzeichnis, Organigramm, Leitbild, Konzepte, Prozessablauf.",
+              "Kein Inkraftsetzungsdatum in der Liste (nur beim Finanzreglement im Titel)."],
+  "sections": sds_secs},
+ {"id": "pg-fehraltorf", "name": "Politische Gemeinde Fehraltorf", "kurz": "Fehraltorf", "typ": "Politische Gemeinde", "bezirk": "Pfäffikon",
+  "gemeinden": ["Fehraltorf"], "sitz": "Fehraltorf", "website": "https://www.fehraltorf.ch", "rs_url": "https://www.fehraltorf.ch/gesetzessammlung",
+  "cms": "i-web / icms (Innovative Web AG)", "menu_pfad": ["Verwaltung", "Gesetzessammlung", "1–9 Sachgebiet (je eine Unterseite)"],
+  "weitere_einstiege": ["Schule Fehraltorf (eigene Website schulefehraltorf.ch, nur «Informationen»/Downloads)"], "renderer": "iweb_gk",
+  "struktur": "Neun Unterseiten je Sachgebiet mit Tabellen Nummer | Titel | Gültig seit, Detailseite je Erlass. Eigene Systematik: 2 = Schule/Bildung, 6 = Bauwesen, 9 = Rechtspflege.",
+  "nummerierung": "Erlassnummern mit Sachgebietsziffer (101, 111.1, 202.1.1), teils ohne Punkt (2010, 5010)",
+  "css": ["https://www.fehraltorf.ch/dist/fehraltorf/2023/css/main.1d24fe3f8975ae1fb6e2.css"],
+  "theme": {"font": "Avenir LT Std Book", "heading": "Avenir LT Std Black", "text": "#00314e", "primary": "#00314e", "button": "#00314e", "surface": "#f2f5f7", "dark": "#00314e"},
+  "nav": ["Gemeinde", "Politik", "Verwaltung", "Freizeit, Kultur und Veranstaltungen", "Aktuelles und Gesellschaft", "Schule Fehraltorf", "Werke Fehraltorf"],
+  "einheit": "Einheitsgemeinde",
+  "befunde": ["Einheitsgemeinde (Gemeindeordnung Art. 2: Gemeinde erfüllt die Aufgaben der Volksschule): die Schul-Erlasse stehen in der Gemeinde-SR (Sachgebiet 2).",
+              "Eigene Sachgebiet-Reihenfolge statt Leitfaden Anhang 1 (Schule = 2, Bauwesen = 6, Finanzen = 7, Rechtspflege = 9); Seitenadressen der Unterseiten (gk-zivilrecht …) passen nicht zum Inhalt.",
+              "Zonenplan, Kernzonen- und Gestaltungspläne als Dokumente abgelegt (Leitfaden: Hinweis genügt).",
+              "Nicht rechtsetzend und ungekennzeichnet: Konzepte, Leistungsvereinbarungen, Archivplan, Bericht zum Energieplan, Weisung.",
+              "Schul-Website hat keine eigene Rechtssammlung, nur eine Liste «Informationen» (Neuigkeiten und Downloads)."],
+  "sections": feh_secs},
+]
+ORGS += NEU2
 # Einbettung (X-Frame-Options / frame-ancestors am 17.11.2026 geprüft) und PDF-Vorschau
 EINBETTBAR = {"skm-marthalen"}
 for o in ORGS:
@@ -752,11 +851,13 @@ SG = [
  ("Sekundarschulgemeinde", "Birmensdorf - Aesch", "Dietikon", "Birmensdorf", ["Birmensdorf", "Aesch"]), ("Sekundarschulgemeinde", "Weiningen", "Dietikon", "Weiningen", None),
 ]
 ORG_SG = {("Primarschulgemeinde", "Trüllikon"): "ps-truellikon", ("Sekundarschulgemeinde", "Kreis Marthalen"): "skm-marthalen",
-          ("Sekundarschulgemeinde", "Bülach"): "sek-buelach", ("Primarschulgemeinde", "Höri"): "ps-hoeri"}
+          ("Sekundarschulgemeinde", "Bülach"): "sek-buelach", ("Primarschulgemeinde", "Höri"): "ps-hoeri",
+          ("Sekundarschulgemeinde", "Dübendorf - Schwerzenbach"): "ssg-duebendorf-schwerzenbach"}
 # Ergebnisse der Recherche vom 17.11.2026 (sicher), Rest wird hergeleitet
 UNSICHER_MITGLIED = {("Sekundarschulgemeinde", "Bülach"): ["Bachenbülach", "Winkel"]}
 STUFE_FIX = {"Bachenbülach": ("Gemeinde", None), "Winkel": ("Gemeinde", None), "Hochfelden": ("Gemeinde", "Sekundarschulgemeinde Bülach"),
-             "Meilen": ("Gemeinde", "Gemeinde")}
+             "Meilen": ("Gemeinde", "Gemeinde"), "Fehraltorf": ("Gemeinde", "Gemeinde"),
+             "Dübendorf": ("Gemeinde", "Sekundarschulgemeinde Dübendorf - Schwerzenbach")}
 
 def schulgemeinden():
     out = []
@@ -1049,7 +1150,7 @@ def leitfaden_pruefung(o):
     p("8", "Nicht rechtsetzende Dokumente gekennzeichnet", "ja" if nr_ == 0 else "unsicher",
       "Keine gefunden." if nr_ == 0 else f"{nr_} Konzepte/Merkblätter/Richtlinien o. Ä. ohne Kennzeichnung «nichtrechtsetzend».")
     # Ziff. 3 – nur geltendes Recht
-    aufg = {"pg-meilen": mei_aufgehoben, "pg-winkel": win_aufgehoben}.get(o["id"], 0)
+    aufg = {"pg-meilen": mei_aufgehoben, "pg-winkel": win_aufgehoben, "pg-duebendorf": due_aufgehoben, "pg-fehraltorf": feh_aufgehoben}.get(o["id"], 0)
     p("3", "Nur geltendes Recht (keine aufgehobenen Erlasse)", "unsicher" if aufg else "info",
       f"{aufg} aufgehobene Erlasse stehen weiterhin als Zeile in der Liste." if aufg else "Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist).")
     # Ziff. 6 – interkommunale Verträge
@@ -1065,9 +1166,18 @@ def leitfaden_pruefung(o):
         schul = 0
         if s4:
             schul = sum(1 for d, _ in _alle(s4, "") if re.search(r"schul|primar|sekundar|kindergarten|hort|lager", norm(d["titel"])))
+        anderswo = {}
+        for s in o["sections"]:
+            if s is s4: continue
+            k = sum(1 for d, _ in _alle(s, "") if re.search(r"schul|primar|sekundar|kindergarten|lager", norm(d["titel"])))
+            if k >= 2: anderswo[s["titel"]] = k
         if einheit.startswith("Einheitsgemeinde"):
-            p("Anhang 1", "Sachgebiet 4 «Schule» in der politischen Gemeinde", "ja" if schul >= 2 else "unsicher",
-              f"{schul} Schul-Erlasse im Sachgebiet 4." + ("" if schul >= 2 else " Die Schule ist Teil der Gemeinde – ihre Erlasse gehören in diese SR; prüfen, ob sie nur auf der Schul-Website stehen."))
+            if schul >= 2: st, txt = "ja", f"{schul} Schul-Erlasse im Sachgebiet 4."
+            elif anderswo:
+                st, txt = "unsicher", "Schul-Erlasse stehen in der SR, aber nicht im Sachgebiet 4 (Leitfaden Anhang 1): " + "; ".join(f"{k} in «{t}»" for t, k in anderswo.items()) + "."
+            else:
+                st, txt = "unsicher", f"{schul} Schul-Erlasse im Sachgebiet 4. Die Schule ist Teil der Gemeinde – ihre Erlasse gehören in diese SR; prüfen, ob sie nur auf der Schul-Website stehen."
+            p("Anhang 1", "Sachgebiet 4 «Schule» in der politischen Gemeinde", st, txt)
         else:
             p("Anhang 1", "Sachgebiet 4 «Schule» in der politischen Gemeinde", "ja" if s4 else "unsicher", "Sachgebiet 4 vorhanden (auch ohne Schulaufgaben zu führen)." if s4 else "Kein Sachgebiet 4.")
     o["leitfaden"] = P
@@ -1124,7 +1234,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.4.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.5.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1132,7 +1242,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.4.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.5.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

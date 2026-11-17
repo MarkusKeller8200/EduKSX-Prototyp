@@ -1,6 +1,6 @@
 # Prototyp: Rechtssammlung
 
-**Status:** in-arbeit · **Version:** 0.4.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
+**Status:** in-arbeit · **Version:** 0.5.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
 
 ## Frage
 
@@ -48,6 +48,10 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 | Politische Gemeinde Winkel | Verwaltung › Rechtssammlung › 1–9 | 46 |
 | Schule Winkel (Primarstufe der Gemeinde) | Betreuung › Dokumente | 7 |
 | Politische Gemeinde Hochfelden | Politik › Gesetzessammlung | 77 |
+| Politische Gemeinde Dübendorf | Politik › Gesetzessammlung › 1–9 | 89 |
+| Primarschule Dübendorf (Primarstufe der Stadt) | Organisation › Rechtssammlung | 10 |
+| Sekundarschulgemeinde Dübendorf-Schwerzenbach | Informationen › Systematische Rechtssammlung | 27 |
+| Politische Gemeinde Fehraltorf (Einheitsgemeinde) | Verwaltung › Gesetzessammlung › 1–9 | 118 |
 
 ## Quellen
 

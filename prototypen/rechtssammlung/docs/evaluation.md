@@ -1,16 +1,16 @@
 # EduKSX-Codex – Evaluation systematischer Rechtssammlungen
 
-Prototyp 0.4.0 · Stand 17.11.2026
+Prototyp 0.5.0 · Stand 17.11.2026
 
 ## Vergleich
 
-| | Gemeinde Trüllikon | Schule Trüllikon | SKM | Sek Bülach | Meilen | Bachenbülach | Schule Bachenbülach | Höri | Primarschule Höri | Winkel | Schule Winkel | Hochfelden |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| CMS | i-web / icms (Innovative Web AG) | Escola-Schulplattform (Ordner-Sitemap) | WordPress (Theme BeTheme) | Escola-Schulplattform (Dokumentablage per AJAX) | i-web / icms (Innovative Web AG) | Gemeinde-CMS mit Dokumentablage (Ordnerbaum) | Gemeinde-CMS mit Dokumentablage (Ordnerbaum) | Gemeinde-CMS mit Dokumentablage (Ordnerbaum, per AJAX) | Escola-Schulplattform (Dokumentablage per AJAX) | i-web / icms (Innovative Web AG) | Escola-Schulplattform (Dokumentablage per AJAX) | Contao |
-| Menüpfad | Wir für Sie › Rechtssammlung | Download › Systematische Rechtssammlung | Schulgemeinde › Systematische Rechtssammlung | Schulverwaltung › Systematische Rechtssammlung | Verwaltung › Rechtssammlung › 1–9 Sachgebiet (je eine Unterseite) | Verwaltung › Systematische Rechtssammlung | Schule › Service › Reglemente und Dokumente | Politik & Verwaltung › Verwaltung › Rechtssammlung | Organisation › Schulpflege › Rechtsgrundlagen | Verwaltung › Rechtssammlung › 1–9 Sachgebiet (je eine Unterseite) | Betreuung › Dokumente | Politik › Gesetzessammlung |
-| Rubriken / Dokumente | 9 / 39 | 9 / 190 | 7 / 50 | 5 / 12 | 9 / 164 | 9 / 26 | 9 / 27 | 9 / 49 | 1 / 4 | 9 / 46 | 1 / 7 | 9 / 77 |
-| Ordnertiefe | 1 | 3 | 2 | 1 | 2 | 2 | 1 | 1 | 1 | 2 | 1 | 2 |
-| Nummerierung | Sachgebiet 1–9 als Präfix im Titel, keine Erlassnummer | Erlassnummer + Datum im Dateinamen (z. B. 100.02-20220101_PST_…), Rubriken SR-00…SR-11 | Eigene Systematik 100–105 mit Unterziffern (100.1 …); Jahresrechnungen/Budgets teilen sich 104.1 bzw. 104.2 | Datum JJJJ.MM.TT als Titel-Präfix, keine Erlassnummer | Vollständige Erlassnummern nach Leitfaden (z. B. 100.1, 110.111) mit Inkraftsetzungsdatum | Sachgebiete 01–09 und Untergruppen (10, 11 …); Dateien ohne Erlassnummer, Abkürzung in Klammer (GO, EVO …) | keine | Erlassnummer im Dateinamen (100.1, 120.1.1 …) | keine | Vollständige Erlassnummern nach Leitfaden mit Inkraftsetzungsdatum | keine | Erlassnummer im Dateinamen (100.1_…), Untergruppen nach Leitfaden |
+| | Gemeinde Trüllikon | Schule Trüllikon | SKM | Sek Bülach | Meilen | Bachenbülach | Schule Bachenbülach | Höri | Primarschule Höri | Winkel | Schule Winkel | Hochfelden | Dübendorf | Primarschule Dübendorf | Sek Dübendorf-Schwerzenbach | Fehraltorf |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| CMS | i-web / icms (Innovative Web AG) | Escola-Schulplattform (Ordner-Sitemap) | WordPress (Theme BeTheme) | Escola-Schulplattform (Dokumentablage per AJAX) | i-web / icms (Innovative Web AG) | Gemeinde-CMS mit Dokumentablage (Ordnerbaum) | Gemeinde-CMS mit Dokumentablage (Ordnerbaum) | Gemeinde-CMS mit Dokumentablage (Ordnerbaum, per AJAX) | Escola-Schulplattform (Dokumentablage per AJAX) | i-web / icms (Innovative Web AG) | Escola-Schulplattform (Dokumentablage per AJAX) | Contao | i-web / icms (Innovative Web AG) | i-web / icms (Innovative Web AG) | Escola-Schulplattform | i-web / icms (Innovative Web AG) |
+| Menüpfad | Wir für Sie › Rechtssammlung | Download › Systematische Rechtssammlung | Schulgemeinde › Systematische Rechtssammlung | Schulverwaltung › Systematische Rechtssammlung | Verwaltung › Rechtssammlung › 1–9 Sachgebiet (je eine Unterseite) | Verwaltung › Systematische Rechtssammlung | Schule › Service › Reglemente und Dokumente | Politik & Verwaltung › Verwaltung › Rechtssammlung | Organisation › Schulpflege › Rechtsgrundlagen | Verwaltung › Rechtssammlung › 1–9 Sachgebiet (je eine Unterseite) | Betreuung › Dokumente | Politik › Gesetzessammlung | Politik › Gesetzessammlung › 1–9 Sachgebiet (je eine Unterseite) | Organisation › Rechtssammlung | Informationen › Systematische Rechtssammlung | Verwaltung › Gesetzessammlung › 1–9 Sachgebiet (je eine Unterseite) |
+| Rubriken / Dokumente | 9 / 39 | 9 / 190 | 7 / 50 | 5 / 12 | 9 / 164 | 9 / 26 | 9 / 27 | 9 / 49 | 1 / 4 | 9 / 46 | 1 / 7 | 9 / 77 | 9 / 89 | 1 / 10 | 6 / 27 | 9 / 118 |
+| Ordnertiefe | 1 | 3 | 2 | 1 | 2 | 2 | 1 | 1 | 1 | 2 | 1 | 2 | 2 | 1 | 1 | 2 |
+| Nummerierung | Sachgebiet 1–9 als Präfix im Titel, keine Erlassnummer | Erlassnummer + Datum im Dateinamen (z. B. 100.02-20220101_PST_…), Rubriken SR-00…SR-11 | Eigene Systematik 100–105 mit Unterziffern (100.1 …); Jahresrechnungen/Budgets teilen sich 104.1 bzw. 104.2 | Datum JJJJ.MM.TT als Titel-Präfix, keine Erlassnummer | Vollständige Erlassnummern nach Leitfaden (z. B. 100.1, 110.111) mit Inkraftsetzungsdatum | Sachgebiete 01–09 und Untergruppen (10, 11 …); Dateien ohne Erlassnummer, Abkürzung in Klammer (GO, EVO …) | keine | Erlassnummer im Dateinamen (100.1, 120.1.1 …) | keine | Vollständige Erlassnummern nach Leitfaden mit Inkraftsetzungsdatum | keine | Erlassnummer im Dateinamen (100.1_…), Untergruppen nach Leitfaden | Vollständige Erlassnummern nach Leitfaden (z. B. 100.1, 600.211) mit Inkraftsetzungsdatum | keine | Sachgebiet.Laufnummer im Titel (1.1, 2.4 …), Sachgebiete nach Leitfaden Anhang 2 plus «6 Öffentliche Ordnung & Sicherheit» | Erlassnummern mit Sachgebietsziffer (101, 111.1, 202.1.1), teils ohne Punkt (2010, 5010) |
 
 ## Politische Gemeinde Trüllikon
 
@@ -1367,6 +1367,496 @@ Dokumentarten: Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …) 6, Behör
 | Anhang 1 | Sachgebiet 4 «Schule» in der politischen Gemeinde | ✓ erfüllt | 2 Schul-Erlasse im Sachgebiet 4. |
 
 Dokumentarten: Behördenerlass (Reglement) 23, Gemeindeerlass (Verordnung/Ordnung) 21, Rechtsetzender Vertrag / Statuten 21, Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …) 7, Unklar – prüfen 3, Gehört nicht in die SR (Beschluss, Budget, Protokoll …) 1, Raumplan (Hinweis genügt) 1
+
+## Politische Gemeinde Dübendorf
+
+- **Typ / Bezirk:** Politische Gemeinde, Uster
+- **Website:** https://www.duebendorf.ch
+- **Rechtssammlung:** https://www.duebendorf.ch/gesetzessammlung
+- **Menüpfad:** Politik › Gesetzessammlung › 1–9 Sachgebiet (je eine Unterseite)
+- **Weitere Einstiege:** Verwaltung › Bildung › Primarschule (eigene Website schule-duebendorf.ch); Sekundarschule Dübendorf-Schwerzenbach (eigene Website sek-ds.ch)
+- **CMS:** i-web / icms (Innovative Web AG)
+- **Struktur:** Wie Meilen/Winkel: neun Unterseiten je Sachgebiet, Untergruppen (Zehner bzw. Hunderter) mit Tabellen Nummer | Titel | Gültig seit; Detailseite je Erlass.
+- **Nummerierung:** Vollständige Erlassnummern nach Leitfaden (z. B. 100.1, 600.211) mit Inkraftsetzungsdatum
+- **Umfang:** 9 Rubriken, 89 Dokumente
+
+### Menüstruktur und Dateien
+
+- **1 Gemeinde / Behörden** (28)
+  - **100 Allgemeines** (2)
+    - Gemeindeordnung
+    - Organisations- und Verwaltungsreglement
+  - **101 Gemeinderat** (1)
+    - Geschäftsordnung des Gemeinderates
+  - **103 Stadtrat** (1)
+    - Geschäftsreglement Stadtrat
+  - **104 Eigenständige Kommissionen** (1)
+    - Geschäftsordnung Primarschulpflege
+  - **105 Ausschüsse und unterstelle Kommissionen** (9)
+    - Geschäftsreglement Bauausschuss
+    - Geschäftsreglement Ausschuss für Grundsteuern
+    - Geschäftsreglement Kultur- und Sportkommission
+    - Geschäftsreglement Stadtbildkommission
+    - Geschäftsreglement Energiestadtkommission
+    - Geschäftsreglement Kommission der Ereignisorganisation KEO
+    - Geschäftsreglement Sozialkommission
+    - Geschäftsreglement Jugendkommission
+    - Reglement Jugendparlament
+  - **106 Beratende Kommissionen** (3)
+    - Geschäftsreglement Planungskommission
+    - Geschäftsreglement Verkehrskommission
+    - Geschäftsreglement Freiraumkommission
+  - **11 Entschädigung von Behörden** (1)
+    - Entschädigungsverordnung
+  - **13 Personalrecht** (6)
+    - Anstellungs- und Besoldungsverordnung
+    - Reglement über die Jahresarbeitszeit der Stadtverwaltung Dübendorf
+    - Entschädigungs- und Spesenreglement
+    - Reglement Home-Office und externe Arbeiten
+    - Fort- und Weiterbildungsreglement
+    - Reglement Personalkommission
+  - **15 Publikationsrecht, Öffentlichkeitsprinzip** (1)
+    - Kommunikationskonzept
+  - **16 Datenschutz** (1)
+    - Allgemeine Richtlinie für Informationssicherheit und Datenschutz
+  - **17 Informationsverwaltung** (2)
+    - Verordnung über das Stadtarchiv
+    - Reglement über die Schriftgutverwaltung
+- **2 Zivilrecht** (5)
+  - **20 Kindes- und Erwachsenenschutz** (2)
+    - KESB: Anschlussvertrag Kreis Dübendorf mit den Gemeinden Fällanden, Maur und Wangen-Brüttisellen
+    - Reglement für die Entschädigung und den Spesenersatz der Beiständinnen und Beistände
+  - **21 Zivilstandswesen** (2)
+    - Zivilstandskreis Dübendorf: Vertrag über die Zusammenarbeit mit den Gemeinden Fällanden, Maur, Wallisellen und Wangen-Brüttisellen
+    - Reglement über die Lazariterkirche im Gfenn
+  - **22 Betreibungs- und Stadtammannamt** (1)
+    - Betreibungsamt Dübendorf: Anschlussvertrag mit der Gemeinde Wangen-Brüttisellen
+- **3 Strafrecht** (0)
+- **4 Schule / Freizeit** (11)
+  - **41 Familienergänzende Einrichtungen** (5)
+    - Elternbeitragsreglement für die von der Stadt Dübendorf subventionierten familienergänzenden Angebote
+    - Elternbeitragsreglement Schulergänzende Angebote
+    - Reglement Schulergänzende Angebote
+    - Kinderbetreuungsverordnung
+    - Tarifreglement zur Kinderbetreuungsverordnung der Stadt Dübendorf
+  - **42 Jugendmusikschule** (1)
+    - Allgemeine Geschäftsbedingungen Musikschule Region Dübendorf
+  - **43 Sport** (2)
+    - Zweckverband Sportanlage Dürrbach: Statuten
+    - Sport- und Freizeitanlagen Dübendorf AG: Statuten
+  - **44 Freizeit** (1)
+    - Benutzungsordnung der Stadtbibliothek Dübendorf
+  - **45 Kultur** (1)
+    - Stiftungsurkunde Obere Mühle
+  - **46 Vereine** (1)
+    - Reglement zur Vereinsunterstützung (Vereinsreglement)
+- **5 Sicherheit** (10)
+  - **50 Öffentliche Ordnung allgemein** (1)
+    - Reglement über die Videoüberwachung des öffentlichen Grundes
+  - **51 Polizei** (3)
+    - Polizeiverordnung
+    - Verordnung über das gemeinderechtliche Ordnungsbussenverfahren
+    - Stadtpolizei Dübendorf: Anschlussvertrag mit der Gemeinde Wangen-Brüttisellen
+  - **52 Militär** (1)
+    - Verordnung über die Benützung der Schiessanlage Werlen
+  - **53 Zivilschutz** (2)
+    - Zivilschutz Region Dübendorf: Anschlussvetrag mit der Gemeinde Wangen-Brüttisellen
+    - Dienstreglement der Zivilschutzorganisation Region Dübendorf
+  - **55 Feuerwehr** (3)
+    - Dienstreglement Feuerwehr Dübendorf - Wangen-Brüttisellen
+    - Feuerwehr Dübendorf: Anschlussvertrag mit der Gemeinde Wangen-Brüttisellen
+    - Reglement Benützung Feuerwehrlokal
+- **6 Finanzen / Steuern** (7)
+  - **60 Finanzen allgemein** (6)
+    - Finanzordnung Stadtverwaltung
+    - Gebührenverordnung
+    - Allgemeines Gebührenreglement
+    - Gebührenreglement Stadtbibliothek Dübendorf
+    - Gebührenreglement KESB
+    - Gebührenreglement Vermietung Schulräume
+  - **61 Pensionskasse** (1)
+    - Vorsorgereglement Pensionskasse der Stadt Dübendorf
+- **7 Bauen / Ver- / Entsorgung** (22)
+  - **70 BZO, Nutzungspläne** (3)
+    - Bauordnung
+    - Zürcher Planungsgruppe Glattal (ZPG): Verbandsstatuten
+    - Verordnung über den kommunalen Mehrwertausgleichfonds
+  - **740 Versorgung allgemein** (2)
+    - Versorgungsverordnung
+    - Glattwerk AG: Statuten
+  - **742 Versorgung Wasser** (4)
+    - Verordnung über die Wasserversorgung
+    - Genossenschaft Wasserversorgung Dübendorf WVD: Statuten
+    - Gruppenwasserversorgung Vororte und Glattal (GVG): Statuten
+    - Gruppenwasserversorgung Oberes Glattal (GOG): Statuten
+  - **750 Entsorgung Abfall** (3)
+    - Abfallverordnung
+    - Vollziehungsverordnung zur Abfallverordnung
+    - Reglement über die Infrastruktur- und Leistungskosten
+  - **751 Entsorgung Abwasser** (5)
+    - Siedlungsentwässerungsverordnung (SEVO)
+    - Ausführungsbestimmungen zur Siedlungsentwässerungsverordnung
+    - Interkommunale Anstalt (IKA) ARANeugut: Gründungsvertrag
+    - Interkommunale Anstalt (IKA) ARANeugut: Organisationsreglement
+    - Interkommunale Anstalt (IKA) ARANeugut: Vertrag Aussenbauwerke
+  - **763 Natur und Landschaft** (1)
+    - Verordnung über den Schutz von Naturschutzgebieten mit kommunaler Bedeutung in Dübendorf
+  - **780 Strassen** (2)
+    - Gesamtverkehrskonzept inkl. Beilagen und Anhänge
+    - Verordnung für das Verlegen von Leitungen im Strassengebiet (öffentlicher Grund) der Stadt Dübendorf
+  - **781 Parkierung** (2)
+    - Verordnung über Abstellen von Fahrzeugen auf öffentlichem Grund
+    - Verordnung über die Fahrzeugabstellplätze
+- **8 Soziales / Gesundheit** (6)
+  - **84 Friedhof und Bestattungswesen** (2)
+    - Friedhofverordnung
+    - Grabmalreglement
+  - **85 Pflege und Spitex** (3)
+    - IMWIL Alters- und Spitexzentrum: Taxordnung Tagesklinik und Nachtklinik
+    - IMWIL Alters- und Spitexzentrum: Taxordnung stationärer Bereich
+    - IMWIL Alters- und Spitexzentrum: Taxordnung Spitex
+  - **85 Spital** (1)
+    - Spital Uster: Interkommunaler Vertrag
+- **9 Wirtschaft / Gewerbe** (0)
+
+### Befunde
+
+- Gleicher Aufbau wie Meilen und Winkel: Erlassnummer mit Sachgebietsziffer und «Gültig seit» bei jedem Erlass.
+- Primarstufe gehört zur Stadt (Geschäftsordnung Primarschulpflege 104.1 in der Stadt-SR); die übrigen Primarschul-Erlasse stehen aber nur auf der Schul-Website.
+- Sachgebiete 3 Strafrecht und 9 Wirtschaft/Gewerbe sind leer.
+- Mit «Kommunikationskonzept» (150.1), «Gesamtverkehrskonzept» (780.1) und einer Richtlinie (160.1) stehen nicht rechtsetzende Dokumente ohne Kennzeichnung in der SR.
+- Menüpunkt «Gesetzessammlung» unter Politik.
+
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ✓ erfüllt | 9 Sachgebiete/Rubriken, nummeriert. |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 9 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✓ erfüllt | Anhang 1 (politische Gemeinde): 9 von 9 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✓ erfüllt | 89 von 89 Dokumenten (100%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ✓ erfüllt | Keine gefunden. |
+| 7 | Raumpläne nur als Hinweis | ✓ erfüllt | Keine Raumpläne abgelegt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ? prüfen | 6 Konzepte/Merkblätter/Richtlinien o. Ä. ohne Kennzeichnung «nichtrechtsetzend». |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ✓ erfüllt | 16 Verträge/Statuten. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 22 als Verordnung/Ordnung, 43 als Reglement o. Ä. bezeichnet, 2 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+| Anhang 1 | Sachgebiet 4 «Schule» in der politischen Gemeinde | ✓ erfüllt | 3 Schul-Erlasse im Sachgebiet 4. |
+
+Dokumentarten: Behördenerlass (Reglement) 43, Gemeindeerlass (Verordnung/Ordnung) 22, Rechtsetzender Vertrag / Statuten 16, Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …) 6, Unklar – prüfen 2
+
+## Primarschule Dübendorf (Primarstufe der Stadt)
+
+- **Typ / Bezirk:** Schule der Einheitsgemeinde, Uster
+- **Website:** https://www.schule-duebendorf.ch
+- **Rechtssammlung:** https://www.schule-duebendorf.ch/rechtssammlung
+- **Menüpfad:** Organisation › Rechtssammlung
+- **Weitere Einstiege:** Downloads je Schuleinheit (Birchlen, Dorf, Flugfeld …)
+- **CMS:** i-web / icms (Innovative Web AG)
+- **Struktur:** Eine Seite «Rechtssammlung» mit einer alphabetischen Dokumentliste (Titel, PDF, Grösse), ohne Sachgebiete.
+- **Nummerierung:** keine
+- **Umfang:** 1 Rubriken, 10 Dokumente
+
+### Menüstruktur und Dateien
+
+- **Dokumente** (10)
+  - Allgemeine Richtlinie Informationsicherheitund Datenschutz Primarschule Dübendorf
+  - Finanzreglement Primarschule Dübendorf 01.09.2026
+  - Funktionendiagramm Primarschule Dübendorf 01.09
+  - Geschäftsreglement 01.09.2026
+  - Kommunikationskonzept
+  - Konzept sonderpädagogischer Hort - Dezember 2025
+  - Reglement Projektorganisation Primarschule 01.09.2026
+  - Reglement Videoüberwachung
+  - Schularealordnung
+  - Reglement Ausschuss Sonderpädagogik Primarschule D
+
+### Befunde
+
+- Alphabetische Liste ohne Sachgebiete und Nummern – genügt dem Leitfaden nicht (Ziff. 3).
+- Gemischt: Reglemente neben Konzepten, Funktionendiagramm und Richtlinie.
+- Die Primarstufe gehört zur Stadt: diese Erlasse gehörten ins Sachgebiet 4 der Stadt-SR.
+
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ✗ nicht erfüllt | Keine Gliederung nach Sachgebieten (nur eine Liste/Tabelle). |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 1 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✗ nicht erfüllt | Anhang 2 (Schulgemeinde): 0 von 5 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✗ nicht erfüllt | 0 von 10 Dokumenten (0%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ✓ erfüllt | Keine gefunden. |
+| 7 | Raumpläne nur als Hinweis | ✓ erfüllt | Keine Raumpläne abgelegt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ? prüfen | 4 Konzepte/Merkblätter/Richtlinien o. Ä. ohne Kennzeichnung «nichtrechtsetzend». |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ℹ Hinweis | Keine Verträge oder Statuten gefunden. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 0 als Verordnung/Ordnung, 6 als Reglement o. Ä. bezeichnet, 0 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+
+Dokumentarten: Behördenerlass (Reglement) 6, Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …) 4
+
+## Sekundarschulgemeinde Dübendorf-Schwerzenbach
+
+- **Typ / Bezirk:** Sekundarschulgemeinde, Uster
+- **Website:** https://www.sek-ds.ch
+- **Rechtssammlung:** https://www.sek-ds.ch/informationen/systematische-rechtssammlung/p-80/
+- **Menüpfad:** Informationen › Systematische Rechtssammlung
+- **Weitere Einstiege:** 
+- **CMS:** Escola-Schulplattform
+- **Struktur:** Eine Seite mit sechs Sachgebieten (Überschriften 1–6) und je einer Downloadliste.
+- **Nummerierung:** Sachgebiet.Laufnummer im Titel (1.1, 2.4 …), Sachgebiete nach Leitfaden Anhang 2 plus «6 Öffentliche Ordnung & Sicherheit»
+- **Umfang:** 6 Rubriken, 27 Dokumente
+
+### Menüstruktur und Dateien
+
+- **1 Gemeinde – Behörden – Verwaltung** (8)
+  - 1.1 Gemeindeordnung
+  - 1.2 Behördenverzeichnis
+  - 1.3 Organisationsstatut
+  - 1.4 Organigramm
+  - 1.5 Personalverordnung
+  - 1.6 Ausführungsbestimmungen zur Personalverordnung
+  - 1.7 Leitbild
+  - 1.8 Verordnung Entschädigung Behörde, Kommissionen
+- **2 Schulbetrieb Sekundarschule** (9)
+  - 2.1 Reglement Absenzen, Dispensationen und Jokertage
+  - 2.2 Reglement Berufsvorbereitungsjahr
+  - 2.3 Reglement Elternmitwirkung
+  - 2.4 Hausordnung Grüze 1-7, 2025
+  - 2.5 Hausordnung Stägenbuck 2023
+  - 2.6 Nutzungsreglement Schüler iPad
+  - 2.7 Prozessablauf Querversetzungen innerhalb der SSDS
+  - 2.8 Konzept Sonderpädagogik
+  - 2.9 Anschlussvertrag Schulpsychologischer Dienst
+- **3 Schulergänzende Angebote** (3)
+  - 3.1 Konzept LIFT
+  - 3.2 Reglement Tagesstrukturen
+  - 3.3 Reglement Ufzgi-Club
+- **4 Sport und Freizeit** (3)
+  - 4.1 Benützerreglement für Schulräume
+  - 4.2 Benützerreglement für Schulräume - Tarife
+  - 4.3 Reglement Klassenlager, Schulreisen, Lager u. weiteres
+- **5 Finanzen – Gebühren** (3)
+  - 5.1 Gebührenverordnung
+  - 5.2 Gebührentarif
+  - 5.3 Finanzreglement (gültig ab 1. März 2025)
+- **6 Öffentliche Ordnung & Sicherheit** (1)
+  - 6.1 Videoüberwachung Reglement
+
+### Befunde
+
+- Sachgebiete 1–5 folgen dem Leitfaden (Anhang 2), dazu ein eigenes Sachgebiet 6 für Videoüberwachung.
+- Nicht rechtsetzende Dokumente in der SR: Behördenverzeichnis, Organigramm, Leitbild, Konzepte, Prozessablauf.
+- Kein Inkraftsetzungsdatum in der Liste (nur beim Finanzreglement im Titel).
+
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ✓ erfüllt | 6 Sachgebiete/Rubriken, nummeriert. |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 6 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ✓ erfüllt | Anhang 2 (Schulgemeinde): 5 von 5 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✓ erfüllt | 27 von 27 Dokumenten (100%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ✓ erfüllt | Keine gefunden. |
+| 7 | Raumpläne nur als Hinweis | ✓ erfüllt | Keine Raumpläne abgelegt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ? prüfen | 4 Konzepte/Merkblätter/Richtlinien o. Ä. ohne Kennzeichnung «nichtrechtsetzend». |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ✓ erfüllt | 1 Verträge/Statuten. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 5 als Verordnung/Ordnung, 15 als Reglement o. Ä. bezeichnet, 2 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+
+Dokumentarten: Behördenerlass (Reglement) 15, Gemeindeerlass (Verordnung/Ordnung) 5, Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …) 4, Unklar – prüfen 2, Rechtsetzender Vertrag / Statuten 1
+
+## Politische Gemeinde Fehraltorf
+
+- **Typ / Bezirk:** Politische Gemeinde, Pfäffikon
+- **Website:** https://www.fehraltorf.ch
+- **Rechtssammlung:** https://www.fehraltorf.ch/gesetzessammlung
+- **Menüpfad:** Verwaltung › Gesetzessammlung › 1–9 Sachgebiet (je eine Unterseite)
+- **Weitere Einstiege:** Schule Fehraltorf (eigene Website schulefehraltorf.ch, nur «Informationen»/Downloads)
+- **CMS:** i-web / icms (Innovative Web AG)
+- **Struktur:** Neun Unterseiten je Sachgebiet mit Tabellen Nummer | Titel | Gültig seit, Detailseite je Erlass. Eigene Systematik: 2 = Schule/Bildung, 6 = Bauwesen, 9 = Rechtspflege.
+- **Nummerierung:** Erlassnummern mit Sachgebietsziffer (101, 111.1, 202.1.1), teils ohne Punkt (2010, 5010)
+- **Umfang:** 9 Rubriken, 118 Dokumente
+
+### Menüstruktur und Dateien
+
+- **1 Gemeinde / Behörden / Verwaltung / Datenschutz** (15)
+  - **10 Gemeinde** (1)
+    - Gemeindeordnung
+  - **11 Behörden** (8)
+    - Organisationsreglement des Gemeinderates
+    - Geschäftsreglement des Gemeinderates
+    - Organisationsreglement Werkkommission
+    - Geschäftsreglement Baukollegium
+    - Geschäfts- und Kompetenzenordnung der Gesellschaftskommission
+    - Verordnung über die Entschädigung der Behörden und Kommissionen der Politischen Gemeinde Fehraltorf
+    - Weitere Kommissionsentschädigungen ab 1. Juli 2018
+    - Teuerungsanpassung 2026 der Behördenentschädigungen
+  - **12 Verwaltungspersonal** (1)
+    - Personalverordnung
+  - **13 Datenschutz, Information, Kommunikation** (4)
+    - Reglement für das Mitteilungsblatt Fehraltörfler
+    - Reglement Informationsverwaltung und Archivierung
+    - Verzeichnis der Informationsbestände der Gemeinde Fehraltorf
+    - Weisung zum Öffentlichkeitsgrundsatz
+  - **14 Archiv** (1)
+    - Archivplan
+- **2 Schule / Bildung** (17)
+  - **20 Schule allgemein** (17)
+    - Organisationsreglement der Schule Fehraltorf
+    - Geschäftsreglement der Schulpflege
+    - FEB-Verordnung
+    - Ausführungsbestimmungen zur FEB-Verordnung
+    - Leistungsvereinbarung Chinderstern
+    - Leistungsvereinbarung Tagesstern Fehraltorf GmbH
+    - Leistungsvereinbarung für die Tagesfamilien Zürcher Oberland
+    - Elternbeitragsreglement
+    - Beitragsreglement für freiwillige, kostenpflichtige Angebote der Schule Fehraltorf
+    - Kriterienkatalog Schulgeldübernahme für Schüler_innen an Privatschulen mit Swiss Olympic Label
+    - Reglement für die Schulzahnpflege
+    - Konzept Elternmitwirkung an der Schule Fehraltorf
+    - Reglement Elternmitwirkung Schule Fehraltorf
+    - Absenzen und Urlaube von Schülerinnen und Schülern
+    - Jokertage
+    - Reglement Erwachsenenbildung
+    - Statuten des Zweckverbands des Schulpsychologischen Dienstes des Bezirks Pfäffikon
+- **3 Gesellschaft / Bevölkerung / Gesundheit / Soziales** (17)
+  - **30 Gesellschaft** (1)
+    - Ergänzende Richtlinien zur Ausgestaltung der Sozialhilfe
+  - **31 Bestattungswesen** (3)
+    - Verordnung über das Friedhof- und Bestattungswesen
+    - Vorschriften über die Grabmale
+    - Bestattungs- und Friedhofverordnung Erhöhen der Gebühren
+  - **32 Gesundheit** (7)
+    - Alters- und Pflegezentrum Rosengasse Anstaltsvertrag
+    - GerAtrium Anstaltsvertrag
+    - Leistungsvereinbarung Spitex Regio ZO
+    - Interkommunaler Vertrag betreffend Umwandlung des Zweckverbandes Spital Uster in die gemeinnützige Aktiengesellschaft ''Spital Uster AG''
+    - Aktionärsbindungsvertrag Spital Uster
+    - KEZO Statuten
+    - Konzept Pflegeversorgung der Gemeinde Fehraltorf
+  - **33 Soziales** (5)
+    - Anschlussvertrag über die Zusatzleistungen
+    - Anschlussvertrag zur Führung der Bedarfsabklärungsstelle
+    - Vertrag über die Zusammenarbeit mehrerer politischen Gemeinden im Zivilstandskreis Päffikon
+    - Zweckverbandsstatuten Sozials Bezirk Pfäffikon ZH
+    - Reglement über die Verwendung der Mittel der Sonderrecchnung Stiftung für wohltätige, gemeinnützige und soziale Zwecke
+  - **34 Asylwesen** (1)
+    - Unterstützungsrichtlinien Asylwesen
+- **4 Kultur / Sport / Freizeit** (5)
+  - **40 Kultur 41 Geschichte 42 Sport und Freizeit** (5)
+    - Gemeindewappen Verwendung
+    - Informationstafeln über Gemeindeanlässe; Grundsätze für Publikationen von Meldungen auf den Informationstafeln (Pylonen) der Gemeinde Fehraltorf
+    - Reglement für die Gemeindebibliothek
+    - Benutzerordnung der Gemeindebibliothek
+    - Jugendförderungsbeiträge
+- **5 Öffentliche Ordnung und Sicherheit** (14)
+  - **50 Polizei** (10)
+    - Polizeiverordnung
+    - Gemeinderechtlichen Ordnungsbussen
+    - Sicherheit Intervention Prävention (sip) Fehraltorf, Organisations- und Dienstreglement
+    - Verordnung über das nächtliche Dauerparkieren auf öffentlichem Grund in der Gemeinde Fehraltorf
+    - Verkehrskontrollen Verordnung über das nächtliche Dauerparkieren auf öffentlichem Grund, Auslegung des Begriffes regelmässig
+    - Reglement über die Videoüberwachung in der Gemeinde Fehraltorf
+    - Liste der Videoüberwachungsinstallationen
+    - Anschlussvertrag Kommunal Polizei Region Pfäffikon
+    - Reglement für den Aushang von temporären Reklamen
+    - Vereinbarung über die Mitbenützung der 300m Schiessanlage Saumholz Pfäffikon durch den Schützenverein Fehraltorf
+  - **51 Feuerwehr** (1)
+    - Zusammenarbeitsvertrag Feuerwehr
+  - **52 Militär und Zivilschutz** (2)
+    - Vereinbarung ZSO Pfäffikon-Fehraltorf-Hittnau-Russikon
+    - Vereinbarung (Anschlussvertrag) RFO Pfäffikon-Fehraltorf-Hittnau-Russikon
+  - **54 RFO** (1)
+    - Organisationsreglement RFO
+- **6 Bauwesen / Umweltschutz / Energie / Versorgung** (32)
+  - **60 Richt- und Erschliessungsplanung** (1)
+    - Statuten des Zweckverbandes Region Zürcher Oberland RZ
+  - **61 Nutzungsplanung** (9)
+    - Bau- und Zonenordnung (BZO)
+    - Zonenplan
+    - Gestaltungspläne
+    - Kernzonenpläne Übersicht
+    - Kernzonenplan Dorf
+    - Kernzonenplan Fabrik
+    - Kernzonenplan Mesikon
+    - Kernzonenplan Rüti
+    - Reglement zum kommunalen Mehrwertausgleichsfonds
+  - **63 Umweltschutz** (5)
+    - Siedlungsentwässerungsverordnung (SEVO) der Gemeinde Fehraltorf
+    - Ausführungsbestimmungen zu Siedlungsentwässerungsverordnung
+    - Verordnung über die Gebühren der Siedlungsentwässerung
+    - Werterhaltung Kanalisation Wegleitung private Kanalisationsleitungen
+    - Zweckverbandsstatuten Abwasserreinigungsanlage ARA Fehraltorf-Russikon
+  - **64 Energiewirtschaft 65 Versorgung mit Wasser und Energie** (14)
+    - Kommunaler Energieplan Gemeinde Fehraltorf
+    - Bericht zum Energieplan
+    - Energiereglement
+    - Ausführungsbestimmungen Energiereglement
+    - Reglement der Stromversorgung
+    - Allgemeine Geschäftsbedingungen (AGB)
+    - Technische Anschlussbedingungen für den Netzanschluss
+    - Zusatz zu den Werkvorschriften WV CH VSE
+    - Gebührentarif der Werke
+    - Gebühren für die Elektrizitätsversorgung 2026
+    - Reglement der Wasserversorgung
+    - Tarif- und Gebührenvorschriften zum Reglement der Wasserversorgung
+    - Vertrag Erdgas Zürich AG
+    - Konzessionsvertrag mit dem Elektrizitätswerk der Stadt Zürich
+  - **68 Entsorgung** (3)
+    - Abfallverordnung für die Gemeinde Fehraltorf
+    - Vollzugsverordnung zur Abfallverordnung
+    - Gebührenreglement Abfallentsorgung
+- **7 Liegenschaften / Beschaffungen / Finanzen / Steuern** (12)
+  - **70 Gemeindeliegenschaften 71 Beschaffungswesen** (8)
+    - Reglement über die Benutzung der gemeindeeigenen Liegenschaften (Benutzungsreglement)
+    - Anhang 1 | "Heiget-Huus" | Reglement über die Benutzung der gemeindeeigenen Liegenschaften
+    - Anhang 2 | Schul- und Sportanlagen | Reglement über die Benutzung der gemeindeeigenen Liegenschaften
+    - Anhang 3 | Mehrzweckhalle | Reglement über die Benutzung der gemeindeeigenen Liegenschaften
+    - Anhang 4 | Hallenbad | Reglement über die Benutzung der gemeindeeigenen Liegenschaften
+    - Reglement über die Benützung von abschliessbaren Veloparkanlagen der Gemeinde Fehraltorf
+    - Alterswohnungen Hintergasse Vermietungsbestimmungen
+    - Interne Wegleitung des Gebäudestandards für kommunale Bauten
+  - **72 Finanzen** (4)
+    - Gebührenverordnung
+    - Gebührentarif
+    - Das Harmonisierte Rechnungslegungsmodell 2 (HRM2) Rechnungslegung Grundsätze Aktivierungs- und Wesentlichkeitsgrenze
+    - Das Harmonisierte Rechnungslegungsmodell 2 (HRM2) Haushaltsgleichgewicht
+- **8 Wirtschaft / Arbeit / Verkehr** (5)
+  - **80 Handel, Dienstleistungen und Gewerbe 81 Forstwesen und Jagd 82 Strassen 83 Öffentlicher Verkehr 84 Privater Verkehr** (5)
+    - Benützungsreglement Coworking-Space
+    - Vereinbarung über die gemeinsame Anstellung eines vollamtlichen Revierförsters (Forstrevier Russikon - Fehraltorf)
+    - Bauarbeiten im Strassenperimeter | Reglement betreffend Ausführung und Kostenteiler
+    - Kostenteiler bei Bauarbeiten | Genehmigen des Reglements
+    - Privatstrassenreglement
+- **9 Rechtspflege** (1)
+  - **90 Friedensrichteramt 91 Betreibungswesen** (1)
+    - Vertrag über die Zusammenarbeit unter den Gemeinden im Betreibungskreis Pfäffikon ZH
+
+### Befunde
+
+- Einheitsgemeinde (Gemeindeordnung Art. 2: Gemeinde erfüllt die Aufgaben der Volksschule): die Schul-Erlasse stehen in der Gemeinde-SR (Sachgebiet 2).
+- Eigene Sachgebiet-Reihenfolge statt Leitfaden Anhang 1 (Schule = 2, Bauwesen = 6, Finanzen = 7, Rechtspflege = 9); Seitenadressen der Unterseiten (gk-zivilrecht …) passen nicht zum Inhalt.
+- Zonenplan, Kernzonen- und Gestaltungspläne als Dokumente abgelegt (Leitfaden: Hinweis genügt).
+- Nicht rechtsetzend und ungekennzeichnet: Konzepte, Leistungsvereinbarungen, Archivplan, Bericht zum Energieplan, Weisung.
+- Schul-Website hat keine eigene Rechtssammlung, nur eine Liste «Informationen» (Neuigkeiten und Downloads).
+
+### Leitfaden-Prüfung (automatisch, Anhaltspunkt)
+
+| Ziff. | Prüfpunkt | Ergebnis | Befund |
+|---|---|---|---|
+| 3 | Nach Sachgebieten gegliedert | ✓ erfüllt | 9 Sachgebiete/Rubriken, nummeriert. |
+| 3 | Höchstens neun Sachgebiete | ✓ erfüllt | 9 Rubriken auf oberster Ebene. |
+| 9 | Systematik nach Leitfaden (Anhang 1 bzw. 2) | ? prüfen | Anhang 1 (politische Gemeinde): 7 von 9 empfohlenen Sachgebieten erkennbar. |
+| 3 | Eindeutige Nummer je Dokument (beginnt mit Sachgebietsziffer) | ✓ erfüllt | 118 von 118 Dokumenten (100%). |
+| 7 | Keine Beschlüsse, Budgets, Rechnungen, Protokolle | ✓ erfüllt | Keine gefunden. |
+| 7 | Raumpläne nur als Hinweis | ℹ Hinweis | 5 Raumpläne (Zonen-/Kernzonen-/Richtpläne) als Dokument abgelegt – zulässig, Hinweis auf ÖREB-Kataster genügt. |
+| 8 | Nicht rechtsetzende Dokumente gekennzeichnet | ? prüfen | 10 Konzepte/Merkblätter/Richtlinien o. Ä. ohne Kennzeichnung «nichtrechtsetzend». |
+| 3 | Nur geltendes Recht (keine aufgehobenen Erlasse) | ℹ Hinweis | Aus der Website nicht prüfbar (Inkraft-/Aufhebungsdaten fehlen meist). |
+| 6 | Rechtsetzende interkommunale Verträge enthalten | ✓ erfüllt | 21 Verträge/Statuten. |
+| 5 | Bezeichnung der Erlasse (Verordnung / Reglement) | ℹ Hinweis | 17 als Verordnung/Ordnung, 41 als Reglement o. Ä. bezeichnet, 24 unklar. Ob Legislative oder Exekutive erlassen hat, ist aus dem Titel nicht prüfbar. |
+| Anhang 1 | Sachgebiet 4 «Schule» in der politischen Gemeinde | ? prüfen | Schul-Erlasse stehen in der SR, aber nicht im Sachgebiet 4 (Leitfaden Anhang 1): 8 in «2 Schule / Bildung». |
+
+Dokumentarten: Behördenerlass (Reglement) 41, Unklar – prüfen 24, Rechtsetzender Vertrag / Statuten 21, Gemeindeerlass (Verordnung/Ordnung) 17, Nicht rechtsetzend (Konzept, Merkblatt, Richtlinie …) 10, Raumplan (Hinweis genügt) 5
 
 ## Grundlage: Leitfaden systematische Rechtssammlung
 

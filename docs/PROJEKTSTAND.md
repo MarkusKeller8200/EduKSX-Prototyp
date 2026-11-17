@@ -9,7 +9,7 @@
 | Grundgerüst Prototypen-Ablage | fertig | 0.1.0 | `docs/PROJEKTSTART.md` |
 | Prototyp EduKSX-Staffing (Einsatzplanung) | Klickprototyp, in Abstimmung | 0.1.0 | `prototypen/einsatzplanung/ANFORDERUNGEN.md` |
 | Prototyp EduKSX-Flow (Ablaufplanung) | Klickprototyp, in Abstimmung | 0.1.0 | `prototypen/ablaufplanung/README.md` |
-| Prototyp EduKSX-Codex (Rechtssammlung) | Evaluation Pilot 4 Organisationen, Demo-Seiten (#6), Menü (#7), 12 Organisationen, Schulgemeinden, Matrix, Widget, PDF-Vorschau (#8–#12), Leitfaden-Prüfung und Grundlagen (#14) – Prototyp 0.4.0 | 0.1.0 | `prototypen/rechtssammlung/docs/evaluation.md` |
+| Prototyp EduKSX-Codex (Rechtssammlung) | Evaluation Pilot 4 Organisationen, Demo-Seiten (#6), Menü (#7), 12 Organisationen, Schulgemeinden, Matrix, Widget, PDF-Vorschau (#8–#12), Leitfaden-Prüfung und Grundlagen (#14), Dübendorf und Fehraltorf (#15) – Prototyp 0.5.0 | 0.1.0 | `prototypen/rechtssammlung/docs/evaluation.md` |
 | Einstiegsseite GitHub Pages | fertig, Pages noch einzuschalten | 0.1.0 | `tools/seite_bauen.py` |
 
 ## Offen bzw. geplant

@@ -36,6 +36,13 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-17 (05:10–05:50) – EduKSX-Codex 0.5.0
+
+- Auftrag «alle anderen Gemeinden aufnehmen» – auf Rückfrage eingegrenzt auf Dübendorf und Fehraltorf (Entscheid 2026-11-17).
+- Erfasst: Stadt Dübendorf (89 Erlasse), Primarschule Dübendorf (10), Sek Dübendorf-Schwerzenbach (27), Fehraltorf (118) (#15 → `_3 Beta-Test`).
+- Fehraltorf ist Einheitsgemeinde; Schule Fehraltorf hat keine eigene Rechtssammlung (nicht als Organisation erfasst).
+- Offen: nächste Gemeinden nach Wunsch; Erfassung braucht je Website eine Browser-Freigabe.
+
 ### Sitzung 2026-11-17 (04:40–05:10) – EduKSX-Codex 0.4.0
 
 - Leitfaden systematische Rechtssammlung geprüft (identisch mit zh.ch, Stand 14.10.2025) und unter
