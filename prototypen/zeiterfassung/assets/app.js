@@ -262,6 +262,7 @@
     return `<div class="app">
       <header class="app-kopf">
         <a class="marke" href="#stempeln">${ICON_EDUKSX}${wortmarke("EduKSX-Time")}</a>
+        <a class="btn klein zurueck" href="../" title="Zurück zur Einstiegsseite aller EduKSX-Prototypen">← Zurück</a>
         <div class="person"><b>${e(p.name)}</b><span>${e(p.funktion)} · ${e(p.pensum)} %</span></div>
       </header>
       <div class="band${navigator.onLine ? "" : " offline"}" role="note">${navigator.onLine

@@ -3,7 +3,7 @@
   "produkt": "EduKSX-Staffing",
   "icon": "staffing",
   "beschreibung": "Pensen, Ressourcen und Berufsauftrag planen, Stellenplan und VZE nach den Vorgaben des Kantons Zürich, Anstellungsfreigaben, Pensenumfrage, Stellvertretungen, Personalgespräche und Tagesstrukturen.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "status": "in-arbeit",
   "technik": "html",
   "modul": "EduKSX-Staffing",

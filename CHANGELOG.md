@@ -8,6 +8,9 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Neu
 
+- Alle Prototypen: Titel auf der Einstiegsseite (Wortmarke und Icon) ist klickbar und öffnet den Prototyp wie
+  «Prototyp öffnen»; jeder Prototyp hat hinter dem Titel einen Button «← Zurück» zur Einstiegsseite (auch in der
+  Vorlage) – EduKSX-Staffing 0.1.1, EduKSX-Flow 0.5.3, EduKSX-Codex 0.5.4, EduKSX-Sign 0.1.2, EduKSX-Time 0.3.5.
 - EduKSX-Sign 0.1.1: «Alle Prototypen» als Menüsektion über «Übersicht» (wie EduKSX-Flow).
 - Prototyp **EduKSX-Sign – Signatur / Persönliche Ablage** (`prototypen/signatur`): persönliche Ablage mit
   Ordnern, Drag & Drop und Abgleich mit der Cloud-Ablage; PDF-Formulare ausfüllen, Text, Kommentar, Datum und

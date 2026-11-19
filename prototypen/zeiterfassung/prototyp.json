@@ -3,7 +3,7 @@
   "produkt": "EduKSX-Time",
   "icon": "time",
   "beschreibung": "Installierbare Mobil-App (PWA) zum Ein- und Ausstempeln: Kommen, Pause, Gehen mit Buchungsart (Arbeitszeit, Homeoffice), Tagesliste, Ist/Soll/Saldo, Verlauf der letzten 14 Tage, funktioniert offline. Schritt 1 – Abwesenheiten, Korrekturen, Monatsabschluss und Visum folgen.",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "status": "in-arbeit",
   "technik": "html",
   "modul": "EduKSX-Time",
