@@ -336,7 +336,8 @@
       "ZH-Lex": "Zürcher Gesetzessammlung: Loseblattsammlung (LS) = geltendes kantonales Recht nach Sachgebieten; Offizielle Sammlung (OS) = Erlasse und Änderungen chronologisch.",
       "Gemeindeamt": "Gemeindeorganisation, Musterordnungen, Leitfaden systematische Rechtssammlung, Verzeichnis der Gemeinden.",
       "Volksschulamt": "Erläuterungen und Vollzugshilfen für die Volksschule (Organisation, Personal, Unterricht) – keine amtliche Publikation der Erlasse selbst.",
-      "Bildungsrat": "Bildungsratsbeschlüsse (BRB) zu Lehrplan, Lektionentafel, Lehrmitteln und Beurteilung."
+      "Bildungsrat": "Bildungsratsbeschlüsse (BRB) zu Lehrplan, Lektionentafel, Lehrmitteln und Beurteilung.",
+      "Kommunal": "Systematische Rechtssammlung der Schulgemeinde bzw. der Gemeinde mit Schulaufgaben: Gemeindeordnung, Organisationsstatut, Geschäftsordnung, Personal- und Entschädigungsverordnung, Reglemente. Platzhalter «Schule XYZ» – wird durch die gewählte Schulgemeinde ersetzt."
     };
     var weitere = [
       ["Leitfaden systematische Rechtssammlung", "Gemeindeamt / VZGV, Juni 2018, Ergänzung Februar 2019 – abgelegt in quellen/", link("grundlagen")],
@@ -350,8 +351,9 @@
       h("div", { cls: "tabelle-wrap" }, h("table", null,
         h("thead", null, h("tr", null, ["Ebene", "Massgebende Quelle", "Was dort publiziert wird", "Einträge in der Liste"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
         h("tbody", null, R.publikationsquellen.map(function (q) {
-          var key = /Fedlex/.test(q.name) ? "Fedlex" : /ZH-Lex/.test(q.name) ? "ZH-Lex" : /Gemeindeamt/.test(q.name) ? "Gemeindeamt" : /Volksschule/.test(q.name) ? "Volksschulamt" : "Bildungsrat";
-          return h("tr", null, h("th", { scope: "row", text: q.ebene }), h("td", null, extern(q.url, q.name + " ↗")), h("td", { text: beschreibung[key] || "" }),
+          var key = q.ebene === "Kommunal" ? "Kommunal" : /Fedlex/.test(q.name) ? "Fedlex" : /ZH-Lex/.test(q.name) ? "ZH-Lex" : /Gemeindeamt/.test(q.name) ? "Gemeindeamt" : /Volksschule/.test(q.name) ? "Volksschulamt" : "Bildungsrat";
+          return h("tr", null, h("th", { scope: "row", text: q.ebene }), h("td", null, q.url ? extern(q.url, q.name + " ↗") : [h("span", { text: q.name }), h("div", { cls: "small" }, badge("warnung", "…", "Platzhalter"), " ", h("a", { href: link("schulgemeinden"), text: "erfasste Schulgemeinden →" }))]),
+            h("td", { text: beschreibung[key] || "" }),
             h("td", { cls: "zahlrechts", text: String(nach[key] || 0) }));
         })))),
       h("p", { cls: "small muted", text: (nach["Personalamt Kanton Zürich"] || 0) + " Einträge verweisen auf das Handbuch Personalrecht des Kantons, " + (nach["Kanton Zürich"] || 0) + " auf weitere Seiten des Kantons (Leitfaden Informationsverwaltung, MAB-Grundlagen). Für die Rechtsgrundlagen-Liste werden diese Hinweise durch den direkten ZH-Lex- bzw. Fedlex-Link ergänzt." }),

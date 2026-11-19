@@ -105,4 +105,6 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Codex 0.7.0: Menüsektion «Gesetzestexte & Verordnungen» – Rechtsgrundlagen Schule (62 Einträge in 7 Sachbereichen,
   Suche und Filter nach Sachbereich und Ebene, Fundstelle mit dauerhaftem ZH-Lex-/Fedlex-Link, 13 Fundstellen geprüft)
   und Herkunftsliste der Publikationsquellen; Ausgangsliste unter `quellen/` abgelegt.
+- EduKSX-Codex 0.7.1: Herkunftsliste um Ebene «Kommunal – Rechtssammlung der Schule XYZ» ergänzt (Platzhalter, wird durch
+  die gewählte Schulgemeinde ersetzt); kommunale Einträge der Rechtsgrundlagen zählen dorthin.
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.
