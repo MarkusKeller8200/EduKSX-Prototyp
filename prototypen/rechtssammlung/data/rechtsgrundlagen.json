@@ -1,0 +1,621 @@
+{
+ "stand": "20.11.2026",
+ "herkunft": "Rechtsgrundlagenverzeichnis «Rechtsgrundlagen für öffentliche Schulen im Kanton Zürich» (Rohliste, Stand der Recherche 20.11.2026), vom Projektverantwortlichen eingebracht",
+ "sachbereiche": [
+  {
+   "nr": 1,
+   "titel": "Schulrecht, Unterricht und Schülerinnen und Schüler"
+  },
+  {
+   "nr": 2,
+   "titel": "Schulbehörde, Gemeindeorganisation und Verwaltung"
+  },
+  {
+   "nr": 3,
+   "titel": "Personalrecht und Anstellungsverhältnisse"
+  },
+  {
+   "nr": 4,
+   "titel": "Datenschutz, Informationssicherheit und ICT"
+  },
+  {
+   "nr": 5,
+   "titel": "Finanzwesen, Beschaffung und Infrastruktur"
+  },
+  {
+   "nr": 6,
+   "titel": "Kindesschutz, Gesundheit und weitere Bundesgesetze"
+  },
+  {
+   "nr": 7,
+   "titel": "Bildungsratsbeschlüsse und verbindliche Unterrichtsvorgaben"
+  }
+ ],
+ "publikationsquellen": [
+  {
+   "ebene": "Bund",
+   "name": "Fedlex – Systematische Rechtssammlung",
+   "url": "https://www.fedlex.admin.ch/de/cc"
+  },
+  {
+   "ebene": "Kanton Zürich",
+   "name": "ZH-Lex – Zürcher Gesetzessammlung",
+   "url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "ebene": "Gemeindeamt",
+   "name": "Gemeindeamt Kanton Zürich",
+   "url": "https://www.zh.ch/de/direktion-der-justiz-und-des-innern/gemeindeamt.html"
+  },
+  {
+   "ebene": "Volksschulamt",
+   "name": "Informationen für die Volksschule",
+   "url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html"
+  },
+  {
+   "ebene": "Bildungsrat",
+   "name": "Bildungsrat Kanton Zürich",
+   "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat.html"
+  }
+ ],
+ "eintraege": [
+  {
+   "nr": 1,
+   "sachbereich": 1,
+   "erlass": "Bundesverfassung (BV), SR 101",
+   "stelle": "Art. 19, 62",
+   "relevanz": "Anspruch auf Grundschulunterricht, Zuständigkeit der Kantone",
+   "quelle": "Fedlex",
+   "quelle_url": "https://www.fedlex.admin.ch/eli/cc/1999/404/de"
+  },
+  {
+   "nr": 2,
+   "sachbereich": 1,
+   "erlass": "Bildungsgesetz (BiG), LS 410.1",
+   "stelle": "§ 2",
+   "relevanz": "Grundsätze und Bildungsauftrag",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 3,
+   "sachbereich": 1,
+   "erlass": "Volksschulgesetz (VSG), LS 412.100",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Organisation, Auftrag, Schulpflicht, Schulbetrieb und Zuständigkeiten",
+   "quelle": "VSA / ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html"
+  },
+  {
+   "nr": 4,
+   "sachbereich": 1,
+   "erlass": "Volksschulverordnung (VSV), LS 412.101",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Vollzug des Volksschulgesetzes, Schulorganisation und Unterricht",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_101-2006_06_28-2006_08_21-121.html"
+  },
+  {
+   "nr": 5,
+   "sachbereich": 1,
+   "erlass": "Volksschulgesetz",
+   "stelle": "§ 21",
+   "relevanz": "Lehrplan und Zuständigkeit des Bildungsrates",
+   "quelle": "Bildungsrat",
+   "quelle_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-4-volksschule-lehrplan-fuer-die-volksschule-des-kantons-zuerich.html"
+  },
+  {
+   "nr": 6,
+   "sachbereich": 1,
+   "erlass": "Volksschulgesetz",
+   "stelle": "§ 31",
+   "relevanz": "Beurteilung der Schülerinnen und Schüler",
+   "quelle": "Volksschulamt",
+   "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-schulinfo-unterricht.html"
+  },
+  {
+   "nr": 7,
+   "sachbereich": 1,
+   "erlass": "Volksschulgesetz",
+   "stelle": "§§ 33–40",
+   "relevanz": "Sonderpädagogische Massnahmen",
+   "quelle": "Bildungsrat",
+   "quelle_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html"
+  },
+  {
+   "nr": 8,
+   "sachbereich": 1,
+   "erlass": "Verordnung über die sonderpädagogischen Massnahmen (VSM), LS 412.103",
+   "stelle": "§ 6",
+   "relevanz": "Integrative Förderung",
+   "quelle": "Bildungsrat",
+   "quelle_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2010-brb-2-volksschule-lehrmittel-fuer-den-integrativen-unterricht-berich.html"
+  },
+  {
+   "nr": 9,
+   "sachbereich": 1,
+   "erlass": "VSM, LS 412.103",
+   "stelle": "§§ 12–16",
+   "relevanz": "Deutsch als Zweitsprache (DaZ), Voraussetzungen und Zuweisung",
+   "quelle": "Bildungsrat",
+   "quelle_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html"
+  },
+  {
+   "nr": 10,
+   "sachbereich": 1,
+   "erlass": "VSM, LS 412.103",
+   "stelle": "§ 24",
+   "relevanz": "Schulisches Standortgespräch",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 11,
+   "sachbereich": 1,
+   "erlass": "Reglement über die Ausstellung der Schulzeugnisse, LS 412.121.31",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Zeugnisse, Beurteilungen und Dokumentation der Leistungen",
+   "quelle": "Bildungsrat",
+   "quelle_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2008-brb-30-volksschule-zeugnisreglement-neuerlass.html"
+  },
+  {
+   "nr": 12,
+   "sachbereich": 1,
+   "erlass": "Volksschulverordnung",
+   "stelle": "§ 26 Abs. 2",
+   "relevanz": "Stundenplan und Schuljahresorganisation",
+   "quelle": "Volksschulamt",
+   "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-anstellung-arbeit/volksschule-arbeitsverhaeltnis_anpassen.html"
+  },
+  {
+   "nr": 13,
+   "sachbereich": 1,
+   "erlass": "Volksschulgesetz",
+   "stelle": "§§ 54–56",
+   "relevanz": "Zusammenarbeit mit Eltern, Elternmitwirkung und Mitwirkungsrechte",
+   "quelle": "Volksschulamt",
+   "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation.html"
+  },
+  {
+   "nr": 14,
+   "sachbereich": 1,
+   "erlass": "Volksschulgesetz und Volksschulverordnung",
+   "stelle": "Sachbereich Disziplin",
+   "relevanz": "Disziplinarmassnahmen, Zuständigkeiten und Verfahren",
+   "quelle": "Volksschulamt",
+   "quelle_url": "https://www.zh.ch/de/bildung/schulen/volksschule/rechte-und-pflichten-der-eltern/volksschule-disziplinarmassnahmen.html"
+  },
+  {
+   "nr": 15,
+   "sachbereich": 1,
+   "erlass": "Volksschulgesetz und Volksschulverordnung",
+   "stelle": "Sachbereich Tagesstrukturen",
+   "relevanz": "Schulergänzende Betreuung und Mittagstisch",
+   "quelle": "Volksschulamt",
+   "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-schulinfo-unterrichtsergaenzende-angebote/schulinfo-tagesstrukturen.html"
+  },
+  {
+   "nr": 16,
+   "sachbereich": 2,
+   "erlass": "Verfassung des Kantons Zürich, LS 101",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Verfassungsrechtliche Grundlagen für Bildung und Gemeindeselbstverwaltung",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 17,
+   "sachbereich": 2,
+   "erlass": "Gemeindegesetz (GG), LS 131.1",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Organisation, Zuständigkeiten und Aufgaben der Schulgemeinden",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_1-2015_04_20-2018_01_01-132.html"
+  },
+  {
+   "nr": 18,
+   "sachbereich": 2,
+   "erlass": "Gemeindeverordnung (VGG), LS 131.11",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Vollzug des Gemeindegesetzes, Gemeindeverwaltung und Rechtssammlung",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-125.html"
+  },
+  {
+   "nr": 19,
+   "sachbereich": 2,
+   "erlass": "Volksschulgesetz",
+   "stelle": "Bestimmungen zur Schulpflege",
+   "relevanz": "Strategische Führung, Aufsicht und Verantwortlichkeiten",
+   "quelle": "Volksschulamt",
+   "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation.html"
+  },
+  {
+   "nr": 20,
+   "sachbereich": 2,
+   "erlass": "Volksschulgesetz",
+   "stelle": "Bestimmungen zur Schulleitung",
+   "relevanz": "Operative Führung und Schulorganisation",
+   "quelle": "Volksschulamt",
+   "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation.html"
+  },
+  {
+   "nr": 21,
+   "sachbereich": 2,
+   "erlass": "Volksschulgesetz",
+   "stelle": "Bestimmungen zum Organisationsstatut",
+   "relevanz": "Aufgaben, Kompetenzen, Verantwortlichkeiten und Prozesse",
+   "quelle": "Volksschulamt",
+   "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation/schulinfo-organisation-auf-gemeindeebene.html"
+  },
+  {
+   "nr": 22,
+   "sachbereich": 2,
+   "erlass": "Gemeindegesetz",
+   "stelle": "§ 53",
+   "relevanz": "Öffentlich-rechtliche Arbeitsverhältnisse des Gemeindepersonals",
+   "quelle": "Volksschulamt",
+   "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-personal-fuehren/volksschule-kantonales-kommunales-personal.html"
+  },
+  {
+   "nr": 23,
+   "sachbereich": 2,
+   "erlass": "Verwaltungsrechtspflegegesetz (VRG), LS 175.2",
+   "stelle": "§ 8",
+   "relevanz": "Akteneinsicht und verfahrensrechtliche Rechte betroffener Personen",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 24,
+   "sachbereich": 2,
+   "erlass": "Gemeindeordnung der jeweiligen Schulgemeinde",
+   "stelle": "Kommunale Bestimmungen",
+   "relevanz": "Aufgabenverteilung, Behördenkompetenzen und Finanzbefugnisse",
+   "quelle": "Gemeindeamt",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html"
+  },
+  {
+   "nr": 25,
+   "sachbereich": 3,
+   "erlass": "Lehrpersonalgesetz (LPG), LS 412.31",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Anstellungsverhältnisse der kantonalen Lehrpersonen und Schulleitungen",
+   "quelle": "Volksschulamt",
+   "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-personal-fuehren.html"
+  },
+  {
+   "nr": 26,
+   "sachbereich": 3,
+   "erlass": "Lehrpersonalverordnung (LPVO), LS 412.311",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Vollzug des Lehrpersonalgesetzes, Berufsauftrag, Arbeitszeit, Lohn und Personalführung",
+   "quelle": "Volksschulamt",
+   "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-personal-fuehren.html"
+  },
+  {
+   "nr": 27,
+   "sachbereich": 3,
+   "erlass": "Personalgesetz (PG), LS 177.10",
+   "stelle": "§ 46",
+   "relevanz": "Mitarbeitendenbeurteilung",
+   "quelle": "Kanton Zürich",
+   "quelle_url": "https://www.zh.ch/de/arbeiten-beim-kanton/fuer-hr-profis/handbuch-personalrecht/definition/grundlagen/gesetzliche-grundlagen.html"
+  },
+  {
+   "nr": 28,
+   "sachbereich": 3,
+   "erlass": "Personalverordnung (PVO), LS 177.11",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Ergänzende personalrechtliche Bestimmungen",
+   "quelle": "Kanton Zürich",
+   "quelle_url": "https://www.zh.ch/de/arbeiten-beim-kanton/fuer-hr-profis/handbuch-personalrecht/definition/grundlagen/gesetzliche-grundlagen.html"
+  },
+  {
+   "nr": 29,
+   "sachbereich": 3,
+   "erlass": "Vollzugsverordnung zum Personalgesetz (VVO), LS 177.111",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Ferien, Urlaub, Arbeitszeit, Spesen und weiterer Personalvollzug",
+   "quelle": "Kanton Zürich",
+   "quelle_url": "https://www.zh.ch/de/arbeiten-beim-kanton/fuer-hr-profis/handbuch-personalrecht/definition/grundlagen/gesetzliche-grundlagen.html"
+  },
+  {
+   "nr": 30,
+   "sachbereich": 3,
+   "erlass": "Lehrpersonalgesetz und Lehrpersonalverordnung",
+   "stelle": "§ 20 LPG; §§ 23–25 LPVO",
+   "relevanz": "Mitarbeitendenbeurteilung von Lehrpersonen und Schulleitungen",
+   "quelle": "VSA – Rechtsgrundlagen MAB",
+   "quelle_url": "https://www.zh.ch/content/dam/zhweb/bilder-dokumente/themen/bildung/informationen-fuer-schulen/informationen-fuer-die-volksschule/fuehrung/personal-fuehren/personal-beurteilen-mab/rechtliche_grundlagen_mab.pdf"
+  },
+  {
+   "nr": 31,
+   "sachbereich": 3,
+   "erlass": "Gemeindegesetz",
+   "stelle": "§ 53",
+   "relevanz": "Personalrecht für kommunal angestellte Schulmitarbeitende",
+   "quelle": "Volksschulamt",
+   "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-personal-fuehren/volksschule-kantonales-kommunales-personal.html"
+  },
+  {
+   "nr": 32,
+   "sachbereich": 3,
+   "erlass": "Kommunales Personalreglement",
+   "stelle": "Kommunale Bestimmungen",
+   "relevanz": "Anstellungsbedingungen für Verwaltung, ICT, Schulassistenzen und Betreuungspersonal",
+   "quelle": "Gemeindeamt",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html"
+  },
+  {
+   "nr": 33,
+   "sachbereich": 4,
+   "erlass": "Gesetz über die Information und den Datenschutz (IDG), LS 170.4",
+   "stelle": "§§ 4–7",
+   "relevanz": "Bearbeitung von Personendaten, Informationsverwaltung und Datenschutzgrundsätze",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 34,
+   "sachbereich": 4,
+   "erlass": "Verordnung über die Information und den Datenschutz (IDV), LS 170.41",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Konkretisierung des kantonalen Informations- und Datenschutzrechts",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 35,
+   "sachbereich": 4,
+   "erlass": "Verordnung über die Informationsverwaltung und -sicherheit (IVSV), LS 170.8",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Informationssicherheit, Verwaltung von Informationen und organisatorische Schutzmassnahmen",
+   "quelle": "Kantonaler Leitfaden",
+   "quelle_url": "https://www.zh.ch/content/dam/zhweb/bilder-dokumente/themen/politik-staat/informationsverwaltung/dokumente_informationsverwaltung/Leitfaden%20Informationsverwaltung%20%28Version%201.0%29.pdf"
+  },
+  {
+   "nr": 36,
+   "sachbereich": 4,
+   "erlass": "Archivgesetz (ArchG), LS 170.6",
+   "stelle": "§ 6",
+   "relevanz": "Eigenständige Archive der Gemeinden und Schulgemeinden",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 37,
+   "sachbereich": 4,
+   "erlass": "Archivverordnung (ArchV), LS 170.61",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Vollzug der Archivgesetzgebung, Archivierung und Aktenbewirtschaftung",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 38,
+   "sachbereich": 4,
+   "erlass": "Gesetz über die Auslagerung von Informatikdienstleistungen, LS 172.71",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Relevanz bei der Auslagerung kantonaler Informatikdienstleistungen; kommunale Anwendbarkeit separat prüfen",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 39,
+   "sachbereich": 4,
+   "erlass": "Bundesgesetz über den Datenschutz (DSG), SR 235.1",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Soweit der bundesrechtliche Geltungsbereich eröffnet ist, insbesondere bei privaten Dienstleistern",
+   "quelle": "Fedlex",
+   "quelle_url": "https://www.fedlex.admin.ch/eli/cc/2022/491/de"
+  },
+  {
+   "nr": 40,
+   "sachbereich": 4,
+   "erlass": "Datenschutzverordnung (DSV), SR 235.11",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Vollzug des Bundesdatenschutzgesetzes im jeweiligen Anwendungsbereich",
+   "quelle": "Fedlex",
+   "quelle_url": "https://www.fedlex.admin.ch/eli/cc/2022/568/de"
+  },
+  {
+   "nr": 41,
+   "sachbereich": 5,
+   "erlass": "Gemeindegesetz (GG), LS 131.1",
+   "stelle": "Finanzhaushaltsbestimmungen",
+   "relevanz": "Budgetierung, Rechnungslegung, finanzielle Zuständigkeiten und Kontrolle",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_1-2015_04_20-2018_01_01-132.html"
+  },
+  {
+   "nr": 42,
+   "sachbereich": 5,
+   "erlass": "Gemeindeverordnung (VGG), LS 131.11",
+   "stelle": "Finanzhaushaltsbestimmungen",
+   "relevanz": "Vollzugsregelungen zur Gemeinderechnung, Haushaltsführung und Finanzverwaltung",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-125.html"
+  },
+  {
+   "nr": 43,
+   "sachbereich": 5,
+   "erlass": "Interkantonale Vereinbarung über das öffentliche Beschaffungswesen (IVöB 2019)",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Öffentliche Beschaffung von ICT, Dienstleistungen, Einrichtungen und Bauleistungen",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 44,
+   "sachbereich": 5,
+   "erlass": "Kantonales Beitrittsgesetz zur IVöB",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Kantonale Umsetzung des öffentlichen Beschaffungsrechts",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 45,
+   "sachbereich": 5,
+   "erlass": "Submissionsverordnung (SV), LS 720.11",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Ergänzende Vorschriften zum Beschaffungsverfahren",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 46,
+   "sachbereich": 5,
+   "erlass": "Planungs- und Baugesetz (PBG), LS 700.1",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Schulhausbauten, Umbauten, Nutzungsänderungen und baurechtliche Anforderungen",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 47,
+   "sachbereich": 6,
+   "erlass": "UN-Kinderrechtskonvention, SR 0.107",
+   "stelle": "Art. 3, 12, 28, 29",
+   "relevanz": "Kindeswohl, Mitwirkung und Recht auf Bildung",
+   "quelle": "Fedlex",
+   "quelle_url": "https://www.fedlex.admin.ch/eli/cc/1998/2055_2055_2055/de"
+  },
+  {
+   "nr": 48,
+   "sachbereich": 6,
+   "erlass": "Schweizerisches Zivilgesetzbuch (ZGB), SR 210",
+   "stelle": "Art. 301–303",
+   "relevanz": "Elterliche Sorge, Erziehung und Bildung",
+   "quelle": "Fedlex",
+   "quelle_url": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233/de"
+  },
+  {
+   "nr": 49,
+   "sachbereich": 6,
+   "erlass": "Schweizerisches Zivilgesetzbuch (ZGB)",
+   "stelle": "Art. 307 ff.",
+   "relevanz": "Kindesschutz, behördliche Massnahmen",
+   "quelle": "Fedlex",
+   "quelle_url": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233/de"
+  },
+  {
+   "nr": 50,
+   "sachbereich": 6,
+   "erlass": "Behindertengleichstellungsgesetz (BehiG), SR 151.3",
+   "stelle": "Art. 20",
+   "relevanz": "Schulung und Integration von Kindern und Jugendlichen mit Behinderungen",
+   "quelle": "Fedlex",
+   "quelle_url": "https://www.fedlex.admin.ch/eli/cc/2003/667/de"
+  },
+  {
+   "nr": 51,
+   "sachbereich": 6,
+   "erlass": "Schweizerisches Strafgesetzbuch (StGB), SR 311.0",
+   "stelle": "Art. 321",
+   "relevanz": "Berufsgeheimnis, soweit die betreffende Person darunter fällt",
+   "quelle": "Fedlex",
+   "quelle_url": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799/de"
+  },
+  {
+   "nr": 52,
+   "sachbereich": 6,
+   "erlass": "Schweizerisches Strafgesetzbuch (StGB)",
+   "stelle": "Art. 320",
+   "relevanz": "Amtsgeheimnis für erfasste Amtsträgerinnen und Amtsträger",
+   "quelle": "Fedlex",
+   "quelle_url": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799/de"
+  },
+  {
+   "nr": 53,
+   "sachbereich": 6,
+   "erlass": "Urheberrechtsgesetz (URG), SR 231.1",
+   "stelle": "Art. 19",
+   "relevanz": "Nutzung urheberrechtlich geschützter Werke im Unterricht",
+   "quelle": "Fedlex",
+   "quelle_url": "https://www.fedlex.admin.ch/eli/cc/1993/1798_1798_1798/de"
+  },
+  {
+   "nr": 54,
+   "sachbereich": 6,
+   "erlass": "Verordnung über die Finanzierung der Sonderschulung (VFiSo), LS 412.106",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Finanzierung der Sonderschulung",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 55,
+   "sachbereich": 6,
+   "erlass": "Verordnung über die Aufsicht über die Sonderschulung, LS 412.106.1",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Qualitätssicherung und Aufsicht über die Sonderschulung",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "nr": 56,
+   "sachbereich": 6,
+   "erlass": "Spitalschulverordnung (SpiV), LS 412.107",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Schulung bei Spital- und Klinikaufenthalten",
+   "quelle": "Volksschulamt",
+   "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-schulinfo-besonderer-bildungsbedarf/schulinfo-spitalschulung.html"
+  },
+  {
+   "nr": 57,
+   "sachbereich": 7,
+   "erlass": "Einführung Zürcher Lehrplan 21",
+   "stelle": "BRB 4/2017",
+   "relevanz": "Inkraftsetzung des Lehrplans",
+   "quelle": "Bildungsrat",
+   "quelle_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-4-volksschule-lehrplan-fuer-die-volksschule-des-kantons-zuerich.html"
+  },
+  {
+   "nr": 58,
+   "sachbereich": 7,
+   "erlass": "Lektionentafel der Volksschule",
+   "stelle": "BRB 5/2017",
+   "relevanz": "Lektionentafeln für Kindergarten, Primar- und Sekundarstufe",
+   "quelle": "Bildungsrat",
+   "quelle_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-5-volksschule-lektionentafel-fuer-die-kindergarten-primar-und-sekundarstufe.html"
+  },
+  {
+   "nr": 59,
+   "sachbereich": 7,
+   "erlass": "Anpassung Sekundarstufe",
+   "stelle": "BRB 1/2019",
+   "relevanz": "Anpassung der Lektionentafel",
+   "quelle": "Bildungsrat",
+   "quelle_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2019-brb-1-anpassung-lektionentafel-sekundarschule.html"
+  },
+  {
+   "nr": 60,
+   "sachbereich": 7,
+   "erlass": "Anpassung Sekundarstufe",
+   "stelle": "BRB 5/2021",
+   "relevanz": "Weitere Anpassung der Lektionentafel",
+   "quelle": "Bildungsrat",
+   "quelle_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2021-brb-05.html"
+  },
+  {
+   "nr": 61,
+   "sachbereich": 7,
+   "erlass": "Anpassungen Beurteilung und Zeugnis",
+   "stelle": "BRB 5/2025",
+   "relevanz": "Beurteilung in RKE und MI in der Primarstufe",
+   "quelle": "Bildungsrat",
+   "quelle_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2025-brb-05.html"
+  },
+  {
+   "nr": 62,
+   "sachbereich": 7,
+   "erlass": "Deutsch als Zweitsprache",
+   "stelle": "BRB 8/2026",
+   "relevanz": "Anforderungen an ein Lehrmittel für Sprachförderung und DaZ",
+   "quelle": "Bildungsrat",
+   "quelle_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html"
+  }
+ ]
+}

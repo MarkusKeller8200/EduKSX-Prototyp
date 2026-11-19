@@ -95,3 +95,11 @@ ul.punkte li { padding: 0; border: 0; background: none; }
 .fortschritt .small { white-space: nowrap; }
 table.kompakt { table-layout: auto; }
 table.kompakt td { word-break: normal; }
+
+/* Gesetzestexte & Verordnungen */
+.filterzeile { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .5rem 0 1rem; }
+.filterzeile input[type=search] { min-width: 260px; flex: 1 1 260px; }
+table.rg td { vertical-align: top; font-size: .9rem; }
+table.rg td:nth-child(5) { min-width: 220px; }
+.ok-mark { color: var(--success); font-weight: 700; }
+.filterzeile input[type=search], .filterzeile select { font: inherit; padding: .45rem .6rem; border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px); background: var(--background); color: var(--foreground); }

@@ -62,6 +62,14 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 - Offen: Stempeln per NFC-Tag (Idee, noch kein Issue – Antwort Projektleitung ausstehend).
 - Offen: weitere Schritte («der ganze Rest») je als Issue nach Freigabe; Icon «time» vorläufig, nicht im Icon-Set.
 
+### Sitzung 2026-11-20 (01:10–01:40) – EduKSX-Codex 0.7.0
+
+- Menüsektion «Gesetzestexte & Verordnungen»: Rechtsgrundlagen Schule (62) und Herkunftsliste (#31 → `_3 Beta-Test`).
+- Ausgangsliste vom Projektverantwortlichen (20.11.2026) ist **nicht juristisch validiert**; geprüft wurden die Ordnungsnummern
+  412.121.31, 172.71, 412.106, 412.106.1, 720.11, 720.1 (dazu 131.1/131.11). Nr. 44: Beitrittsgesetz IVöB = LS 720.1 ergänzt;
+  Abkürzung Submissionsverordnung = SVO.
+- Offen: übrige Fundstellen und Paragrafen prüfen; Verknüpfung Gesetz ↔ Vollzugsverordnung; kommunale Erlasse der Schulgemeinden anbinden.
+
 ### Sitzung 2026-11-20 (00:35–01:10) – EduKSX-Codex 0.6.0
 
 - Startseite «Übersicht» nach dem Muster von Flow/Sign (Kennzahlen, Fortschritt je Bezirk, Handlungsbedarf, Dokumentarten); bisherige Übersicht → «Vergleich» (#19 → `_3 Beta-Test`).

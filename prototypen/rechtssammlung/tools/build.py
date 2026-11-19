@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.6.0 – Generator.
+"""EduKSX-Codex Prototyp 0.7.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1188,6 +1188,63 @@ def _alle(n, pfad):
     for d in n.get("dokumente", []): yield d, pfad
     for k in n.get("kinder", []): yield from _alle(k, pfad + " › " + k["titel"])
 
+# ---------------------------------------------------------------- Gesetzestexte & Verordnungen (Rechtsgrundlagen Schule)
+# Rohliste: data/rechtsgrundlagen.json (aus quellen/rechtsgrundlagen_schulen_zh.md). Hier werden Fundstelle, Ebene,
+# Abkürzung, Direktlink und Herkunft ergänzt. «Geprüft» = Ordnungsnummer am 20.11.2026 in ZH-Lex nachgesehen.
+RG_ALIAS = [  # Titelanfang ohne Fundstelle → (Abkürzung, Fundstelle)
+ (r"^Volksschulgesetz und Volksschulverordnung", ("VSG / VSV", "LS 412.100 / 412.101")),
+ (r"^Lehrpersonalgesetz und Lehrpersonalverordnung", ("LPG / LPVO", "LS 412.31 / 412.311")),
+ (r"^Volksschulgesetz", ("VSG", "LS 412.100")), (r"^Volksschulverordnung", ("VSV", "LS 412.101")),
+ (r"^Gemeindegesetz", ("GG", "LS 131.1")), (r"^Schweizerisches Zivilgesetzbuch", ("ZGB", "SR 210")),
+ (r"^Schweizerisches Strafgesetzbuch", ("StGB", "SR 311.0")),
+ (r"^Interkantonale Vereinbarung über das öffentliche Beschaffungswesen", ("IVöB", "LS 720.1 (Anhang)")),
+ (r"^Kantonales Beitrittsgesetz zur IVöB", ("BeiG IVöB", "LS 720.1")),
+ (r"^Gemeindeordnung der jeweiligen Schulgemeinde", ("GO", "kommunal")),
+ (r"^Kommunales Personalreglement", ("", "kommunal")),
+]
+RG_GEPRUEFT = {"131.1", "131.11", "412.121.31", "172.71", "412.106", "412.106.1", "720.11", "720.1"}
+ZHLEX = "http://www.zhlex.zh.ch/Erlass.html?Open&Ordnr={}"
+
+def rechtsgrundlagen():
+    d = json.loads((ROOT / "data/rechtsgrundlagen.json").read_text(encoding="utf-8"))
+    for e in d["eintraege"]:
+        titel = e["erlass"]
+        m = re.search(r",?\s*\b(LS|SR)\s+([\d.]+)\s*$", titel)
+        abk = (re.search(r"\(([A-ZÄÖÜ][A-Za-zÄÖÜäöü]{1,7})\)", titel) or [None, ""])[1]
+        if m:
+            fund, kurz = f"{m[1]} {m[2]}", re.sub(r",?\s*\b(LS|SR)\s+[\d.]+\s*$", "", titel)
+        else:
+            fund, kurz = "", titel
+            for muster, (a, f) in RG_ALIAS:
+                if re.search(muster, titel): abk, fund = abk or a, f; break
+        if not abk and re.fullmatch(r"[A-ZÄÖÜ]{2,6}", kurz.strip()): abk = kurz.strip()
+        if abk == "SV": abk, kurz = "SVO", kurz.replace("(SV)", "(SVO)")   # amtliche Abkürzung laut ZH-Lex
+        if kurz.startswith("Verfassung des Kantons Zürich"): abk = "KV"
+        if re.match(r"BRB", e["stelle"]): ebene = "Bildungsrat"
+        elif fund.startswith("SR") or re.match(r"^SR", fund): ebene = "Bund"
+        elif fund.startswith("LS"): ebene = "Kanton"
+        elif fund == "kommunal": ebene = "Gemeinde"
+        else: ebene = "Kanton"
+        nummern = re.findall(r"\d{3}(?:\.\d+)+|\d{3}", fund) if fund.startswith("LS") else []
+        if fund.startswith("LS") and "/" in fund:   # «LS 412.100 / 412.101»
+            nummern = re.findall(r"\d{3}\.\d+(?:\.\d+)*", fund)
+        direkt = []
+        for n in nummern:
+            direkt.append({"text": "ZH-Lex LS " + n, "url": ZHLEX.format(n)})
+        if ebene == "Bund" and e["quelle_url"] and "fedlex" in e["quelle_url"]:
+            direkt.append({"text": "Fedlex " + fund, "url": e["quelle_url"]})
+        if ebene == "Bildungsrat" and e["quelle_url"]:
+            direkt.append({"text": e["stelle"], "url": e["quelle_url"]})
+        u = e["quelle_url"] or ""
+        herkunft = ("Fedlex" if "fedlex" in u else "Bildungsrat" if "/bildungsrat" in u else "Volksschulamt" if "informationen-volksschule" in u or "/volksschule" in u
+                    else "Gemeindeamt" if "gemeindeorganisation" in u or "gemeindeamt" in u else "ZH-Lex" if "gesetzessammlung" in u
+                    else "Personalamt Kanton Zürich" if "arbeiten-beim-kanton" in u else "Kanton Zürich")
+        generisch = u.rstrip("/").endswith(("gesetzessammlung.html", "informationen-volksschule.html", "gemeindeorganisation.html"))
+        e.update({"titel": kurz, "abk": abk, "fundstelle": fund, "ebene": ebene, "direkt": direkt, "herkunft": herkunft,
+                  "quelle_generisch": generisch, "geprueft": any(n in RG_GEPRUEFT for n in nummern)})
+    d["erlasse"] = sorted({e["fundstelle"] for e in d["eintraege"] if e["fundstelle"] and e["fundstelle"] != "kommunal"} )
+    return d
+
 # ---------------------------------------------------------------- Übersicht
 WM = ('<span class="wm" role="img" aria-label="EduKSX-Codex"><span aria-hidden="true"><span class="v">E</span><span class="n">du</span>'
       '<span class="o">K</span><span class="b">SX</span><span class="n">-Codex</span></span></span>')
@@ -1206,7 +1263,7 @@ def render_daten(gemeinden):
             g = next((x for x in gem if x["gemeinde"] == o["sitz"]), None)
             if g: o["einheit"] = g["einheit"]
     for o in ORGS: leitfaden_pruefung(o)
-    daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN,
+    daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN, "rechtsgrundlagen": rechtsgrundlagen(),
              "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
     return ("/* Erzeugt von tools/build.py – nicht von Hand bearbeiten. */\nwindow.CODEX = "
             + json.dumps(daten, ensure_ascii=False, separators=(",", ":")) + ";\n")
@@ -1235,7 +1292,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.6.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.7.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1243,7 +1300,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.6.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.7.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

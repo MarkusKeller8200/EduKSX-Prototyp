@@ -5,6 +5,7 @@
 | Datei | Inhalt | Herkunft |
 |---|---|---|
 | `leitfaden_systematische_rechtssammlung.docx` | Leitfaden zum Aufbau einer systematischen Rechtssammlung, Gemeindeamt Kanton Zürich mit VZGV, Juni 2018, Ergänzung Februar 2019 – unverändertes Original | https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html › Systematische Rechtssammlung › «Download Leitfaden systematische Rechtssammlung» |
+| `rechtsgrundlagen_schulen_zh.md` | «Rechtsgrundlagen für öffentliche Schulen im Kanton Zürich» – Ausgangsliste mit 62 Einträgen in 7 Sachbereichen und den offiziellen Publikationsquellen, Stand der Recherche 20.11.2026; noch nicht juristisch validiert. Tracking-Parameter aus den Links entfernt. Strukturiert in `data/rechtsgrundlagen.json`, angezeigt unter «Gesetzestexte & Verordnungen» | vom Projektverantwortlichen eingebracht (Chat 20.11.2026) |
 | `leitfaden_systematische_rechtssammlung.pdf` | Dieselbe Datei als PDF für die Online-Vorschau (mit LibreOffice umgewandelt, Metadaten neutralisiert) | erzeugt aus der DOCX |
 
 - Original geprüft: identisch mit der Datei auf zh.ch (86 516 Bytes, Server-Datum 14.10.2025),

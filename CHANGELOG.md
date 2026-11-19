@@ -102,4 +102,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Schulgemeinden, Dokumente, Leitfaden-Prüfung), Fortschritt je Bezirk, Handlungsbedarf nach Leitfaden, erfasste
   Rechtssammlungen, Dokumentarten, vorbildliche Beispiele, Plattformen und Ablauf; bisherige Seite heisst «Vergleich».
   Zurück-Taste aus 0.5.5 in den Generator übernommen.
+- EduKSX-Codex 0.7.0: Menüsektion «Gesetzestexte & Verordnungen» – Rechtsgrundlagen Schule (62 Einträge in 7 Sachbereichen,
+  Suche und Filter nach Sachbereich und Ebene, Fundstelle mit dauerhaftem ZH-Lex-/Fedlex-Link, 13 Fundstellen geprüft)
+  und Herkunftsliste der Publikationsquellen; Ausgangsliste unter `quellen/` abgelegt.
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

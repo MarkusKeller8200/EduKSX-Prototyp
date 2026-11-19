@@ -124,6 +124,9 @@
         h("li", null, eintrag(link("schulgemeinden"), "Alle " + D.schulgemeinden.length + " Schulgemeinden", r.art === "schulgemeinden")),
         h("li", null, eintrag(link("matrix"), "Struktur-Matrix", r.art === "matrix")),
         h("li", null, eintrag(link("grundlagen"), "Grundlagen (Leitfaden, ZH-Lex)", r.art === "grundlagen")),
+        h("li", { cls: "gruppe", "aria-hidden": "true", text: "Gesetzestexte & Verordnungen" }),
+        h("li", null, eintrag(link("rechtsgrundlagen"), "Rechtsgrundlagen Schule", r.art === "rechtsgrundlagen", h("span", { cls: "anz", text: String(D.rechtsgrundlagen.eintraege.length) }))),
+        h("li", null, eintrag(link("herkunft"), "Herkunftsliste (Publikationsquellen)", r.art === "herkunft")),
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Bezirke" })),
       h("div", { cls: "suche" }, such),
       liste);
@@ -263,6 +266,105 @@
           h("li", null, h("strong", { text: "Prüfen: " }), "Leitfaden-Prüfung je Organisation zeigt, was nach kantonalem Leitfaden fehlt oder nicht in die Rechtssammlung gehört."),
           h("li", null, h("strong", { text: "Veröffentlichen: " }), "Nachbau im Stil der Gemeinde-Website und einbettbares Widget (iFrame) mit Navigation, Suche und PDF-Vorschau.")))
     ];
+  }
+
+  // ------------------------------------------------------------------ Gesetzestexte & Verordnungen
+  var EBENE_BADGE = { Bund: ["info", "CH"], Kanton: ["violett", "ZH"], Bildungsrat: ["neutral", "BR"], Gemeinde: ["warnung", "G"] };
+  function ebeneBadge(e) { var b = EBENE_BADGE[e] || ["neutral", ""]; return badge(b[0], b[1], e); }
+  function rechtsgrundlagenAnsicht() {
+    var R = D.rechtsgrundlagen, E = R.eintraege;
+    var such = h("input", { type: "search", placeholder: "Erlass, Paragraf oder Thema suchen", "aria-label": "Rechtsgrundlagen durchsuchen" });
+    var selSb = h("select", { "aria-label": "Sachbereich" }, h("option", { value: "", text: "Alle Sachbereiche" }),
+      R.sachbereiche.map(function (s) { return h("option", { value: String(s.nr), text: s.nr + " " + s.titel }); }));
+    var selEb = h("select", { "aria-label": "Ebene" }, h("option", { value: "", text: "Alle Ebenen" }),
+      ["Bund", "Kanton", "Bildungsrat", "Gemeinde"].map(function (e) { return h("option", { value: e, text: e }); }));
+    var zaehler = h("p", { cls: "small muted" });
+    var huelle = h("div");
+    function zeile(e) {
+      return h("tr", null,
+        h("td", { cls: "zahlrechts", text: String(e.nr) }),
+        h("td", null, h("strong", { text: e.titel }), e.abk && e.titel.indexOf("(" + e.abk + ")") < 0 && e.titel !== e.abk ? h("span", { cls: "muted", text: " (" + e.abk + ")" }) : null),
+        h("td", { cls: "nowrap" }, e.fundstelle || h("span", { cls: "muted", text: "–" }), e.geprueft ? h("span", { cls: "ok-mark", title: "Ordnungsnummer am 20.11.2026 in ZH-Lex geprüft", text: " ✓" }) : null),
+        h("td", { text: e.stelle }),
+        h("td", { text: e.relevanz }),
+        h("td", null, ebeneBadge(e.ebene)),
+        h("td", null, e.direkt.map(function (d, i) { return [i ? h("br") : null, extern(d.url, d.text + " ↗")]; }),
+          e.quelle_url ? [e.direkt.length ? h("br") : null, h("span", { cls: "small muted" }, "Quelle: ", extern(e.quelle_url, e.quelle), e.quelle_generisch ? h("span", { title: "Link führt auf eine allgemeine Seite, nicht direkt auf den Erlass", text: " (allgemein)" }) : null)] : null));
+    }
+    function zeigen() {
+      var f = such.value.trim().toLowerCase(), sb = selSb.value, eb = selEb.value;
+      var treffer = E.filter(function (e) {
+        return (!sb || String(e.sachbereich) === sb) && (!eb || e.ebene === eb) &&
+          (!f || [e.titel, e.abk, e.fundstelle, e.stelle, e.relevanz].join(" ").toLowerCase().indexOf(f) >= 0);
+      });
+      zaehler.textContent = treffer.length + " von " + E.length + " Einträgen";
+      huelle.textContent = "";
+      R.sachbereiche.forEach(function (s) {
+        var t = treffer.filter(function (e) { return e.sachbereich === s.nr; });
+        if (!t.length) return;
+        huelle.appendChild(h("h2", { text: s.nr + ". " + s.titel + " (" + t.length + ")" }));
+        huelle.appendChild(h("div", { cls: "tabelle-wrap" }, h("table", { cls: "rg" },
+          h("thead", null, h("tr", null, ["Nr.", "Erlass / Rechtsgrundlage", "Fundstelle", "Artikel / Paragraf", "Relevanz im Schulumfeld", "Ebene", "Erlasstext"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+          h("tbody", null, t.map(zeile)))));
+      });
+      if (!treffer.length) huelle.appendChild(h("p", { cls: "muted", text: "Keine Einträge gefunden." }));
+    }
+    [such, selSb, selEb].forEach(function (el) { el.addEventListener("input", zeigen); });
+    zeigen();
+    var n = function (eb) { return E.filter(function (e) { return e.ebene === eb; }).length; };
+    return [kopf("Gesetzestexte & Verordnungen", "Rechtsgrundlagen für öffentliche Schulen im Kanton Zürich – Schwerpunkt Volksschule, insbesondere Sekundarstufe. Stand der Recherche " + R.stand + ".",
+        [h("a", { cls: "btn", href: link("herkunft"), text: "Herkunftsliste" }), h("a", { cls: "btn", href: "https://github.com/MarkusKeller8200/EduKSX-Prototyp/blob/main/prototypen/rechtssammlung/quellen/rechtsgrundlagen_schulen_zh.md", target: "_blank", rel: "noopener", text: "Ausgangsliste ↗" })]),
+      h("div", { cls: "karten" },
+        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Einträge" }), h("div", { cls: "zahl", text: String(E.length) }), h("div", { cls: "small muted", text: "in " + R.sachbereiche.length + " Sachbereichen" })),
+        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Verschiedene Erlasse" }), h("div", { cls: "zahl", text: String(R.erlasse.length) }), h("div", { cls: "small muted", text: "mit LS- oder SR-Nummer" })),
+        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Nach Ebene" }), h("div", { cls: "small" }, ebeneBadge("Bund"), " " + n("Bund") + "  ", ebeneBadge("Kanton"), " " + n("Kanton")),
+          h("div", { cls: "small", style: "margin-top:.35rem" }, ebeneBadge("Bildungsrat"), " " + n("Bildungsrat") + "  ", ebeneBadge("Gemeinde"), " " + n("Gemeinde"))),
+        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Fundstelle geprüft" }), h("div", { cls: "zahl", text: String(E.filter(function (e) { return e.geprueft; }).length) }), h("div", { cls: "small muted", text: "übrige noch zu prüfen" }))),
+      h("p", { cls: "meldung warnung" }, h("strong", { text: "Ausgangsliste, noch nicht juristisch validiert. " }),
+        "Vor der Übernahme die konsolidierte Fassung, die genauen Paragrafen und die Anwendbarkeit auf die jeweilige Schulgemeinde prüfen. «Erlasstext» führt über den dauerhaften ZH-Lex-Link (Ordnungsnummer) bzw. Fedlex auf die aktuelle Fassung; «(allgemein)» heisst: die Quelle in der Ausgangsliste zeigt nur auf eine allgemeine Seite."),
+      h("div", { cls: "filterzeile" }, such, selSb, selEb, zaehler),
+      huelle,
+      h("section", { cls: "karte", style: "margin-top:1rem" }, h("h2", { text: "Geplantes Datenmodell (Rechtskataster)" }),
+        h("p", { cls: "small", text: "Zwei Ebenen: Erlass (Erlass-ID z. B. ZH-412.100, Titel, Abkürzung, Ebene, Erlasstyp, Fundstelle, Direktlink, Rechtsstatus, gültig ab/bis, letzte Rechtsprüfung) und darunter einzelne Artikel/Paragrafen (Sachgebiet, Kurzbeschreibung, zuständige Stelle, verknüpfte Verordnung). Ergänzt um die kommunalen Erlasse der Schulgemeinden (Gemeindeordnung, Organisationsstatut, Geschäftsordnung, Personalreglement, Finanzkompetenzen) aus den erfassten Rechtssammlungen." }))];
+  }
+  function herkunftsliste() {
+    var R = D.rechtsgrundlagen, E = R.eintraege;
+    var nach = {};
+    E.forEach(function (e) { nach[e.herkunft] = (nach[e.herkunft] || 0) + 1; });
+    var beschreibung = {
+      "Fedlex": "Systematische Rechtssammlung (SR) des Bundes – geltendes Bundesrecht und Staatsverträge, dauerhafte ELI-Links.",
+      "ZH-Lex": "Zürcher Gesetzessammlung: Loseblattsammlung (LS) = geltendes kantonales Recht nach Sachgebieten; Offizielle Sammlung (OS) = Erlasse und Änderungen chronologisch.",
+      "Gemeindeamt": "Gemeindeorganisation, Musterordnungen, Leitfaden systematische Rechtssammlung, Verzeichnis der Gemeinden.",
+      "Volksschulamt": "Erläuterungen und Vollzugshilfen für die Volksschule (Organisation, Personal, Unterricht) – keine amtliche Publikation der Erlasse selbst.",
+      "Bildungsrat": "Bildungsratsbeschlüsse (BRB) zu Lehrplan, Lektionentafel, Lehrmitteln und Beurteilung."
+    };
+    var weitere = [
+      ["Leitfaden systematische Rechtssammlung", "Gemeindeamt / VZGV, Juni 2018, Ergänzung Februar 2019 – abgelegt in quellen/", link("grundlagen")],
+      ["Verzeichnis der Gemeinden des Kantons Zürich", "Gemeindeamt, Stand 1. Juli 2026 – Schulgemeinden und Gemeinden mit Schulaufgaben", null],
+      ["Liste politische Gemeinden", "Gemeindeamt – Verwaltungs-E-Mail, daraus die Websites der 160 Gemeinden", null],
+      ["Websites der Gemeinden und Schulgemeinden", D.organisationen.length + " Rechtssammlungen, Stand " + D.stand + " – alle Dokumentlinks führen auf die Originale", link("vergleich")],
+      ["Rechtsgrundlagen für öffentliche Schulen im Kanton Zürich", "Ausgangsliste mit " + E.length + " Einträgen, Stand der Recherche " + R.stand + " – abgelegt in quellen/", link("rechtsgrundlagen")]
+    ];
+    return [kopf("Herkunftsliste", "Woher die Rechtsgrundlagen und Daten in EduKSX-Codex stammen. Massgebend ist immer die amtliche Publikation."),
+      h("h2", { text: "Offizielle Publikationsquellen" }),
+      h("div", { cls: "tabelle-wrap" }, h("table", null,
+        h("thead", null, h("tr", null, ["Ebene", "Massgebende Quelle", "Was dort publiziert wird", "Einträge in der Liste"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+        h("tbody", null, R.publikationsquellen.map(function (q) {
+          var key = /Fedlex/.test(q.name) ? "Fedlex" : /ZH-Lex/.test(q.name) ? "ZH-Lex" : /Gemeindeamt/.test(q.name) ? "Gemeindeamt" : /Volksschule/.test(q.name) ? "Volksschulamt" : "Bildungsrat";
+          return h("tr", null, h("th", { scope: "row", text: q.ebene }), h("td", null, extern(q.url, q.name + " ↗")), h("td", { text: beschreibung[key] || "" }),
+            h("td", { cls: "zahlrechts", text: String(nach[key] || 0) }));
+        })))),
+      h("p", { cls: "small muted", text: (nach["Personalamt Kanton Zürich"] || 0) + " Einträge verweisen auf das Handbuch Personalrecht des Kantons, " + (nach["Kanton Zürich"] || 0) + " auf weitere Seiten des Kantons (Leitfaden Informationsverwaltung, MAB-Grundlagen). Für die Rechtsgrundlagen-Liste werden diese Hinweise durch den direkten ZH-Lex- bzw. Fedlex-Link ergänzt." }),
+      h("h2", { text: "Direktlinks" }),
+      h("ul", null,
+        h("li", null, h("strong", { text: "ZH-Lex: " }), "dauerhafter Link auf die aktuelle Fassung über die Ordnungsnummer – ", h("code", { text: "http://www.zhlex.zh.ch/Erlass.html?Open&Ordnr=412.100" })),
+        h("li", null, h("strong", { text: "Fedlex: " }), "ELI-Link auf die systematische Fassung – z. B. ", h("code", { text: "https://www.fedlex.admin.ch/eli/cc/1999/404/de" }))),
+      h("h2", { text: "Weitere Quellen dieses Prototyps" }),
+      h("div", { cls: "tabelle-wrap" }, h("table", null,
+        h("thead", null, h("tr", null, ["Quelle", "Inhalt und Stand", ""].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+        h("tbody", null, weitere.map(function (w) {
+          return h("tr", null, h("th", { scope: "row", text: w[0] }), h("td", { text: w[1] }), h("td", null, w[2] ? h("a", { href: w[2], text: "ansehen →" }) : null));
+        }))))];
   }
 
   function alleGemeinden() {
@@ -601,6 +703,8 @@
     else if (r.art === "sg") inhalt = sgAnsicht(r.a);
     else if (r.art === "matrix") inhalt = matrix();
     else if (r.art === "grundlagen") inhalt = grundlagen();
+    else if (r.art === "rechtsgrundlagen") inhalt = rechtsgrundlagenAnsicht();
+    else if (r.art === "herkunft") inhalt = herkunftsliste();
     else if (r.art === "org" && ORG[r.a]) inhalt = !r.b ? organisation(ORG[r.a]) : r.b.indexOf("ansicht-") === 0 ? ansicht(ORG[r.a], r.b) : rubrik(ORG[r.a], r.b);
     else inhalt = nichtGefunden();
     var rahmen = document.getElementById("rahmen");
