@@ -36,6 +36,16 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 (00:00–00:30) – Prototyp EduKSX-Sign
+
+- Neuer Prototyp `prototypen/signatur` (EduKSX-Sign – Signatur / Persönliche Ablage), Auftrag im Chat: Ablage je
+  Mitarbeiter:in mit Ordnern und Drag & Drop, Abgleich mit der Cloud-Ablage, PDF-Formulare/Anmerkungen, Word inline,
+  Signaturprozess mit PDF/A, Ergebnis `_sign` im Ursprungsordner, Versiegeln. Vorbild Signaturdienst (Name nicht im Prototyp).
+- Getestet im Browser (Chrome, hell/dunkel, schmal): Hochladen, Formular, Werkzeuge, Prozess mit Platzhaltern,
+  Unterschrift mit Code, Abschluss mit Siegel, Word-Umwandlung, Versiegeln Excel, Eingang, Abgleich/Konflikt.
+- Issue konnte nicht angelegt werden (GitHub-CLI ohne Anmeldung) – nachholen, Status `_3 Beta-Test`.
+- ZU PRÜFEN: Suffix `_seal`; Ablage erhaltener Unterschriften in «Unterzeichnet erhalten». OFFEN: Anbindung Cloud-Ablage, Anbieter.
+
 ### Sitzung 2026-11-17 (13:20–13:45) – Prototyp EduKSX-Time
 
 - Neuer Prototyp `prototypen/zeiterfassung` (EduKSX-Time – Zeiterfassung / Stempeln), Vorbild: die im Intranet
