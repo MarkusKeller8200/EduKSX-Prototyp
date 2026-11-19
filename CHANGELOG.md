@@ -8,6 +8,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Neu
 
+- EduKSX-Flow 0.5.5 und EduKSX-Sign 0.1.4: Menüsektion «EduKSX-Prototypen › Alle Prototypen» entfernt – ersetzt durch
+  die Zurück-Taste hinter dem Titel.
 - Alle Prototypen: «Zurück» als Taste nur mit Icon (Pfeil links, Beschriftung für Screenreader); Einstiegsseite:
   statt des klickbaren Titels ist die ganze obere Fläche der Karte (Icon, Titel, Beschreibung) klickbar und durch
   einen feinen Strich vom Text getrennt; Titel wieder in normaler Grösse – EduKSX-Staffing 0.1.2, EduKSX-Flow 0.5.4,

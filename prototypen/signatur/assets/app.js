@@ -9,7 +9,7 @@
   "use strict";
 
   const D = window.SIGN_DATEN;
-  const VERSION = "0.1.3";
+  const VERSION = "0.1.4";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // Einstiegsseite aller Prototypen
   const SPEICHER = "eduksx-sign-v1";
 
@@ -281,7 +281,7 @@
       </header>
       <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Personen und Dokumente sind erfunden. Signaturen, PDF/A-Umwandlung, Siegel und der Abgleich mit der Cloud-Ablage werden nur simuliert.</div>
       <div class="rahmen">
-        <nav class="navi" aria-label="Hauptnavigation"><ul><li class="gruppe" aria-hidden="true">EduKSX-Prototypen</li><li><a class="einstieg" href="${EINSTIEG}" title="Zur Einstiegsseite aller EduKSX-Prototypen">${ico('<path d="M15 18l-6-6 6-6"/>')}<span>Alle Prototypen</span></a></li><li class="trenner" aria-hidden="true"></li>${navi}</ul></nav>
+        <nav class="navi" aria-label="Hauptnavigation"><ul>${navi}</ul></nav>
         <main id="inhalt" tabindex="-1">${inhalt}</main>
       </div>
       <footer class="fuss"><span>${wordmark("Sign")} · Prototyp ${VERSION} · in Entwicklung · <a href="${EINSTIEG}">Alle Prototypen</a></span><span>Developed by ${WM_DEV}</span></footer>

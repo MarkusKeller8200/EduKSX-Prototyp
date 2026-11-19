@@ -7,7 +7,7 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v5";
-  const VERSION = "0.5.4";
+  const VERSION = "0.5.5";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
@@ -461,7 +461,7 @@
       </header>
       <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Personen sind erfunden, Aufrufe an die anderen Module werden nur simuliert. Grundlage: Prozessliste der Arbeitsgruppe und Funktionendiagramm (Muster).</div>
       <div class="rahmen">
-        <nav class="navi" aria-label="Hauptnavigation"><ul><li class="gruppe" aria-hidden="true">EduKSX-Prototypen</li><li><a class="einstieg" href="${EINSTIEG}" title="Zur Einstiegsseite aller EduKSX-Prototypen">${ico('<path d="M15 18l-6-6 6-6"/>')}<span>Alle Prototypen</span></a></li><li class="trenner" aria-hidden="true"></li>${navi}</ul></nav>
+        <nav class="navi" aria-label="Hauptnavigation"><ul>${navi}</ul></nav>
         <main id="inhalt" tabindex="-1">${inhalt}</main>
       </div>
       <footer class="fuss"><span>${wordmark("Flow")} · Prototyp ${VERSION} · in Entwicklung · <a href="${EINSTIEG}">Alle Prototypen</a> · Begriffe: <a href="https://glossary.eduksx.ch">EduKSX-Glossary</a> (CC BY 4.0)</span><span>Developed by ${WM_DEV}</span></footer>

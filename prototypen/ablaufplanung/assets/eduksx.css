@@ -370,9 +370,6 @@ td.quelle { min-width: 14rem; }
 
 /* Link zur Einstiegsseite der Prototypen (Menüsektion über «Übersicht») */
 .navi .gruppe:first-child { margin-top: 0; }
-.navi a.einstieg { color: var(--link); }
-.navi .trenner { border-bottom: 1px solid var(--border); margin: .4rem .7rem .2rem; }
-@media (max-width: 900px) { .navi .trenner { display: none; } }
 
 /* Zurück zur Einstiegsseite: Taste nur mit Icon, hinter dem Titel */
 .btn.zurueck { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; padding: 0; flex: none; }
