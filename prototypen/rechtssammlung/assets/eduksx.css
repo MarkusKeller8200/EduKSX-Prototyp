@@ -231,3 +231,6 @@ dialog::backdrop { background: rgb(15 23 42 / .45); }
 .paragraf.markiert { background: var(--secondary); outline: 2px solid var(--brand-orange); }
 a.gesetz { white-space: nowrap; }
 @media print { .paragraf { break-inside: avoid; } }
+
+/* Zurück zur Einstiegsseite: Taste nur mit Icon, hinter dem Titel */
+.btn.zurueck { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; padding: 0; flex: none; }

@@ -70,14 +70,10 @@ def karte(ordner: Path, d: dict) -> str:
     titel = wortmarke(d["produkt"]) if d.get("produkt") else e(d.get("name", ordner.name))
     ziel = f"{e(ordner.name)}/{e(start)}" if start else ""
 
-    def kopf_link(inhalt: str, cls: str, versteckt: bool = False) -> str:
-        """Titel (und Icon) öffnen den Prototyp – wie «Prototyp öffnen»."""
-        if not ziel:
-            return inhalt
-        extra = ' tabindex="-1" aria-hidden="true"' if versteckt else ""
-        klasse = f' class="{cls}"' if cls else ""
-        return f'<a{klasse} href="{ziel}" title="Prototyp öffnen"{extra}>{inhalt}</a>'
-
+    kopf_inhalt = f'{icon(d.get("icon", "eduksx"))}<div><h2>{titel}</h2><p class="muted">{e(d.get("name", ""))}</p></div>'
+    # Ganze Kopffläche (Icon, Titel, Untertitel) öffnet den Prototyp – wie «Prototyp öffnen»
+    kopf = (f'<a class="prototyp-kopf" href="{ziel}" title="Prototyp öffnen">{kopf_inhalt}</a>' if ziel
+            else f'<div class="prototyp-kopf">{kopf_inhalt}</div>')
     links = []
     if start:
         links.append(f'<a class="btn primaer" href="{e(ordner.name)}/{e(start)}">Prototyp öffnen</a>')
@@ -87,7 +83,7 @@ def karte(ordner: Path, d: dict) -> str:
     links.append(f'<a class="btn" href="{REPO}/tree/main/prototypen/{e(ordner.name)}">Quellcode</a>')
     return f"""
       <article class="karte prototyp">
-        <div class="prototyp-kopf">{kopf_link(icon(d.get("icon", "eduksx")), "", True)}<div><h2>{kopf_link(titel, "titel")}</h2><p class="muted">{e(d.get("name", ""))}</p></div></div>
+        {kopf}
         <p>{e(d.get("beschreibung", ""))}</p>
         <p class="small"><span class="badge {cls}"><span aria-hidden="true">{sym}</span>{e(text)}</span>
           <span class="badge neutral">Version {e(str(d.get("version", "")))}</span>
@@ -112,11 +108,11 @@ def menue(liste: list[tuple[Path, dict]]) -> str:
     .seite {{ max-width: 1152px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }}
     .gitter {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr)); gap: 1rem; }}
     .prototyp {{ display: flex; flex-direction: column; gap: .25rem; }}
-    .prototyp-kopf {{ display: flex; gap: .75rem; align-items: center; margin-bottom: .5rem; }}
+    .prototyp-kopf {{ display: flex; gap: .75rem; align-items: center; margin: -1rem -1rem .5rem; padding: 1rem;
+      border-bottom: 1px solid var(--border); border-radius: var(--radius) var(--radius) 0 0; color: inherit; text-decoration: none; }}
+    a.prototyp-kopf:hover {{ background: var(--muted); }}
+    a.prototyp-kopf:focus-visible {{ outline: 2px solid var(--ring); outline-offset: -2px; }}
     .prototyp-kopf h2 {{ font-size: 1.25rem; margin: 0; }}
-    .prototyp-kopf a {{ text-decoration: none; display: flex; }}
-    .prototyp-kopf a.titel {{ display: inline; }}
-    .prototyp-kopf a.titel:hover .wm, .prototyp-kopf a.titel:focus-visible .wm {{ text-decoration: underline; text-decoration-color: var(--brand-blue); text-underline-offset: 4px; }}
     .prototyp-kopf p {{ margin: 0; }}
     .prototyp .formzeile {{ margin-top: auto; margin-bottom: 0; }}
     a.btn {{ text-decoration: none; }}

@@ -7,7 +7,7 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v5";
-  const VERSION = "0.5.3";
+  const VERSION = "0.5.4";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
@@ -447,7 +447,7 @@
       <header class="kopf">
         <a class="marke" href="#/uebersicht">${ICON_FLOW}${wordmark("Flow")}</a>
         <span class="muted small">Ablaufplanung / Termine und ToDo</span>
-        <a class="btn klein zurueck" href="${EINSTIEG}" title="Zurück zur Einstiegsseite aller EduKSX-Prototypen">← Zurück</a>
+        <a class="btn zurueck" href="${EINSTIEG}" title="Zurück zur Einstiegsseite aller EduKSX-Prototypen" aria-label="Zurück zur Einstiegsseite aller EduKSX-Prototypen"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
         <div class="werkzeuge">
           <span class="simtag" title="Simulierter Tag – damit Fristen und automatische Schritte ausprobiert werden können">📅 ${esc(datum(S.heute))}</span>
           <button class="btn klein" data-aktion="zeit" data-tage="1" title="Einen Tag weiter">+1 Tag</button>

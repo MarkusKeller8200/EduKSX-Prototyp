@@ -9,7 +9,7 @@
   "use strict";
 
   const D = window.SIGN_DATEN;
-  const VERSION = "0.1.2";
+  const VERSION = "0.1.3";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // Einstiegsseite aller Prototypen
   const SPEICHER = "eduksx-sign-v1";
 
@@ -272,7 +272,7 @@
       <header class="kopf">
         <a class="marke" href="#/uebersicht">${ICON_SIGN}${wordmark("Sign")}</a>
         <span class="muted small">Signatur / Persönliche Ablage</span>
-        <a class="btn klein zurueck" href="${EINSTIEG}" title="Zurück zur Einstiegsseite aller EduKSX-Prototypen">← Zurück</a>
+        <a class="btn zurueck" href="${EINSTIEG}" title="Zurück zur Einstiegsseite aller EduKSX-Prototypen" aria-label="Zurück zur Einstiegsseite aller EduKSX-Prototypen"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
         <div class="werkzeuge">
           <span class="badge neutral" title="Angemeldet (erfunden)">👤 ${esc(D.ICH.name)} · ${esc(D.ICH.funktion)}</span>
           <button class="btn" data-aktion="thema" aria-pressed="${dunkel}" title="Hell/Dunkel">${dunkel ? "☀ Hell" : "☾ Dunkel"}</button>

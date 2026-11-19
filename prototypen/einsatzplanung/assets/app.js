@@ -401,7 +401,7 @@
       <header class="kopf">
         <a class="marke" href="#/uebersicht">${ICON_STAFFING}${wordmark("Staffing")}</a>
         <span class="muted small">Einsatzplanung</span>
-        <a class="btn klein zurueck" href="../" title="Zurück zur Einstiegsseite aller EduKSX-Prototypen">← Zurück</a>
+        <a class="btn zurueck" href="../" title="Zurück zur Einstiegsseite aller EduKSX-Prototypen" aria-label="Zurück zur Einstiegsseite aller EduKSX-Prototypen"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
         <div class="werkzeuge">
           <label class="sr-only" for="w-schule">Schule</label><select id="w-schule" data-aktion="schule">${schulen}</select>
           <label class="sr-only" for="w-jahr">Schuljahr</label><select id="w-jahr" data-aktion="schuljahr">${jahre}</select>
@@ -416,7 +416,7 @@
         <nav class="navi" aria-label="Hauptnavigation"><ul>${navi}</ul></nav>
         <main id="inhalt" tabindex="-1">${inhalt}</main>
       </div>
-      <footer class="fuss"><span>${wordmark("Staffing")} · Prototyp 0.1.1 · in Entwicklung · <a href="../">Alle Prototypen</a> · Begriffe: <a href="https://glossary.eduksx.ch">EduKSX-Glossary</a> (CC BY 4.0)</span><span>Developed by ${WM_DEV}</span></footer>
+      <footer class="fuss"><span>${wordmark("Staffing")} · Prototyp 0.1.2 · in Entwicklung · <a href="../">Alle Prototypen</a> · Begriffe: <a href="https://glossary.eduksx.ch">EduKSX-Glossary</a> (CC BY 4.0)</span><span>Developed by ${WM_DEV}</span></footer>
       <div class="sr-only" aria-live="polite" id="ansage"></div>`;
   }
 

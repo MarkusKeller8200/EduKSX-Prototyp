@@ -8,6 +8,10 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Neu
 
+- Alle Prototypen: «Zurück» als Taste nur mit Icon (Pfeil links, Beschriftung für Screenreader); Einstiegsseite:
+  statt des klickbaren Titels ist die ganze obere Fläche der Karte (Icon, Titel, Beschreibung) klickbar und durch
+  einen feinen Strich vom Text getrennt; Titel wieder in normaler Grösse – EduKSX-Staffing 0.1.2, EduKSX-Flow 0.5.4,
+  EduKSX-Codex 0.5.5, EduKSX-Sign 0.1.3, EduKSX-Time 0.3.6.
 - Alle Prototypen: Titel auf der Einstiegsseite (Wortmarke und Icon) ist klickbar und öffnet den Prototyp wie
   «Prototyp öffnen»; jeder Prototyp hat hinter dem Titel einen Button «← Zurück» zur Einstiegsseite (auch in der
   Vorlage) – EduKSX-Staffing 0.1.1, EduKSX-Flow 0.5.3, EduKSX-Codex 0.5.4, EduKSX-Sign 0.1.2, EduKSX-Time 0.3.5.

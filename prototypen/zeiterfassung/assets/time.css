@@ -23,7 +23,7 @@ body {
 }
 .app-kopf .marke { font-size: 1.1rem; gap: .45rem; }
 .app-kopf .marke svg { width: 26px; height: 26px; }
-.app-kopf .zurueck { white-space: nowrap; min-height: 2.25rem; display: inline-flex; align-items: center; }
+.app-kopf .zurueck { min-height: 2.25rem; }
 .app-kopf .person { margin-left: auto; text-align: right; line-height: 1.2; }
 .app-kopf .person b { display: block; font-size: .9rem; }
 .app-kopf .person span { font-size: .78rem; color: var(--muted-foreground); }

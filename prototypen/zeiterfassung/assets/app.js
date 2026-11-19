@@ -262,7 +262,7 @@
     return `<div class="app">
       <header class="app-kopf">
         <a class="marke" href="#stempeln">${ICON_EDUKSX}${wortmarke("EduKSX-Time")}</a>
-        <a class="btn klein zurueck" href="../" title="Zurück zur Einstiegsseite aller EduKSX-Prototypen">← Zurück</a>
+        <a class="btn zurueck" href="../" title="Zurück zur Einstiegsseite aller EduKSX-Prototypen" aria-label="Zurück zur Einstiegsseite aller EduKSX-Prototypen"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
         <div class="person"><b>${e(p.name)}</b><span>${e(p.funktion)} · ${e(p.pensum)} %</span></div>
       </header>
       <div class="band${navigator.onLine ? "" : " offline"}" role="note">${navigator.onLine
