@@ -1,6 +1,6 @@
 # Prototyp: Rechtssammlung
 
-**Status:** in-arbeit · **Version:** 0.5.3 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
+**Status:** in-arbeit · **Version:** 0.6.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
 
 ## Frage
 
@@ -20,7 +20,7 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 | Pfad | Zweck |
 |---|---|
 | `index.html` | Übersicht im EduKSX-Auftritt mit Menü links: Bezirk › Politische Gemeinden (Vermerk «EG» = Einheitsgemeinde, «EG ?» = nicht gesichert) / Schulgemeinden › Rubriken |
-| `assets/app.js`, `assets/codex.css` | Menü und Ansichten: Übersicht, Bezirk, Gemeinde, Schulgemeinden, Organisation (Steckbrief, Nachbau, iFrame-Variante, Original ⟷ Nachbau, Matrix-Spalte), Rubrik mit PDF-Vorschau, Struktur-Matrix |
+| `assets/app.js`, `assets/codex.css` | Menü und Ansichten: Übersicht (Kennzahlen, Fortschritt je Bezirk, Handlungsbedarf), Vergleich, Bezirk, Gemeinde, Schulgemeinden, Organisation (Steckbrief, Nachbau, iFrame-Variante, Original ⟷ Nachbau, Matrix-Spalte), Rubrik mit PDF-Vorschau, Struktur-Matrix |
 | `assets/daten.js` | Daten für Übersicht und Widget (erzeugt von `tools/build.py`) |
 | `embed/` | Einbettbares Widget (`embed/index.html?org=<id>`): Sachgebiet › Unterordner › Dokument, Suche, PDF-Vorschau, meldet seine Höhe per `postMessage` |
 | `demo/<id>.html` | Nachbau der Original-Seite (Schrift, Farben, Aufbau; ohne Logos) |

@@ -62,6 +62,11 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 - Offen: Stempeln per NFC-Tag (Idee, noch kein Issue – Antwort Projektleitung ausstehend).
 - Offen: weitere Schritte («der ganze Rest») je als Issue nach Freigabe; Icon «time» vorläufig, nicht im Icon-Set.
 
+### Sitzung 2026-11-20 (00:35–01:10) – EduKSX-Codex 0.6.0
+
+- Startseite «Übersicht» nach dem Muster von Flow/Sign (Kennzahlen, Fortschritt je Bezirk, Handlungsbedarf, Dokumentarten); bisherige Übersicht → «Vergleich» (#19 → `_3 Beta-Test`).
+- Achtung: `index.html` der Rechtssammlung wird von `tools/build.py` erzeugt – Änderungen dort (z. B. Zurück-Taste aus 0.5.5) im Generator nachführen.
+
 ### Sitzung 2026-11-17 (05:10–05:50) – EduKSX-Codex 0.5.0
 
 - Auftrag «alle anderen Gemeinden aufnehmen» – auf Rückfrage eingegrenzt auf Dübendorf und Fehraltorf (Entscheid 2026-11-17).

@@ -98,4 +98,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Langform im Tooltip und auf der Gemeinde-/Organisationsseite.
 - EduKSX-Codex 0.5.2: Vergleichstabelle der Übersicht gedreht – eine Zeile je Organisation (mit Link), Merkmale als Spalten.
 - EduKSX-Codex 0.5.3: Bezirksliste im Menü zeigt «analysiert / **Anzahl Gemeinden**» (z. B. 1 / **10**).
+- EduKSX-Codex 0.6.0: neue Startseite «Übersicht» wie in den anderen Modulen – Kennzahlen (erfasste Gemeinden,
+  Schulgemeinden, Dokumente, Leitfaden-Prüfung), Fortschritt je Bezirk, Handlungsbedarf nach Leitfaden, erfasste
+  Rechtssammlungen, Dokumentarten, vorbildliche Beispiele, Plattformen und Ablauf; bisherige Seite heisst «Vergleich».
+  Zurück-Taste aus 0.5.5 in den Generator übernommen.
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

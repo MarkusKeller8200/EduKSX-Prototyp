@@ -118,7 +118,8 @@
     return h("nav", { cls: "navi", "aria-label": "Rechtssammlungen nach Bezirk" },
       h("ul", null,
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Überblick" }),
-        h("li", null, eintrag("#/", "Übersicht und Vergleich", r.art === "")),
+        h("li", null, eintrag("#/", "Übersicht", r.art === "")),
+        h("li", null, eintrag(link("vergleich"), "Vergleich", r.art === "vergleich")),
         h("li", null, eintrag(link("gemeinden"), "Alle 160 Gemeinden", r.art === "gemeinden")),
         h("li", null, eintrag(link("schulgemeinden"), "Alle " + D.schulgemeinden.length + " Schulgemeinden", r.art === "schulgemeinden")),
         h("li", null, eintrag(link("matrix"), "Struktur-Matrix", r.art === "matrix")),
@@ -137,7 +138,7 @@
     return h("dl", { cls: "fakten" }, paare.map(function (p) { return [h("dt", { text: p[0] }), h("dd", null, p[1])]; }));
   }
 
-  function uebersicht() {
+  function vergleich() {
     var karten = D.organisationen.map(function (o) {
       return h("article", { cls: "karte org" },
         h("h2", null, h("a", { href: link("org", o.id), text: o.name })),
@@ -153,8 +154,8 @@
     var erfasst = D.gemeinden.filter(function (g) { return g.org; }).length;
     var schulAufgaben = D.gemeinden.filter(function (g) { return /^Einheitsgemeinde/.test(g.einheit || ""); }).length;
     return [
-      kopf("Systematische Rechtssammlungen im Kanton Zürich",
-        "Gemeinden und Schulgemeinden veröffentlichen ihr geltendes Recht in einer systematisch aufgebauten Rechtssammlung. EduKSX-Codex erfasst, wie sie heute aufgebaut sind."),
+      kopf("Vergleich der erfassten Rechtssammlungen",
+        "Aufbau, Menüpfad, Umfang und Nummerierung je Organisation – Grundlage für eine einheitliche Codex-Normalform."),
       h("div", { cls: "karten kennzahlen" },
         [["Bezirke", D.bezirke.length], ["Politische Gemeinden", D.gemeinden.length], ["davon erfasst", erfasst],
          ["Schulgemeinden", D.schulgemeinden.length], ["Organisationen erfasst", D.organisationen.length],
@@ -164,7 +165,7 @@
       h("p", { cls: "small muted", text: "«mit Schulaufgaben»: aus dem Gemeindeverzeichnis hergeleitet (Einheitsgemeinde ganz oder für eine Stufe); amtlich sind es 114. Abweichungen entstehen, wo die Mitglieder einer Schulgemeinde noch nicht bekannt sind (Vermerk «EG ?» im Menü, EG = Einheitsgemeinde)." }),
       h("h2", { text: "Erfasst: " + D.organisationen.length + " Organisationen" }),
       h("div", { cls: "gitter" }, karten),
-      h("h2", { text: "Vergleich" }),
+      h("h2", { text: "Vergleichstabelle" }),
       h("div", { cls: "tabelle-wrap" }, h("table", null,
         h("thead", null, h("tr", null, h("th", { scope: "col", text: "Organisation" }), zeilen.map(function (z) { return h("th", { scope: "col", text: z[0] }); }))),
         h("tbody", null, D.organisationen.map(function (o) {
@@ -173,6 +174,94 @@
             return typeof v === "string" ? h("td", { text: v }) : h("td", null, v);
           }));
         }))))
+    ];
+  }
+
+  // ------------------------------------------------------------------ Übersicht (Startseite)
+  function kennzahl(href, titel, zahl, unter) {
+    return h("a", { cls: "karte kachel", href: href }, h("div", { cls: "titel", text: titel }), h("div", { cls: "zahl" }, zahl), h("div", { cls: "small muted" }, unter));
+  }
+  function balken(teil, ganz, text) {
+    var anteil = ganz ? Math.round(teil / ganz * 100) : 0;
+    return h("span", { cls: "fortschritt" }, h("span", { cls: "balken", role: "img", "aria-label": text || (teil + " von " + ganz) },
+      h("span", { style: "width:" + anteil + "%" })), h("span", { cls: "small muted", text: text || (teil + " / " + ganz) }));
+  }
+  function uebersicht() {
+    var orgs = D.organisationen;
+    var pgErf = D.gemeinden.filter(function (g) { return g.org; }).length;
+    var sgErf = D.schulgemeinden.filter(function (s) { return s.org; }).length;
+    var schulenEg = orgs.filter(function (o) { return o.typ === "Schule der Einheitsgemeinde"; }).length;
+    var dokumente = orgs.reduce(function (n, o) { return n + o.anzahl_dokumente; }, 0);
+    var punkte = { ja: 0, unsicher: 0, nein: 0 };
+    orgs.forEach(function (o) { (o.leitfaden || []).forEach(function (p) { if (punkte[p.status] !== undefined) punkte[p.status]++; }); });
+    var arten = {};
+    orgs.forEach(function (o) { Object.keys(o.arten || {}).forEach(function (a) { arten[a] = (arten[a] || 0) + o.arten[a]; }); });
+    var vorbildlich = orgs.filter(function (o) { return !(o.leitfaden || []).some(function (p) { return p.status === "nein"; }) && (o.leitfaden || []).filter(function (p) { return p.status === "unsicher"; }).length <= 2; });
+    var handlung = [], handlungOrg = [];
+    orgs.forEach(function (o) {
+      var nein = (o.leitfaden || []).filter(function (p) { return p.status === "nein"; });
+      nein.forEach(function (p) { handlung.push([o, p]); });
+      if (nein.length) handlungOrg.push([o, nein]);
+    });
+    handlungOrg.sort(function (a, b) { return b[1].length - a[1].length || b[0].anzahl_dokumente - a[0].anzahl_dokumente; });
+    var cms = {};
+    orgs.forEach(function (o) { var k = o.cms.split(" (")[0]; cms[k] = (cms[k] || 0) + 1; });
+    var bezirke = D.bezirke.map(function (b) {
+      var g = gemeindenIn(b);
+      return { b: b, n: g.length, erf: g.filter(orgZuGemeinde).length, sg: sgIn(b).length, sgErf: sgIn(b).filter(function (s) { return s.org; }).length };
+    });
+    var orgsSortiert = orgs.slice().sort(function (a, b) { return b.anzahl_dokumente - a.anzahl_dokumente; });
+
+    return [
+      kopf("Übersicht",
+        "Gemeinden und Schulgemeinden veröffentlichen ihr geltendes Recht in einer systematisch aufgebauten Rechtssammlung (§ 7 Abs. 2 GG). EduKSX-Codex erfasst, wie diese heute aufgebaut sind, prüft sie gegen den kantonalen Leitfaden und bereitet eine einheitliche Rechtssammlung vor.",
+        [h("a", { cls: "btn", href: link("grundlagen"), text: "Leitfaden" }), h("a", { cls: "btn primaer", href: link("matrix"), text: "Struktur-Matrix" })]),
+      h("div", { cls: "karten" },
+        kennzahl(link("gemeinden"), "Politische Gemeinden erfasst", [String(pgErf), h("span", { cls: "von", text: " / " + D.gemeinden.length })], "in " + bezirke.filter(function (x) { return x.erf; }).length + " von " + D.bezirke.length + " Bezirken"),
+        kennzahl(link("schulgemeinden"), "Schulgemeinden erfasst", [String(sgErf), h("span", { cls: "von", text: " / " + D.schulgemeinden.length })], "dazu " + schulenEg + " Schulen von Einheitsgemeinden"),
+        kennzahl(link("vergleich"), "Dokumente erfasst", String(dokumente), "aus " + orgs.length + " Rechtssammlungen"),
+        kennzahl(link("grundlagen"), "Leitfaden-Prüfung", [badge("erfolg", "✓", String(punkte.ja)), " ", badge("warnung", "?", String(punkte.unsicher)), " ", badge("fehler", "✗", String(punkte.nein))],
+          handlung.length + " Prüfpunkte nicht erfüllt")),
+      h("div", { cls: "spalten" },
+        h("section", { cls: "karte" }, h("h2", { text: "Fortschritt je Bezirk" }),
+          h("table", { cls: "kompakt" },
+            h("thead", null, h("tr", null, h("th", { scope: "col", text: "Bezirk" }), h("th", { scope: "col", text: "Politische Gemeinden" }), h("th", { scope: "col", text: "Schulgemeinden" }))),
+            h("tbody", null, bezirke.map(function (x) {
+              return h("tr", null, h("th", { scope: "row" }, h("a", { href: link("bezirk", x.b), text: x.b })),
+                h("td", null, balken(x.erf, x.n)), h("td", null, x.sg ? balken(x.sgErf, x.sg) : h("span", { cls: "small muted", text: "keine" })));
+            })))),
+        h("section", { cls: "karte" }, h("h2", { text: "Handlungsbedarf nach Leitfaden" }),
+          h("p", { cls: "small muted", text: handlungOrg.length + " von " + orgs.length + " Rechtssammlungen erfüllen mindestens einen Prüfpunkt nicht." }),
+          handlungOrg.length ? h("ul", { cls: "infoliste" }, handlungOrg.slice(0, 6).map(function (x) {
+            return h("li", null, h("a", { href: link("org", x[0].id) }, h("strong", { text: x[0].kurz })), " ", badge("fehler", "✗", x[1].length + " nicht erfüllt"),
+              h("ul", { cls: "small punkte" }, x[1].map(function (p) { return h("li", { title: p.text, text: p.titel + " (Ziff. " + p.ziffer + ")" }); })));
+          })) : h("p", { cls: "muted", text: "Keine Prüfpunkte offen. ✓" }),
+          handlungOrg.length > 6 ? h("p", { cls: "small" }, h("a", { href: link("grundlagen"), text: "Alle " + handlung.length + " Befunde in den Grundlagen ansehen →" })) : null)),
+      h("div", { cls: "spalten" },
+        h("section", { cls: "karte" }, h("h2", { text: "Erfasste Rechtssammlungen" }),
+          h("table", { cls: "kompakt" },
+            h("thead", null, h("tr", null, ["Organisation", "Bezirk", "Dok.", "Leitfaden"].map(function (t) { return h("th", { scope: "col", text: t }); }))),
+            h("tbody", null, orgsSortiert.map(function (o) {
+              return h("tr", null, h("th", { scope: "row" }, h("a", { href: link("org", o.id), text: o.kurz }), h("div", { cls: "small muted", text: o.typ })),
+                h("td", { text: o.bezirk }), h("td", { cls: "zahlrechts", text: String(o.anzahl_dokumente) }), h("td", { cls: "nowrap" }, lfZusammenfassung(o)));
+            })))),
+        h("section", { cls: "karte" }, h("h2", { text: "Dokumentarten (alle erfassten Dokumente)" }),
+          h("table", { cls: "kompakt" }, h("tbody", null, Object.keys(arten).sort(function (a, b) { return arten[b] - arten[a]; }).map(function (a) {
+            return h("tr", null, h("th", { scope: "row", text: D.arten[a] }), h("td", null, balken(arten[a], dokumente, arten[a] + " · " + Math.round(arten[a] / dokumente * 100) + " %")));
+          }))),
+          h("p", { cls: "small muted", text: "Einordnung nach Leitfaden Ziff. 5–8 anhand von Titel und Ablageort – ein Anhaltspunkt, keine rechtliche Prüfung." }),
+          h("h2", { text: "Vorbildliche Beispiele" }),
+          h("p", { cls: "small" }, vorbildlich.length ? vorbildlich.map(function (o, i) { return [i ? ", " : "", h("a", { href: link("org", o.id), text: o.kurz })]; }) : "noch keine",
+            " – gegliedert nach Leitfaden, Erlassnummer mit Sachgebietsziffer, kein Prüfpunkt «nicht erfüllt». Musterbeispiele des Kantons: Meilen und Dürnten."),
+          h("h2", { text: "Plattformen der Websites" }),
+          h("ul", null, Object.keys(cms).sort(function (a, b) { return cms[b] - cms[a]; }).map(function (k) { return h("li", null, h("strong", { text: String(cms[k]) }), " " + k); })),
+          h("p", { cls: "small muted", text: "Einbetten erlaubt nur " + orgs.filter(function (o) { return o.einbettbar; }).length + " von " + orgs.length + " Websites; die übrigen verbieten die Anzeige im iFrame. Deshalb öffnen sich Original und Nachbau meist nebeneinander, und die PDF-Vorschau funktioniert erst mit der eigenen Dokumentenablage." }))),
+      h("section", { cls: "karte" }, h("h2", { text: "So funktioniert EduKSX-Codex" }),
+        h("ol", null,
+          h("li", null, h("strong", { text: "Erfassen: " }), "Rechtssammlung einer Gemeinde oder Schulgemeinde mit allen Rubriken und Dokumenten übernehmen (Menü links: Bezirk › Gemeinde)."),
+          h("li", null, h("strong", { text: "Vergleichen: " }), "Struktur-Matrix ordnet ähnliche Dokumente einander zu (✓ vorhanden, ? unsicher, – fehlt); der ", h("a", { href: link("vergleich"), text: "Vergleich" }), " zeigt Aufbau und Nummerierung."),
+          h("li", null, h("strong", { text: "Prüfen: " }), "Leitfaden-Prüfung je Organisation zeigt, was nach kantonalem Leitfaden fehlt oder nicht in die Rechtssammlung gehört."),
+          h("li", null, h("strong", { text: "Veröffentlichen: " }), "Nachbau im Stil der Gemeinde-Website und einbettbares Widget (iFrame) mit Navigation, Suche und PDF-Vorschau.")))
     ];
   }
 
@@ -504,6 +593,7 @@
     document.querySelectorAll("dialog").forEach(function (d) { if (d.open) d.close(); d.remove(); });
     var r = route(), inhalt;
     if (r.art === "") inhalt = uebersicht();
+    else if (r.art === "vergleich") inhalt = vergleich();
     else if (r.art === "gemeinden") inhalt = alleGemeinden();
     else if (r.art === "bezirk") inhalt = bezirk(r.a);
     else if (r.art === "gemeinde") inhalt = gemeinde(r.a, r.b);

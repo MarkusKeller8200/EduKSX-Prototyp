@@ -68,3 +68,30 @@ ul.mz-docs li { margin-bottom: .15rem; }
 .vorschau-frame { width: 100%; height: 75vh; border: 0; }
 .sr-only { position: absolute; left: -9999px; }
 @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
+
+/* Übersicht (Startseite) */
+a.karte.kachel { text-decoration: none; color: inherit; display: block; }
+a.karte.kachel:hover, a.karte.kachel:focus-visible { border-color: var(--brand-blue); }
+.karte .zahl .von { font-size: 1rem; font-weight: 500; color: var(--muted-foreground); }
+.spalten { margin-bottom: 1rem; }
+.spalten > .karte h2, section.karte h2 { font-size: 1.1rem; margin: 0 0 .6rem; }
+section.karte h2 + * { margin-top: 0; }
+section.karte h2:not(:first-child) { margin-top: 1.1rem; }
+table.kompakt { width: 100%; border-collapse: collapse; font-size: .9rem; }
+table.kompakt th, table.kompakt td { padding: .35rem .4rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: middle; }
+table.kompakt thead th { font-size: .78rem; color: var(--muted-foreground); font-weight: 600; }
+.fortschritt { display: inline-flex; align-items: center; gap: .25rem .5rem; flex-wrap: wrap; }
+.fortschritt .balken { min-width: 70px; width: 90px; }
+.infoliste { list-style: none; padding: 0; margin: 0; display: grid; gap: .35rem; }
+.infoliste li { padding: .5rem .7rem; border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px); background: var(--card); }
+@media (max-width: 900px) { .spalten { grid-template-columns: 1fr; } }
+table.kompakt th, table.kompakt td { background: transparent; }
+table.kompakt th[scope=row] { font-weight: 500; }
+.nowrap { white-space: nowrap; }
+.zahlrechts { text-align: right !important; font-variant-numeric: tabular-nums; }
+ul.punkte { margin: .3rem 0 0; padding-left: 1.1rem; }
+ul.punkte li { padding: 0; border: 0; background: none; }
+.spalten > * { min-width: 0; }
+.fortschritt .small { white-space: nowrap; }
+table.kompakt { table-layout: auto; }
+table.kompakt td { word-break: normal; }
