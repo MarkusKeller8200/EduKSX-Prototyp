@@ -5,7 +5,9 @@
  *  - Schuljahr: Schuljahreswechsel, Schuljahresbeginn, Semesterwechsel, Semesterende, Schuljahresende – je mit
  *    Versatz in Tagen, Wochen oder Monaten (z. B. 2 Monate vor Schuljahresende); Termine je Schuljahr pflegbar
  *  - wiederkehrend: jedes Trimester, Semester, Quartal (Beginn, Ende oder ganzer Abschnitt, mit Versatz),
- *    monatlich, wöchentlich, täglich, alle Wochentage (Mo–Fr), Wochenende (Sa–So), Arbeitstage (Mo–Fr ohne Feiertage)
+ *    monatlich, wöchentlich, täglich, alle Wochentage (Mo–Fr), Wochenende (Sa–So), Arbeitstage (Mo–Fr ohne Feiertage),
+ *    Schultage (ohne Ferien und schulfreie Tage)
+ *  - Ferienregel je Ereignis: fällt ein Termin auf einen Nicht-Schultag → beibehalten, vorziehen, nachholen, auslassen
  * Ein Ereignis kann mit einer Ablaufvorlage verknüpft werden: Flow startet den Ablauf mit dem Datum des Vorkommens
  * als Stichtag. Wird von app.js über window.FLOW_KALENDER eingebunden.
  */
@@ -23,13 +25,17 @@
     ["Einmal pro Jahr", [["q", "Quartal (ganzes Quartal)"], ["kw", "Kalenderwoche"], ["am", "Datum"], ["zeitraum", "Zeitraum"]]],
     ["Schuljahr", [["stichtag", "Bezug auf Schuljahrestermin (± Tage/Wochen/Monate)"]]],
     ["Wiederkehrend", [["trimester", "jedes Trimester"], ["semester", "jedes Semester"], ["quartal", "jedes Quartal"], ["monatlich", "monatlich"], ["woechentlich", "wöchentlich"],
-      ["taeglich", "täglich"], ["wochentage", "alle Wochentage (Mo–Fr)"], ["wochenende", "Wochenende (Sa–So)"], ["arbeitstage", "Arbeitstage (Mo–Fr ohne Feiertage)"]]],
+      ["taeglich", "täglich"], ["wochentage", "alle Wochentage (Mo–Fr)"], ["wochenende", "Wochenende (Sa–So)"], ["arbeitstage", "Arbeitstage (Mo–Fr ohne Feiertage)"], ["schultage", "Schultage (ohne Ferien und schulfreie Tage)"]]],
   ];
   const ANKER = {
     schuljahreswechsel: "Schuljahreswechsel", schuljahresbeginn: "Schuljahresbeginn (1. Schultag)", semesterende1: "Semesterende (1. Semester)",
     semesterwechsel: "Semesterwechsel (Beginn 2. Semester)", semesterende: "Semesterende (beide Semester)", schuljahresende: "Schuljahresende (letzter Schultag)",
   };
-  const SERIE = ["taeglich", "wochentage", "wochenende", "arbeitstage", "woechentlich"]; // als eine Zeile/ein Balken darstellen
+  const FERIEN_ANKER = { herbstferien: "Herbstferien", weihnachtsferien: "Weihnachtsferien", sportferien: "Sportferien", fruehlingsferien: "Frühlingsferien", sommerferien: "Sommerferien" };
+  Object.entries(FERIEN_ANKER).forEach(([k, n]) => { ANKER[k] = `Beginn ${n}`; ANKER[k + "_ende"] = `Ende ${n} (letzter Ferientag)`; });
+  const FERIENREGEL = [["", "Datum beibehalten"], ["vorher", "auf den letzten Schultag davor"], ["nachher", "auf den ersten Schultag danach"], ["auslassen", "auslassen"]];
+  const FERIENART = { ferien: "Ferien", frei: "schulfrei", anlass: "Anlass (Unterricht)" };
+  const SERIE = ["taeglich", "wochentage", "wochenende", "arbeitstage", "schultage", "woechentlich"]; // als eine Zeile/ein Balken darstellen
   const ABSCHNITT = { trimester: "Trimester", semester: "Semester", quartal: "Quartal" };
   const GRENZE = { trimester: ["Trimesterbeginn", "Trimesterende"], semester: ["Semesterbeginn", "Semesterende"], quartal: ["Quartalsbeginn", "Quartalsende"] };
 
@@ -80,6 +86,21 @@
       return FT_CACHE[y];
     }
     const istFeiertag = (iso) => feiertage(Number(iso.slice(0, 4))).set.has(iso);
+    /** Ferien oder schulfreier Tag aus den Schuljahresdaten (Anlässe zählen nicht). */
+    function frei(iso) {
+      for (const sj of S().schuljahre) for (const f of sj.ferien || []) if (f.art !== "anlass" && iso >= f.von && iso <= f.bis) return f;
+      return null;
+    }
+    const imSchuljahr = (iso) => S().schuljahre.some((sj) => iso >= sj.beginn && iso <= sj.ende);
+    const istSchultag = (iso) => wochentag(iso) <= 5 && !istFeiertag(iso) && !frei(iso) && imSchuljahr(iso);
+    function grund(iso) {
+      const f = frei(iso);
+      if (f) return f.name;
+      if (wochentag(iso) > 5) return "Wochenende";
+      const ft = feiertage(Number(iso.slice(0, 4))).liste.find((x) => x[0] === iso);
+      if (ft) return ft[1];
+      return "ausserhalb des Schuljahres";
+    }
 
     // ------------------------------------------------------------ Schuljahre
     const schuljahre = () => S().schuljahre.slice().sort((a, b) => a.beginn.localeCompare(b.beginn));
@@ -104,7 +125,12 @@
     function ankerDaten(anker) {
       const out = [];
       schuljahre().forEach((sj) => {
-        const d = { schuljahreswechsel: [sj.wechsel], schuljahresbeginn: [sj.beginn], semesterende1: [sj.semesterende1], semesterwechsel: [sj.semesterwechsel], semesterende: [sj.semesterende1, sj.ende], schuljahresende: [sj.ende] }[anker] || [];
+        let d = { schuljahreswechsel: [sj.wechsel], schuljahresbeginn: [sj.beginn], semesterende1: [sj.semesterende1], semesterwechsel: [sj.semesterwechsel], semesterende: [sj.semesterende1, sj.ende], schuljahresende: [sj.ende] }[anker];
+        if (!d) {
+          const key = String(anker || "").replace(/_ende$/, "");
+          const fe = (sj.ferien || []).find((x) => x.art === "ferien" && x.name.startsWith(FERIEN_ANKER[key] || "–"));
+          d = fe ? [anker.endsWith("_ende") ? fe.bis : fe.von] : [];
+        }
         d.forEach((x) => out.push({ d: x, sj: sj.name }));
       });
       return out;
@@ -122,14 +148,24 @@
     /** Alle Vorkommen eines Ereignisses, die den Zeitraum [von, bis] berühren. */
     function vorkommenZwischen(ev, von, bis) {
       const z = ev.zeit, out = [];
-      const add = (a, b, info) => { if (b >= von && a <= bis && (!ev.jahr || Number(a.slice(0, 4)) === ev.jahr)) out.push({ ev, von: a, bis: b, info: info || "", key: ev.id + "|" + a }); };
       const r = z.regel;
+      const add = (a, b, info) => {
+        // Ferienregel: Einzeltermin auf einem Nicht-Schultag verschieben oder auslassen
+        if (ev.ferien && a === b && !SERIE.includes(r) && !istSchultag(a) && S().schuljahre.length) {
+          if (ev.ferien === "auslassen") return;
+          const schritt = ev.ferien === "vorher" ? -1 : 1;
+          let d = a, n = 0;
+          while (!istSchultag(d) && n++ < 60) d = addTage(d, schritt);
+          if (n <= 60) { info = `${info ? info + " · " : ""}verschoben von ${datumKurz(a)} (${grund(a)})`; a = b = d; }
+        }
+        if (b >= von && a <= bis && (!ev.jahr || Number(a.slice(0, 4)) === ev.jahr)) out.push({ ev, von: a, bis: b, info: info || "", key: ev.id + "|" + a });
+      };
       if (!r) {
         for (let y = Number(von.slice(0, 4)) - 1; y <= Number(bis.slice(0, 4)) + 1; y++) { const o = jaehrlichIm(ev, y); add(o.von, o.bis); }
       } else if (SERIE.includes(r)) {
         for (let d = von; d <= bis; d = addTage(d, 1)) {
           const w = wochentag(d);
-          const ok = r === "taeglich" || (r === "wochentage" && w <= 5) || (r === "wochenende" && w >= 6) || (r === "arbeitstage" && w <= 5 && !istFeiertag(d)) || (r === "woechentlich" && w === Number(z.wochentag || 1));
+          const ok = r === "taeglich" || (r === "wochentage" && w <= 5) || (r === "wochenende" && w >= 6) || (r === "arbeitstage" && w <= 5 && !istFeiertag(d)) || (r === "schultage" && istSchultag(d)) || (r === "woechentlich" && w === Number(z.wochentag || 1));
           if (ok) add(d, d);
         }
       } else if (r === "monatlich") {
@@ -196,6 +232,7 @@
         case "wochentage": return "alle Wochentage (Montag–Freitag)";
         case "wochenende": return "jedes Wochenende (Samstag–Sonntag)";
         case "arbeitstage": return "alle Arbeitstage (Mo–Fr ohne Feiertage Kanton Zürich)";
+        case "schultage": return "alle Schultage (ohne Ferien, schulfreie Tage, Feiertage)";
         default:
           if (z.q) return `${w}, Quartal ${z.q} (${QUARTAL[z.q]})`;
           if (z.kw) return `${w}, Kalenderwoche ${z.kw}`;
@@ -203,7 +240,7 @@
           return `${w}, ${z.von.split("-").reverse().join(".")}.–${z.bis.split("-").reverse().join(".")}.`;
       }
     }
-    const regelKurz = (ev) => ({ stichtag: "Schuljahr", trimester: "Trimester", semester: "Semester", quartal: "Quartal", monatlich: "monatlich", woechentlich: "wöchentlich", taeglich: "täglich", wochentage: "Mo–Fr", wochenende: "Sa–So", arbeitstage: "Arbeitstage" }[ev.zeit.regel] || (ev.jahr ? `nur ${ev.jahr}` : "jährlich"));
+    const regelKurz = (ev) => ({ stichtag: "Schuljahr", trimester: "Trimester", semester: "Semester", quartal: "Quartal", monatlich: "monatlich", woechentlich: "wöchentlich", taeglich: "täglich", wochentage: "Mo–Fr", wochenende: "Sa–So", arbeitstage: "Arbeitstage", schultage: "Schultage" }[ev.zeit.regel] || (ev.jahr ? `nur ${ev.jahr}` : "jährlich"));
     function wann(o) {
       const z = o.ev.zeit;
       if (istSerie(o.ev)) return `${zeitregel(o.ev)} · nächstes ${datumKurz(o.von)}`;
@@ -365,10 +402,14 @@
         });
         row += n;
       });
+      schuljahre().forEach((sj) => (sj.ferien || []).filter((fe) => fe.art !== "anlass" && fe.bis >= p.von && fe.von <= p.bis).forEach((fe) => {
+        const a = fe.von < p.von ? p.von : fe.von, b = fe.bis > p.bis ? p.bis : fe.bis;
+        html += `<div class="zl-ferien ${fe.art}" style="grid-row:2 / ${row};grid-column:${col(a) + 1} / ${col(b) + 2}" title="${esc(fe.name)}: ${datumKurz(fe.von)} – ${datumKurz(fe.bis)}">${fe.art === "ferien" ? `<span>${esc(fe.name.replace("ferien", ""))}</span>` : ""}</div>`;
+      }));
       marken.forEach(([d, t]) => { html += `<div class="zl-marke" style="grid-row:2 / ${row};grid-column:${col(d) + 1}" title="${esc(t)}: ${datumKurz(d)}"><span>${esc(t)}</span></div>`; });
       const h = S().heute;
       if (h >= p.von && h <= p.bis) html += `<div class="zl-heute" style="grid-row:1 / ${row};grid-column:${col(h) + 1}" title="Heute (simuliert): ${datumKurz(h)}"><span>heute</span></div>`;
-      html += `</div></div><p class="small muted">Balken = Zeitraum; Einzeltermine beginnen mit einem Punkt in ihrer Woche. ↻ = wiederkehrend; Serien (täglich bis wöchentlich) als ein durchgehender Balken. Gestrichelte Linien = Schuljahreswechsel, Semesterwechsel, Schuljahresende. ⇢ mit Ablauf verknüpft, ✓ erledigt, ! überfällig.</p>`;
+      html += `</div></div><p class="small muted">Balken = Zeitraum; Einzeltermine beginnen mit einem Punkt in ihrer Woche. ↻ = wiederkehrend; Serien (täglich bis wöchentlich) als ein durchgehender Balken. Gestrichelte Linien = Schuljahreswechsel, Semesterwechsel, Schuljahresende; schraffierte Spalten = Ferien und schulfreie Tage. ⇢ mit Ablauf verknüpft, ✓ erledigt, ! überfällig.</p>`;
       return html;
     }
 
@@ -425,15 +466,31 @@
         if (!(sj.beginn < sj.trimester2 && sj.trimester2 < sj.trimester3 && sj.trimester3 < sj.ende)) f.push("Trimester ausserhalb des Schuljahres");
         return f.length ? `<span class="badge fehler">✕ ${esc(f.join("; "))}</span>` : `<span class="badge erfolg">✓ stimmig</span>`;
       };
-      const verwendet = S().ereignisse.filter((ev) => ["stichtag", "trimester", "semester"].includes(ev.zeit.regel));
+      const verwendet = S().ereignisse.filter((ev) => ["stichtag", "trimester", "semester", "schultage"].includes(ev.zeit.regel) || ev.ferien);
       const y = Number(S().heute.slice(0, 4));
       const naechstesSj = sjs.length ? (() => { const a = Number(sjs[sjs.length - 1].name.slice(0, 4)) + 1; return `${a}/${String(a + 1).slice(2)}`; })() : "";
       return `<p class="small muted">Diese Termine je Schuljahr steuern die Zeitregeln «Bezug auf Schuljahrestermin», «jedes Semester» und «jedes Trimester». Beispielwerte – bitte mit den Ferienplänen der Schule abgleichen. Bearbeiten: Schulverwaltung, Schulleitung.</p>
         <div class="tabelle-wrap"><table class="sj-tabelle"><thead><tr><th>Schuljahr</th><th>Schuljahreswechsel</th><th>Schuljahresbeginn</th><th>Semesterende (1.)</th><th>Semesterwechsel</th><th>Schuljahresende</th><th>2. Trimester ab</th><th>3. Trimester ab</th><th>Prüfung</th></tr></thead>
         <tbody>${sjs.map((sj) => `<tr><td><strong>${esc(sj.name)}</strong></td>${["wechsel", "beginn", "semesterende1", "semesterwechsel", "ende", "trimester2", "trimester3"].map((k) => feld(sj, k)).join("")}<td>${pruef(sj)}</td></tr>`).join("")}</tbody></table></div>
         <p style="margin-top:.6rem"><button class="btn" data-aktion="kal-sj-neu" ${darf ? "" : "disabled"}>＋ Schuljahr ${esc(naechstesSj)}</button></p>
+        <h2 style="margin-top:1.25rem">Ferien und schulfreie Tage</h2>
+        <p class="small muted">Testdaten: Ferienplan der Sekundarschulgemeinde Bülach (öffentlich; 2025/26 nach den Daten der Kreisgemeinden). «Ferien» und «schulfrei» zählen nicht als Schultage; «Anlass» ist nur ein Hinweis. Ferienbeginn und -ende stehen als Bezugstermine zur Verfügung (z. B. 1 Woche vor Beginn Sommerferien).</p>
+        ${sjs.map((sj) => {
+          let schultage = 0;
+          for (let d = sj.beginn; d <= sj.ende; d = addTage(d, 1)) if (istSchultag(d)) schultage++;
+          const ferien = (sj.ferien || []).map((fe, i) => ({ fe, i })).sort((a, b) => a.fe.von.localeCompare(b.fe.von));
+          return `<details class="gefaess" ${sj.name === sjs.find((x) => x.ende >= S().heute)?.name ? "open" : ""}><summary><span><strong>Schuljahr ${esc(sj.name)}</strong> · ${ferien.filter((x) => x.fe.art === "ferien").length} Ferien, ${ferien.filter((x) => x.fe.art === "frei").length} schulfreie Abschnitte</span><span class="small muted">${schultage} Schultage</span></summary>
+            <div class="inhalt"><div class="tabelle-wrap"><table class="sj-tabelle"><thead><tr><th>Bezeichnung</th><th>von</th><th>bis</th><th>Art</th><th class="zahl">Tage</th><th></th></tr></thead><tbody>
+            ${ferien.map(({ fe, i }) => `<tr><td><input type="text" value="${esc(fe.name)}" data-aktion="kal-fe" data-sj="${esc(sj.name)}" data-i="${i}" data-k="name" ${darf ? "" : "disabled"} aria-label="Bezeichnung"></td>
+              <td><input type="date" value="${esc(fe.von)}" data-aktion="kal-fe" data-sj="${esc(sj.name)}" data-i="${i}" data-k="von" ${darf ? "" : "disabled"} aria-label="von"></td>
+              <td><input type="date" value="${esc(fe.bis)}" data-aktion="kal-fe" data-sj="${esc(sj.name)}" data-i="${i}" data-k="bis" ${darf ? "" : "disabled"} aria-label="bis"></td>
+              <td><select data-aktion="kal-fe" data-sj="${esc(sj.name)}" data-i="${i}" data-k="art" ${darf ? "" : "disabled"} aria-label="Art">${Object.entries(FERIENART).map(([k, n]) => `<option value="${k}" ${k === fe.art ? "selected" : ""}>${esc(n)}</option>`).join("")}</select></td>
+              <td class="zahl">${tageZwischen(fe.von, fe.bis) + 1}</td>
+              <td>${darf ? `<button class="btn klein gefahr" data-aktion="kal-fe-weg" data-sj="${esc(sj.name)}" data-i="${i}" aria-label="Eintrag löschen">✕</button>` : ""}</td></tr>`).join("")}
+            </tbody></table></div>${darf ? `<p style="margin-top:.5rem"><button class="btn klein" data-aktion="kal-fe-neu" data-sj="${esc(sj.name)}">＋ Ferien oder schulfreier Tag</button></p>` : ""}</div></details>`;
+        }).join("")}
         <div class="spalten" style="margin-top:1rem">
-          <div class="karte"><h2>Ereignisse mit Schuljahresbezug (${verwendet.length})</h2><ul class="infoliste">${verwendet.map((ev) => `<li><button class="link" data-aktion="kal-oeffnen" data-id="${ev.id}">${esc(ev.titel)}</button> <span class="small muted">${esc(zeitregel(ev))}</span></li>`).join("") || `<li class="muted">keine</li>`}</ul></div>
+          <div class="karte"><h2>Ereignisse mit Schuljahres- oder Ferienbezug (${verwendet.length})</h2><ul class="infoliste">${verwendet.map((ev) => `<li><button class="link" data-aktion="kal-oeffnen" data-id="${ev.id}">${esc(ev.titel)}</button> <span class="small muted">${esc(zeitregel(ev))}${ev.ferien ? " · in Ferien: " + esc(FERIENREGEL.find((x) => x[0] === ev.ferien)[1]) : ""}</span></li>`).join("") || `<li class="muted">keine</li>`}</ul></div>
           <div class="karte"><h2>Feiertage ${y} (Kanton Zürich)</h2><p class="small muted">Für die Zeitregel «Arbeitstage» (Montag–Freitag ohne diese Tage).</p><ul class="infoliste">${feiertage(y).liste.map(([d, t]) => `<li>${datumKurz(d)} <span class="small muted">${esc(t)}</span></li>`).join("")}</ul></div>
         </div>`;
     }
@@ -478,7 +535,7 @@
       return `<div class="kal-detail" data-glossary-ignore>
         <div class="small muted">${esc(D.QUELLEN[ev.quelle] || "Eigenes Ereignis")}</div>
         <h2>${esc(ev.titel)}</h2>
-        <p>${bereichBadge(ev.bereich)} ${o ? statusBadge(o) : ""} <span class="small muted">${esc(zeitregel(ev))}</span></p>
+        <p>${bereichBadge(ev.bereich)} ${o ? statusBadge(o) : ""} <span class="small muted">${esc(zeitregel(ev))}${ev.ferien ? " · fällt der Termin in Ferien/schulfreie Tage: " + esc(FERIENREGEL.find((x) => x[0] === ev.ferien)[1]) : ""}</span></p>
         <div class="feldliste">
           <div class="feldzeile"><span class="muted">Vorkommen</span><span>${o ? (o.von === o.bis ? datumKurz(o.von) : `${datumKurz(o.von)} – ${datumKurz(o.bis)}`) + (o.info ? ` <span class="small muted">(${esc(o.info)})</span>` : "") : "– (Schuljahresdaten erfasst?)"}</span></div>
           ${kommende.length ? `<div class="feldzeile"><span class="muted">Weitere</span><span class="small">${kommende.map((x) => `<button class="link" data-aktion="kal-oeffnen" data-id="${ev.id}" data-von="${x.von}">${datumKurz(x.von)}</button>`).join(" · ")}</span></div>` : ""}
@@ -537,6 +594,7 @@
           <label class="feld">Art<select data-k="art" data-neu-zeichnen="1">${ARTEN.map(([g, l]) => `<optgroup label="${esc(g)}">${l.map(([v, t]) => `<option value="${v}" ${v === art ? "selected" : ""}>${esc(t)}</option>`).join("")}</optgroup>`).join("")}</select></label>
           ${params}
         </div>
+        ${SERIE.includes(art) ? "" : `<div class="formzeile"><label class="feld">Fällt ein Termin auf einen Nicht-Schultag (Ferien, schulfrei, Wochenende, Feiertag)${sel("ferienregel", FERIENREGEL, ev.ferien || "", true)}</label></div>`}
         <p class="small muted">Vorschau: ${esc(zeitregel(ev))} → <strong>${esc(probe)}</strong> <button class="btn klein" data-aktion="kal-vorschau">↻ aktualisieren</button></p></fieldset>
         <fieldset><legend>Zuständigkeit</legend><div class="rollenraster">${Object.entries(D.KAL_ROLLEN).map(([r, n]) => `<label class="feld" title="${esc(n)}">${esc(r)}<select data-rolle="${r}">${["", "A", "E", "V", "M", "E/V", "M/E", "M/V"].map((w) => `<option ${w === (ev.rollen[r] || "") ? "selected" : ""}>${w}</option>`).join("")}</select></label>`).join("")}</div>
           <p class="small muted">A = Abnahme · E = Entscheid · V = Verantwortung · M = Mitarbeit</p></fieldset>
@@ -574,6 +632,7 @@
       else if (art === "monatlich") ev.zeit = { regel: art, tag: gleich ? (wert("tag", "1") === "letzter" ? "letzter" : Number(wert("tag", 1))) : Math.min(28, Number(basis.slice(8, 10))) };
       else if (art === "woechentlich") ev.zeit = { regel: art, wochentag: gleich ? Number(wert("wochentag", 1)) : wochentag(basis) };
       else ev.zeit = { regel: art };
+      ev.ferien = SERIE.includes(art) ? "" : wert("ferienregel", ev.ferien || "");
       ev.rollen = {};
       d.querySelectorAll("[data-rolle]").forEach((s) => { if (s.value) ev.rollen[s.dataset.rolle] = s.value; });
     }
@@ -631,8 +690,20 @@
           const l = schuljahre().slice(-1)[0];
           const plus = (iso) => addTage(iso, 364); // gleicher Wochentag im Folgejahr
           const a = Number(l.name.slice(0, 4)) + 1;
-          st.schuljahre.push({ name: `${a}/${String(a + 1).slice(2)}`, wechsel: `${a}-08-01`, beginn: plus(l.beginn), semesterende1: plus(l.semesterende1), semesterwechsel: plus(l.semesterwechsel), ende: plus(l.ende), trimester2: plus(l.trimester2), trimester3: plus(l.trimester3) });
-          X.speichern(); X.render(); ansage("Schuljahr ergänzt – Daten bitte prüfen.");
+          st.schuljahre.push({ name: `${a}/${String(a + 1).slice(2)}`, wechsel: `${a}-08-01`, beginn: plus(l.beginn), semesterende1: plus(l.semesterende1), semesterwechsel: plus(l.semesterwechsel), ende: plus(l.ende), trimester2: plus(l.trimester2), trimester3: plus(l.trimester3),
+            ferien: (l.ferien || []).map((fe) => ({ name: fe.name, von: plus(fe.von), bis: plus(fe.bis), art: fe.art })) });
+          X.speichern(); X.render(); ansage("Schuljahr ergänzt – Daten und Ferien bitte prüfen.");
+          return true;
+        }
+        case "kal-fe-neu": {
+          const sj = st.schuljahre.find((x) => x.name === el.dataset.sj);
+          (sj.ferien = sj.ferien || []).push({ name: "Schulfreier Tag", von: sj.beginn, bis: sj.beginn, art: "frei" });
+          X.speichern(); X.render(); return true;
+        }
+        case "kal-fe-weg": {
+          const sj = st.schuljahre.find((x) => x.name === el.dataset.sj);
+          const fe = sj.ferien[Number(el.dataset.i)];
+          frage(`«${fe.name}» (${datumKurz(fe.von)} – ${datumKurz(fe.bis)}) aus dem Schuljahr ${sj.name} entfernen?`, "Entfernen", () => { sj.ferien.splice(Number(el.dataset.i), 1); X.speichern(); X.render(); });
           return true;
         }
         default: return false;
@@ -644,6 +715,12 @@
       if (ak === "kal-filter") { st.kal[el.dataset.f] = el.type === "checkbox" ? el.checked : el.value; X.speichern(); X.render(); return true; }
       if (ak === "kal-teil") { const k = el.dataset.key; if (el.checked) st.kalErledigt[k] = st.heute; else delete st.kalErledigt[k]; X.speichern(); X.render(); return true; }
       if (ak === "kal-sj") { const sj = st.schuljahre.find((x) => x.name === el.dataset.sj); if (sj && el.value) { sj[el.dataset.k] = el.value; X.speichern(); X.render(); ansage(`Schuljahr ${sj.name}: gespeichert.`); } return true; }
+      if (ak === "kal-fe") {
+        const sj = st.schuljahre.find((x) => x.name === el.dataset.sj);
+        const fe = sj && sj.ferien[Number(el.dataset.i)];
+        if (fe && el.value) { fe[el.dataset.k] = el.value; if (fe.bis < fe.von) fe.bis = fe.von; X.speichern(); X.render(); ansage("Ferien gespeichert."); }
+        return true;
+      }
       if (ak === "kal-flow") {
         const ev = st.ereignisse.find((x) => x.id === K.id);
         ev.flow = el.value || null; K.ev = kopie(ev);

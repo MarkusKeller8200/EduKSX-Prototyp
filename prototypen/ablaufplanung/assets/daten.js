@@ -209,12 +209,33 @@
   };
   const QUELLEN = { plan: "Jahresplanung ICT-Prozesse", liste: "Master-Checkliste ICT-Jahreszyklus", kw: "Jahreskalender Fachstelle ICT", beispiel: "Beispiele Zeitregeln (Prototyp)" };
 
-  // Schuljahresdaten (Beispielwerte, je Schule zu pflegen): steuern Schuljahres-, Semester- und Trimester-Regeln
+  // Schuljahresdaten mit Ferien. Testdaten: Ferienplan der Sekundarschulgemeinde Bülach (öffentlich, Ferienplan
+  // 2026–2029 auf buelach.ch; 2025/26 nach den Daten der Kreisgemeinden). Semester- und Trimestergrenzen sind
+  // Annahmen (Semesterwechsel Anfang Februar, vgl. Jahreskalender Fachstelle ICT KW 5/6).
+  // Ferienarten: ferien = Ferien, frei = schulfrei (Feiertag, Brücke), anlass = besonderer Tag ohne Unterrichtsausfall
+  const f = (name, von, bis, art) => ({ name, von, bis: bis || von, art: art || "ferien" });
   const SCHULJAHRE = [
-    { name: "2025/26", wechsel: "2025-08-01", beginn: "2025-08-18", semesterende1: "2026-01-30", semesterwechsel: "2026-02-02", ende: "2026-07-10", trimester2: "2025-11-17", trimester3: "2026-03-09" },
-    { name: "2026/27", wechsel: "2026-08-01", beginn: "2026-08-17", semesterende1: "2027-01-29", semesterwechsel: "2027-02-01", ende: "2027-07-16", trimester2: "2026-11-16", trimester3: "2027-03-08" },
-    { name: "2027/28", wechsel: "2027-08-01", beginn: "2027-08-23", semesterende1: "2028-02-04", semesterwechsel: "2028-02-07", ende: "2028-07-14", trimester2: "2027-11-22", trimester3: "2028-03-13" },
+    { name: "2025/26", wechsel: "2025-08-01", beginn: "2025-08-18", semesterende1: "2026-01-30", semesterwechsel: "2026-02-02", ende: "2026-07-10", trimester2: "2025-11-17", trimester3: "2026-03-09",
+      ferien: [f("Herbstferien", "2025-10-06", "2025-10-17"), f("Weihnachtsferien", "2025-12-22", "2026-01-02"), f("Sportferien", "2026-02-09", "2026-02-20"),
+        f("Ostern", "2026-04-03", "2026-04-06", "frei"), f("Frühlingsferien", "2026-04-20", "2026-05-01"), f("Auffahrtsbrücke", "2026-05-14", "2026-05-15", "frei"),
+        f("Pfingstmontag", "2026-05-25", null, "frei"), f("Sommerferien", "2026-07-13", "2026-08-14")] },
+    { name: "2026/27", wechsel: "2026-08-01", beginn: "2026-08-17", semesterende1: "2027-01-29", semesterwechsel: "2027-02-01", ende: "2027-07-16", trimester2: "2026-11-16", trimester3: "2027-03-08",
+      ferien: [f("Herbstferien", "2026-10-05", "2026-10-16"), f("Herbstmärt mit Brücke", "2026-11-02", "2026-11-03", "frei"), f("Schulsilvester", "2026-12-18", null, "anlass"),
+        f("Weihnachtsferien", "2026-12-21", "2027-01-01"), f("Sportferien", "2027-02-15", "2027-02-26"), f("Gründonnerstag (Schulschluss 12 Uhr)", "2027-03-25", null, "anlass"),
+        f("Ostern", "2027-03-26", "2027-03-29", "frei"), f("Frühlingsferien", "2027-04-26", "2027-05-07"), f("Auffahrtsbrücke", "2027-05-06", "2027-05-07", "frei"),
+        f("Pfingstmontag", "2027-05-17", null, "frei"), f("Maimärt", "2027-05-25", null, "anlass"), f("Sommerferien", "2027-07-19", "2027-08-20")] },
+    { name: "2027/28", wechsel: "2027-08-01", beginn: "2027-08-23", semesterende1: "2028-02-04", semesterwechsel: "2028-02-07", ende: "2028-07-14", trimester2: "2027-11-22", trimester3: "2028-03-13",
+      ferien: [f("Herbstferien", "2027-10-11", "2027-10-22"), f("Herbstmärt mit Brücke", "2027-11-01", "2027-11-02", "frei"), f("Schulsilvester", "2027-12-17", null, "anlass"),
+        f("Weihnachtsferien", "2027-12-20", "2027-12-31"), f("Sportferien", "2028-02-14", "2028-02-25"), f("Gründonnerstag (Schulschluss 12 Uhr)", "2028-04-13", null, "anlass"),
+        f("Ostern", "2028-04-14", "2028-04-17", "frei"), f("Frühlingsferien", "2028-04-17", "2028-04-28"), f("Auffahrtsbrücke", "2028-05-25", "2028-05-26", "frei"),
+        f("Maimärt", "2028-05-30", null, "anlass"), f("Pfingstmontag", "2028-06-05", null, "frei"), f("Sommerferien", "2028-07-17", "2028-08-18")] },
+    { name: "2028/29", wechsel: "2028-08-01", beginn: "2028-08-21", semesterende1: "2029-02-02", semesterwechsel: "2029-02-05", ende: "2029-07-13", trimester2: "2028-11-20", trimester3: "2029-03-12",
+      ferien: [f("Herbstferien", "2028-10-09", "2028-10-20"), f("Herbstmärt mit Brücke", "2028-10-30", "2028-10-31", "frei"), f("Schulsilvester", "2028-12-22", null, "anlass"),
+        f("Weihnachtsferien", "2028-12-25", "2029-01-05"), f("Sportferien", "2029-02-12", "2029-02-23"), f("Gründonnerstag (Schulschluss 12 Uhr)", "2029-03-29", null, "anlass"),
+        f("Ostern", "2029-03-30", "2029-04-02", "frei"), f("Frühlingsferien", "2029-04-23", "2029-05-04"), f("Auffahrtsbrücke", "2029-05-10", "2029-05-11", "frei"),
+        f("Pfingstmontag", "2029-05-21", null, "frei"), f("Maimärt", "2029-05-29", null, "anlass"), f("Sommerferien", "2029-07-16", "2029-08-17")] },
   ];
+
   const r = (txt) => Object.fromEntries(String(txt || "").split(/\s+/).filter(Boolean).map((x) => x.split(":")));
   const EREIGNISSE = [];
   let nr = 0;
@@ -381,6 +402,10 @@
   bsp("Support-Tickets sichten und zuweisen", "betrieb", { regel: "wochentage" }, "TICTS:V PICTS:M");
   bsp("Wartungsfenster: Updates einspielen", "betrieb", { regel: "wochenende" }, "VT:V TICTS:M");
   bsp("Backup-Protokoll prüfen", "ds", { regel: "arbeitstage" }, "TICTS:V ISV:M");
+  bsp("Geräteausleihe Klassensätze kontrollieren", "beschaffung", { regel: "schultage" }, "PICTS:V");
+  bsp("Updates vor den Sommerferien freigeben", "ds", { regel: "stichtag", anker: "sommerferien", versatz: -1, einheit: "wochen" }, "VT:V TICTS:M");
+  bsp("Geräte-Rückläufer nach den Herbstferien prüfen", "beschaffung", { regel: "stichtag", anker: "herbstferien_ende", versatz: 3, einheit: "tage" }, "TICTS:V", { ferien: "nachher" });
+  bsp("Passwort-Erinnerung an Lehrpersonen (Monatsanfang, nur an Schultagen)", "komm", { regel: "monatlich", tag: 1 }, "PICTS:V", { ferien: "nachher" });
 
   // Laufende Abläufe (Stichtage relativ zum heutigen Tag, damit der Prototyp immer «aktuell» wirkt)
   const LAEUFE = [

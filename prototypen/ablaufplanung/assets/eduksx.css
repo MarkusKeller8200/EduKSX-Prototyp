@@ -322,7 +322,7 @@ button.link { font: inherit; background: none; border: none; padding: 0; color: 
 .zl-bahn { background: var(--card); border-bottom: 1px solid var(--border); z-index: 0; }
 .zl-bahn.b2 { background: color-mix(in srgb, var(--muted) 60%, transparent); }
 .zl-label { grid-column: 1; padding: .35rem .6rem; display: flex; flex-direction: column; gap: .2rem; align-items: flex-start; position: sticky; left: 0; z-index: 2; background: inherit; }
-.zl-item { z-index: 1; margin: 2px 1px; padding: .1rem .4rem; border-radius: 5px; border: 1px solid var(--border); background: var(--background); color: var(--foreground); font: inherit; font-size: .74rem; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; min-width: 0; }
+.zl-item { z-index: 2; position: relative; margin: 2px 1px; padding: .1rem .4rem; border-radius: 5px; border: 1px solid var(--border); background: var(--background); color: var(--foreground); font: inherit; font-size: .74rem; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; min-width: 0; }
 .zl-item:hover, .zl-item:focus-visible { border-color: var(--brand-orange); outline: none; box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-orange) 35%, transparent); }
 .zl-item.b-violett { background: var(--violet-soft); border-color: color-mix(in srgb, var(--violet-text) 30%, transparent); }
 .zl-item.b-warnung { background: var(--warning-soft); border-color: color-mix(in srgb, var(--warning) 30%, transparent); }
@@ -356,3 +356,7 @@ dialog.breit { max-width: 760px; }
 .sj-tabelle input[type="date"] { font: inherit; font-size: .85rem; padding: .25rem .35rem; border: 1px solid var(--input); border-radius: calc(var(--radius) - 4px); background: var(--background); color: var(--foreground); }
 .sj-tabelle td { white-space: nowrap; }
 .editor optgroup { font-style: normal; font-weight: 600; }
+.zl-ferien { z-index: 1; pointer-events: none; background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--success) 10%, transparent) 0 6px, transparent 6px 12px); border-left: 1px solid color-mix(in srgb, var(--success) 35%, transparent); border-right: 1px solid color-mix(in srgb, var(--success) 35%, transparent); position: relative; }
+.zl-ferien.frei { background: color-mix(in srgb, var(--success) 8%, transparent); border: none; }
+.zl-ferien span { position: absolute; top: 2px; left: 2px; font-size: .58rem; font-weight: 600; color: var(--success); writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; }
+.sj-tabelle input[type="text"] { font: inherit; font-size: .85rem; padding: .25rem .35rem; border: 1px solid var(--input); border-radius: calc(var(--radius) - 4px); background: var(--background); color: var(--foreground); min-width: 14rem; }

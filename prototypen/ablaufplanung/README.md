@@ -35,10 +35,15 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
     Schuljahresende – jeweils genau oder ± x Tage/Wochen/Monate (z. B. «2 Monate vor Schuljahresende»);
   - wiederkehrend: jedes Trimester, Semester, Quartal (Beginn, Ende oder ganzer Abschnitt, ± Tage), monatlich
     (Tag oder letzter Tag), wöchentlich (Wochentag), täglich, alle Wochentage (Mo–Fr), Wochenende (Sa–So),
-    Arbeitstage (Mo–Fr ohne Feiertage Kanton Zürich, Ostern berechnet).
+    Arbeitstage (Mo–Fr ohne Feiertage Kanton Zürich, Ostern berechnet), Schultage (ohne Ferien und schulfreie Tage);
+  - Ferienbeginn und -ende (Herbst-, Weihnachts-, Sport-, Frühlings-, Sommerferien) als Bezugstermine;
+  - Ferienregel je Ereignis: fällt ein Termin auf einen Nicht-Schultag → beibehalten, auf den letzten Schultag davor,
+    auf den ersten Schultag danach oder auslassen.
   - **Schuljahresdaten** je Schuljahr pflegbar (Schuljahreswechsel, -beginn, Semesterende, Semesterwechsel,
     Schuljahresende, Trimestergrenzen) mit Plausibilitätsprüfung; sie steuern die Schuljahres-, Semester- und
-    Trimesterregeln. Serien (täglich bis wöchentlich) erscheinen als eine Zeile mit dem nächsten Vorkommen. Ansichten Zeitleiste (Bereiche × Kalenderwochen, Kalender- oder
+    Trimesterregeln. **Ferien und schulfreie Tage** je Schuljahr pflegbar (Ferien, schulfrei, Anlass), mit Anzahl
+    Schultage; Testdaten aus dem öffentlichen Ferienplan der Sekundarschulgemeinde Bülach 2025/26–2028/29 (auf Wunsch
+    der Projektleitung, Ausnahme zur Regel «keine echten Schuldaten»). In der Zeitleiste schraffiert. Serien (täglich bis wöchentlich) erscheinen als eine Zeile mit dem nächsten Vorkommen. Ansichten Zeitleiste (Bereiche × Kalenderwochen, Kalender- oder
   Schuljahr), Liste und Quartale (wie die Jahresplanung auf dem Flipchart); Filter nach Bereich, Zuständigkeit, Quelle.
   Ein Ereignis kann mit einer **Ablaufvorlage verknüpft** werden; «Ablauf starten» übernimmt das Datum des Ereignisses
   als Stichtag (Beispiel: Vorlage «Beschaffung Geräte»). Anstehende Termine erscheinen in Übersicht und «Meine Aufgaben».
@@ -60,8 +65,9 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
 - Vikariate und Schulsozialarbeit (Zugriff auf SuS-Daten) als eigene Vorlagen.
 - Jahresplanung: Rolle «LB» (Bezeichnung offen); Zuordnung der Spalten zu den Flow-Rollen (TICTS/PICTS/VT → ICT,
   LB → Ressortvorstand) für «Meine Termine».
-- Schuljahresdaten: Beispielwerte; Trimester an der Schule überhaupt üblich? «Arbeitstage» ohne Schulferien
-  (Verwaltung arbeitet in den Ferien) – oder zusätzlich eine Regel «Schultage»?
+- Schuljahresdaten: Semester- und Trimestergrenzen sind Annahmen (Trimester nicht üblich, nur der Vollständigkeit
+  halber). Entschieden 2026-11-19: Ferien werden benötigt; «Arbeitstage» bleiben ohne Ferien (Verwaltung),
+  «Schultage» ohne Ferien und schulfreie Tage.
 - Kalender: Teilaufgaben als eigene Ablaufschritte führen? Automatisch starten, wenn ein verknüpftes Ereignis näher rückt?
 - Digitale Aktenführung ab 1.1.2029: Aufrufprotokoll als Teil des Personaldossiers?
 

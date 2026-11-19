@@ -6,8 +6,8 @@
 (function () {
   "use strict";
 
-  const SPEICHER = "eduksx-flow-prototyp-v3";
-  const VERSION = "0.3.0";
+  const SPEICHER = "eduksx-flow-prototyp-v4";
+  const VERSION = "0.4.0";
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
 
