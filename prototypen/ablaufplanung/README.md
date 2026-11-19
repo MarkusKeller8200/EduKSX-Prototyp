@@ -16,6 +16,24 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
 - **Ablaufvorlagen** mit Schritten: Bezeichnung, verantwortliche Rolle, Frist relativ zum Stichtag (`T−21`),
   Vorgänger («erst nach»), Bedingung (z. B. nur für Klassenlehrpersonen) und genau ein **Aufruf** eines Vorgangs.
   Darstellung als Liste und als **Ablaufbild** (Bahnen je Rolle, Reihenfolge von links nach rechts).
+- **45 Ablaufvorlagen in Gruppen**, jeder Schritt mit **Quellenangabe** (Gesetz und Paragraf, Merkblatt, interne
+  Grundlage; Links im Quellenverzeichnis je Vorlage; «ZU PRÜFEN» für gemeindeeigene Regelungen):
+  - Gemeinde: Gemeindeversammlung (GG §§ 6, 17–19, Checkliste und Leitfaden des Gemeindeamts)
+  - Schulbehörde: ordentliche Sitzung, Antrag/Geschäft, Zirkularbeschluss, Präsidialbeschluss (GG §§ 6, 39–41)
+  - Rechnungsprüfungskommission: Prüfung Jahresrechnung, Prüfung Budget (GG §§ 58–59, 101, 128; Merkblatt Budget)
+  - Schulleitung: Schulleitungskonferenz
+  - Finanzen: Budget, Jahresrechnung, Investition (GG §§ 95–96, 99, 101–108, 115, 125, 128; VGG §§ 13, 20–21)
+  - Lernende: Eintritt, Austritt, Mutation Personenangaben, Ein-/Umteilung, Zahnarzt- und Arztgutscheine
+    (VSG §§ 3, 50; VSV § 8; GesG § 51; VSVZ § 7; FD 4.4.1, 6.1.x)
+  - Personal: Anstellung kantonal/kommunal Ein- und Austritt, Mitarbeiterbeurteilung, Mitarbeitergespräch,
+    Mutationen, Vikariat kantonal/kommunal, provisorische Anstellung, Unfall (Bagatell, > 3 Tage, kantonal),
+    Krankheit (LPG §§ 3, 7, 7 a, 8, 20, 25; LPVO §§ 4, 23, 24, 30; VVO §§ 11, 13, 21–25, 30, 99, 100, 136–139;
+    PG §§ 14, 17; UVG Art. 45; Informationen des Volksschulamts)
+  - Infrastruktur: Schulraumprognose, Schulraum für Dritte (FD 1.2.7, 1.2.8, 1.2.11, 2.6)
+  - ICT: Hardwarebeschaffung Schuljahreswechsel und unterjährig, Arbeitsplatz, Klassenzimmerausrüstung, Lehrmittel,
+    Anwendungen/Schulsoftware, Onboarding und Offboarding LP/MA (Jahresplanung, Master-Checkliste, Jahreskalender ICT)
+  Externe Beteiligte (Gemeindeversammlung, Volksschulamt, Mitarbeitende, Erziehungsberechtigte) erscheinen als Rollen;
+  ihre Schritte bestätigt die zuständige Stelle («Eingang bestätigen»). Neues (geplantes) Modul EduKSX-Finance.
 - **Vorgangsregister:** Jedes Modul meldet seine Vorgänge mit Parametern, Ergebnis und Antwortart («sofort» oder
   «mit Rückmeldung»). Flow kennt nur diese Verträge. Module im Prototyp: Core, Ident, Connect, Staffing, Time, Shop.
 - **Platzhalter und Verkettung:** Parameter nutzen Kontextfelder (`{person}`, `{stichtag-14}`) und Ergebnisse
@@ -69,6 +87,9 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
   halber). Entschieden 2026-11-19: Ferien werden benötigt; «Arbeitstage» bleiben ohne Ferien (Verwaltung),
   «Schultage» ohne Ferien und schulfreie Tage.
 - Kalender: Teilaufgaben als eigene Ablaufschritte führen? Automatisch starten, wenn ein verknüpftes Ereignis näher rückt?
+- Quellen «ZU PRÜFEN» (42 Schritte): Geschäftsordnung der Schulpflege, Personalverordnung, Gemeindeordnung
+  (Finanzkompetenzen), Submissionsschwellen, Paragrafen VSV/IDG/VGG § 39. Recherchestand 19.11.2026, keine
+  Rechtsberatung. Revision PG § 17 (Kündigungsfristen) hängig.
 - Digitale Aktenführung ab 1.1.2029: Aufrufprotokoll als Teil des Personaldossiers?
 
 ## Ergebnis

@@ -6,8 +6,8 @@
 (function () {
   "use strict";
 
-  const SPEICHER = "eduksx-flow-prototyp-v4";
-  const VERSION = "0.4.0";
+  const SPEICHER = "eduksx-flow-prototyp-v5";
+  const VERSION = "0.5.0";
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
 
@@ -144,6 +144,15 @@
         stundenplan: "zugestellt",
         rechte: `Gruppe «${lauf.kontext.funktion || "–"}»`,
         befund: "keine Abweichungen",
+        geschaeft: `G-${jahr}-${nr()}`,
+        beschluss: `B-${jahr}-${nr()}`,
+        publikation: `publiziert ${datumKurz(S.heute)}`,
+        lernende: `S-${nr()}`,
+        inventar: `INV-${nr()}`,
+        kredit: "Budgetkredit vorhanden",
+        stimmen: "einstimmig angenommen",
+        eingang: `bestätigt ${datumKurz(S.heute)}`,
+        dokument: `DOK-${nr()}`,
       }[k] || "ja";
     });
     return out;
@@ -241,6 +250,7 @@
     v.schritte.forEach((s) => {
       const name = `«${s.titel}»`;
       if (!s.rolle) m.push(["fehler", `${name}: keine verantwortliche Rolle.`]);
+      if (!String(s.quelle || "").trim()) m.push(["warnung", `${name}: Quellenangabe fehlt.`]);
       (s.nach || []).forEach((n) => { if (!ids.has(n)) m.push(["fehler", `${name}: Vorgänger ${n} gibt es nicht.`]); });
       if (vorfahren(v, s.id).has(s.id)) m.push(["fehler", `${name}: Kreis in der Reihenfolge – der Schritt hängt von sich selbst ab.`]);
       (s.nach || []).forEach((n) => { const p = v.schritte.find((x) => x.id === n); if (p && p.tage > s.tage) m.push(["warnung", `${name} (${tKurz(s.tage)}) ist früher fällig als sein Vorgänger «${p.titel}» (${tKurz(p.tage)}).`]); });
@@ -333,6 +343,25 @@
     const v = vorgang(s.aktion.vorgang);
     return `<span class="aufruf"><span class="modul">${m ? "EduKSX-" + esc(m.name) : "?"}</span> ${esc(v ? v.titel : s.aktion.vorgang)}</span>`;
   }
+  /** Quellenangabe mit Links auf bekannte Quellen und Markierung «ZU PRÜFEN». */
+  function quelleHtml(q) {
+    if (!q) return `<span class="badge warnung">⚠ Quelle fehlt</span>`;
+    let h = esc(q);
+    const QV = D.QUELLENVERZEICHNIS || {};
+    Object.keys(QV).sort((x, y) => y.length - x.length).forEach((k) => {
+      if (!QV[k][1]) return;
+      const re = new RegExp(`(^|[\\s(;,])(${k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})(?=[\\s§,;)]|$)`);
+      h = h.replace(re, (m, vor, key) => `${vor}<a href="${esc(QV[k][1])}" target="_blank" rel="noopener" title="${esc(QV[k][0])}">${key}</a>`);
+    });
+    return h.replace(/ZU PRÜFEN/g, '<span class="zupruefen">ZU PRÜFEN</span>');
+  }
+  function quellenVerzeichnis(schritte) {
+    const QV = D.QUELLENVERZEICHNIS || {};
+    const alle = schritte.map((s) => s.quelle || "").join(" ; ");
+    const genutzt = Object.keys(QV).filter((k) => new RegExp(`(^|[\\s(;,])${k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?=[\\s§,;)]|$)`).test(alle));
+    if (!genutzt.length) return "";
+    return `<details class="gefaess" style="margin-top:1rem"><summary><span><strong>Quellenverzeichnis</strong> (${genutzt.length})</span><span class="small muted">${schritte.filter((s) => /ZU PRÜFEN/.test(s.quelle || "")).length} Schritte mit «ZU PRÜFEN»</span></summary><div class="inhalt"><ul class="infoliste">${genutzt.map((k) => `<li><strong>${esc(k)}</strong> – ${QV[k][1] ? `<a href="${esc(QV[k][1])}" target="_blank" rel="noopener">${esc(QV[k][0])}</a>` : esc(QV[k][0]) + ' <span class="small muted">(Grundlage im Prototyp)</span>'}</li>`).join("")}</ul><p class="small muted">Stand der Recherche 19.11.2026, ohne Gewähr – keine Rechtsberatung. «ZU PRÜFEN»: gemeindeeigene Regelung (Gemeindeordnung, Geschäftsordnung, Personalverordnung) oder Paragraf noch zu verifizieren.</p></div></details>`;
+  }
   const fortschritt = (lauf) => { const n = lauf.schritte.length, e = lauf.schritte.filter((x) => ERLEDIGT.includes(x.status)).length; return [e, n, Math.round((e / n) * 100)]; };
   const balken = (p) => `<div class="balken" role="img" aria-label="${p} Prozent erledigt"><span style="width:${p}%"></span></div>`;
   const laufVon = (id) => S.laeufe.find((l) => l.id === id);
@@ -411,7 +440,7 @@
       const zahl = n[0] === "aufgaben" && aufgaben ? ` <span class="zaehler" aria-label="${aufgaben} offen">${aufgaben}</span>` : "";
       return `<li><a href="#/${n[0]}" ${aktiv ? 'aria-current="page"' : ""}>${ICONS[n[0]]}<span>${esc(n[1])}</span>${zahl}</a></li>`;
     }).join("");
-    const rollen = Object.entries(ROLLEN).filter(([k]) => !["LP", "SPr"].includes(k)).map(([k, v]) => `<option value="${k}" ${k === S.rolle ? "selected" : ""}>${esc(v)}</option>`).join("");
+    const rollen = Object.entries(ROLLEN).filter(([k]) => !["LP", "GV", "VSA", "MA", "ELT"].includes(k)).map(([k, v]) => `<option value="${k}" ${k === S.rolle ? "selected" : ""}>${esc(v)}</option>`).join("");
     const dunkel = document.documentElement.classList.contains("dark");
     return `
       <header class="kopf">
@@ -444,13 +473,13 @@
   }
 
   function aktionKnopf(l, s) {
-    const meine = s.rolle === S.rolle;
+    const meine = s.rolle === S.rolle || (D.EXTERN || []).includes(s.rolle);
     const titel = meine ? "" : `title="Nur ${esc(ROLLEN[s.rolle])} – Rolle oben rechts wechseln"`;
     const dis = meine ? "" : "disabled";
     const d = `data-lauf="${l.id}" data-id="${s.id}"`;
     if (s.status === "bereit") return s.aktion
       ? `<button class="btn klein primaer" data-aktion="ausfuehren" ${d} ${dis} ${titel}>▶ Aufruf an EduKSX-${esc((modulVon(s.aktion.vorgang) || { name: "?" }).name)}</button>`
-      : `<button class="btn klein primaer" data-aktion="ausfuehren" ${d} ${dis} ${titel}>✓ Erledigt melden</button>`;
+      : `<button class="btn klein primaer" data-aktion="ausfuehren" ${d} ${dis} ${titel}>${(D.EXTERN || []).includes(s.rolle) ? "✓ Eingang bestätigen" : "✓ Erledigt melden"}</button>`;
     if (s.status === "laeuft") return `<button class="btn klein" data-aktion="rueckmeldung" ${d} title="Simuliert die Rückmeldung des Moduls (z. B. Unterschrift eingegangen)">↩ Rückmeldung simulieren</button>`;
     if (s.status === "fehler") return `<button class="btn klein" data-aktion="nochmals" ${d}>↻ Erneut versuchen</button>`;
     if (s.status === "geplant") return `<button class="btn klein" data-aktion="jetzt" ${d} ${dis} ${titel} title="Automatischen Schritt vor der Frist auslösen">▶ Jetzt auslösen</button>`;
@@ -525,7 +554,7 @@
     const kontext = Object.entries(l.kontext).map(([k, w]) => `<div class="feldzeile"><span class="muted">${esc(k)}</span><span>${esc(k === "stichtag" ? datum(w) : w)}</span></div>`).join("");
     const zeilen = l.schritte.map((s, i) => `<tr class="${s.status === "uebersprungen" ? "blass" : ""}">
       <td class="zahl">${i + 1}</td>
-      <td><strong>${esc(s.titel)}</strong>${s.bedingung && s.bedingung.feld ? `<div class="small muted">Bedingung: ${esc(bedingungText(s.bedingung))}</div>` : ""}${s.fehler && s.status === "fehler" ? `<div class="small" style="color:var(--destructive)">✕ ${esc(s.fehler)}</div>` : ""}</td>
+      <td><strong>${esc(s.titel)}</strong>${s.quelle ? `<div class="quelle">📖 ${quelleHtml(s.quelle)}</div>` : ""}${s.bedingung && s.bedingung.feld ? `<div class="small muted">Bedingung: ${esc(bedingungText(s.bedingung))}</div>` : ""}${s.fehler && s.status === "fehler" ? `<div class="small" style="color:var(--destructive)">✕ ${esc(s.fehler)}</div>` : ""}</td>
       <td>${rolleBadge(s.rolle)}${s.fd ? `<div class="small muted">FD ${esc(s.fd)}</div>` : ""}</td>
       <td>${datumKurz(fristVon(l, s))}<div class="small muted">${tKurz(s.tage)}</div></td>
       <td>${aufrufText(s)}${s.param ? `<div class="param">${Object.entries(s.param).map(([k, w]) => `${esc(k)}: ${esc(w)}`).join("<br>")}</div>` : ""}</td>
@@ -571,7 +600,7 @@
     return `
       <div class="seitenkopf"><div><h1>Ablauf starten</h1><p class="muted">Vorlage wählen, Angaben erfassen – ${wordmark("Flow")} rechnet die Fristen vom Stichtag aus und lässt Schritte weg, deren Bedingung nicht zutrifft.</p></div></div>
       ${START_EREIGNIS[v.id] ? `<p class="meldung info">Aus dem Jahreskalender: <strong>${esc(START_EREIGNIS[v.id].titel)}</strong> – Stichtag vom Ereignis übernommen.</p>` : ""}
-      <div class="formzeile"><label class="feld">Vorlage<select data-aktion="start-vorlage">${frei.map((x) => `<option value="${x.id}" ${x.id === v.id ? "selected" : ""}>${esc(x.titel)} (v${x.version})</option>`).join("")}</select></label></div>
+      <div class="formzeile"><label class="feld">Vorlage<select data-aktion="start-vorlage">${[...new Set(frei.map((x) => x.gruppe || "Weitere"))].map((g) => `<optgroup label="${esc(g)}">${frei.filter((x) => (x.gruppe || "Weitere") === g).map((x) => `<option value="${x.id}" ${x.id === v.id ? "selected" : ""}>${esc(x.titel)} (v${x.version})</option>`).join("")}</optgroup>`).join("")}</select></label></div>
       <div class="karte" style="margin-bottom:1rem"><p class="small muted">${esc(v.beschreibung)}</p><div class="formzeile">${v.felder.map(feld).join("")}</div>
         ${knapp ? `<p class="meldung warnung">⚠ Einzelne Fristen liegen schon in der Vergangenheit – diese Schritte sind ab Start überfällig.</p>` : ""}
         <button class="btn primaer" data-aktion="starten" data-vorlage="${v.id}" ${E.person && E.stichtag ? "" : "disabled"}>▶ Ablauf starten</button></div>
@@ -597,15 +626,18 @@
 
   function seiteVorlagen() {
     const darf = S.rolle === "SV";
-    const karten = S.vorlagen.map((v) => {
+    const gruppen = [...new Set(S.vorlagen.map((v) => v.gruppe || "Weitere"))];
+    const karte = (v) => {
       const m = pruefen(v);
       const f = m.filter((x) => x[0] === "fehler").length, w = m.filter((x) => x[0] === "warnung").length;
       const laufend = S.laeufe.filter((l) => l.vorlage === v.id && !l.abgeschlossen).length;
       return `<div class="karte"><div class="small muted">Version ${v.version} · ${v.schritte.length} Schritte · ${laufend} laufend</div><h3><a href="#/vorlage/${v.id}">${esc(v.titel)}</a></h3><p class="small">${esc(v.beschreibung)}</p>
         <div>${v.status === "freigegeben" ? `<span class="badge erfolg">✓ freigegeben</span>` : `<span class="badge warnung">✎ Entwurf</span>`} ${f ? `<span class="badge fehler">✕ ${f} Fehler</span>` : ""} ${w ? `<span class="badge warnung">⚠ ${w} Hinweise</span>` : ""}</div></div>`;
-    }).join("");
+    };
+    const karten = gruppen.map((g) => `<h2 class="gruppenkopf">${esc(g)} <span class="small muted">${S.vorlagen.filter((v) => (v.gruppe || "Weitere") === g).length}</span></h2><div class="karten">${S.vorlagen.filter((v) => (v.gruppe || "Weitere") === g).map(karte).join("")}</div>`).join("");
     return `<div class="seitenkopf"><div><h1>Ablaufvorlagen</h1><p class="muted">Vorlagen beschreiben, welche Schritte in welcher Reihenfolge nötig sind, wer zuständig ist und welchen Vorgang jeder Schritt aufruft. Prozessbeschriebe: Schulverwaltung bereitet vor (V), Ressortvorstand gibt frei (E) – Funktionendiagramm 1.1.5.</p></div>
-      <div class="aktionen"><button class="btn primaer" data-aktion="vorlage-neu" ${darf ? "" : "disabled title=\"Nur Schulverwaltung (V)\""}>＋ Neue Vorlage</button></div></div><div class="karten">${karten}</div>`;
+      <div class="aktionen"><button class="btn primaer" data-aktion="vorlage-neu" ${darf ? "" : "disabled title=\"Nur Schulverwaltung (V)\""}>＋ Neue Vorlage</button></div></div>
+      <p class="meldung info">Jeder Schritt nennt seine <strong>Quelle</strong> (Gesetz und Paragraf, Merkblatt des Gemeindeamts, Information des Volksschulamts oder interne Grundlage). «ZU PRÜFEN» kennzeichnet gemeindeeigene Regelungen (Gemeindeordnung, Geschäftsordnung, Personalverordnung) und noch nicht verifizierte Paragrafen. Keine Rechtsberatung.</p>${karten}`;
   }
 
   function seiteVorlage(id, reiter) {
@@ -624,6 +656,7 @@
       <td class="small">${(s.nach || []).map((n) => { const q = v.schritte.findIndex((x) => x.id === n); return q >= 0 ? "#" + (q + 1) : esc(n); }).join(", ") || "–"}</td>
       <td>${aufrufText(s)}${s.aktion ? `<div class="param">${Object.entries(s.aktion.param || {}).map(([k, w]) => `${esc(k)}: ${esc(w)}`).join("<br>")}</div>` : ""}</td>
       <td>${s.aktion ? (s.auto ? `<span class="badge violett">◷ automatisch</span>` : `<span class="badge info">● bestätigen</span>`) : `<span class="badge neutral">✋ von Hand</span>`}</td>
+      <td class="quelle">${quelleHtml(s.quelle)}</td>
       <td style="white-space:nowrap">${darf ? `<button class="btn klein" data-aktion="schritt-bearbeiten" data-id="${s.id}" aria-label="Bearbeiten">✎</button> <button class="btn klein" data-aktion="schritt-hoch" data-id="${s.id}" aria-label="Nach oben" ${i ? "" : "disabled"}>↑</button> <button class="btn klein" data-aktion="schritt-runter" data-id="${s.id}" aria-label="Nach unten" ${i < v.schritte.length - 1 ? "" : "disabled"}>↓</button> <button class="btn klein gefahr" data-aktion="schritt-loeschen" data-id="${s.id}" aria-label="Löschen">✕</button>` : ""}</td></tr>`).join("");
     const felder = v.felder.map((f) => `<tr><td><code>{${esc(f.key)}}</code></td><td>${esc(f.label)}</td><td>${esc(f.typ)}${f.werte ? `<div class="small muted">${esc(f.werte.join(", "))}</div>` : ""}</td></tr>`).join("");
     return `
@@ -641,9 +674,9 @@
         <button role="tab" aria-selected="${reiter === "liste"}" data-aktion="reiter" data-ziel="#/vorlage/${v.id}/liste">Schritte (${v.schritte.length})</button>
         <button role="tab" aria-selected="${reiter === "felder"}" data-aktion="reiter" data-ziel="#/vorlage/${v.id}/felder">Kontextfelder</button>
       </div>
-      ${reiter === "bild" ? `<p class="small muted">Bahnen = verantwortliche Rolle, von links nach rechts = Reihenfolge (Pfeil = «nach»). ${darf ? "Schritt anklicken zum Bearbeiten." : ""} Gestrichelt = nur unter Bedingung.</p>${ablaufbild(v.schritte)}`
+      ${reiter === "bild" ? `${quellenVerzeichnis(v.schritte)}<p class="small muted">Bahnen = verantwortliche Rolle, von links nach rechts = Reihenfolge (Pfeil = «nach»). ${darf ? "Schritt anklicken zum Bearbeiten." : ""} Gestrichelt = nur unter Bedingung.</p>${ablaufbild(v.schritte)}`
         : reiter === "felder" ? `<p class="small muted">Angaben beim Start eines Ablaufs. Sie stehen als Platzhalter in den Parametern zur Verfügung, dazu <code>{stichtag+N}</code>/<code>{stichtag-N}</code> und Ergebnisse früherer Schritte wie <code>{o5.benutzername}</code>.</p><div class="tabelle-wrap"><table><thead><tr><th>Platzhalter</th><th>Bezeichnung</th><th>Typ</th></tr></thead><tbody>${felder}</tbody></table></div>`
-        : `<div class="tabelle-wrap"><table><thead><tr><th class="zahl">#</th><th>Schritt</th><th>Wer</th><th>Frist</th><th>Nach</th><th>Aufruf</th><th>Ausführung</th><th></th></tr></thead><tbody>${zeilen}</tbody></table></div>`}`;
+        : `<div class="tabelle-wrap"><table><thead><tr><th class="zahl">#</th><th>Schritt</th><th>Wer</th><th>Frist</th><th>Nach</th><th>Aufruf</th><th>Ausführung</th><th>Quelle</th><th></th></tr></thead><tbody>${zeilen}</tbody></table></div>${quellenVerzeichnis(v.schritte)}`}`;
   }
 
   function seiteVorgaenge() {
@@ -688,7 +721,7 @@
   function editorOeffnen(vid, sid) {
     const v = vorlageVon(vid);
     if (S.rolle !== "SV") { ansage("Bearbeiten nur als Schulverwaltung."); return; }
-    const s = sid ? kopie(v.schritte.find((x) => x.id === sid)) : { id: neueId(v), titel: "", rolle: "SV", tage: 0, nach: [], aktion: null, auto: false, informiert: [], bedingung: null, fd: "" };
+    const s = sid ? kopie(v.schritte.find((x) => x.id === sid)) : { id: neueId(v), titel: "", rolle: "SV", tage: 0, nach: [], aktion: null, auto: false, informiert: [], bedingung: null, fd: "", quelle: "" };
     EDIT = { vid, neu: !sid, s };
     dialogZeichnen();
   }
@@ -712,6 +745,7 @@
       <form method="dialog" class="editor" data-glossary-ignore>
         <h2>${EDIT.neu ? "Neuer Schritt" : "Schritt bearbeiten"} <span class="small muted">${esc(s.id)} · ${esc(v.titel)}</span></h2>
         <label class="feld">Bezeichnung<input type="text" data-e="titel" value="${esc(s.titel)}" required style="width:100%"></label>
+        <label class="feld" style="margin-top:.5rem">Quelle (Gesetz, Paragraf, Merkblatt, interne Grundlage)<input type="text" data-e="quelle" value="${esc(s.quelle || "")}" placeholder="z. B. GG § 18 Abs. 2; Checkliste GV" style="width:100%"></label>
         <fieldset><legend>Zuständigkeit</legend>
           <div class="formzeile">
             <label class="feld">Funktionendiagramm<select data-e="fd"><option value="">– keine Zuordnung –</option>${D.FUNKTIONENDIAGRAMM.map((f) => `<option value="${f.nr}" ${f.nr === s.fd ? "selected" : ""}>${esc(f.nr + " " + f.titel)}</option>`).join("")}</select></label>
@@ -753,6 +787,7 @@
     const q = (k) => dlg.querySelector(`[data-e="${k}"]`);
     const s = EDIT.s;
     s.titel = q("titel").value;
+    s.quelle = q("quelle").value.trim();
     s.tage = Number(q("tage").value || 0);
     s.rolle = q("rolle").value;
     s.informiert = [...dlg.querySelectorAll('[data-e="informiert"]:checked')].map((x) => x.value);
@@ -879,7 +914,7 @@
       }
       case "vorlage-neu": {
         const id = "vorlage-" + S.zaehler++;
-        S.vorlagen.push({ id, titel: "Neue Ablaufvorlage", version: 1, status: "entwurf", stichtag: "Stichtag", beschreibung: "Noch zu beschreiben.",
+        S.vorlagen.push({ id, gruppe: "Weitere", titel: "Neue Ablaufvorlage", version: 1, status: "entwurf", stichtag: "Stichtag", beschreibung: "Noch zu beschreiben.",
           felder: [{ key: "person", label: "Name", typ: "text" }, { key: "funktion", label: "Funktion", typ: "auswahl", werte: D.FUNKTIONEN }, { key: "stichtag", label: "Stichtag", typ: "datum" }], schritte: [] });
         speichern(); location.hash = "#/vorlage/" + id + "/liste"; break;
       }

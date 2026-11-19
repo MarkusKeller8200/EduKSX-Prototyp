@@ -39,6 +39,10 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Flow 0.2.0: Menüpunkt **Jahreskalender** (Jahresplanung ICT-Prozesse, Master-Checkliste, Kalender Fachstelle
   ICT) mit Zeitleiste, Liste und Quartalsansicht, Zuständigkeit, Teilaufgaben, Status; Ereignisse lassen sich mit
   Ablaufvorlagen verknüpfen und starten den Ablauf mit ihrem Datum als Stichtag. Neue Vorlage «Beschaffung Geräte».
+- EduKSX-Flow 0.5.0: 41 neue Ablaufvorlagen (Gemeindeversammlung, Schulbehörde, RPK, Schulleitungskonferenz,
+  Finanzen, Lernende, Personal, Infrastruktur, ICT) mit Quellenangabe je Schritt und Quellenverzeichnis; Vorlagen nach
+  Gruppen; externe Rollen; Vorgänge für Geschäfte, Beschlüsse, Publikation, Lernende, Meldungen; geplantes Modul
+  EduKSX-Finance; Kalenderereignisse mit den neuen Vorlagen verknüpft.
 - EduKSX-Flow 0.4.0: Ferien und schulfreie Tage je Schuljahr (Testdaten Ferienplan Sekundarschulgemeinde Bülach
   2025/26–2028/29), Zeitregel «Schultage», Ferienbeginn/-ende als Bezugstermine, Ferienregel je Ereignis
   (beibehalten, vorziehen, nachholen, auslassen), Ferien in der Zeitleiste.
