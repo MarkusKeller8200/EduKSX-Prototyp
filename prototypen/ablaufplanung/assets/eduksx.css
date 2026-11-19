@@ -368,6 +368,8 @@ td.quelle { min-width: 14rem; }
 .zupruefen { font-weight: 700; color: var(--warning); background: var(--warning-soft); padding: 0 .25rem; border-radius: 3px; white-space: nowrap; }
 .gruppenkopf { margin: 1.25rem 0 .6rem; padding-bottom: .3rem; border-bottom: 1px solid var(--border); }
 
-/* Link zur Einstiegsseite der Prototypen */
-.zurueck { font-size: .85rem; text-decoration: none; padding: .25rem .6rem; border: 1px solid var(--border); border-radius: 999px; color: var(--link); white-space: nowrap; }
-.zurueck:hover { background: var(--muted); }
+/* Link zur Einstiegsseite der Prototypen (Menüsektion über «Übersicht») */
+.navi .gruppe:first-child { margin-top: 0; }
+.navi a.einstieg { color: var(--link); }
+.navi .trenner { border-bottom: 1px solid var(--border); margin: .4rem .7rem .2rem; }
+@media (max-width: 900px) { .navi .trenner { display: none; } }
