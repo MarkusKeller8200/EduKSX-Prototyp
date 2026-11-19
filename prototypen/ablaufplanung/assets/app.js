@@ -7,7 +7,8 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v5";
-  const VERSION = "0.5.0";
+  const VERSION = "0.5.1";
+  const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
 
@@ -444,6 +445,7 @@
     const dunkel = document.documentElement.classList.contains("dark");
     return `
       <header class="kopf">
+        <a class="zurueck" href="${EINSTIEG}" title="Zur Einstiegsseite aller EduKSX-Prototypen">← Alle Prototypen</a>
         <a class="marke" href="#/uebersicht">${ICON_FLOW}${wordmark("Flow")}</a>
         <span class="muted small">Ablaufplanung / Termine und ToDo</span>
         <div class="werkzeuge">
@@ -462,7 +464,7 @@
         <nav class="navi" aria-label="Hauptnavigation"><ul>${navi}</ul></nav>
         <main id="inhalt" tabindex="-1">${inhalt}</main>
       </div>
-      <footer class="fuss"><span>${wordmark("Flow")} · Prototyp ${VERSION} · in Entwicklung · <a href="../">Alle Prototypen</a> · Begriffe: <a href="https://glossary.eduksx.ch">EduKSX-Glossary</a> (CC BY 4.0)</span><span>Developed by ${WM_DEV}</span></footer>
+      <footer class="fuss"><span>${wordmark("Flow")} · Prototyp ${VERSION} · in Entwicklung · <a href="${EINSTIEG}">Alle Prototypen</a> · Begriffe: <a href="https://glossary.eduksx.ch">EduKSX-Glossary</a> (CC BY 4.0)</span><span>Developed by ${WM_DEV}</span></footer>
       <div class="sr-only" aria-live="polite" id="ansage"></div>`;
   }
 
