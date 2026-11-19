@@ -205,8 +205,16 @@
     qual: ["Qualität & Evaluation", "erfolg"],
     komm: ["Kommunikation & Eltern", "warnung"],
     digi: ["Digitale Verwaltung (DigiLex)", "neutral"],
+    betrieb: ["Betrieb & Support", "neutral"],
   };
-  const QUELLEN = { plan: "Jahresplanung ICT-Prozesse", liste: "Master-Checkliste ICT-Jahreszyklus", kw: "Jahreskalender Fachstelle ICT" };
+  const QUELLEN = { plan: "Jahresplanung ICT-Prozesse", liste: "Master-Checkliste ICT-Jahreszyklus", kw: "Jahreskalender Fachstelle ICT", beispiel: "Beispiele Zeitregeln (Prototyp)" };
+
+  // Schuljahresdaten (Beispielwerte, je Schule zu pflegen): steuern Schuljahres-, Semester- und Trimester-Regeln
+  const SCHULJAHRE = [
+    { name: "2025/26", wechsel: "2025-08-01", beginn: "2025-08-18", semesterende1: "2026-01-30", semesterwechsel: "2026-02-02", ende: "2026-07-10", trimester2: "2025-11-17", trimester3: "2026-03-09" },
+    { name: "2026/27", wechsel: "2026-08-01", beginn: "2026-08-17", semesterende1: "2027-01-29", semesterwechsel: "2027-02-01", ende: "2027-07-16", trimester2: "2026-11-16", trimester3: "2027-03-08" },
+    { name: "2027/28", wechsel: "2027-08-01", beginn: "2027-08-23", semesterende1: "2028-02-04", semesterwechsel: "2028-02-07", ende: "2028-07-14", trimester2: "2027-11-22", trimester3: "2028-03-13" },
+  ];
   const r = (txt) => Object.fromEntries(String(txt || "").split(/\s+/).filter(Boolean).map((x) => x.split(":")));
   const EREIGNISSE = [];
   let nr = 0;
@@ -278,7 +286,7 @@
   e("SuS-Logins 1. Klasse", "sus", { von: "07-01", bis: "07-02" }, "TICTS:V", "liste", { teil: [["Liste für Import erstellen", "07-01"], ["Liste für Import an Datenverarbeitung senden", "07-02"], ["Logins Lehrmittelportal erstellen", "07-01"], ["Logins Lern-App erstellen", "07-01"], ["Zugangsliste an Klassenlehrpersonen senden", "07-02"]] });
   e("Hardware-Rotation mit der Sekundarschule", "beschaffung", { von: "07-01", bis: "09-30" }, "TICTS:V", "liste", { teil: [["Pool-Geräte identifizieren", "07-01"], ["Austrittsgeräte SuS zurücknehmen und zurücksetzen", "07-15"], ["Inventar: Mutationen und Standorte anpassen", "07-15"], ["Geräte an die Sekundarschule übergeben", "07-31"], ["Altgeräte der Sekundarschule übernehmen", "08-01"], ["Bestand prüfen und Altgeräte zuteilen", "08-30"]] });
   e("Einführung SuS-Geräte (5. Klasse)", "sus", { von: "07-01", bis: "09-30" }, "PICTS:V", "liste", { teil: [["Info an Klassenlehrpersonen mit Terminauswahl", "07-01"], ["Elternschreiben und Ferienregelung drucken", "09-01"], ["Einführung je Schulhaus", "09-30"]] });
-  e("Schuljahreswechsel Verzeichnisdienst", "sjw", { am: "08-01" }, "TICTS:V", "liste", { teil: [["Konten Lehrpersonen verschieben", "08-01"], ["Konten SuS verschieben", "08-01"]] });
+  e("Schuljahreswechsel Verzeichnisdienst", "sjw", { regel: "stichtag", anker: "schuljahreswechsel", versatz: 0, einheit: "tage" }, "TICTS:V", "liste", { teil: [["Konten Lehrpersonen verschieben", "08-01"], ["Konten SuS verschieben", "08-01"]] });
   e("Schuljahreswechsel Lernstandsplattform", "sjw", { von: "08-15", bis: "08-30" }, "TICTS:V", "liste", { teil: [["Klassen erstellen", "08-15"], ["Pakete für Lehrpersonen freischalten", "08-30"]] });
   e("Office-Lizenzen", "apps", { von: "09-01", bis: "10-31" }, "TICTS:V SV:M", "liste", { teil: [["Anzahl Mitarbeitende ermitteln (LP, Gestaltungspool, SSA)", "09-01"], ["Anzahl Lizenzen an Lizenzpartner melden", "09-15"], ["Lizenzen bei Bedarf erweitern", "09-15"], ["Lizenzen aktivieren", "10-01"]] });
   e("Elternabend Medienbildung (Kindergarten)", "komm", { von: "09-01", bis: "11-30" }, "PICTS:V", "liste", { teil: [["Aktuelle Ausschreibung anfordern", "09-01"], ["Einladung vorbereiten", "09-15"], ["Einladung an Eltern und LP versenden", "10-01"], ["Hinweis an LP: bei Eltern werben", "10-15"], ["Details mit externer Fachstelle klären", "10-15"], ["Raumeinrichtung mit Hausdienst besprechen", "11-01"], ["Erinnerung an Eltern versenden", "11-01"], ["Durchführung Elternabend", "11-30"]] });
@@ -357,6 +365,23 @@
   kw(44, "Erneuerung Geräte älter als 5 Jahre (Notebooks, Tablets)", "beschaffung", { flow: "beschaffung" });
   kw(45, "Offizieller Umstufungstermin", "sus");
 
+  // Beispiele für die übrigen Zeitregeln (Schuljahrestermine und Wiederholungen)
+  const bsp = (titel, bereich, zeit, rollen, weitere) => e(titel, bereich, zeit, rollen, "beispiel", weitere);
+  bsp("Onboarding neue Lehrpersonen: Abläufe starten", "ma", { regel: "stichtag", anker: "schuljahresbeginn", versatz: -6, einheit: "wochen" }, "SL:V SV:M TICTS:M", { flow: "onboarding" });
+  bsp("Klassenlisten fürs neue Schuljahr bereitstellen", "sjw", { regel: "stichtag", anker: "schuljahresende", versatz: -2, einheit: "monate" }, "SV:V TICTS:M");
+  bsp("Konten des alten Schuljahres archivieren", "ds", { regel: "stichtag", anker: "schuljahreswechsel", versatz: 0, einheit: "tage" }, "TICTS:V ISV:M");
+  bsp("Erinnerung Notenabgabe an Lehrpersonen", "komm", { regel: "stichtag", anker: "semesterende", versatz: -14, einheit: "tage" }, "SL:V PICTS:M");
+  bsp("Info zum Semesterwechsel an Lehrpersonen", "komm", { regel: "stichtag", anker: "semesterwechsel", versatz: -7, einheit: "tage" }, "PICTS:V SL:M");
+  bsp("Trimesterbericht ICT an die Schulleitung", "qual", { regel: "trimester", bezug: "ende", versatz: -5 }, "PICTS:V SL:M");
+  bsp("Gerätecheck Klassensätze", "beschaffung", { regel: "semester", bezug: "beginn", versatz: 14 }, "PICTS:V TICTS:M");
+  bsp("ICT-Quartalsbericht an den Ressortvorstand", "qual", { regel: "quartal", bezug: "ende", versatz: 0 }, "VT:V LB:M");
+  bsp("Lizenz- und Kontenbericht", "apps", { regel: "monatlich", tag: "letzter" }, "TICTS:V SV:M");
+  bsp("ICT-Sprechstunde für Lehrpersonen", "wb", { regel: "woechentlich", wochentag: 3 }, "PICTS:V");
+  bsp("Systemmeldungen und Monitoring sichten", "betrieb", { regel: "taeglich" }, "TICTS:V");
+  bsp("Support-Tickets sichten und zuweisen", "betrieb", { regel: "wochentage" }, "TICTS:V PICTS:M");
+  bsp("Wartungsfenster: Updates einspielen", "betrieb", { regel: "wochenende" }, "VT:V TICTS:M");
+  bsp("Backup-Protokoll prüfen", "ds", { regel: "arbeitstage" }, "TICTS:V ISV:M");
+
   // Laufende Abläufe (Stichtage relativ zum heutigen Tag, damit der Prototyp immer «aktuell» wirkt)
   const LAEUFE = [
     { vorlage: "onboarding", tageBisStichtag: 25, kontext: { person: "Lea Muster", funktion: "Klassenlehrperson", pensum: 80 }, erledigt: ["o1", "o2", "o3", "o4", "o12", "o14"] },
@@ -364,5 +389,5 @@
     { vorlage: "onboarding", tageBisStichtag: 70, kontext: { person: "Noah Probst", funktion: "Klassenassistenz", pensum: 40 }, erledigt: [] },
   ];
 
-  window.FLOW_DATEN = { ROLLEN, FUNKTIONENDIAGRAMM, MODULE, ZIELSYSTEME, FUNKTIONEN, VORLAGEN, LAEUFE, KAL_ROLLEN, KAL_ZUORDNUNG, BEREICHE, QUELLEN, EREIGNISSE };
+  window.FLOW_DATEN = { ROLLEN, FUNKTIONENDIAGRAMM, MODULE, ZIELSYSTEME, FUNKTIONEN, VORLAGEN, LAEUFE, KAL_ROLLEN, KAL_ZUORDNUNG, BEREICHE, QUELLEN, EREIGNISSE, SCHULJAHRE };
 })();

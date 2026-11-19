@@ -39,6 +39,10 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Flow 0.2.0: Menüpunkt **Jahreskalender** (Jahresplanung ICT-Prozesse, Master-Checkliste, Kalender Fachstelle
   ICT) mit Zeitleiste, Liste und Quartalsansicht, Zuständigkeit, Teilaufgaben, Status; Ereignisse lassen sich mit
   Ablaufvorlagen verknüpfen und starten den Ablauf mit ihrem Datum als Stichtag. Neue Vorlage «Beschaffung Geräte».
+- EduKSX-Flow 0.3.0: Zeitregeln im Jahreskalender – Schuljahrestermine (Schuljahreswechsel, Semesterende,
+  Semesterwechsel, Schuljahresende, ± Tage/Wochen/Monate), jedes Trimester/Semester/Quartal, monatlich, wöchentlich,
+  täglich, Wochentage, Wochenende, Arbeitstage (Feiertage ZH); Schuljahresdaten je Schuljahr pflegbar; Serien als
+  eine Zeile bzw. ein Balken; Filter nach Zeitregel; Beispielereignisse für jede Regel.
 - EduKSX-Flow 0.2.1: Untertitel «Ablaufplanung / Termine und ToDo» (Kopfzeile, Einstiegsseite).
 - Hilfe mit LPG (Stand 1.1.2022), LPVO (Stand 1.4.2026) und VVO (Stand 1.4.2026, Verweise aus der LPVO verlinkt), Suche und direkten Verweisen aus der Anwendung
   (`assets/recht.js`, erzeugt mit `tools/recht_aufbereiten.py`).

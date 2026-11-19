@@ -29,8 +29,16 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
 - **Laufende Abläufe:** Start mit Kontext (Name, Funktion, Stichtag …), Vorschau der Fristen und entfallenden Schritte;
   danach Aufgabenliste je Rolle, automatische Schritte (laufen bei erreichter Frist), Rückmeldungen, Fehler mit
   «Erneut versuchen», Mitteilungen an informierte Rollen, Aufrufprotokoll.
-- **Jahreskalender:** wiederkehrende und einmalige Ereignisse (Quartal, Kalenderwoche, Datum, Zeitraum) mit
-  Zuständigkeit (A/E/V/M), Teilaufgaben und Status. Ansichten Zeitleiste (Bereiche × Kalenderwochen, Kalender- oder
+- **Jahreskalender:** Termine und ToDos mit Zuständigkeit (A/E/V/M), Teilaufgaben und Status. Zeitregeln:
+  - einmal pro Jahr: Quartal, Kalenderwoche, Datum, Zeitraum (auch «nur 2026»);
+  - Schuljahr: Schuljahreswechsel, Schuljahresbeginn, Semesterende (1. oder beide Semester), Semesterwechsel,
+    Schuljahresende – jeweils genau oder ± x Tage/Wochen/Monate (z. B. «2 Monate vor Schuljahresende»);
+  - wiederkehrend: jedes Trimester, Semester, Quartal (Beginn, Ende oder ganzer Abschnitt, ± Tage), monatlich
+    (Tag oder letzter Tag), wöchentlich (Wochentag), täglich, alle Wochentage (Mo–Fr), Wochenende (Sa–So),
+    Arbeitstage (Mo–Fr ohne Feiertage Kanton Zürich, Ostern berechnet).
+  - **Schuljahresdaten** je Schuljahr pflegbar (Schuljahreswechsel, -beginn, Semesterende, Semesterwechsel,
+    Schuljahresende, Trimestergrenzen) mit Plausibilitätsprüfung; sie steuern die Schuljahres-, Semester- und
+    Trimesterregeln. Serien (täglich bis wöchentlich) erscheinen als eine Zeile mit dem nächsten Vorkommen. Ansichten Zeitleiste (Bereiche × Kalenderwochen, Kalender- oder
   Schuljahr), Liste und Quartale (wie die Jahresplanung auf dem Flipchart); Filter nach Bereich, Zuständigkeit, Quelle.
   Ein Ereignis kann mit einer **Ablaufvorlage verknüpft** werden; «Ablauf starten» übernimmt das Datum des Ereignisses
   als Stichtag (Beispiel: Vorlage «Beschaffung Geräte»). Anstehende Termine erscheinen in Übersicht und «Meine Aufgaben».
@@ -52,6 +60,8 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
 - Vikariate und Schulsozialarbeit (Zugriff auf SuS-Daten) als eigene Vorlagen.
 - Jahresplanung: Rolle «LB» (Bezeichnung offen); Zuordnung der Spalten zu den Flow-Rollen (TICTS/PICTS/VT → ICT,
   LB → Ressortvorstand) für «Meine Termine».
+- Schuljahresdaten: Beispielwerte; Trimester an der Schule überhaupt üblich? «Arbeitstage» ohne Schulferien
+  (Verwaltung arbeitet in den Ferien) – oder zusätzlich eine Regel «Schultage»?
 - Kalender: Teilaufgaben als eigene Ablaufschritte führen? Automatisch starten, wenn ein verknüpftes Ereignis näher rückt?
 - Digitale Aktenführung ab 1.1.2029: Aufrufprotokoll als Teil des Personaldossiers?
 

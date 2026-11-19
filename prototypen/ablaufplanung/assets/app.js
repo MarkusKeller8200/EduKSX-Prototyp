@@ -6,8 +6,8 @@
 (function () {
   "use strict";
 
-  const SPEICHER = "eduksx-flow-prototyp-v2";
-  const VERSION = "0.2.1";
+  const SPEICHER = "eduksx-flow-prototyp-v3";
+  const VERSION = "0.3.0";
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
 
@@ -44,7 +44,8 @@
       erreichbar: Object.fromEntries(D.MODULE.map((m) => [m.key, true])),
       ereignisse: kopie(D.EREIGNISSE),
       kalErledigt: {},
-      kal: { modus: "kalender", jahr: Number(isoHeute().slice(0, 4)), bereich: "", rolle: "", quelle: "", nurFlow: false, nurOffen: false },
+      schuljahre: kopie(D.SCHULJAHRE),
+      kal: { modus: "kalender", jahr: Number(isoHeute().slice(0, 4)), bereich: "", rolle: "", quelle: "", regel: "", nurFlow: false, nurOffen: false },
       zaehler: 1,
     };
     S = st;
