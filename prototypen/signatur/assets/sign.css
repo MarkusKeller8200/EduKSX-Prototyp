@@ -202,3 +202,8 @@ details.menu .liste { position: absolute; right: 0; top: calc(100% + 4px); z-ind
 details.menu .liste > * { font: inherit; font-size: .88rem; text-align: left; background: none; border: none; color: var(--foreground); padding: .4rem .6rem; border-radius: 6px; cursor: pointer; text-decoration: none; }
 details.menu .liste > *:hover { background: var(--muted); }
 details.menu .liste .gefahr { color: var(--destructive); }
+
+/* Menüsektion «Alle Prototypen» wie EduKSX-Flow */
+.navi a.einstieg { color: var(--link); }
+.navi .trenner { border-bottom: 1px solid var(--border); margin: .4rem .7rem .2rem; }
+@media (max-width: 900px) { .navi .trenner { display: none; } }

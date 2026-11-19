@@ -3,7 +3,7 @@
   "produkt": "EduKSX-Sign",
   "icon": "sign",
   "beschreibung": "Persönliche Ablage je Mitarbeiter:in mit Ordnern, Drag & Drop und Abgleich mit der persönlichen Cloud-Ablage; PDF-Formulare inline ausfüllen, Text, Kommentar, Datum und Unterschriftsfeld setzen; Word inline bearbeiten; Signaturprozess mit PDF/A-Umwandlung, Unterzeichnenden, Signaturstufe und Feldern – Ergebnis mit Suffix _sign im Ursprungsordner; Dokumente versiegeln; Eingang für Signaturanfragen aus den anderen Modulen.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "status": "in-arbeit",
   "technik": "html",
   "modul": "EduKSX-Sign",
