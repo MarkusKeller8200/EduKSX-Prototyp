@@ -125,8 +125,8 @@
         h("li", null, eintrag(link("matrix"), "Struktur-Matrix", r.art === "matrix")),
         h("li", null, eintrag(link("grundlagen"), "Grundlagen (Leitfaden, ZH-Lex)", r.art === "grundlagen")),
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Gesetzestexte & Verordnungen" }),
-        h("li", null, eintrag(link("rechtsgrundlagen"), "Rechtsgrundlagen Schule", r.art === "rechtsgrundlagen", h("span", { cls: "anz", text: String(D.rechtsgrundlagen.eintraege.length) }))),
         h("li", null, eintrag(link("herkunft"), "Herkunftsliste (Publikationsquellen)", r.art === "herkunft")),
+        h("li", null, eintrag(link("rechtsgrundlagen"), "Rechtsgrundlagen Schule", r.art === "rechtsgrundlagen", h("span", { cls: "anz", text: String(D.rechtsgrundlagen.eintraege.length) }))),
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Bezirke" })),
       h("div", { cls: "suche" }, such),
       liste);

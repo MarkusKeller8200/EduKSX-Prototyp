@@ -107,4 +107,5 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   und Herkunftsliste der Publikationsquellen; Ausgangsliste unter `quellen/` abgelegt.
 - EduKSX-Codex 0.7.1: Herkunftsliste um Ebene «Kommunal – Rechtssammlung der Schule XYZ» ergänzt (Platzhalter, wird durch
   die gewählte Schulgemeinde ersetzt); kommunale Einträge der Rechtsgrundlagen zählen dorthin.
+- EduKSX-Codex 0.7.2: Menü «Gesetzestexte & Verordnungen» – Herkunftsliste als erster Eintrag.
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

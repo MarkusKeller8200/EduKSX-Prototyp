@@ -3,7 +3,7 @@
   "produkt": "EduKSX-Codex",
   "icon": "codex",
   "beschreibung": "Systematische Rechtssammlungen der Zürcher Gemeinden und Schulgemeinden erfassen und vergleichen: Menü nach Bezirk › Gemeinde (mit Vermerk Einheitsgemeinde) › Rubriken, alle 160 Gemeinden und 60 Schulgemeinden, Struktur-Matrix mit Ähnlichkeitserkennung, Nachbau der Original-Seiten, einbettbares iFrame-Widget mit PDF-Vorschau und geteiltes Fenster Original ⟷ Nachbau, Prüfung gegen den kantonalen Leitfaden systematische Rechtssammlung (Grundlagen mit ZH-Lex-Systematik).",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "status": "in-arbeit",
   "technik": "html",
   "modul": "EduKSX-Codex",
