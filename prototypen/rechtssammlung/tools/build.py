@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.12.0 – Generator.
+"""EduKSX-Codex Prototyp 0.13.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1595,6 +1595,25 @@ HIERARCHIEN = [
    {"von": "kom", "nach": "zgb", "art": "verweist auf"}]},
 ]
 
+def querbezuege(hs, texte):
+    """Querbezüge: in welchen Themen kommt ein Erlass vor (Schlüssel LS-Nummer bzw. SR-Fundstelle)."""
+    def schluessel(k): return k.get("ls") or (k["fundstelle"] if k["fundstelle"] != "kommunal" else None)
+    wo = {}
+    for H in hs:
+        for k in H["knoten"]:
+            sk = schluessel(k)
+            if sk and [H["id"], H["titel"]] not in wo.setdefault(sk, []): wo[sk].append([H["id"], H["titel"]])
+    for H in hs:
+        for k in H["knoten"]:
+            sk = schluessel(k)
+            if sk: k["themen"] = wo[sk]
+    for nr, e in texte["erlasse"].items():
+        e["themen"] = wo.get(nr, [])
+    QUERBEZUG.update(wo)
+    return hs
+
+QUERBEZUG = {}
+
 def hierarchie(texte, spec):
     akt = {nr: e["fassungen"][-1]["nachtrag"] for nr, e in texte["erlasse"].items() if e["fassungen"]}
     knoten = [dict(k) for k in spec["knoten"]]
@@ -1656,8 +1675,15 @@ def render_daten(gemeinden):
     for o in ORGS: leitfaden_pruefung(o); doc_datum_version(o); analyse_info(o)
     TX = texte_index()
     daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN, "rechtsgrundlagen": rechtsgrundlagen(),
-             "texte": TX, "hierarchien": [hierarchie(TX, sp) for sp in HIERARCHIEN],
+             "texte": TX, "hierarchien": querbezuege([hierarchie(TX, sp) for sp in HIERARCHIEN], TX),
              "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
+    for e in daten["rechtsgrundlagen"]["eintraege"]:
+        t = []
+        for nr in re.findall(r"\d+(?:\.\d+)*", e.get("fundstelle") or ""):
+            for sk in (("SR " + nr,) if (e.get("fundstelle") or "").startswith("SR") else (nr,)):
+                for x in QUERBEZUG.get(sk, []):
+                    if x not in t: t.append(x)
+        e["themen"] = t
     return ("/* Erzeugt von tools/build.py – nicht von Hand bearbeiten. */\nwindow.CODEX = "
             + json.dumps(daten, ensure_ascii=False, separators=(",", ":")) + ";\n")
 
@@ -1685,7 +1711,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.12.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.13.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1693,7 +1719,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.12.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.13.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

@@ -1,6 +1,6 @@
 # Prototyp: Rechtssammlung
 
-**Status:** in-arbeit · **Version:** 0.12.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
+**Status:** in-arbeit · **Version:** 0.13.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
 
 ## Frage
 

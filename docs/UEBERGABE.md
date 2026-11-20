@@ -36,6 +36,13 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – EduKSX-Codex 0.13.0
+
+- Auftrag: offene Punkte ohne Prüfung von aussen, Reihenfolge 7 → 6 → 3 → 4 → 2, dazu 5 (Themen «Verfahren & Rechtsschutz»,
+  «Unterricht & Medien») und 8 (Konzept). Punkt 1 (fachliche Prüfung) bleibt offen.
+- Umgesetzt (#37 → `_3 Beta-Test`): Darstellung (Andockpunkte, Beschriftungen in eigener SVG-Ebene, Hervorhebung), Ansicht je
+  Organisation, Querbezüge (`querbezuege()` in tools/build.py, Feld `themen`).
+
 ### Sitzung 2026-11-20 (00:00–00:30) – Prototyp EduKSX-Sign
 
 - Neuer Prototyp `prototypen/signatur` (EduKSX-Sign – Signatur / Persönliche Ablage), Auftrag im Chat: Ablage je

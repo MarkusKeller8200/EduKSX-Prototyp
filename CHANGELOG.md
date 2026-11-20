@@ -129,4 +129,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   «Beschaffung & Bau» (neue Ebene Konkordat: IVöB → BeiG IVöB, PBG → SVO → Beschaffungsrichtlinien, BZO) und
   «Kindesschutz & Schweigepflicht» (KRK → ZGB, StGB → VSG, VSV → Gemeinde) – jetzt 7 Themen; Textfassungen für
   6 weitere Erlasse (jetzt 27) (#36).
+- EduKSX-Codex 0.13.0: Normenhierarchie – Linien verteilt angedockt, Beschriftungen ohne Überlappung, Hervorhebung der
+  Verbindungen beim Klick; Ansicht je Organisation («Ansicht für», Route `#/hierarchie/<thema>/<org>`); Querbezüge «auch in» /
+  «Kommt vor in» in Hierarchie, Rechtsgrundlagen und Textansicht (#37).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

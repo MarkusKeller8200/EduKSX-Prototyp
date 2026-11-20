@@ -1,6 +1,6 @@
 # Konzept: EduKSX-Codex – Versionen, Abgleich, Textfassung und Normenhierarchie (#32)
 
-Stand: 2026-11-20 (Codex 0.12.0) · Status: **IN ARBEIT**
+Stand: 2026-11-20 (Codex 0.13.0) · Status: **IN ARBEIT**
 
 Ein Konzept ist eine Entscheidungsgrundlage, keine Freigabe: umgesetzt wird erst, was als Issue freigegeben ist.
 
@@ -161,3 +161,4 @@ Reglemente).
 | #36 | Normenhierarchien Sonderpädagogik, Beschaffung & Bau, Kindesschutz | `_3 Beta-Test` |
 | #35 | Normenhierarchien Volksschule und Datenschutz & ICT | `_3 Beta-Test` |
 | #34 | Finanzrecht (FAG, FAV, CRG), Fassungen GG/VGG, Normenhierarchie Finanzen | `_3 Beta-Test` |
+| #37 | Normenhierarchie: Darstellung, Ansicht je Organisation, Querbezüge | `_3 Beta-Test` |

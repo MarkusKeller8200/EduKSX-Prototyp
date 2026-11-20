@@ -324,7 +324,7 @@
         h("td", null, h("strong", { text: e.titel }), h("div", { cls: "small muted", text: e.herausgeber }), e.abk && e.titel.indexOf("(" + e.abk + ")") < 0 && e.titel !== e.abk ? h("span", { cls: "muted", text: " (" + e.abk + ")" }) : null),
         h("td", { cls: "nowrap" }, e.fundstelle || h("span", { cls: "muted", text: "–" }), e.geprueft ? h("span", { cls: "ok-mark", title: "Ordnungsnummer am 20.11.2026 in ZH-Lex geprüft", text: " ✓" }) : null),
         h("td", { text: e.stelle }),
-        h("td", { text: e.relevanz }),
+        h("td", null, e.relevanz, e.themen && e.themen.length ? h("div", { cls: "small" }, h("span", { cls: "muted", text: "Normenhierarchie: " }), themenLinks(e.themen)) : null),
         h("td", null, ebeneBadge(e.ebene), h("div", { style: "margin-top:.25rem" }, klasseBadge(e.klasse))),
         h("td", { cls: "nowrap", text: e.veroeffentlicht || "–" }),
         h("td", null, h("div", { cls: "nowrap", text: e.version || "–" }), e.anzahl_versionen ? versionKnopf(e.titel_amtlich || e.titel, e.versionen,
@@ -521,6 +521,7 @@
     return [h("p", { cls: "small muted" }, h("a", { href: link("texte"), text: "Textfassungen" }), " › LS " + ls),
       kopf(e.titel, "LS " + ls + " · Nachtrag " + akt.nachtrag + " · veröffentlicht " + (akt.veroeffentlicht || "–") + (akt.in_kraft_bis ? " · in Kraft bis " + akt.in_kraft_bis : " · geltend"),
         [extern(akt.seite, "Amtliche Fassung (ZH-Lex) ↗"), " ", h("a", { cls: "btn", href: "texte/" + ls + "/" + akt.nachtrag + ".md", download: ls + "_" + akt.nachtrag + ".md", text: "Markdown herunterladen" })]),
+      e.themen && e.themen.length ? h("p", { cls: "small" }, h("strong", { text: "In der Normenhierarchie: " }), themenLinks(e.themen)) : null,
       h("div", { cls: "filterzeile" }, sel,
         h("label", null, cbVgl, " Änderungen markieren"), h("label", null, cbNur, " nur Änderungen"), zus),
       vor ? null : h("p", { cls: "small muted", text: e.voll ? "Erste aufbereitete Fassung – kein Vergleich möglich." : "Nur die geltende Fassung ist aufbereitet." }),
@@ -529,50 +530,98 @@
   }
 
   // ------------------------------------------------------------------ Normenhierarchie
-  function hierarchie(id) {
+  function hierarchie(id, orgId) {
     var H = D.hierarchien.filter(function (x) { return x.id === id; })[0] || D.hierarchien[0], K = {}; H.knoten.forEach(function (k) { K[k.id] = k; });
-    var detail = h("section", { cls: "karte hierarchie-detail", "aria-live": "polite" }, h("p", { cls: "muted", text: "Erlass anklicken, um Grundlage, Belegstellen und Versionen zu sehen." }));
-    var buehne = h("div", { cls: "hierarchie" });
+    var org = orgId && ORG[orgId] ? ORG[orgId] : null, gewaehlt = null;
+    function bsp(k) { return !k.beispiele ? null : org ? k.beispiele.filter(function (b) { return b.org === org.id; }) : k.beispiele; }
+    var detail = h("section", { cls: "karte hierarchie-detail", "aria-live": "polite" }, h("p", { cls: "muted", text: "Erlass anklicken, um Grundlage, Belegstellen und Versionen zu sehen. Die Verbindungen des gewählten Erlasses werden hervorgehoben." }));
+    var buehne = h("div", { cls: "hierarchie" + (org ? " mit-org" : "") });
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.setAttribute("class", "hierarchie-linien"); svg.setAttribute("aria-hidden", "true");
     buehne.appendChild(svg);
+    var oben = document.createElementNS("http://www.w3.org/2000/svg", "svg"); oben.setAttribute("class", "hierarchie-linien oben"); oben.setAttribute("aria-hidden", "true");
+    buehne.appendChild(oben);
     var boxen = {};
     H.ebenen.forEach(function (eb, i) {
       var reihe = h("div", { cls: "h-ebene" }, h("div", { cls: "h-ebene-titel", text: eb }));
       var zelle = h("div", { cls: "h-knoten" });
       H.knoten.filter(function (k) { return k.ebene === i; }).forEach(function (k) {
-        var b = h("button", { type: "button", cls: "h-box", "data-id": k.id, onclick: function () { waehle(k.id); } },
+        var b2 = bsp(k);
+        var leer = org && b2 && !b2.length;
+        var b = h("button", { type: "button", cls: "h-box" + (leer ? " leer" : ""), "data-id": k.id, "aria-pressed": "false", onclick: function () { waehle(k.id); } },
           h("strong", { text: k.titel }), h("span", { cls: "small muted", text: k.fundstelle + " · " + k.art }),
           k.versionen ? h("span", { cls: "small", text: "⟲ " + k.versionen + (k.versionen === 1 ? " Fassung" : " Fassungen") + " aufbereitet" }) : null,
-          k.beispiele ? h("span", { cls: "small", text: k.beispiele.length + " Beispiele aus erfassten Gemeinden" }) : null,
-          k.liste ? h("span", { cls: "small", text: k.liste.length + (k.liste.length === 1 ? " Beschluss" : " Beschlüsse") }) : null);
+          b2 ? h("span", { cls: "small", text: org ? (b2.length ? b2.length + (b2.length === 1 ? " Dokument in " : " Dokumente in ") + org.kurz : "kein Dokument in " + org.kurz + " gefunden") : b2.length + " Beispiele aus erfassten Gemeinden" }) : null,
+          k.liste ? h("span", { cls: "small", text: k.liste.length + (k.liste.length === 1 ? " Beschluss" : " Beschlüsse") }) : null,
+          k.themen && k.themen.length > 1 ? h("span", { cls: "small muted", text: "auch in: " + k.themen.filter(function (t) { return t[0] !== H.id; }).map(function (t) { return t[1]; }).join(", ") }) : null);
         boxen[k.id] = b; zelle.appendChild(b);
       });
       reihe.appendChild(zelle); buehne.appendChild(reihe);
     });
+    var NS = "http://www.w3.org/2000/svg";
+    function el(n, at) { var e = document.createElementNS(NS, n); Object.keys(at).forEach(function (a) { e.setAttribute(a, at[a]); }); return e; }
+    function klasse(art) { return /nicht direkt/.test(art) ? "nicht" : /Vollzug/.test(art) ? "vollzug" : /subsidi/.test(art) ? "subsidiaer" : /Grundlage/.test(art) ? "grundlage" : "verweis"; }
     function linien() {
       if (!buehne.isConnected) return;
       var R0 = buehne.getBoundingClientRect();
       svg.setAttribute("width", R0.width); svg.setAttribute("height", R0.height);
-      svg.textContent = "";
-      H.kanten.forEach(function (k) {
-        var a = boxen[k.von].getBoundingClientRect(), b = boxen[k.nach].getBoundingClientRect();
-        var x1 = a.left + a.width / 2 - R0.left, y1 = a.top - R0.top, x2 = b.left + b.width / 2 - R0.left, y2 = b.bottom - R0.top;
-        var l = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        var my = (y1 + y2) / 2;
-        l.setAttribute("d", "M" + x1 + "," + y1 + " C" + x1 + "," + my + " " + x2 + "," + my + " " + x2 + "," + y2);
-        l.setAttribute("class", "h-linie h-" + (/nicht direkt/.test(k.art) ? "nicht" : /Vollzug/.test(k.art) ? "vollzug" : /subsidi/.test(k.art) ? "subsidiaer" : /Grundlage/.test(k.art) ? "grundlage" : "verweis"));
-        l.setAttribute("marker-end", "url(#pfeil)");
-        svg.appendChild(l);
-        var t = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        t.setAttribute("x", x1 + (x2 - x1) * 0.25 + 4); t.setAttribute("y", y1 + (y2 - y1) * 0.25); t.setAttribute("class", "h-label"); t.textContent = k.art;
-        svg.appendChild(t);
-      });
-      var defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+      svg.textContent = ""; oben.textContent = ""; oben.setAttribute("width", R0.width); oben.setAttribute("height", R0.height);
+      var defs = el("defs", {});
       defs.innerHTML = '<marker id="pfeil" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="h-pfeil"/></marker>';
-      svg.insertBefore(defs, svg.firstChild);
+      svg.appendChild(defs);
+      var R = {}; Object.keys(boxen).forEach(function (x) { var r = boxen[x].getBoundingClientRect(); R[x] = { l: r.left - R0.left, r: r.right - R0.left, t: r.top - R0.top, b: r.bottom - R0.top, cx: r.left + r.width / 2 - R0.left, cy: r.top + r.height / 2 - R0.top, w: r.width }; });
+      // Andockpunkte verteilen: je Box die abgehenden (oben) und ankommenden (unten) Linien nach Zielposition sortieren
+      var aus = {}, ein = {};
+      H.kanten.forEach(function (k, n) { (aus[k.von] = aus[k.von] || []).push(n); (ein[k.nach] = ein[k.nach] || []).push(n); });
+      function versatz(liste, box, gegen) {
+        var m = {}; if (!liste) return m;
+        liste.slice().sort(function (a, b) { return R[gegen(a)].cx - R[gegen(b)].cx; }).forEach(function (n, i, arr) {
+          var abst = Math.min(14, (R[box].w - 30) / Math.max(1, arr.length - 1)); m[n] = (i - (arr.length - 1) / 2) * abst; });
+        return m;
+      }
+      var VA = {}, VE = {};
+      Object.keys(boxen).forEach(function (x) {
+        var a = versatz(aus[x], x, function (n) { return H.kanten[n].nach; }), e = versatz(ein[x], x, function (n) { return H.kanten[n].von; });
+        Object.keys(a).forEach(function (n) { VA[n] = a[n]; }); Object.keys(e).forEach(function (n) { VE[n] = e[n]; });
+      });
+      var belegt = [];
+      function frei(x, y, w, ueberBox) { var bx = { l: x - 2, r: x + w + 2, t: y - 11, b: y + 3 };
+        var boxHit = !ueberBox && Object.keys(R).some(function (q) { var r = R[q]; return bx.r > r.l && bx.l < r.r && bx.b > r.t && bx.t < r.b; });
+        return !boxHit && !belegt.some(function (o) { return bx.r > o.l && bx.l < o.r && bx.b > o.t && bx.t < o.b; }) ? bx : null; }
+      var spaeter = [];
+      H.kanten.forEach(function (k, n) {
+        var a = R[k.von], b = R[k.nach], d, pt;
+        var gleich = K[k.von].ebene === K[k.nach].ebene;
+        if (gleich) {
+          var rechts = b.cx > a.cx, x1 = rechts ? a.r : a.l, x2 = rechts ? b.l : b.r, y = a.cy + 10;
+          d = "M" + x1 + "," + y + " L" + x2 + "," + (b.cy + 10);
+          pt = function (t) { return [x1 + (x2 - x1) * t, y + (b.cy - a.cy) * t]; };
+        } else {
+          var x1b = a.cx + (VA[n] || 0), y1 = a.t, x2b = b.cx + (VE[n] || 0), y2 = b.b, my = (y1 + y2) / 2;
+          d = "M" + x1b + "," + y1 + " C" + x1b + "," + my + " " + x2b + "," + my + " " + x2b + "," + y2;
+          pt = function (t) { var u = 1 - t; return [u * u * u * x1b + 3 * u * u * t * x1b + 3 * u * t * t * x2b + t * t * t * x2b, u * u * u * y1 + 3 * u * u * t * my + 3 * u * t * t * my + t * t * t * y2]; };
+        }
+        var an = gewaehlt && (k.von === gewaehlt || k.nach === gewaehlt), aus2 = gewaehlt && !an;
+        var g = el("g", { class: "h-kante" + (an ? " an" : "") + (aus2 ? " aus" : "") });
+        var l = el("path", { d: d, class: "h-linie h-" + klasse(k.art), "marker-end": "url(#pfeil)" });
+        var tt = el("title", {}); tt.textContent = K[k.von].titel + " → " + K[k.nach].titel + ": " + k.art; l.appendChild(tt);
+        g.appendChild(l); svg.appendChild(g);
+        spaeter.push({ k: k, g: g, pt: pt, an: an, aus: aus2 });
+      });
+      // Beschriftungen zuletzt: erst die hervorgehobenen, dann die übrigen; nur an freien Stellen
+      spaeter.sort(function (a, b) { return (b.an ? 1 : 0) - (a.an ? 1 : 0); }).forEach(function (s2) {
+        if (s2.aus) return;
+        var w = s2.k.art.length * 5.6 + 4, platz = null;
+        [0.5, 0.4, 0.6, 0.3, 0.7, 0.22, 0.78].some(function (t) { var p = s2.pt(t); platz = frei(p[0] - w / 2, p[1] + 4, w, s2.an); if (platz) { platz.x = p[0] - w / 2; platz.y = p[1] + 4; } return platz; });
+        if (!platz) return;
+        belegt.push(platz);
+        var t = el("text", { x: platz.x, y: platz.y, class: "h-label" + (s2.an ? " an" : "") }); t.textContent = s2.k.art; oben.appendChild(t);
+      });
     }
     function waehle(id) {
-      Object.keys(boxen).forEach(function (x) { boxen[x].classList.toggle("aktiv", x === id); boxen[x].setAttribute("aria-pressed", x === id ? "true" : "false"); });
+      gewaehlt = id; linien();
+      Object.keys(boxen).forEach(function (x) {
+        var nah = x === id || H.kanten.some(function (k) { return (k.von === id && k.nach === x) || (k.nach === id && k.von === x); });
+        boxen[x].classList.toggle("aktiv", x === id); boxen[x].classList.toggle("blass", !nah); boxen[x].setAttribute("aria-pressed", x === id ? "true" : "false"); });
       var k = K[id];
       var hoch = H.kanten.filter(function (x) { return x.von === id; }), runter = H.kanten.filter(function (x) { return x.nach === id; });
       var tx = k.ls && D.texte.erlasse[k.ls];
@@ -580,7 +629,8 @@
       detail.appendChild(h("h2", { text: k.titel }));
       detail.appendChild(fakten([["Fundstelle", k.fundstelle], ["Art", k.art], ["Amtliche Fassung", k.url ? extern(k.url, k.ls ? "ZH-Lex ↗" : /fedlex/.test(k.url) ? "Fedlex ↗" : "zh.ch ↗") : "–"],
         ["Textfassung", tx ? h("a", { href: link("text", k.ls, tx.fassungen[tx.fassungen.length - 1].nachtrag), text: tx.voll ? "Text und Änderungen (" + tx.fassungen.length + " Fassungen)" : "Text (geltende Fassung)" }) : "–"],
-        ["Hinweis", k.hinweis || ""]].filter(function (x) { return x[1]; })));
+        ["Hinweis", k.hinweis || ""],
+        ["Kommt vor in", k.themen && k.themen.length > 1 ? themenLinks(k.themen, H.id) : ""]].filter(function (x) { return x[1]; })));
       function kante(x, richtung) {
         var ziel = K[richtung === "hoch" ? x.nach : x.von];
         return h("li", null, h("strong", { text: (richtung === "hoch" ? "stützt sich auf " : "Grundlage für ") + ziel.titel }), " – " + x.art,
@@ -594,21 +644,33 @@
         detail.appendChild(h("h3", { text: "Beschlüsse und Erlasse" }));
         detail.appendChild(h("ul", null, k.liste.map(function (b) { return h("li", null, b.url ? extern(b.url, b.titel + " ↗") : b.titel, b.hinweis ? h("span", { cls: "small muted", text: " – " + b.hinweis }) : null); })));
       }
-      if (k.beispiele) {
-        detail.appendChild(h("h3", { text: "Beispiele aus den erfassten Rechtssammlungen" }));
-        detail.appendChild(h("ul", null, k.beispiele.map(function (b) { return h("li", null, b.url ? extern(b.url, b.titel + " ↗") : b.titel, " – ", h("a", { href: link("org", b.org), text: b.orgname })); })));
+      var b2 = bsp(k);
+      if (b2) {
+        detail.appendChild(h("h3", { text: org ? "Dokumente in " + org.name : "Beispiele aus den erfassten Rechtssammlungen" }));
+        detail.appendChild(b2.length ? h("ul", null, b2.map(function (b) { return h("li", null, b.url ? extern(b.url, b.titel + " ↗") : b.titel, org ? null : [" – ", h("a", { href: link("org", b.org), text: b.orgname })]); }))
+          : h("p", { cls: "muted", text: "In der erfassten Rechtssammlung nicht gefunden (Suche über Titelstichwörter)." }));
       }
     }
     var ro = window.ResizeObserver ? new ResizeObserver(function () { linien(); }) : null;
     setTimeout(function () { linien(); if (ro) ro.observe(buehne); }, 0);
     var themen = h("div", { cls: "reiter", role: "tablist", "aria-label": "Thema wählen" }, D.hierarchien.map(function (x) {
-      return h("a", { href: link("hierarchie", x.id), role: "tab", "aria-selected": x.id === H.id ? "true" : "false", cls: "reiterlink", text: x.titel });
+      return h("a", { href: link("hierarchie", x.id, org ? org.id : null), role: "tab", "aria-selected": x.id === H.id ? "true" : "false", cls: "reiterlink", text: x.titel });
     }));
-    return [kopf("Normenhierarchie – " + H.titel, "Vom übergeordneten Recht über Gesetz und Verordnung des Kantons bis zum Erlass der Gemeinde. Pfeile zeigen auf die übergeordnete Norm."),
+    var orgWahl = h("select", { "aria-label": "Organisation wählen", onchange: function () { location.hash = link("hierarchie", H.id, this.value || null); } },
+      [h("option", { value: "", text: "alle erfassten Organisationen" })].concat(D.organisationen.slice().sort(function (a, b) { return a.kurz.localeCompare(b.kurz, "de"); }).map(function (o) {
+        var opt = h("option", { value: o.id, text: o.kurz + " (" + o.typ + ")" }); if (org && o.id === org.id) opt.selected = true; return opt; })));
+    return [kopf("Normenhierarchie – " + H.titel + (org ? " · " + org.kurz : ""), "Vom übergeordneten Recht über Gesetz und Verordnung des Kantons bis zum Erlass der Gemeinde. Pfeile zeigen auf die übergeordnete Norm."),
       themen,
+      h("div", { cls: "filterzeile" }, h("label", { cls: "small", text: "Ansicht für " }), orgWahl, org ? h("a", { cls: "small", href: link("org", org.id), text: "Rechtssammlung " + org.kurz + " →" }) : null),
       h("p", { cls: "small muted", text: H.hinweis }),
       h("div", { cls: "hierarchie-legende small" }, h("span", { cls: "lg lg-vollzug", text: "Vollzug" }), h("span", { cls: "lg lg-subsidiaer", text: "subsidiär anwendbar" }), h("span", { cls: "lg lg-verweis", text: "verweist auf" }), h("span", { cls: "lg lg-grundlage", text: "Grundlage" }), H.kanten.some(function (x) { return /nicht direkt/.test(x.art); }) ? h("span", { cls: "lg lg-nicht", text: "nicht direkt anwendbar" }) : null),
       h("div", { cls: "hierarchie-rahmen" }, buehne, detail)];
+  }
+
+  function themenLinks(themen, ausser) {
+    var t = themen.filter(function (x) { return x[0] !== ausser; });
+    if (!t.length) return null;
+    return h("span", null, t.map(function (x, i) { return [i ? ", " : "", h("a", { href: link("hierarchie", x[0]), text: x[1] })]; }));
   }
 
   function abgleich() {
@@ -987,7 +1049,7 @@
     else if (r.art === "abgleich") inhalt = abgleich();
     else if (r.art === "texte") inhalt = texteListe();
     else if (r.art === "text") inhalt = textAnsicht(r.a, r.b);
-    else if (r.art === "hierarchie") inhalt = hierarchie(r.a);
+    else if (r.art === "hierarchie") inhalt = hierarchie(r.a, r.b);
     else if (r.art === "org" && ORG[r.a]) inhalt = !r.b ? organisation(ORG[r.a]) : r.b.indexOf("ansicht-") === 0 ? ansicht(ORG[r.a], r.b) : rubrik(ORG[r.a], r.b);
     else inhalt = nichtGefunden();
     var rahmen = document.getElementById("rahmen");
