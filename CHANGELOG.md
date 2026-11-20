@@ -112,4 +112,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Publikationsstelle, Downloadort, Spalten «Veröffentlicht» und «Version»; 466 Fassungen von 26 ZH-Lex-Erlassen mit
   Historik («⟲ n», Klick öffnet die Fassungen); Gemeinde-Dokumente mit «Gültig seit», «Veröffentlicht», «Version»;
   Analyse-Version und Datum je Organisation; Seite «Versionen & Abgleich»; Konzept `docs/KONZEPT-CODEX-VERSIONEN.md` (#32).
+- EduKSX-Codex 0.9.0: Textfassungen der Rechtstexte als Markdown (Vorab-Aufbereitung mit `tools/texte.py`, keine KI zur
+  Laufzeit) – VSG, VSV und LPVO mit allen Fassungen, Änderungen zwischen Fassungen farbig markiert («nur Änderungen»);
+  Normenhierarchie Personalrecht (OR → PG/LPG/GG → PVO/VVO/LPVO → Gemeinde) mit Belegstellen und kommunalen Beispielen;
+  Markdown-Dateien in `texte/` werden auf GitHub Pages veröffentlicht (`tools/seite_bauen.py`) (#33).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

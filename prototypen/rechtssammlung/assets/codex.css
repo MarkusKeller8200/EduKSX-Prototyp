@@ -108,3 +108,50 @@ table.rg td:nth-child(5) { min-width: 220px; }
 .btn.versionen { margin-top: .2rem; font-variant-numeric: tabular-nums; }
 dialog.historik { max-width: min(1000px, 96vw); }
 dialog.historik .fakten { margin: .5rem 0 1rem; }
+
+/* Textfassung */
+.textfassung { max-width: 860px; }
+.textfassung .tb { margin: .45rem 0; line-height: 1.55; }
+.textfassung .tb-h1 { font-size: 1.3rem; } .textfassung .tb-h2 { font-size: 1.1rem; margin-top: 1.4rem; }
+.textfassung .tb-h3 { font-size: 1rem; margin-top: 1.1rem; } .textfassung .tb-h3.kontext { color: var(--muted-foreground); }
+.textfassung .tb-li { padding-left: 1.4rem; }
+.textfassung .tb-rand { font-style: italic; color: var(--muted-foreground); }
+.textfassung sup.fn a { text-decoration: none; font-size: .7em; }
+.textfassung ins, .legende-neu, .textfassung .neu { background: var(--success-soft); text-decoration: underline; text-decoration-color: var(--success); }
+.textfassung del, .legende-weg, .textfassung .geloescht { background: var(--destructive-soft); text-decoration: line-through; }
+.textfassung .neu, .textfassung .geloescht, .textfassung .geaendert { border-left: 4px solid; padding-left: .6rem; }
+.textfassung .neu { border-color: var(--success); text-decoration: none; }
+.textfassung .neu::before { content: "+ "; font-weight: 700; color: var(--success); }
+.textfassung .geloescht { border-color: var(--destructive); }
+.textfassung .geloescht::before { content: "– "; font-weight: 700; }
+.textfassung .geaendert { border-color: var(--warning); }
+.textfassung .geaendert::before { content: "~ "; font-weight: 700; color: var(--warning); }
+ins, del { padding: 0 .1em; }
+ins { background: var(--success-soft); } del { background: var(--destructive-soft); }
+.legende-neu, .legende-weg { padding: 0 .3em; }
+.fussnoten { margin-top: 1.5rem; font-size: .85rem; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Normenhierarchie */
+.hierarchie-rahmen { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+.hierarchie { position: relative; padding: .5rem 0 1rem; }
+.hierarchie-linien { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.h-ebene { position: relative; margin-bottom: 3.6rem; display: grid; grid-template-columns: 9rem 1fr; align-items: center; gap: .5rem; }
+.h-ebene-titel { font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted-foreground); margin-bottom: .35rem; }
+.h-knoten { display: flex; flex-wrap: wrap; gap: .8rem; justify-content: center; }
+.h-box { display: flex; flex-direction: column; gap: .15rem; text-align: left; min-width: 160px; max-width: 230px; padding: .6rem .75rem; background: var(--card);
+  border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); cursor: pointer; font: inherit; color: inherit; position: relative; z-index: 1; }
+.h-box:hover, .h-box:focus-visible { border-color: var(--brand-blue); }
+.h-box.aktiv { border: 2px solid var(--brand-blue); }
+.h-linie { fill: none; stroke: var(--muted-foreground); stroke-width: 1.6; }
+.h-vollzug { stroke: var(--brand-blue); }
+.h-subsidiaer { stroke-dasharray: 6 4; }
+.h-verweis { stroke-dasharray: 2 4; }
+.h-grundlage { stroke: var(--brand-violet); }
+.h-pfeil { fill: var(--muted-foreground); }
+.h-label { font-size: 11px; fill: var(--muted-foreground); }
+.hierarchie-legende { display: flex; gap: 1rem; flex-wrap: wrap; margin: .3rem 0 .6rem; }
+.lg::before { content: ""; display: inline-block; width: 28px; height: 0; border-top: 2px solid var(--muted-foreground); vertical-align: middle; margin-right: .35rem; }
+.lg-vollzug::before { border-top-color: var(--brand-blue); } .lg-subsidiaer::before { border-top-style: dashed; } .lg-verweis::before { border-top-style: dotted; } .lg-grundlage::before { border-top-color: var(--brand-violet); }
+.hierarchie-detail h2 { font-size: 1.1rem; margin-top: 0; } .hierarchie-detail h3 { font-size: .95rem; }
+.beleg { white-space: pre-line; font-size: .88rem; background: var(--muted); padding: .5rem .7rem; border-radius: calc(var(--radius) - 2px); }

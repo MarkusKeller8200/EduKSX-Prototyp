@@ -1,0 +1,1288 @@
+{
+ "erlasse": {
+  "412.100": {
+   "ordnungsnummer": "412.100",
+   "titel": "Volksschulgesetz (VSG)",
+   "fassungen": [
+    {
+     "nachtrag": "054",
+     "veroeffentlicht": "21.08.2006",
+     "in_kraft_bis": "01.01.2008",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07--054.html",
+     "seiten": 20,
+     "absaetze": 341,
+     "fussnoten": 20,
+     "pdf_sha256": "ea801c5cd9e5a7f1987174cc3acf41e6580def3b2319c391f1b8b9b822c27560"
+    },
+    {
+     "nachtrag": "059",
+     "veroeffentlicht": "01.01.2008",
+     "in_kraft_bis": "16.08.2008",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07--059.html",
+     "seiten": 21,
+     "absaetze": 355,
+     "fussnoten": 23,
+     "pdf_sha256": "80c7ec5b08678db261751a916306acb4a47039305476ebe94b1b39d4d75ba203",
+     "delta": {
+      "neu": 16,
+      "gestrichen": 2,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "062",
+     "veroeffentlicht": "16.08.2008",
+     "in_kraft_bis": "01.04.2009",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07--062.html",
+     "seiten": 21,
+     "absaetze": 356,
+     "fussnoten": 24,
+     "pdf_sha256": "ef8e7882ca866e104044c8998dc519c726cac10d7366594362872819dfc7c451",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "065",
+     "veroeffentlicht": "01.04.2009",
+     "in_kraft_bis": "01.07.2010",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07--065.html",
+     "seiten": 21,
+     "absaetze": 352,
+     "fussnoten": 27,
+     "pdf_sha256": "d5a6c3e8316b7b96caa3293f61a3f72310ae24a4f57d45a8ad361e64e71f0780",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 5,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "069",
+     "veroeffentlicht": "01.07.2010",
+     "in_kraft_bis": "01.01.2012",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07--069.html",
+     "seiten": 22,
+     "absaetze": 353,
+     "fussnoten": 29,
+     "pdf_sha256": "45397517c3810ea8bcbc019048f1db410713e41254150512f87f7ac179ab980b",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 0,
+      "geaendert": 11
+     }
+    },
+    {
+     "nachtrag": "075",
+     "veroeffentlicht": "01.01.2012",
+     "in_kraft_bis": "01.08.2012",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07--075.html",
+     "seiten": 22,
+     "absaetze": 371,
+     "fussnoten": 34,
+     "pdf_sha256": "e2d65b228196291a35c0b9bbabb9c7701c6b84f96725937ab30ece82c08c6634",
+     "delta": {
+      "neu": 28,
+      "gestrichen": 10,
+      "geaendert": 15
+     }
+    },
+    {
+     "nachtrag": "077",
+     "veroeffentlicht": "01.08.2012",
+     "in_kraft_bis": "01.08.2012",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07--077.html",
+     "seiten": 22,
+     "absaetze": 375,
+     "fussnoten": 35,
+     "pdf_sha256": "cfed3a8799e536aefb984452862c772e83a3326ab79181294dd252736c512ad8",
+     "delta": {
+      "neu": 4,
+      "gestrichen": 0,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "079",
+     "veroeffentlicht": "01.08.2012",
+     "in_kraft_bis": "20.06.2013",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07--079.html",
+     "seiten": 22,
+     "absaetze": 375,
+     "fussnoten": 36,
+     "pdf_sha256": "ad7e74427d9eb0473e1ea563507c6e23d9f0a61e8aba7973beb406a5522b28cc",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 1,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "081",
+     "veroeffentlicht": "20.06.2013",
+     "in_kraft_bis": "01.08.2013",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07--081.html",
+     "seiten": 23,
+     "absaetze": 386,
+     "fussnoten": 38,
+     "pdf_sha256": "7b52dd26eb2ae0ee56f06b99fd76fc1441c217f0c79f867aa68d83bfed8ad615",
+     "delta": {
+      "neu": 24,
+      "gestrichen": 13,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "082",
+     "veroeffentlicht": "01.08.2013",
+     "in_kraft_bis": "01.01.2014",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07--082.html",
+     "seiten": 23,
+     "absaetze": 385,
+     "fussnoten": 39,
+     "pdf_sha256": "cdc0c7d1fe5cf72b9bd091776cab636c82830e60ea94ea112c53570654ac877c",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 1,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "083",
+     "veroeffentlicht": "01.01.2014",
+     "in_kraft_bis": "01.01.2014",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07--083.html",
+     "seiten": 23,
+     "absaetze": 388,
+     "fussnoten": 41,
+     "pdf_sha256": "945646859265e91eec62407cb788e917aa66644e2c5267cc381706ac0b71eff5",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "085",
+     "veroeffentlicht": "01.01.2014",
+     "in_kraft_bis": "01.08.2015",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07-2006_08_21-085.html",
+     "seiten": 24,
+     "absaetze": 386,
+     "fussnoten": 45,
+     "pdf_sha256": "2bac1e1eb2b16057aae921bb1305455f39ed096adcecdd419e89890de9bbc260",
+     "delta": {
+      "neu": 14,
+      "gestrichen": 16,
+      "geaendert": 11
+     }
+    },
+    {
+     "nachtrag": "089",
+     "veroeffentlicht": "01.08.2015",
+     "in_kraft_bis": "01.08.2015",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07-2006_08_21-089.html",
+     "seiten": 24,
+     "absaetze": 393,
+     "fussnoten": 47,
+     "pdf_sha256": "d058b619421a5f4d00dee61cbe45b74d823b8e6dabfde0573465dfa1ce4e7d38",
+     "delta": {
+      "neu": 9,
+      "gestrichen": 2,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "091",
+     "veroeffentlicht": "01.08.2015",
+     "in_kraft_bis": "01.01.2017",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07-2006_08_21-091.html",
+     "seiten": 24,
+     "absaetze": 393,
+     "fussnoten": 47,
+     "pdf_sha256": "22c89b61d8a706277286d8910de527c3ee550103532834e10c5441cc0c8457cd",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "095",
+     "veroeffentlicht": "01.01.2017",
+     "in_kraft_bis": "01.01.2018",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07-2006_08_21-095.html",
+     "seiten": 25,
+     "absaetze": 409,
+     "fussnoten": 50,
+     "pdf_sha256": "618683cd18de1f61743b9e6adf34a58ada10b52bce0865f12700e2b1706526f7",
+     "delta": {
+      "neu": 16,
+      "gestrichen": 0,
+      "geaendert": 5
+     }
+    },
+    {
+     "nachtrag": "099",
+     "veroeffentlicht": "01.01.2018",
+     "in_kraft_bis": "01.08.2018",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07-2006_08_21-099.html",
+     "seiten": 25,
+     "absaetze": 410,
+     "fussnoten": 52,
+     "pdf_sha256": "eaa01e21805313a7769647bb1c2de95655eb1395b16e729ecda708025821c1d6",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 1,
+      "geaendert": 5
+     }
+    },
+    {
+     "nachtrag": "102",
+     "veroeffentlicht": "01.08.2018",
+     "in_kraft_bis": "01.08.2019",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07-2006_08_21-102.html",
+     "seiten": 25,
+     "absaetze": 406,
+     "fussnoten": 54,
+     "pdf_sha256": "40cf7c8ccd4ffcb0b5a34bf1e7c5580787cbed03bb9697e04c52bd1e4627f43a",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 5,
+      "geaendert": 4
+     }
+    },
+    {
+     "nachtrag": "106",
+     "veroeffentlicht": "01.08.2019",
+     "in_kraft_bis": "01.01.2021",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07-2006_08_21-106.html",
+     "seiten": 27,
+     "absaetze": 444,
+     "fussnoten": 57,
+     "pdf_sha256": "cd25f11cf48ddd3ebb802e0632b512424eea491e4cb59c5d9e3c1593350440d3",
+     "delta": {
+      "neu": 39,
+      "gestrichen": 1,
+      "geaendert": 10
+     }
+    },
+    {
+     "nachtrag": "111",
+     "veroeffentlicht": "01.01.2021",
+     "in_kraft_bis": "01.08.2021",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07-2006_08_21-111.html",
+     "seiten": 27,
+     "absaetze": 449,
+     "fussnoten": 60,
+     "pdf_sha256": "4b969ddf4bd49f148e69a2ed5e5fc25aa52e98cad995eec9d28764311c3742a7",
+     "delta": {
+      "neu": 28,
+      "gestrichen": 23,
+      "geaendert": 12
+     }
+    },
+    {
+     "nachtrag": "113",
+     "veroeffentlicht": "01.08.2021",
+     "in_kraft_bis": "01.01.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07-2006_08_21-113.html",
+     "seiten": 27,
+     "absaetze": 448,
+     "fussnoten": 61,
+     "pdf_sha256": "634c7eb1b765f8098ca9e6c6e571019d2240ed84ddf71c6755e16545f4079edb",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 1,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "115",
+     "veroeffentlicht": "01.01.2022",
+     "in_kraft_bis": "01.01.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07-2006_08_21-115.html",
+     "seiten": 30,
+     "absaetze": 505,
+     "fussnoten": 67,
+     "pdf_sha256": "40a8bc155c3b465ade660233f5a4470eb1a9388917e46e446142a65552e8b823",
+     "delta": {
+      "neu": 76,
+      "gestrichen": 19,
+      "geaendert": 13
+     }
+    },
+    {
+     "nachtrag": "117",
+     "veroeffentlicht": "01.01.2022",
+     "in_kraft_bis": "01.01.2023",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07-2006_08_21-117.html",
+     "seiten": 30,
+     "absaetze": 505,
+     "fussnoten": 67,
+     "pdf_sha256": "e1220947d0ece0c7d23b503906995f655ac829493a237417c3a9d7b8df70dc06",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "119",
+     "veroeffentlicht": "01.01.2023",
+     "in_kraft_bis": "01.08.2024",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07-2006_08_21-119.html",
+     "seiten": 30,
+     "absaetze": 501,
+     "fussnoten": 69,
+     "pdf_sha256": "7376688971fb097c8d9aad7869b66529deee8e8c6571d798f095b280de77a245",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 5,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "126",
+     "veroeffentlicht": "01.08.2024",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_100-2005_02_07-2006_08_21-126.html",
+     "seiten": 30,
+     "absaetze": 501,
+     "fussnoten": 70,
+     "pdf_sha256": "1085ff385a5d2f8a91c5be60f6787dffe0771106e9b224d71ae54a585f968c7f",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    }
+   ]
+  },
+  "412.101": {
+   "ordnungsnummer": "412.101",
+   "titel": "Volksschulverordnung (VSV)",
+   "fassungen": [
+    {
+     "nachtrag": "054",
+     "veroeffentlicht": "21.08.2006",
+     "in_kraft_bis": "01.01.2009",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_101-2006_06_28--054.html",
+     "seiten": 21,
+     "absaetze": 348,
+     "fussnoten": 9,
+     "pdf_sha256": "a6d47ba20fd4be24eab5771b1dd1e2a0d12281970e77880c9b1fe9fe3adc9313"
+    },
+    {
+     "nachtrag": "063",
+     "veroeffentlicht": "01.01.2009",
+     "in_kraft_bis": "01.01.2012",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_101-2006_06_28--063.html",
+     "seiten": 21,
+     "absaetze": 349,
+     "fussnoten": 11,
+     "pdf_sha256": "ccea192a146e75c5a868a71e0b941260ad85dc3b73e2f169ff959f91aaa4f052",
+     "delta": {
+      "neu": 4,
+      "gestrichen": 3,
+      "geaendert": 10
+     }
+    },
+    {
+     "nachtrag": "075",
+     "veroeffentlicht": "01.01.2012",
+     "in_kraft_bis": "01.08.2012",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_101-2006_06_28--075.html",
+     "seiten": 21,
+     "absaetze": 354,
+     "fussnoten": 12,
+     "pdf_sha256": "48b2552af812a1d4fa090afc9900bee5b10f3d4b1534f5c3d4a6691c6289aea2",
+     "delta": {
+      "neu": 5,
+      "gestrichen": 0,
+      "geaendert": 20
+     }
+    },
+    {
+     "nachtrag": "077",
+     "veroeffentlicht": "01.08.2012",
+     "in_kraft_bis": "01.06.2015",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_101-2006_06_28-2006_08_21-077.html",
+     "seiten": 21,
+     "absaetze": 352,
+     "fussnoten": 14,
+     "pdf_sha256": "f5abe1f496caad3567203c121c206073847279f756fa34a6b90efc4ce8d443c2",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 2,
+      "geaendert": 18
+     }
+    },
+    {
+     "nachtrag": "089",
+     "veroeffentlicht": "01.06.2015",
+     "in_kraft_bis": "01.08.2016",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_101-2006_06_28-2006_08_21-089.html",
+     "seiten": 23,
+     "absaetze": 375,
+     "fussnoten": 18,
+     "pdf_sha256": "d71a3c1fe8056eb2cde04688b2d99829ecfeedab02f0c9217af9b91c15197717",
+     "delta": {
+      "neu": 34,
+      "gestrichen": 11,
+      "geaendert": 12
+     }
+    },
+    {
+     "nachtrag": "093",
+     "veroeffentlicht": "01.08.2016",
+     "in_kraft_bis": "01.08.2017",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_101-2006_06_28-2006_08_21-093.html",
+     "seiten": 23,
+     "absaetze": 380,
+     "fussnoten": 21,
+     "pdf_sha256": "bcf4373a4894b15968365a1b35ae4b62403ae910d59a8a9f390da7056c77c3d0",
+     "delta": {
+      "neu": 7,
+      "gestrichen": 2,
+      "geaendert": 25
+     }
+    },
+    {
+     "nachtrag": "097",
+     "veroeffentlicht": "01.08.2017",
+     "in_kraft_bis": "01.08.2018",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_101-2006_06_28-2006_08_21-097.html",
+     "seiten": 23,
+     "absaetze": 384,
+     "fussnoten": 22,
+     "pdf_sha256": "728f9627c51bdf0ce765ede3ec1fb135409dab7d435b722702283b8d56175090",
+     "delta": {
+      "neu": 4,
+      "gestrichen": 0,
+      "geaendert": 9
+     }
+    },
+    {
+     "nachtrag": "101",
+     "veroeffentlicht": "01.08.2018",
+     "in_kraft_bis": "01.08.2019",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_101-2006_06_28-2006_08_21-101.html",
+     "seiten": 23,
+     "absaetze": 384,
+     "fussnoten": 23,
+     "pdf_sha256": "92bc253dddf5c0f1aa67c3bfab049bd44c92482ac48a48887a70146bb346d399",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 7
+     }
+    },
+    {
+     "nachtrag": "106",
+     "veroeffentlicht": "01.08.2019",
+     "in_kraft_bis": "01.01.2021",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_101-2006_06_28-2006_08_21-106.html",
+     "seiten": 27,
+     "absaetze": 465,
+     "fussnoten": 26,
+     "pdf_sha256": "87f3f53b30534cae5284b60bae3ed2e5588524955d519c8d5453df5c63a24c6d",
+     "delta": {
+      "neu": 86,
+      "gestrichen": 5,
+      "geaendert": 15
+     }
+    },
+    {
+     "nachtrag": "111",
+     "veroeffentlicht": "01.01.2021",
+     "in_kraft_bis": "01.08.2023",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_101-2006_06_28-2006_08_21-111.html",
+     "seiten": 27,
+     "absaetze": 463,
+     "fussnoten": 28,
+     "pdf_sha256": "6427be845ba0fd18c855b9a149ea4cb87e2b699e209d62b126d790c80d921dd8",
+     "delta": {
+      "neu": 4,
+      "gestrichen": 6,
+      "geaendert": 17
+     }
+    },
+    {
+     "nachtrag": "121",
+     "veroeffentlicht": "01.08.2023",
+     "in_kraft_bis": "01.08.2026",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_101-2006_06_28-2006_08_21-121.html",
+     "seiten": 27,
+     "absaetze": 463,
+     "fussnoten": 29,
+     "pdf_sha256": "6dbad04dc4f69c448998388eb2d1f09010debd1f5127a50cc5e55664fe11ba13",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "134",
+     "veroeffentlicht": "01.08.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_101-2006_06_28-2006_08_21-134.html",
+     "seiten": 27,
+     "absaetze": 464,
+     "fussnoten": 30,
+     "pdf_sha256": "097c2a8e29948a496964729497cacc9ea47fb1d55a4b411e9b3d24a062a85cd6",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 1,
+      "geaendert": 10
+     }
+    }
+   ]
+  },
+  "412.311": {
+   "ordnungsnummer": "412.311",
+   "titel": "Lehrpersonalverordnung (LPVO)",
+   "fassungen": [
+    {
+     "nachtrag": "040",
+     "veroeffentlicht": "24.03.2003",
+     "in_kraft_bis": "16.08.2004",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19--040.html",
+     "seiten": 17,
+     "absaetze": 99,
+     "fussnoten": 8,
+     "pdf_sha256": "39a044987e87d528e44e12ba76846ead6331143844f95102cd60cbbc511f227f"
+    },
+    {
+     "nachtrag": "045",
+     "veroeffentlicht": "01.07.2004",
+     "in_kraft_bis": "01.01.2005",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2004_08_16-045.html",
+     "seiten": 19,
+     "absaetze": 108,
+     "fussnoten": 12,
+     "pdf_sha256": "03a3137e854d22957aafc2711068078e224ac55943ce161e120a09ab1e28ba0a",
+     "delta": {
+      "neu": 26,
+      "gestrichen": 17,
+      "geaendert": 20
+     }
+    },
+    {
+     "nachtrag": "047",
+     "veroeffentlicht": "01.01.2005",
+     "in_kraft_bis": "16.08.2007",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-047.html",
+     "seiten": 20,
+     "absaetze": 116,
+     "fussnoten": 15,
+     "pdf_sha256": "132879cda9e50f895478042f8ca05bc760abcbc0b8d2bb5123d6bbde1ac72c7d",
+     "delta": {
+      "neu": 32,
+      "gestrichen": 24,
+      "geaendert": 23
+     }
+    },
+    {
+     "nachtrag": "058",
+     "veroeffentlicht": "16.08.2007",
+     "in_kraft_bis": "01.01.2008",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-058.html",
+     "seiten": 24,
+     "absaetze": 269,
+     "fussnoten": 17,
+     "pdf_sha256": "216abe4854e098241ed15b8ba90c5fb93853c22626803896ac8593769d439858",
+     "delta": {
+      "neu": 198,
+      "gestrichen": 45,
+      "geaendert": 26
+     }
+    },
+    {
+     "nachtrag": "059",
+     "veroeffentlicht": "01.01.2008",
+     "in_kraft_bis": "01.01.2008",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-059.html",
+     "seiten": 24,
+     "absaetze": 262,
+     "fussnoten": 19,
+     "pdf_sha256": "2a900e8c84c31ddb07bae260de0c5361b5c2c42c5249b273ffc4bbb9bdc877a2",
+     "delta": {
+      "neu": 4,
+      "gestrichen": 11,
+      "geaendert": 4
+     }
+    },
+    {
+     "nachtrag": "060",
+     "veroeffentlicht": "01.01.2008",
+     "in_kraft_bis": "01.01.2008",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-060.html",
+     "seiten": 24,
+     "absaetze": 262,
+     "fussnoten": 19,
+     "pdf_sha256": "1d5fb0513095425285c4bd7c5a5c80a8cb839e2f41fc48879effb01dd4a595d4",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 2,
+      "geaendert": 6
+     }
+    },
+    {
+     "nachtrag": "061",
+     "veroeffentlicht": "01.05.2008",
+     "in_kraft_bis": "16.08.2008",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-061.html",
+     "seiten": 22,
+     "absaetze": 245,
+     "fussnoten": 20,
+     "pdf_sha256": "36628321197eefb2331a825fcd5611d8999a4b17ca15105c85175d9a0ef2f070",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 17,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "062a",
+     "veroeffentlicht": "16.08.2008",
+     "in_kraft_bis": "16.08.2008",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-062a.html",
+     "seiten": 23,
+     "absaetze": 245,
+     "fussnoten": 23,
+     "pdf_sha256": "2713dbd89b5fc92b51271ed74ceaaf04814f502d43c618b1d84b66bab86f3261",
+     "delta": {
+      "neu": 6,
+      "gestrichen": 6,
+      "geaendert": 7
+     }
+    },
+    {
+     "nachtrag": "062b",
+     "veroeffentlicht": "16.08.2008",
+     "in_kraft_bis": "01.01.2009",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-062b.html",
+     "seiten": 23,
+     "absaetze": 245,
+     "fussnoten": 24,
+     "pdf_sha256": "27e4ffd45521b4d64d3be332880f1c930c3d6a45513b46b07f057205636c51da",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "064",
+     "veroeffentlicht": "01.01.2009",
+     "in_kraft_bis": "16.08.2009",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-064.html",
+     "seiten": 23,
+     "absaetze": 245,
+     "fussnoten": 24,
+     "pdf_sha256": "3eeb7ce10104bec866cede455f142fe932e2de739158445d1e21e82c81a06aa9",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 1,
+      "geaendert": 7
+     }
+    },
+    {
+     "nachtrag": "066a",
+     "veroeffentlicht": "16.08.2009",
+     "in_kraft_bis": "16.08.2009",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-066a.html",
+     "seiten": 22,
+     "absaetze": 238,
+     "fussnoten": 25,
+     "pdf_sha256": "540096589abea2e1e0dcc8f0d55be2519dddd39a7ebd25ac2b88f3299d1f5935",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 7,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "066b",
+     "veroeffentlicht": "16.08.2009",
+     "in_kraft_bis": "01.05.2010",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-066b.html",
+     "seiten": 22,
+     "absaetze": 238,
+     "fussnoten": 26,
+     "pdf_sha256": "1394981fe30731859ff1b1278ddf8132ef6ed571af8d01e457df85268af7ec99",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "069",
+     "veroeffentlicht": "01.05.2010",
+     "in_kraft_bis": "01.01.2011",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-069.html",
+     "seiten": 22,
+     "absaetze": 242,
+     "fussnoten": 27,
+     "pdf_sha256": "50c82ad52bea09935a0be4f97dcbe692ab6f3e22240cd6d2a0318e50f64f00af",
+     "delta": {
+      "neu": 5,
+      "gestrichen": 1,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "071",
+     "veroeffentlicht": "01.01.2011",
+     "in_kraft_bis": "01.05.2011",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-071.html",
+     "seiten": 19,
+     "absaetze": 250,
+     "fussnoten": 33,
+     "pdf_sha256": "66e0fc4976bc0f71820790edf1beabb3b7e1ed5a59d47a52e78e6e3181734a38",
+     "delta": {
+      "neu": 27,
+      "gestrichen": 19,
+      "geaendert": 18
+     }
+    },
+    {
+     "nachtrag": "073",
+     "veroeffentlicht": "01.05.2011",
+     "in_kraft_bis": "01.08.2011",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-073.html",
+     "seiten": 19,
+     "absaetze": 260,
+     "fussnoten": 35,
+     "pdf_sha256": "2244c35fe3576aacab226756f8f11a51f81ee95229e68087390f5d735b55c444",
+     "delta": {
+      "neu": 18,
+      "gestrichen": 8,
+      "geaendert": 25
+     }
+    },
+    {
+     "nachtrag": "073a",
+     "veroeffentlicht": "01.08.2011",
+     "in_kraft_bis": "01.01.2012",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-073a.html",
+     "seiten": 20,
+     "absaetze": 269,
+     "fussnoten": 38,
+     "pdf_sha256": "b83f03b86593e9bb208348d5e1dbe3d208a30ea7402d2d8a6eeadc34f47b4cd1",
+     "delta": {
+      "neu": 18,
+      "gestrichen": 9,
+      "geaendert": 13
+     }
+    },
+    {
+     "nachtrag": "075a",
+     "veroeffentlicht": "01.01.2012",
+     "in_kraft_bis": "20.01.2012",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-075a.html",
+     "seiten": 20,
+     "absaetze": 272,
+     "fussnoten": 39,
+     "pdf_sha256": "edd59fde6d893c4ca45ef75e83bdaf354f05aadda7040b45736e76a2dc71e921",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "075b",
+     "veroeffentlicht": "20.01.2012",
+     "in_kraft_bis": "01.08.2012",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-075b.html",
+     "seiten": 20,
+     "absaetze": 272,
+     "fussnoten": 40,
+     "pdf_sha256": "c440f93a4bb8955da17829b432c3f42896992b515a65d69e9a44bf66fc044ca3",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 16
+     }
+    },
+    {
+     "nachtrag": "077",
+     "veroeffentlicht": "01.08.2012",
+     "in_kraft_bis": "01.01.2014",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-077.html",
+     "seiten": 20,
+     "absaetze": 270,
+     "fussnoten": 31,
+     "pdf_sha256": "ab0e076f071bb2535274691343025c1d760b514d1d6e9c3f3920e71ed5f96d25",
+     "delta": {
+      "neu": 4,
+      "gestrichen": 6,
+      "geaendert": 33
+     }
+    },
+    {
+     "nachtrag": "083",
+     "veroeffentlicht": "01.01.2014",
+     "in_kraft_bis": "01.08.2014",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-083.html",
+     "seiten": 21,
+     "absaetze": 287,
+     "fussnoten": 33,
+     "pdf_sha256": "e5d02b3ed379a7caae9b5b6e8d96992f4035057d66922d5de9280d5a60aa428d",
+     "delta": {
+      "neu": 19,
+      "gestrichen": 2,
+      "geaendert": 7
+     }
+    },
+    {
+     "nachtrag": "085",
+     "veroeffentlicht": "01.08.2014",
+     "in_kraft_bis": "01.08.2015",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-085.html",
+     "seiten": 21,
+     "absaetze": 278,
+     "fussnoten": 36,
+     "pdf_sha256": "070c33464c3d2dd94692b83ca262ff3f670a071e88616068c9e621e67b9d0166",
+     "delta": {
+      "neu": 9,
+      "gestrichen": 18,
+      "geaendert": 10
+     }
+    },
+    {
+     "nachtrag": "089",
+     "veroeffentlicht": "01.08.2015",
+     "in_kraft_bis": "01.07.2016",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-089.html",
+     "seiten": 22,
+     "absaetze": 284,
+     "fussnoten": 38,
+     "pdf_sha256": "18ce7c96ac323d560c1093c545eff0067c07c6d935bbc1a112a3deadcb32ee73",
+     "delta": {
+      "neu": 8,
+      "gestrichen": 2,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "093",
+     "veroeffentlicht": "01.07.2016",
+     "in_kraft_bis": "01.12.2016",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-093.html",
+     "seiten": 22,
+     "absaetze": 285,
+     "fussnoten": 39,
+     "pdf_sha256": "a37e219a7f047064f0e4626c7897393fedd20eefa5c0504aed630680cfc8709d",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 1,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "095",
+     "veroeffentlicht": "01.12.2016",
+     "in_kraft_bis": "01.01.2017",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-095.html",
+     "seiten": 22,
+     "absaetze": 285,
+     "fussnoten": 40,
+     "pdf_sha256": "e301da7c8c5d14d671ddb96306e9fa9fadddb37e2e312a4447454b6abec2f4bb",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 4
+     }
+    },
+    {
+     "nachtrag": "095a",
+     "veroeffentlicht": "01.01.2017",
+     "in_kraft_bis": "01.08.2017",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-095a.html",
+     "seiten": 22,
+     "absaetze": 285,
+     "fussnoten": 41,
+     "pdf_sha256": "3097c3ea966c25cf65787b6acddb0ee7bdae94370ee2261faef35fc4161d2957",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "097",
+     "veroeffentlicht": "01.08.2017",
+     "in_kraft_bis": "26.01.2018",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-097.html",
+     "seiten": 25,
+     "absaetze": 340,
+     "fussnoten": 44,
+     "pdf_sha256": "537bfb8de4486801a2105a7a832087a179732d97061ed9a8802c6d47439cdb6e",
+     "delta": {
+      "neu": 96,
+      "gestrichen": 41,
+      "geaendert": 19
+     }
+    },
+    {
+     "nachtrag": "100",
+     "veroeffentlicht": "26.01.2018",
+     "in_kraft_bis": "01.08.2018",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-100.html",
+     "seiten": 25,
+     "absaetze": 340,
+     "fussnoten": 45,
+     "pdf_sha256": "c60855d557d706c6272198a746c0206e0f99c076f3525cf3ec1e6c5b80d2d8ae",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "101",
+     "veroeffentlicht": "01.08.2018",
+     "in_kraft_bis": "25.01.2019",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-101.html",
+     "seiten": 26,
+     "absaetze": 339,
+     "fussnoten": 46,
+     "pdf_sha256": "0e50440a24328c63e22ff1d6714ed5b63d490e8af99ce31111e9eab48e29e7d7",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 2,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "104",
+     "veroeffentlicht": "25.01.2019",
+     "in_kraft_bis": "01.08.2019",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-104.html",
+     "seiten": 26,
+     "absaetze": 339,
+     "fussnoten": 46,
+     "pdf_sha256": "149484c5a3895fed1594fb104d9cddb6ee0410e91a3ccfc5132881118e558f38",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "105",
+     "veroeffentlicht": "01.08.2019",
+     "in_kraft_bis": "24.01.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-105.html",
+     "seiten": 26,
+     "absaetze": 338,
+     "fussnoten": 47,
+     "pdf_sha256": "6e1efa7e1323ae7e14d470a8a1d62737540781571db748f358cd79fdaf97f141",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 1,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "108",
+     "veroeffentlicht": "24.01.2020",
+     "in_kraft_bis": "01.08.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-108.html",
+     "seiten": 26,
+     "absaetze": 338,
+     "fussnoten": 48,
+     "pdf_sha256": "ea93d18c26f0a57b6c72916d8476f55d9d9203609485fe15081606c1b6446ffc",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "109",
+     "veroeffentlicht": "01.08.2020",
+     "in_kraft_bis": "01.01.2021",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-109.html",
+     "seiten": 26,
+     "absaetze": 338,
+     "fussnoten": 49,
+     "pdf_sha256": "86b482feab95e86a36822b4a7a28855db99dd2ad48a33dde6f6f5153c70a97f4",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 7
+     }
+    },
+    {
+     "nachtrag": "111",
+     "veroeffentlicht": "01.01.2021",
+     "in_kraft_bis": "26.05.2021",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-111.html",
+     "seiten": 26,
+     "absaetze": 337,
+     "fussnoten": 51,
+     "pdf_sha256": "4a6145376616a7d698a277855e299af78c5e2b42744d083244d5fcdcc82b7529",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 2,
+      "geaendert": 17
+     }
+    },
+    {
+     "nachtrag": "113",
+     "veroeffentlicht": "26.05.2021",
+     "in_kraft_bis": "01.08.2021",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-113.html",
+     "seiten": 26,
+     "absaetze": 338,
+     "fussnoten": 53,
+     "pdf_sha256": "2debdc7a57fe8f8f1f2b0edd8c06562abdf662c35948ad3232ac6ebc204b9c46",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "114",
+     "veroeffentlicht": "01.08.2021",
+     "in_kraft_bis": "26.01.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-114.html",
+     "seiten": 26,
+     "absaetze": 339,
+     "fussnoten": 54,
+     "pdf_sha256": "28ae57f7dec49d815e0b69570dc20c7d4d5fcd42ebe94c0a2085db57c3db664e",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 2,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "116",
+     "veroeffentlicht": "26.01.2022",
+     "in_kraft_bis": "01.10.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-116.html",
+     "seiten": 26,
+     "absaetze": 339,
+     "fussnoten": 55,
+     "pdf_sha256": "adb3047cb115a74d7d90f7de431e3595539269c007018b0abfda8ec86117364a",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "118",
+     "veroeffentlicht": "01.10.2022",
+     "in_kraft_bis": "26.10.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-118.html",
+     "seiten": 26,
+     "absaetze": 340,
+     "fussnoten": 56,
+     "pdf_sha256": "95a1fb8c536db669055b820c09263d23b6d10dde7261397233d901ce981b92ce",
+     "delta": {
+      "neu": 4,
+      "gestrichen": 3,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "119",
+     "veroeffentlicht": "26.10.2022",
+     "in_kraft_bis": "01.01.2023",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-119.html",
+     "seiten": 26,
+     "absaetze": 340,
+     "fussnoten": 57,
+     "pdf_sha256": "b02f01debd5f8338614329ecbcefca399e86feb09eb204e563086acac32dd226",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "120",
+     "veroeffentlicht": "01.01.2023",
+     "in_kraft_bis": "26.01.2023",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-120.html",
+     "seiten": 26,
+     "absaetze": 335,
+     "fussnoten": 59,
+     "pdf_sha256": "e8b5904b54f6293af74690f3a17db74e91a778304c881f6c8ba69d92256428f6",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 7,
+      "geaendert": 17
+     }
+    },
+    {
+     "nachtrag": "122",
+     "veroeffentlicht": "26.01.2023",
+     "in_kraft_bis": "01.08.2023",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-122.html",
+     "seiten": 26,
+     "absaetze": 335,
+     "fussnoten": 60,
+     "pdf_sha256": "885addd5dbfd84b9dee47de6df1326eca4293583653e37316fe53d9e9c085be7",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "123",
+     "veroeffentlicht": "01.08.2023",
+     "in_kraft_bis": "26.01.2024",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-123.html",
+     "seiten": 26,
+     "absaetze": 335,
+     "fussnoten": 61,
+     "pdf_sha256": "c9038bf1b1884a845f76edd7a7786d067cc0a14b8a5475ce3e3e13ce983e4c35",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "124",
+     "veroeffentlicht": "26.01.2024",
+     "in_kraft_bis": "24.01.2025",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-124.html",
+     "seiten": 26,
+     "absaetze": 335,
+     "fussnoten": 63,
+     "pdf_sha256": "fa80328c8fd988d7a9bffce173871a885d3b67d5dddfdc5896f9f6912788183f",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "128",
+     "veroeffentlicht": "24.01.2025",
+     "in_kraft_bis": "26.01.2026",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-128.html",
+     "seiten": 27,
+     "absaetze": 335,
+     "fussnoten": 64,
+     "pdf_sha256": "24369350ecc7d891184d20d9615b19d745abd1254d4a7106e9fee7ff5ec3390c",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "132",
+     "veroeffentlicht": "26.01.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_311-2000_07_19-2000_10_01-132.html",
+     "seiten": 27,
+     "absaetze": 335,
+     "fussnoten": 64,
+     "pdf_sha256": "9c64c943ab89ad7548dbe5b41de7be6abe60dd5c5fb64a44f802bd150fa3784a",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    }
+   ]
+  },
+  "177.10": {
+   "ordnungsnummer": "177.10",
+   "titel": "Personalgesetz (PG)",
+   "fassungen": [
+    {
+     "nachtrag": "126",
+     "veroeffentlicht": "01.08.2024",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-177_10-1998_09_27-1999_07_01-126.html",
+     "seiten": 18,
+     "absaetze": 305,
+     "fussnoten": 24,
+     "pdf_sha256": "4beff781ea3968cf7bde9a8c43badecd5160dfd1cdfc4ab02000797d980fd0fc"
+    }
+   ]
+  },
+  "177.11": {
+   "ordnungsnummer": "177.11",
+   "titel": "Personalverordnung (PVO)",
+   "fassungen": [
+    {
+     "nachtrag": "132",
+     "veroeffentlicht": "26.01.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-177_11-1998_12_16-1999_01_01-132.html",
+     "seiten": 17,
+     "absaetze": 227,
+     "fussnoten": 28,
+     "pdf_sha256": "ac93d31cae5a6450fafcbd04fd04376a94b87cf5c566d0d34c1735d0e0fab6a9"
+    }
+   ]
+  },
+  "177.111": {
+   "ordnungsnummer": "177.111",
+   "titel": "Vollzugsverordnung zum Personalgesetz (VVO)",
+   "fassungen": [
+    {
+     "nachtrag": "132",
+     "veroeffentlicht": "26.01.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-177_111-1999_05_19-1999_07_01-132.html",
+     "seiten": 78,
+     "absaetze": 888,
+     "fussnoten": 765,
+     "pdf_sha256": "37d3a6a4d151211154e284a91fe75ec308872ee266c98ac35e7ecca4b3b83860"
+    }
+   ]
+  },
+  "412.31": {
+   "ordnungsnummer": "412.31",
+   "titel": "Lehrpersonalgesetz (LPG)",
+   "fassungen": [
+    {
+     "nachtrag": "118",
+     "veroeffentlicht": "01.10.2022",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_31-1999_05_10-2000_10_01-118.html",
+     "seiten": 11,
+     "absaetze": 164,
+     "fussnoten": 35,
+     "pdf_sha256": "fbe92a8827135cc24b39922f8d25e5cfb57d027b149ca55ba32097d9a29d4a42"
+    }
+   ]
+  },
+  "131.1": {
+   "ordnungsnummer": "131.1",
+   "titel": "Gemeindegesetz (GG)",
+   "fassungen": [
+    {
+     "nachtrag": "132",
+     "veroeffentlicht": "01.04.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_1-2015_04_20-2018_01_01-132.html",
+     "seiten": 42,
+     "absaetze": 856,
+     "fussnoten": 21,
+     "pdf_sha256": "713343fbeed4815bc1ab47f62aa6562e5cadfe7f40fe678a1700327b3b6236af"
+    }
+   ]
+  }
+ },
+ "stand": "20.11.2026"
+}

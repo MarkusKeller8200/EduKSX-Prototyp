@@ -62,6 +62,14 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 - Offen: Stempeln per NFC-Tag (Idee, noch kein Issue – Antwort Projektleitung ausstehend).
 - Offen: weitere Schritte («der ganze Rest») je als Issue nach Freigabe; Icon «time» vorläufig, nicht im Icon-Set.
 
+### Sitzung 2026-11-20 (01:10–02:10) – EduKSX-Codex 0.9.0
+
+- Entscheide 2026-11-20: Aufbereitung vorab (Dateien statt Laufzeit-KI/API); Test an VSG, VSV, LPVO; Normenhierarchie Personalrecht.
+- Umgesetzt (#33 → `_3 Beta-Test`): `tools/texte.py` (ZH-Lex-PDF → Markdown, Unterschiede), Ansichten «Textfassungen & Änderungen» und «Normenhierarchie».
+- Hinweis: Der Arbeitsbereich erreicht zh.ch und notes.zh.ch direkt (curl/urllib) – die Aufbereitung braucht keinen Browser.
+  `tools/seite_bauen.py` veröffentlicht jetzt Markdown in `texte/`-Ordnern (sonst *.md weiterhin ausgeschlossen).
+- Offen: Tabellen (LPVO-Anhang); restliche 23 ZH-Lex-Erlasse; GitHub Action für Abgleich + Aufbereitung; kommunale Erlasse.
+
 ### Sitzung 2026-11-20 (00:50–01:30) – EduKSX-Codex 0.8.0
 
 - Entscheide 2026-11-20: Quellenklassen A–F; Dateidatum bei fehlendem Website-Datum zulässig (gekennzeichnet); alle Dokumente mit «Veröffentlicht» und «Version»; alte Versionen behalten, Anzahl zeigen, Klick = Historik; Analyse-Version je Gemeinde.

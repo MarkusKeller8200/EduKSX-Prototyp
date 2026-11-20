@@ -166,6 +166,17 @@ def cache_brechen(ordner: Path) -> None:
             html.write_text(neu, encoding="utf-8")
 
 
+_GRUNDMUSTER = shutil.ignore_patterns("node_modules", "vendor", ".env*", "*.md", "__pycache__")
+
+
+def ohne_entwicklungsdateien(verzeichnis: str, namen: list[str]) -> set[str]:
+    """Entwicklungsdateien weglassen. Markdown nur in «texte/»-Ordnern behalten (aufbereitete Rechtstexte für die Anzeige)."""
+    weg = set(_GRUNDMUSTER(verzeichnis, namen))
+    if "texte" in Path(verzeichnis).parts:
+        weg -= {n for n in namen if n.endswith(".md")}
+    return weg
+
+
 def bauen(ziel: Path) -> list[str]:
     if ziel.exists():
         shutil.rmtree(ziel)
@@ -173,7 +184,7 @@ def bauen(ziel: Path) -> list[str]:
     shutil.copy2(ROOT / "seite" / "eduksx.css", ziel / "assets" / "eduksx.css")
     liste = prototypen()
     for ordner, _ in liste:
-        shutil.copytree(ordner, ziel / ordner.name, ignore=shutil.ignore_patterns("node_modules", "vendor", ".env*", "*.md", "__pycache__"))
+        shutil.copytree(ordner, ziel / ordner.name, ignore=ohne_entwicklungsdateien)
         cache_brechen(ziel / ordner.name)
     (ziel / "index.html").write_text(menue(liste), encoding="utf-8")
     (ziel / ".nojekyll").write_text("", encoding="utf-8")

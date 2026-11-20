@@ -127,6 +127,8 @@
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Gesetzestexte & Verordnungen" }),
         h("li", null, eintrag(link("herkunft"), "Herkunftsliste (Publikationsquellen)", r.art === "herkunft")),
         h("li", null, eintrag(link("rechtsgrundlagen"), "Rechtsgrundlagen Schule", r.art === "rechtsgrundlagen", h("span", { cls: "anz", text: String(D.rechtsgrundlagen.eintraege.length) }))),
+        h("li", null, eintrag(link("texte"), "Textfassungen & Änderungen", r.art === "texte" || r.art === "text")),
+        h("li", null, eintrag(link("hierarchie"), "Normenhierarchie", r.art === "hierarchie")),
         h("li", null, eintrag(link("abgleich"), "Versionen & Abgleich", r.art === "abgleich")),
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Bezirke" })),
       h("div", { cls: "suche" }, such),
@@ -271,6 +273,11 @@
   }
 
   // ------------------------------------------------------------------ Versionen und Historik
+  function textLink(ls, nachtrag, inhalt) {
+    var e = ls && D.texte.erlasse[ls];
+    if (!e || !e.fassungen.some(function (f) { return f.nachtrag === nachtrag; })) return null;
+    return h("a", { href: link("text", ls, nachtrag), text: inhalt || "Textfassung" });
+  }
   function versionKnopf(titel, versionen, info) {
     var n = (versionen || []).length;
     if (!n) return h("span", { cls: "muted small", text: "–" });
@@ -284,7 +291,9 @@
       var status = i === 0 ? badge("erfolg", "●", "aktuell") : badge("neutral", "○", v.in_kraft_bis ? "in Kraft bis " + v.in_kraft_bis : "abgelöst");
       return h("tr", null, h("td", null, v.url ? extern(v.url, v.version + " ↗") : v.version), h("td", null, status),
         h("td", { text: v.veroeffentlicht || "–" }), h("td", { text: v.inkraft || v.gueltig_seit || "–" }),
-        h("td", { text: v.erlass_neu ? "früherer Erlass vom " + v.erlassdatum : (v.erfasst ? "erfasst " + v.erfasst : "") }), h("td", { text: v.quelle || "" }));
+        h("td", null, v.erlass_neu ? "früherer Erlass vom " + v.erlassdatum : (v.erfasst ? "erfasst " + v.erfasst : ""),
+          (function () { var m = /Nachtrag (\S+)/.exec(v.version || ""), ls = m && (/erlass-([\d_]+)-/.exec(v.url || "") || [])[1]; var a = m && ls ? textLink(ls.replace(/_/g, "."), m[1], "Text und Änderungen") : null; if (a) a.addEventListener("click", function () { dlg.close(); }); return a; })()),
+        h("td", { text: v.quelle || "" }));
     });
     dlg.appendChild(h("div", { cls: "seitenkopf" }, h("div", null, h("strong", { text: titel }), h("div", { cls: "small muted", text: versionen.length + " Versionen · neueste zuerst · alte Versionen bleiben erhalten" })), h("div", { cls: "aktionen" }, zu)));
     if (info) dlg.appendChild(fakten(info.filter(function (x) { return x[1]; })));
@@ -320,7 +329,8 @@
         h("td", { cls: "nowrap", text: e.veroeffentlicht || "–" }),
         h("td", null, h("div", { cls: "nowrap", text: e.version || "–" }), e.anzahl_versionen ? versionKnopf(e.titel_amtlich || e.titel, e.versionen,
           [["Herausgebende Behörde", e.herausgeber], ["Massgebende Publikationsstelle", e.publikationsstelle], ["Downloadort", e.downloadort ? extern(e.downloadort, "aktuelle Fassung ↗") : null], ["Fundstelle", e.fundstelle]]) : (e.version_hinweis ? h("div", { cls: "small muted", text: e.version_hinweis }) : null)),
-        h("td", null, e.direkt.map(function (d, i) { return [i ? h("br") : null, extern(d.url, d.text + " ↗")]; }),
+        h("td", null, (function () { var ls = (/LS ([\d.]+)/.exec(e.fundstelle) || [])[1]; var t = ls && D.texte.erlasse[ls]; return t ? [h("a", { cls: "btn klein", href: link("text", ls, t.fassungen[t.fassungen.length - 1].nachtrag), text: "Text" + (t.voll ? " & Änderungen" : "") }), h("br")] : null; })(),
+          e.direkt.map(function (d, i) { return [i ? h("br") : null, extern(d.url, d.text + " ↗")]; }),
           e.quelle_url ? [e.direkt.length ? h("br") : null, h("span", { cls: "small muted" }, "Quelle: ", extern(e.quelle_url, e.quelle), e.quelle_generisch ? h("span", { title: "Link führt auf eine allgemeine Seite, nicht direkt auf den Erlass", text: " (allgemein)" }) : null)] : null));
     }
     function zeigen() {
@@ -415,6 +425,183 @@
         }))))];
   }
 
+  // ------------------------------------------------------------------ Textfassungen (Markdown) und Änderungen
+  function inline(t) {
+    var teile = [], re = /\[\^(\w+)\]/g, m, last = 0;
+    while ((m = re.exec(t))) { if (m.index > last) teile.push(t.slice(last, m.index)); teile.push(h("sup", { cls: "fn" }, h("a", { href: "#fn-" + m[1], "data-fn": m[1], text: m[1] }))); last = re.lastIndex; }
+    if (last < t.length) teile.push(t.slice(last));
+    return teile;
+  }
+  function mdTeile(md) {
+    var kopf = {}, kern = md;
+    if (md.indexOf("---\n") === 0) {
+      var ende = md.indexOf("\n---\n");
+      md.slice(4, ende).split("\n").forEach(function (z) { var m = /^(\w+): "?(.*?)"?$/.exec(z); if (m) kopf[m[1]] = m[2]; });
+      kern = md.slice(ende + 5);
+    }
+    var trenn = kern.indexOf("\n\n---\n\n"), fn = {};
+    var body = trenn >= 0 ? kern.slice(0, trenn) : kern;
+    if (trenn >= 0) kern.slice(trenn).split("\n").forEach(function (z) { var m = /^\[\^(\w+)\]: (.*)$/.exec(z); if (m) fn[m[1]] = m[2]; });
+    return { kopf: kopf, bloecke: body.trim().split("\n\n").filter(function (b) { return b.trim(); }), fussnoten: fn };
+  }
+  function blockArt(b) { return /^### /.test(b) ? "h3" : /^## /.test(b) ? "h2" : /^# /.test(b) ? "h1" : /^- /.test(b) ? "li" : /^\*.*\*$/.test(b) ? "rand" : "p"; }
+  function blockText(b) { return b.replace(/^(### |## |# |- )/, "").replace(/^\*(.*)\*$/, "$1"); }
+  function blockEl(art, inhalt, extraCls) {
+    var tag = art === "h1" ? "h2" : art === "h2" ? "h3" : art === "h3" ? "h4" : art === "li" ? "div" : "p";
+    return h(tag, { cls: "tb tb-" + art + (extraCls ? " " + extraCls : "") }, inhalt);
+  }
+  function markiert(teile, art) {
+    return teile.map(function (t, i) {
+      var txt = t[1]; if (i === 0) txt = blockText(txt);
+      if (t[0] === "=") return txt + " ";
+      return h(t[0] === "+" ? "ins" : "del", null, h("span", { cls: "sr-only", text: t[0] === "+" ? " eingefügt: " : " gestrichen: " }), txt, " ");
+    });
+  }
+  function texteListe() {
+    var E = D.texte.erlasse, nrs = Object.keys(E);
+    return [kopf("Textfassungen & Änderungen", "Rechtstexte als Markdown (KI-lesbar), maschinell aus den amtlichen PDF erzeugt. Für vollständig aufbereitete Erlasse sind die Änderungen zwischen aufeinanderfolgenden Fassungen farbig markiert."),
+      h("p", { cls: "meldung info" }, "Aufbereitung vorab mit ", h("code", { text: "tools/texte.py" }), " (pdfplumber und Regeln; keine KI zur Laufzeit). Massgebend ist die amtliche Fassung in ZH-Lex. Grenzen: Tabellen (z. B. Lohnskalen im Anhang der LPVO) werden noch nicht als Tabelle erkannt."),
+      h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+        h("thead", null, h("tr", null, ["Erlass", "Fundstelle", "Aufbereitet", "Geltende Fassung", "Letzte Änderung", "Verweise auf"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+        h("tbody", null, nrs.map(function (nr) {
+          var e = E[nr], f = e.fassungen, akt = f[f.length - 1], d = akt.delta;
+          return h("tr", null, h("th", { scope: "row" }, h("a", { href: link("text", nr, akt.nachtrag), text: e.titel })), h("td", { cls: "nowrap", text: "LS " + nr }),
+            h("td", { text: e.voll ? f.length + " Fassungen" : "nur geltende Fassung" }), h("td", { cls: "nowrap", text: "Nachtrag " + akt.nachtrag + " · " + akt.veroeffentlicht }),
+            h("td", null, d ? h("span", { cls: "small" }, badge("erfolg", "+", String(d.neu)), " ", badge("fehler", "–", String(d.gestrichen)), " ", badge("warnung", "~", String(d.geaendert))) : h("span", { cls: "muted", text: "–" })),
+            h("td", { cls: "small", text: e.verweise.slice(0, 4).map(function (v) { return v[0] + " (" + v[1] + ")"; }).join(", ") }));
+        }))))];
+  }
+  function textAnsicht(ls, nachtrag) {
+    var e = D.texte.erlasse[ls];
+    if (!e) return nichtGefunden();
+    var f = e.fassungen, idx = f.map(function (x) { return x.nachtrag; }).indexOf(nachtrag);
+    if (idx < 0) { idx = f.length - 1; nachtrag = f[idx].nachtrag; }
+    var vor = idx > 0 ? f[idx - 1] : null, akt = f[idx];
+    var huelle = h("div", { cls: "textfassung", "aria-live": "polite" }, h("p", { cls: "muted", text: "Text wird geladen …" }));
+    var cbVgl = h("input", { type: "checkbox", checked: vor ? true : null, disabled: vor ? null : true });
+    var cbNur = h("input", { type: "checkbox", disabled: vor ? null : true });
+    var sel = h("select", { "aria-label": "Fassung wählen", onchange: function () { location.hash = link("text", ls, sel.value); } },
+      f.slice().reverse().map(function (x) { return h("option", { value: x.nachtrag, selected: x.nachtrag === nachtrag ? true : null, text: "Nachtrag " + x.nachtrag + " · veröffentlicht " + (x.veroeffentlicht || "–") }); }));
+    var zus = h("span", { cls: "small" });
+    var daten = null, delta = null;
+    function zeigen() {
+      if (!daten) return;
+      var T = mdTeile(daten), B = T.bloecke, ch = (cbVgl.checked && delta) ? delta.aenderungen : [];
+      var weg = {}, mark = {};
+      ch.forEach(function (c) { if (c.op === "-") (weg[c.vor] = weg[c.vor] || []).push(c.text); else mark[c.i] = c; });
+      huelle.textContent = "";
+      var letzteH3 = null, ausgegebenH3 = null;
+      function kontext() { if (cbNur.checked && letzteH3 !== null && ausgegebenH3 !== letzteH3) { huelle.appendChild(blockEl("h3", inline(blockText(B[letzteH3])), "kontext")); ausgegebenH3 = letzteH3; } }
+      for (var i = 0; i <= B.length; i++) {
+        (weg[i] || []).forEach(function (t) { kontext(); huelle.appendChild(blockEl(blockArt(t), [h("span", { cls: "sr-only", text: "Gestrichen: " }), inline(blockText(t))], "geloescht")); });
+        if (i === B.length) break;
+        var b = B[i], art = blockArt(b), c = mark[i];
+        if (art === "h3") letzteH3 = i;
+        if (cbNur.checked && !c) continue;
+        if (c) kontext();
+        if (!c) huelle.appendChild(blockEl(art, inline(blockText(b))));
+        else if (c.op === "+") { huelle.appendChild(blockEl(art, [h("span", { cls: "sr-only", text: "Neu: " }), inline(blockText(b))], "neu")); if (art === "h3") ausgegebenH3 = i; }
+        else huelle.appendChild(blockEl(art, markiert(c.teile, art), "geaendert"));
+      }
+      var fnk = Object.keys(T.fussnoten);
+      if (fnk.length && !cbNur.checked) huelle.appendChild(h("details", { cls: "fussnoten" }, h("summary", { text: "Fussnoten (" + fnk.length + ")" }),
+        h("ol", null, fnk.map(function (k) { return h("li", { id: "fn-" + k, value: /^\d+$/.test(k) ? k : null }, T.fussnoten[k]); }))));
+      if (cbNur.checked && !ch.length) huelle.appendChild(h("p", { cls: "muted", text: "Keine Änderungen gegenüber der Vorgängerfassung." }));
+    }
+    [cbVgl, cbNur].forEach(function (c) { c.addEventListener("change", zeigen); });
+    fetch("texte/" + ls + "/" + nachtrag + ".md").then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (t) {
+      daten = t;
+      if (!vor) return null;
+      return fetch("texte/" + ls + "/delta_" + vor.nachtrag + "_" + nachtrag + ".json").then(function (r) { return r.ok ? r.json() : null; });
+    }).then(function (d) {
+      delta = d || null;
+      if (delta) { var z = delta.zusammenfassung; zus.textContent = ""; zus.append(" gegenüber Nachtrag " + vor.nachtrag + ": ", badge("erfolg", "+", z.neu + " neu"), " ", badge("fehler", "–", z.gestrichen + " gestrichen"), " ", badge("warnung", "~", z.geaendert + " geändert")); }
+      zeigen();
+    }).catch(function (err) { huelle.textContent = ""; huelle.appendChild(h("p", { cls: "meldung fehler", text: "Textfassung konnte nicht geladen werden (" + err.message + ")." })); });
+    return [h("p", { cls: "small muted" }, h("a", { href: link("texte"), text: "Textfassungen" }), " › LS " + ls),
+      kopf(e.titel, "LS " + ls + " · Nachtrag " + akt.nachtrag + " · veröffentlicht " + (akt.veroeffentlicht || "–") + (akt.in_kraft_bis ? " · in Kraft bis " + akt.in_kraft_bis : " · geltend"),
+        [extern(akt.seite, "Amtliche Fassung (ZH-Lex) ↗"), " ", h("a", { cls: "btn", href: "texte/" + ls + "/" + akt.nachtrag + ".md", download: ls + "_" + akt.nachtrag + ".md", text: "Markdown herunterladen" })]),
+      h("div", { cls: "filterzeile" }, sel,
+        h("label", null, cbVgl, " Änderungen markieren"), h("label", null, cbNur, " nur Änderungen"), zus),
+      vor ? null : h("p", { cls: "small muted", text: e.voll ? "Erste aufbereitete Fassung – kein Vergleich möglich." : "Nur die geltende Fassung ist aufbereitet." }),
+      h("p", { cls: "small muted" }, h("ins", null, "eingefügt"), " · ", h("del", null, "gestrichen"), " · ", h("span", { cls: "legende-neu", text: "neuer Absatz" }), " · ", h("span", { cls: "legende-weg", text: "gestrichener Absatz" }), " – maschinell erzeugt, massgebend ist die amtliche Fassung."),
+      huelle];
+  }
+
+  // ------------------------------------------------------------------ Normenhierarchie
+  function hierarchie() {
+    var H = D.hierarchien[0], K = {}; H.knoten.forEach(function (k) { K[k.id] = k; });
+    var detail = h("section", { cls: "karte hierarchie-detail", "aria-live": "polite" }, h("p", { cls: "muted", text: "Erlass anklicken, um Grundlage, Belegstellen und Versionen zu sehen." }));
+    var buehne = h("div", { cls: "hierarchie" });
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.setAttribute("class", "hierarchie-linien"); svg.setAttribute("aria-hidden", "true");
+    buehne.appendChild(svg);
+    var boxen = {};
+    H.ebenen.forEach(function (eb, i) {
+      var reihe = h("div", { cls: "h-ebene" }, h("div", { cls: "h-ebene-titel", text: eb }));
+      var zelle = h("div", { cls: "h-knoten" });
+      H.knoten.filter(function (k) { return k.ebene === i; }).forEach(function (k) {
+        var b = h("button", { type: "button", cls: "h-box", "data-id": k.id, onclick: function () { waehle(k.id); } },
+          h("strong", { text: k.titel }), h("span", { cls: "small muted", text: k.fundstelle + " · " + k.art }),
+          k.versionen ? h("span", { cls: "small", text: "⟲ " + k.versionen + (k.versionen === 1 ? " Fassung" : " Fassungen") + " aufbereitet" }) : null,
+          k.beispiele ? h("span", { cls: "small", text: k.beispiele.length + " Beispiele aus erfassten Gemeinden" }) : null);
+        boxen[k.id] = b; zelle.appendChild(b);
+      });
+      reihe.appendChild(zelle); buehne.appendChild(reihe);
+    });
+    function linien() {
+      if (!buehne.isConnected) return;
+      var R0 = buehne.getBoundingClientRect();
+      svg.setAttribute("width", R0.width); svg.setAttribute("height", R0.height);
+      svg.textContent = "";
+      H.kanten.forEach(function (k) {
+        var a = boxen[k.von].getBoundingClientRect(), b = boxen[k.nach].getBoundingClientRect();
+        var x1 = a.left + a.width / 2 - R0.left, y1 = a.top - R0.top, x2 = b.left + b.width / 2 - R0.left, y2 = b.bottom - R0.top;
+        var l = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        var my = (y1 + y2) / 2;
+        l.setAttribute("d", "M" + x1 + "," + y1 + " C" + x1 + "," + my + " " + x2 + "," + my + " " + x2 + "," + y2);
+        l.setAttribute("class", "h-linie h-" + (/Vollzug/.test(k.art) ? "vollzug" : /subsidi/.test(k.art) ? "subsidiaer" : /Grundlage/.test(k.art) ? "grundlage" : "verweis"));
+        l.setAttribute("marker-end", "url(#pfeil)");
+        svg.appendChild(l);
+        var t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        t.setAttribute("x", x1 + (x2 - x1) * 0.25 + 4); t.setAttribute("y", y1 + (y2 - y1) * 0.25); t.setAttribute("class", "h-label"); t.textContent = k.art;
+        svg.appendChild(t);
+      });
+      var defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+      defs.innerHTML = '<marker id="pfeil" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="h-pfeil"/></marker>';
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    function waehle(id) {
+      Object.keys(boxen).forEach(function (x) { boxen[x].classList.toggle("aktiv", x === id); boxen[x].setAttribute("aria-pressed", x === id ? "true" : "false"); });
+      var k = K[id];
+      var hoch = H.kanten.filter(function (x) { return x.von === id; }), runter = H.kanten.filter(function (x) { return x.nach === id; });
+      var tx = k.ls && D.texte.erlasse[k.ls];
+      detail.textContent = "";
+      detail.appendChild(h("h2", { text: k.titel }));
+      detail.appendChild(fakten([["Fundstelle", k.fundstelle], ["Art", k.art], ["Amtliche Fassung", k.url ? extern(k.url, k.ls ? "ZH-Lex ↗" : "Fedlex ↗") : "–"],
+        ["Textfassung", tx ? h("a", { href: link("text", k.ls, tx.fassungen[tx.fassungen.length - 1].nachtrag), text: tx.voll ? "Text und Änderungen (" + tx.fassungen.length + " Fassungen)" : "Text (geltende Fassung)" }) : "–"],
+        ["Hinweis", k.hinweis || ""]].filter(function (x) { return x[1]; })));
+      function kante(x, richtung) {
+        var ziel = K[richtung === "hoch" ? x.nach : x.von];
+        return h("li", null, h("strong", { text: (richtung === "hoch" ? "stützt sich auf " : "Grundlage für ") + ziel.titel }), " – " + x.art,
+          x.verweise ? h("span", { cls: "small muted", text: " · " + x.verweise + " Verweise in den Fussnoten" }) : null,
+          x.beleg && x.beleg.text ? h("details", null, h("summary", { text: "Belegstelle " + x.beleg.fundstelle + " " + x.beleg.stelle }), h("p", { cls: "beleg", text: x.beleg.text })) : null);
+      }
+      if (hoch.length) { detail.appendChild(h("h3", { text: "Übergeordnet" })); detail.appendChild(h("ul", null, hoch.map(function (x) { return kante(x, "hoch"); }))); }
+      if (runter.length) { detail.appendChild(h("h3", { text: "Untergeordnet" })); detail.appendChild(h("ul", null, runter.map(function (x) { return kante(x, "runter"); }))); }
+      if (tx && tx.verweise.length) detail.appendChild(h("p", { cls: "small" }, h("strong", { text: "Verweist (Fussnoten) auf: " }), tx.verweise.slice(0, 8).map(function (v) { return v[0] + " (" + v[1] + ")"; }).join(", ")));
+      if (k.beispiele) {
+        detail.appendChild(h("h3", { text: "Beispiele aus den erfassten Rechtssammlungen" }));
+        detail.appendChild(h("ul", null, k.beispiele.map(function (b) { return h("li", null, b.url ? extern(b.url, b.titel + " ↗") : b.titel, " – ", h("a", { href: link("org", b.org), text: b.orgname })); })));
+      }
+    }
+    var ro = window.ResizeObserver ? new ResizeObserver(function () { linien(); }) : null;
+    setTimeout(function () { linien(); if (ro) ro.observe(buehne); }, 0);
+    return [kopf("Normenhierarchie – " + H.titel, "Vom Bundesrecht über Gesetz und Verordnung des Kantons bis zum Erlass der Gemeinde. Pfeile zeigen auf die übergeordnete Norm."),
+      h("p", { cls: "small muted", text: H.hinweis }),
+      h("div", { cls: "hierarchie-legende small" }, h("span", { cls: "lg lg-vollzug", text: "Vollzug" }), h("span", { cls: "lg lg-subsidiaer", text: "subsidiär anwendbar" }), h("span", { cls: "lg lg-verweis", text: "verweist auf" }), h("span", { cls: "lg lg-grundlage", text: "Grundlage" })),
+      h("div", { cls: "hierarchie-rahmen" }, buehne, detail)];
+  }
+
   function abgleich() {
     var R = D.rechtsgrundlagen, E = R.eintraege;
     var mitV = E.filter(function (e) { return e.anzahl_versionen; });
@@ -426,7 +613,7 @@
         h("div", { cls: "karte" }, h("div", { cls: "titel", text: "ZH-Lex – kantonale Erlasse" }), h("div", { cls: "zahl", text: String(anzErl) }), h("div", { cls: "small muted", text: anzV + " Versionen (Nachträge), abgerufen " + R.zhlex_abgerufen })),
         h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Fedlex – Bundesrecht" }), h("div", { cls: "zahl", text: String(E.filter(function (e) { return e.ebene === "Bund"; }).length) }), h("div", { cls: "small muted", text: "Stand noch nicht abgefragt" })),
         h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Rechtssammlungen der Gemeinden" }), h("div", { cls: "zahl", text: String(orgs.length) }), h("div", { cls: "small muted", text: "Analyse v1, erfasst " + orgs[0].analysiert_am })),
-        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Offene Abgleiche" }), h("div", { cls: "zahl", text: "0" }), h("div", { cls: "small muted", text: "Prüfliste – noch kein Lauf" }))),
+        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Textfassungen (Markdown)" }), h("div", { cls: "zahl", text: String(Object.keys(D.texte.erlasse).length) }), h("div", { cls: "small muted" }, h("a", { href: link("texte"), text: "Erlasse aufbereitet →" })))),
       h("section", { cls: "karte" }, h("h2", { text: "Ablauf eines Abgleichs" }),
         h("ol", null,
           h("li", null, h("strong", { text: "Suchen: " }), "je Quelle ein Leser – ZH-Lex über die Suche nach Ordnungsnummer und die «Historie Nachtragsnr.», Fedlex über «Stand am», Gemeinde-Websites über die bekannte Struktur (Menüpfad, Ordner, Tabellen)."),
@@ -789,6 +976,9 @@
     else if (r.art === "rechtsgrundlagen") inhalt = rechtsgrundlagenAnsicht();
     else if (r.art === "herkunft") inhalt = herkunftsliste();
     else if (r.art === "abgleich") inhalt = abgleich();
+    else if (r.art === "texte") inhalt = texteListe();
+    else if (r.art === "text") inhalt = textAnsicht(r.a, r.b);
+    else if (r.art === "hierarchie") inhalt = hierarchie();
     else if (r.art === "org" && ORG[r.a]) inhalt = !r.b ? organisation(ORG[r.a]) : r.b.indexOf("ansicht-") === 0 ? ansicht(ORG[r.a], r.b) : rubrik(ORG[r.a], r.b);
     else inhalt = nichtGefunden();
     var rahmen = document.getElementById("rahmen");

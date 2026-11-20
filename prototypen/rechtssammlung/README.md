@@ -1,6 +1,6 @@
 # Prototyp: Rechtssammlung
 
-**Status:** in-arbeit · **Version:** 0.8.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
+**Status:** in-arbeit · **Version:** 0.9.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
 
 ## Frage
 
@@ -32,6 +32,8 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 | `data/raw/` | Rohdaten aus den Websites |
 | `data/rechtsgrundlagen.json` | Gesetzestexte & Verordnungen: 62 Rechtsgrundlagen für Schulen (Bund, Kanton, Bildungsrat, Gemeinde) mit Sachbereich, Artikel und Quelle; Fundstelle, Ebene und Direktlink ergänzt `tools/build.py` |
 | `quellen/` | Leitfaden systematische Rechtssammlung (Original von zh.ch und PDF für die Vorschau), Herkunft in `quellen/README.md` |
+| `texte/` | Textfassungen (Markdown) je ZH-Lex-Fassung und Unterschiede je Fassungspaar (JSON), erzeugt von `tools/texte.py` |
+| `tools/texte.py` | Vorab-Aufbereitung: ZH-Lex-PDF laden, in Markdown umwandeln, Unterschiede berechnen (`python3 tools/texte.py 412.100`) |
 | `tools/build.py` | Generator: Datenmodell, Schulgemeinden (60) mit Einheitsgemeinde-Herleitung, Struktur-Matrix, Nachbauten |
 
 ## Erfasst (Stand 17.11.2026)

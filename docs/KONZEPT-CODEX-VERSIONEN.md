@@ -1,6 +1,6 @@
 # Konzept: EduKSX-Codex – Versionen, Abgleich, Textfassung und Normenhierarchie (#32)
 
-Stand: 2026-11-20 (Codex 0.8.0) · Status: **IN ARBEIT**
+Stand: 2026-11-20 (Codex 0.9.0) · Status: **IN ARBEIT**
 
 Ein Konzept ist eine Entscheidungsgrundlage, keine Freigabe: umgesetzt wird erst, was als Issue freigegeben ist.
 
@@ -110,9 +110,23 @@ Für die vergleichende Anzeige reicht der Abschnitt `deltas/…json`; der Browse
 
 | Nr. | Frage | Optionen | Entscheid | Status |
 |---|---|---|---|---|
-| E1 | Aufbereitung | A vorab / B Browser / C API | A (Empfehlung) | OFFEN |
-| E2 | Werkzeug PDF → Markdown | pdfplumber + Regeln / Docling / Marker | – | ZU PRÜFEN (Lizenz, Qualität an 3 Erlassen) |
-| E3 | Umfang | zuerst 26 ZH-Lex-Erlasse, dann kommunale Erlasse | – | OFFEN |
+| E1 | Aufbereitung | A vorab / B Browser / C API | A – vorab aufbereiten, als Dateien veröffentlichen | **BESCHLOSSEN** 2026-11-20 |
+| E2 | Werkzeug PDF → Markdown | pdfplumber + Regeln / Docling / Marker | Test an VSG, VSV, LPVO: pdfplumber + Regeln (siehe 3.4) | **BESCHLOSSEN** 2026-11-20 (Test) |
+| E3 | Umfang | zuerst Testerlasse, dann alle 26 ZH-Lex-Erlasse, dann kommunale Erlasse | Test mit 3 Erlassen, alle Fassungen | **BESCHLOSSEN** 2026-11-20 |
+
+### 3.4 Ergebnis Test (20.11.2026)
+
+- `tools/texte.py` (pdfplumber, MIT) wandelt die ZH-Lex-PDF je Fassung in Markdown um: Titel, Teile/Abschnitte (`##`),
+  Paragrafen mit Randtitel (`### § 31. Beurteilung`), Absatznummern (¹ ² ³), Aufzählungen (`- a.`), Fussnoten
+  (`[^64]`). Kopf mit Fundstelle, Nachtrag, Publikationsdatum, Quelle und SHA-256 der PDF.
+- Aufbereitet: VSG 24, VSV 12, LPVO 44 Fassungen (alle des geltenden Erlasses) mit Unterschieden je Fassungspaar;
+  dazu die geltende Fassung von PG, PVO, VVO, LPG und GG für die Normenhierarchie. Dauer ca. 6 Minuten, 4 MB.
+- Unterschiede: Absatzvergleich (difflib), darin wortgenau; Fussnotenverweise zählen nicht als Änderung.
+  Beispiel VSG Nachtrag 126: § 31 Abs. 1 um die Notenregel ergänzt – korrekt erkannt.
+- **Grenzen:** Tabellen (Lohnskalen im Anhang der LPVO) werden nicht als Tabelle erkannt; vereinzelte Satzartefakte der
+  PDF («Kinderder gartenstufe», «enthal - ten») erzeugen kleine Schein-Änderungen. Docling (Tabellen) bleibt Option,
+  braucht aber ein grosses Modell-Paket; Marker steht unter GPL – für den Prototyp beide nicht verwendet.
+- Nächster Schritt: Tabellen mit `pdfplumber.extract_tables` ergänzen; Lauf als GitHub Action nach dem ZH-Lex-Abgleich.
 
 ## 4. Normenhierarchie grafisch (**EMPFOHLEN**)
 
@@ -126,12 +140,13 @@ Reglemente).
   regelbasiert auslesen; kommunale Erlasse über ihre Titel und Ingresse zuordnen.
 - **Anzeige:** Baum bzw. Ebenen-Diagramm Bund → Kanton (Gesetz → Verordnung → Reglement/BRB) → Gemeinde, Knoten
   anklickbar (Erlass, Versionen, Unterschiede). Zuerst für die Themen Personal, Volksschule, Datenschutz.
-- **Status:** **OFFEN** – Freigabe abwarten.
+- **Status:** **BESCHLOSSEN** 2026-11-20 – Pilot Personalrecht umgesetzt (Codex 0.9.0): OR → PG / LPG / GG → PVO / VVO /
+  LPVO → Personalverordnung der Gemeinde (17 Beispiele aus den erfassten Rechtssammlungen). Verbindungen von Hand,
+  Belegstellen (PG § 18, PVO § 1, LPG § 2, GG § 53) automatisch aus den Textfassungen; Verweise aus den Fussnoten gezählt.
 
 ## 5. Issues
 
 | Issue | Inhalt | Status |
 |---|---|---|
 | #32 | Codex 0.8.0: Quellenkatalog A–F, Veröffentlicht/Version, Versionshistorik, Analyse-Version | `_3 Beta-Test` |
-| – | Textfassung Markdown und Deltas (Kapitel 3) | Vorschlag, Freigabe offen |
-| – | Normenhierarchie grafisch (Kapitel 4) | Vorschlag, Freigabe offen |
+| #33 | Textfassung Markdown, Änderungen farbig, Normenhierarchie Personalrecht (Kapitel 3 und 4) | `_3 Beta-Test` |

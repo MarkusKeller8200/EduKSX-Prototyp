@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.8.0 – Generator.
+"""EduKSX-Codex Prototyp 0.9.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1375,6 +1375,97 @@ def doc_datum_version(o):
                                "erfasst": ERFASST_AM, "url": d.get("url"), "quelle": o["website"], "status": "aktuell"}]
             d["anzahl_versionen"] = 1
 
+# ---------------------------------------------------------------- Textfassungen (texte/, erzeugt von tools/texte.py)
+TEXTE = ROOT / "texte"
+def texte_index():
+    p = TEXTE / "index.json"
+    if not p.exists(): return {"erlasse": {}}
+    idx = json.loads(p.read_text(encoding="utf-8"))
+    for nr, e in idx["erlasse"].items():
+        fs = e["fassungen"]
+        e["voll"] = len(fs) > 1                       # alle Fassungen aufbereitet (sonst nur geltende)
+        e["verweise"] = verweise(nr, fs[-1]["nachtrag"]) if fs else []
+    return idx
+
+def _md(nr, nachtrag):
+    p = TEXTE / nr / f"{nachtrag}.md"
+    return p.read_text(encoding="utf-8") if p.exists() else ""
+
+def verweise(nr, nachtrag):
+    """Ausgehende Verweise der geltenden Fassung: Fussnoten mit LS-/SR-Nummer, gezählt nach Zielerlass."""
+    md = _md(nr, nachtrag); fn = {}
+    for m in re.finditer(r"^\[\^(\w+)\]: (.*)$", md, re.M):
+        for art, num in re.findall(r"\b(LS|SR) (\d[\d.]*\d)", m.group(2)): fn.setdefault(m.group(1), []).append(f"{art} {num}")
+    zaehl = {}
+    for ref in re.findall(r"\[\^(\w+)\]", md.split("\n---\n\n[^")[0] if "\n---\n\n[^" in md else md):
+        for z in fn.get(ref, []): zaehl[z] = zaehl.get(z, 0) + 1
+    return sorted(([z, n] for z, n in zaehl.items() if z != "LS " + nr), key=lambda x: -x[1])
+
+def paragraf(nr, nachtrag, para):
+    """Text eines Paragrafen (Überschrift und Absätze) aus der Markdown-Fassung."""
+    md = _md(nr, nachtrag)
+    m = re.search(r"^### " + re.escape(para) + r"[^\n]*\n\n(.*?)(?=\n### |\n## |\n---\n|\Z)", md, re.S | re.M)
+    if not m: return ""
+    return re.sub(r"\[\^\w+\]", "", m.group(0)).replace("### ", "").strip()
+
+# ---------------------------------------------------------------- Normenhierarchie Personalrecht (Pilot, Auftrag 20.11.2026)
+def hierarchie_personal(texte):
+    akt = {nr: e["fassungen"][-1]["nachtrag"] for nr, e in texte["erlasse"].items() if e["fassungen"]}
+    def beleg(nr, para): return {"fundstelle": f"LS {nr}", "stelle": para, "text": paragraf(nr, akt.get(nr, ""), para)} if nr in akt else None
+    knoten = [
+        {"id": "or", "ebene": 0, "titel": "Obligationenrecht (OR)", "fundstelle": "SR 220", "art": "Bundesgesetz",
+         "url": "https://www.fedlex.admin.ch/eli/cc/27/317_321_377/de", "hinweis": "Arbeitsvertrag Art. 319 ff. – im öffentlichen Personalrecht nur, wo das kantonale Recht darauf verweist"},
+        {"id": "pg", "ebene": 1, "titel": "Personalgesetz (PG)", "fundstelle": "LS 177.10", "art": "Gesetz (Kantonsrat)", "ls": "177.10"},
+        {"id": "lpg", "ebene": 1, "titel": "Lehrpersonalgesetz (LPG)", "fundstelle": "LS 412.31", "art": "Gesetz (Kantonsrat)", "ls": "412.31"},
+        {"id": "gg", "ebene": 1, "titel": "Gemeindegesetz (GG)", "fundstelle": "LS 131.1", "art": "Gesetz (Kantonsrat)", "ls": "131.1"},
+        {"id": "pvo", "ebene": 2, "titel": "Personalverordnung (PVO)", "fundstelle": "LS 177.11", "art": "Verordnung (Regierungsrat)", "ls": "177.11"},
+        {"id": "vvo", "ebene": 2, "titel": "Vollzugsverordnung zum Personalgesetz (VVO)", "fundstelle": "LS 177.111", "art": "Verordnung (Regierungsrat)", "ls": "177.111"},
+        {"id": "lpvo", "ebene": 2, "titel": "Lehrpersonalverordnung (LPVO)", "fundstelle": "LS 412.311", "art": "Verordnung (Regierungsrat)", "ls": "412.311"},
+    ]
+    kanten = [
+        {"von": "pg", "nach": "or", "art": "verweist auf", "beleg": beleg("177.10", "§ 18.") or beleg("177.10", "§ 18 a.")},
+        {"von": "pvo", "nach": "pg", "art": "Vollzug", "beleg": beleg("177.11", "§ 1.")},
+        {"von": "vvo", "nach": "pg", "art": "Vollzug", "beleg": None},
+        {"von": "lpg", "nach": "pg", "art": "subsidiär", "beleg": beleg("412.31", "§ 2.")},
+        {"von": "lpvo", "nach": "lpg", "art": "Vollzug", "beleg": None},
+        {"von": "lpvo", "nach": "vvo", "art": "verweist auf", "beleg": None},
+    ]
+    # Gemeinde: kommunale Personalerlasse aus den erfassten Rechtssammlungen
+    kommunal = []
+    for o in ORGS:
+        for s in o["sections"]:
+            for d in walk(s):
+                t = norm(d["titel"])
+                if re.search(r"personalverordnung|personalreglement|anstellungs und besoldungsverordnung|\bpevo\b", t) and not re.search(r"anhang|vollz|ausf", t):
+                    kommunal.append({"org": o["id"], "orgname": o["kurz"], "typ": o["typ"], "titel": d["titel"], "url": d.get("url")})
+    knoten.append({"id": "gem", "ebene": 3, "titel": "Personalverordnung der Gemeinde / Schulgemeinde", "fundstelle": "kommunal", "art": "Gemeindeerlass",
+                   "hinweis": "Platzhalter «Schule XYZ»; Beispiele aus den erfassten Rechtssammlungen", "beispiele": kommunal})
+    kanten.append({"von": "gem", "nach": "gg", "art": "Grundlage", "beleg": beleg("131.1", "§ 53.")})
+    kanten.append({"von": "gem", "nach": "pg", "art": "subsidiär (§ 53 Abs. 2 GG)", "beleg": None})
+    # Doppelte Beispiele (gleiche Organisation, gleicher Titel) zusammenfassen
+    gesehen, ein = set(), []
+    for x in kommunal:
+        key = (x["org"], norm(x["titel"])[-30:])
+        if key not in gesehen: gesehen.add(key); ein.append(x)
+    knoten[-1]["beispiele"] = ein
+    ls_von = {k["id"]: k.get("ls") for k in knoten}
+    fund = {k["id"]: k["fundstelle"] for k in knoten}
+    for k in kanten:
+        q = ls_von.get(k["von"])
+        if q and q in texte["erlasse"]:
+            k["verweise"] = sum(n for z, n in texte["erlasse"][q]["verweise"] if z == fund[k["nach"]])
+    for k in kanten:
+        if k["von"] == "vvo" and not k["beleg"]:
+            k["beleg"] = {"fundstelle": "LS 177.111", "stelle": "Titel", "text": "Vollzugsverordnung zum Personalgesetz (VVO) – Titel und Ingress: Vollzug des Personalgesetzes"}
+    for k in knoten:
+        if k.get("ls"):
+            k["url"] = f"http://www.zhlex.zh.ch/Erlass.html?Open&Ordnr={k['ls']}"
+            k["text"] = k["ls"] in akt
+            k["versionen"] = len(texte["erlasse"].get(k["ls"], {}).get("fassungen", []))
+    return {"id": "personal", "titel": "Personalrecht", "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+            "knoten": knoten, "kanten": kanten,
+            "hinweis": "Pilot: Verbindungen von Hand festgelegt und mit Belegstellen aus den aufbereiteten Texten (ZH-Lex, geltende Fassung) hinterlegt; ausgehende Verweise automatisch aus den Fussnoten gezählt."}
+
 # ---------------------------------------------------------------- Übersicht
 WM = ('<span class="wm" role="img" aria-label="EduKSX-Codex"><span aria-hidden="true"><span class="v">E</span><span class="n">du</span>'
       '<span class="o">K</span><span class="b">SX</span><span class="n">-Codex</span></span></span>')
@@ -1393,7 +1484,9 @@ def render_daten(gemeinden):
             g = next((x for x in gem if x["gemeinde"] == o["sitz"]), None)
             if g: o["einheit"] = g["einheit"]
     for o in ORGS: leitfaden_pruefung(o); doc_datum_version(o); analyse_info(o)
+    TX = texte_index()
     daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN, "rechtsgrundlagen": rechtsgrundlagen(),
+             "texte": TX, "hierarchien": [hierarchie_personal(TX)],
              "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
     return ("/* Erzeugt von tools/build.py – nicht von Hand bearbeiten. */\nwindow.CODEX = "
             + json.dumps(daten, ensure_ascii=False, separators=(",", ":")) + ";\n")
@@ -1422,7 +1515,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.8.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.9.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1430,7 +1523,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.8.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.9.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),
