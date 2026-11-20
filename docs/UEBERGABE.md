@@ -36,6 +36,11 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – EduKSX-Codex 0.19.0
+
+- Auftrag: Übersicht Eltern und Thema Gesundheit. Umgesetzt (#43 → `_3 Beta-Test`); Ordnungsnummern in ZH-Lex geprüft
+  (810.1, 818.22, 818.11), EpG über Fedlex (ELI 2015/297).
+
 ### Sitzung 2026-11-20 – EduKSX-Codex 0.18.0
 
 - Auftrag: Personalrecht prüfen, Themen nach Volksschulbezug ordnen. Umgesetzt (#42 → `_3 Beta-Test`): `REIHENFOLGE` und

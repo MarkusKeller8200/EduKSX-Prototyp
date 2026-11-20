@@ -3349,6 +3349,238 @@
      "pdf_sha256": "19a1f6deed988dd6c92b02e2724ed156ed420a2452623558c20a684bfab66ab6"
     }
    ]
+  },
+  "sr-818.101": {
+   "ordnungsnummer": "SR 818.101",
+   "titel": "Epidemiengesetz (EpG)",
+   "titel_amtlich": "Bundesgesetz über die Bekämpfung übertragbarer Krankheiten des Menschen",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 7,
+   "fassungen": [
+    {
+     "nachtrag": "20200625",
+     "veroeffentlicht": "25.06.2020",
+     "in_kraft_bis": "18.12.2021",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2015/297/20200625/de",
+     "absaetze": 172,
+     "fussnoten": 24,
+     "artikel": 90,
+     "html_sha256": "2555d47bab3b850f64759f827576f9e21bb4edccd3f51bfc28722e0cb093b37e"
+    },
+    {
+     "nachtrag": "20211218",
+     "veroeffentlicht": "18.12.2021",
+     "in_kraft_bis": "01.07.2022",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2015/297/20211218/de",
+     "absaetze": 172,
+     "fussnoten": 24,
+     "artikel": 90,
+     "html_sha256": "7d5c602e09a70b7287bbb9c7fc5de4fbcc27ade005e37054e9872947fd6da7d7",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 1,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "20220701",
+     "veroeffentlicht": "01.07.2022",
+     "in_kraft_bis": "01.01.2023",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2015/297/20220701/de",
+     "absaetze": 172,
+     "fussnoten": 24,
+     "artikel": 90,
+     "html_sha256": "4afd41b1f6f5a9ef804c21b4e7604fe77174a81abf812372987fa75656babb3f",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 1,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "20230101",
+     "veroeffentlicht": "01.01.2023",
+     "in_kraft_bis": "01.09.2023",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2015/297/20230101/de",
+     "absaetze": 172,
+     "fussnoten": 24,
+     "artikel": 90,
+     "html_sha256": "2863f1e71188fc986808cd4175a895badf892b9c4f7ef073beb23823278483f6",
+     "delta": {
+      "neu": 8,
+      "gestrichen": 6,
+      "geaendert": 10
+     }
+    },
+    {
+     "nachtrag": "20230901",
+     "veroeffentlicht": "01.09.2023",
+     "in_kraft_bis": "01.07.2024",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2015/297/20230901/de",
+     "absaetze": 172,
+     "fussnoten": 30,
+     "artikel": 90,
+     "html_sha256": "9a82283c65d2d2de42ee07228e16325700adab7622969b966bbb897b14043715",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 1,
+      "geaendert": 4
+     }
+    },
+    {
+     "nachtrag": "20240701",
+     "veroeffentlicht": "01.07.2024",
+     "in_kraft_bis": "01.08.2025",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2015/297/20240701/de",
+     "absaetze": 165,
+     "fussnoten": 30,
+     "artikel": 90,
+     "html_sha256": "568bbdfc9f4733ecae04b9bdb80a4347eed7a840a0c4df5bf311a0d207d5ab1a",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 20,
+      "geaendert": 4
+     }
+    },
+    {
+     "nachtrag": "20250801",
+     "veroeffentlicht": "01.08.2025",
+     "in_kraft_bis": "",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2015/297/20250801/de",
+     "absaetze": 166,
+     "fussnoten": 31,
+     "artikel": 90,
+     "html_sha256": "04a6554b4665ca9f262568c76d40ef737cc6e5fc012ed766e3fbb93daca48fe5",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    }
+   ]
+  },
+  "818.22": {
+   "ordnungsnummer": "818.22",
+   "titel": "Verordnung über die Schul- und Volkszahnpflege (VSVZ)",
+   "fassungen": [
+    {
+     "nachtrag": "014",
+     "veroeffentlicht": "",
+     "in_kraft_bis": "01.01.2011",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-818_22-1965_11_15--014.html",
+     "seiten": 6,
+     "absaetze": 74,
+     "fussnoten": 7,
+     "pdf_sha256": "c1cbcef304607b4121145a7e9923b5921f827c52863b9ca7fa9dff895fd93627"
+    },
+    {
+     "nachtrag": "071",
+     "veroeffentlicht": "01.01.2011",
+     "in_kraft_bis": "01.01.2012",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-818_22-1965_11_15--071.html",
+     "seiten": 7,
+     "absaetze": 105,
+     "fussnoten": 8,
+     "pdf_sha256": "2f6ac957e0154024592d2961818561cd18ab90f67cae8dce743d4639898917c7",
+     "delta": {
+      "neu": 39,
+      "gestrichen": 8,
+      "geaendert": 27
+     }
+    },
+    {
+     "nachtrag": "075",
+     "veroeffentlicht": "01.01.2012",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-818_22-1965_11_15-1965_11_15-075.html",
+     "seiten": 7,
+     "absaetze": 104,
+     "fussnoten": 9,
+     "pdf_sha256": "c0ebae2c91aa2a7abff2c88bb398f04e9a65472353921de7a29be5cebab607a3",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 1,
+      "geaendert": 2
+     }
+    }
+   ]
+  },
+  "818.11": {
+   "ordnungsnummer": "818.11",
+   "titel": "Vollzugsverordnung zur eidgenössischen Epidemiengesetzgebung (VV EpiG)",
+   "fassungen": [
+    {
+     "nachtrag": "012",
+     "veroeffentlicht": "",
+     "in_kraft_bis": "01.12.2007",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-818_11-1975_03_19--012.html",
+     "seiten": 7,
+     "absaetze": 77,
+     "fussnoten": 10,
+     "pdf_sha256": "d945bae883ad6cfcbf12c37439d4fe2bf8834eb7869521420781cd66e781e097"
+    },
+    {
+     "nachtrag": "059",
+     "veroeffentlicht": "01.12.2007",
+     "in_kraft_bis": "01.01.2011",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-818_11-1975_03_19--059.html",
+     "seiten": 7,
+     "absaetze": 108,
+     "fussnoten": 11,
+     "pdf_sha256": "e1c727c07fcf56b624dac403f86cf91483146596136bc61f88f17dc72a255a2d",
+     "delta": {
+      "neu": 31,
+      "gestrichen": 0,
+      "geaendert": 24
+     }
+    },
+    {
+     "nachtrag": "071",
+     "veroeffentlicht": "01.01.2011",
+     "in_kraft_bis": "01.08.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-818_11-1975_03_19-1975_06_13-071.html",
+     "seiten": 7,
+     "absaetze": 102,
+     "fussnoten": 13,
+     "pdf_sha256": "0391a070579514ab1e0b859fae8769a9af5882798bd615515e52260c03f94f80",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 9,
+      "geaendert": 26
+     }
+    },
+    {
+     "nachtrag": "110",
+     "veroeffentlicht": "01.08.2020",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-818_11-1975_03_19-1975_06_13-110.html",
+     "seiten": 7,
+     "absaetze": 102,
+     "fussnoten": 14,
+     "pdf_sha256": "5fb84d58cc784b7885a47c481b230f9b8eee9310bcfa596e3299b6a8246124dd",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 3
+     }
+    }
+   ]
+  },
+  "810.1": {
+   "ordnungsnummer": "810.1",
+   "titel": "Gesundheitsgesetz (GesG)",
+   "fassungen": [
+    {
+     "nachtrag": "131",
+     "veroeffentlicht": "01.01.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-810_1-2007_04_02-2008_07_01-131.html",
+     "seiten": 26,
+     "absaetze": 409,
+     "fussnoten": 32,
+     "pdf_sha256": "9c58f5aca05ea62f5dd30dffd94099015bc5755c7e35469e38e0080a09ae8fa0"
+    }
+   ]
   }
  },
  "stand": "20.11.2026"

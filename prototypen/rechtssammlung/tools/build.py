@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.18.0 – Generator.
+"""EduKSX-Codex Prototyp 0.19.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1252,7 +1252,7 @@ RG_ALIAS = [  # Titelanfang ohne Fundstelle → (Abkürzung, Fundstelle)
  (r"^Gemeindeordnung der jeweiligen Schulgemeinde", ("GO", "kommunal")),
  (r"^Kommunales Personalreglement", ("", "kommunal")),
 ]
-RG_GEPRUEFT = {"131.1", "131.11", "412.121.31", "172.71", "412.106", "412.106.1", "720.11", "720.1", "132.1", "132.11", "611"}
+RG_GEPRUEFT = {"131.1", "131.11", "412.121.31", "172.71", "412.106", "412.106.1", "720.11", "720.1", "132.1", "132.11", "611", "810.1", "818.22", "818.11"}
 ZHLEX = "http://www.zhlex.zh.ch/Erlass.html?Open&Ordnr={}"
 
 def rechtsgrundlagen():
@@ -1728,11 +1728,64 @@ HIERARCHIEN = [
    {"von": "kom", "nach": "idg", "art": "Personendaten", "beleg": ("170.4", "§ 3.")},
    {"von": "kom", "nach": "lm", "art": "verweist auf"},
    {"von": "kom", "nach": "vsg", "art": "gestützt auf", "beleg": ("412.100", "§ 21.")}]},
+ {"id": "eltern", "titel": "Eltern",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "krk", "ebene": 0, "titel": "UN-Kinderrechtskonvention (KRK)", "sr": "0.107", "art": "Staatsvertrag", "url": "https://www.fedlex.admin.ch/eli/cc/1998/2055_2055_2055/de",
+    "hinweis": "Art. 18: Eltern tragen die Hauptverantwortung für Erziehung und Entwicklung; Art. 12: Anhörung des Kindes"},
+   {"id": "zgb", "ebene": 0, "titel": "Zivilgesetzbuch (ZGB) – elterliche Sorge", "sr": "210", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233/de",
+    "hinweis": "Art. 301–303: Erziehung, gewaltfreie Erziehung; Art. 302 Abs. 3: Zusammenarbeit der Eltern mit Schule und Jugendhilfe"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Stellung der Eltern", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
+    "hinweis": "§ 28 Absenzen und Dispensation, § 52 Disziplin, §§ 54–57 Zusammenarbeit, Mitwirkung, Elternpflichten"},
+   {"id": "vsv", "ebene": 2, "titel": "Volksschulverordnung (VSV) – Absenzen, Information, Mitwirkung", "art": "Verordnung (Regierungsrat)", "ls": "412.101",
+    "hinweis": "§§ 28–30 Absenzen, Dispensation, Jokertage; §§ 59–66 Information, Elterngespräche, Mitwirkung, Elternpflichten"},
+   {"id": "os", "ebene": 3, "titel": "Elternmitwirkung (Organisationsstatut, Reglement)", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
+    "hinweis": "Das Organisationsstatut regelt die Mitwirkung der Eltern (§ 55 VSG), oft mit eigenem Reglement Elternrat/Elternforum",
+    "muster": r"elternmitwirkung|elternrat|elternforum|elternmitarbeit|elternorganisation"},
+   {"id": "abs", "ebene": 3, "titel": "Absenzen, Jokertage, Schulordnung", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
+    "hinweis": "Regeln zu Absenzen, Urlaub, Dispensation, Jokertagen, Verhalten und Disziplin",
+    "muster": r"absenz|jokertag|dispens|urlaub von schuel|schulordnung|schulhausordnung|verhaltens|disziplin", "ohne": r"sammelstelle|entsorg|friedhof|werkhof|personal|mitarbeit|antrag|gesuch|formular|verpflichtungserklaerung"}],
+  "kanten": [
+   {"von": "zgb", "nach": "krk", "art": "Umsetzung", "beleg": ("sr-0.107", "Art. 18")},
+   {"von": "vsg", "nach": "zgb", "art": "Zusammenarbeit (Art. 302 ZGB)", "beleg": ("412.100", "§ 54."), "beleg_oben": ("sr-210", "Art. 302")},
+   {"von": "vsg", "nach": "krk", "art": "Mitwirkung", "beleg": ("412.100", "§ 50."), "beleg_oben": ("sr-0.107", "Art. 12")},
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 66."), "beleg_unten": ("412.101", "§ 28.")},
+   {"von": "os", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 55.")},
+   {"von": "os", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 65.")},
+   {"von": "abs", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 30."), "beleg_unten": ("412.101", "§ 28.")},
+   {"von": "abs", "nach": "vsg", "art": "Disziplin", "beleg": ("412.100", "§ 52.")}]},
+ {"id": "gesundheit", "titel": "Gesundheit",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "epg", "ebene": 0, "titel": "Epidemiengesetz (EpG)", "sr": "818.101", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/2015/297/de",
+    "hinweis": "Art. 21: Kantone überprüfen den Impfstatus während der obligatorischen Schulzeit; Art. 40: Massnahmen gegenüber der Bevölkerung (z. B. Schulschliessungen)"},
+   {"id": "gesg", "ebene": 1, "titel": "Gesundheitsgesetz (GesG)", "art": "Gesetz (Kantonsrat)", "ls": "810.1",
+    "hinweis": "§ 49 Gesundheitsförderung in Schulen, § 50 Prävention und ärztliche Überwachung während der Schulpflicht"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – schulärztlicher Dienst", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 20: Die Gemeinden bezeichnen die schulärztlichen Dienste"},
+   {"id": "vsv", "ebene": 2, "titel": "Volksschulverordnung (VSV) – Untersuchungen, Impfen", "art": "Verordnung (Regierungsrat)", "ls": "412.101",
+    "hinweis": "§ 16 schulärztlicher Dienst, §§ 17–17 c drei schulärztliche Untersuchungen, § 18 Impfen"},
+   {"id": "vvepig", "ebene": 2, "titel": "Vollzugsverordnung zur Epidemiengesetzgebung (VV EpiG)", "art": "Verordnung (Regierungsrat)", "ls": "818.11"},
+   {"id": "vsvz", "ebene": 2, "titel": "Verordnung über die Schul- und Volkszahnpflege (VSVZ)", "art": "Verordnung (Regierungsrat)", "ls": "818.22",
+    "hinweis": "§ 1: Die Gemeinden organisieren die Schulzahnpflege (Prophylaxe, jährliche Untersuchung)"},
+   {"id": "sad", "ebene": 3, "titel": "Schulärztlicher und schulzahnärztlicher Dienst, Gesundheitsförderung", "fundstelle": "kommunal", "art": "Behördenerlass oder Vertrag",
+    "hinweis": "Vertrag mit Schulärztin/Schularzt und Schulzahnklinik, Reglement Schulgesundheit, Präventionskonzept",
+    "muster": r"schulaerzt|schularzt|schulzahn|zahnpflege|zahnarzt|zahnklinik|schulgesundheit|gesundheitsfoerder|suchtpraevention|praevention", "ohne": r"spitex|alters|pflegeheim|friedhof|kommission|brand|feuer"}],
+  "kanten": [
+   {"von": "gesg", "nach": "epg", "art": "Umsetzung (Art. 21 EpG)", "beleg": ("810.1", "§ 50."), "beleg_oben": ("sr-818.101", "Art. 21")},
+   {"von": "vvepig", "nach": "epg", "art": "Vollzug", "beleg": ("818.11", "§ 6.")},
+   {"von": "vsg", "nach": "gesg", "art": "verweist auf", "beleg": ("412.100", "§ 20.")},
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 16.")},
+   {"von": "vsv", "nach": "epg", "art": "Impfen", "beleg": ("412.101", "§ 18.")},
+   {"von": "vsvz", "nach": "gesg", "art": "Gesundheitsgesetzgebung"},
+   {"von": "sad", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 20.")},
+   {"von": "sad", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 17.")},
+   {"von": "sad", "nach": "vsvz", "art": "Grundlage", "beleg": ("818.22", "§ 1.")},
+   {"von": "sad", "nach": "gesg", "art": "Grundlage", "beleg": ("810.1", "§ 49.")}]},
 ]
 # Reihenfolge nach Bezug zur Volksschule (Auftrag 20.11.2026): Schule → Kinder → Personal → Unterricht → Organisation und Ressourcen
-REIHENFOLGE = ["volksschule", "sonderpaedagogik", "kindesschutz", "personal", "unterricht", "datenschutz", "finanzen", "verfahren", "beschaffung"]
+REIHENFOLGE = ["volksschule", "sonderpaedagogik", "kindesschutz", "eltern", "gesundheit", "personal", "unterricht", "datenschutz", "finanzen", "verfahren", "beschaffung"]
 HIERARCHIEN.sort(key=lambda h: REIHENFOLGE.index(h["id"]))
-GRUPPEN = {"volksschule": "Schule", "sonderpaedagogik": "Kinder", "kindesschutz": "Kinder", "personal": "Personal", "unterricht": "Unterricht",
+GRUPPEN = {"volksschule": "Schule", "sonderpaedagogik": "Kinder & Eltern", "kindesschutz": "Kinder & Eltern", "eltern": "Kinder & Eltern", "gesundheit": "Gesundheit", "personal": "Personal", "unterricht": "Unterricht",
            "datenschutz": "Organisation & Ressourcen", "finanzen": "Organisation & Ressourcen", "verfahren": "Organisation & Ressourcen", "beschaffung": "Organisation & Ressourcen"}
 
 # ---------------------------------------------------------------- Maschinelle Verbindungen (Auftrag 20.11.2026, Punkt 4)
@@ -1931,7 +1984,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.18.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.19.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1939,7 +1992,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.18.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.19.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

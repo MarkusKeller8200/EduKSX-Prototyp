@@ -646,6 +646,46 @@
    "quelle": "ZH-Lex",
    "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
    "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Thema Finanzen)"
+  },
+  {
+   "nr": 66,
+   "sachbereich": 6,
+   "erlass": "Gesundheitsgesetz (GesG), LS 810.1",
+   "stelle": "§§ 49–50",
+   "relevanz": "Gesundheitsförderung in Schulen; Prävention und ärztliche Überwachung während der Schulpflicht, Impfberatung",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Thema Gesundheit)"
+  },
+  {
+   "nr": 67,
+   "sachbereich": 6,
+   "erlass": "Verordnung über die Schul- und Volkszahnpflege (VSVZ), LS 818.22",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Schulzahnpflege durch die Gemeinden: Prophylaxe, jährliche Untersuchung",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Thema Gesundheit)"
+  },
+  {
+   "nr": 68,
+   "sachbereich": 6,
+   "erlass": "Vollzugsverordnung zur eidgenössischen Epidemiengesetzgebung (VV EpiG), LS 818.11",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Vollzug des Epidemienrechts im Kanton, Impfungen auf Kosten des Kantons",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Thema Gesundheit)"
+  },
+  {
+   "nr": 69,
+   "sachbereich": 6,
+   "erlass": "Epidemiengesetz (EpG), SR 818.101",
+   "stelle": "Art. 21, 40",
+   "relevanz": "Förderung von Impfungen, Überprüfung des Impfstatus während der obligatorischen Schulzeit; Massnahmen gegenüber der Bevölkerung (z. B. Schulschliessungen)",
+   "quelle": "Fedlex",
+   "quelle_url": "https://www.fedlex.admin.ch/eli/cc/2015/297/de",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Thema Gesundheit)"
   }
  ]
 }
