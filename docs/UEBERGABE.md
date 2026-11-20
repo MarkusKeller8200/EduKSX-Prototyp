@@ -62,6 +62,15 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 - Offen: Stempeln per NFC-Tag (Idee, noch kein Issue – Antwort Projektleitung ausstehend).
 - Offen: weitere Schritte («der ganze Rest») je als Issue nach Freigabe; Icon «time» vorläufig, nicht im Icon-Set.
 
+### Sitzung 2026-11-20 (02:10–02:50) – EduKSX-Codex 0.10.0
+
+- Auftrag: FAG und CRG aufnehmen, GG und VGG mit allen Fassungen als Text, Normenhierarchie Finanzen.
+- Umgesetzt (#34 → `_3 Beta-Test`): Einträge 63–65 (FAG, FAV, CRG) in `data/rechtsgrundlagen.json` (Feld «ergaenzung»);
+  Texte für 12 Erlasse; `HIERARCHIEN` in `tools/build.py` (Personalrecht, Finanzen) mit gemeinsamer Funktion
+  `hierarchie()`; Route `#/hierarchie/<id>`.
+- Offen: Gebühren-Spezialerlasse (Wasser, Abwasser, Abfall) bewusst ausgeschlossen; weitere Themen (Volksschule,
+  Datenschutz); Tabellen in PDFs.
+
 ### Sitzung 2026-11-20 (01:10–02:10) – EduKSX-Codex 0.9.0
 
 - Entscheide 2026-11-20: Aufbereitung vorab (Dateien statt Laufzeit-KI/API); Test an VSG, VSV, LPVO; Normenhierarchie Personalrecht.

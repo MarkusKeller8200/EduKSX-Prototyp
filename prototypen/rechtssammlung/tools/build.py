@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.9.0 – Generator.
+"""EduKSX-Codex Prototyp 0.10.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1202,7 +1202,7 @@ RG_ALIAS = [  # Titelanfang ohne Fundstelle → (Abkürzung, Fundstelle)
  (r"^Gemeindeordnung der jeweiligen Schulgemeinde", ("GO", "kommunal")),
  (r"^Kommunales Personalreglement", ("", "kommunal")),
 ]
-RG_GEPRUEFT = {"131.1", "131.11", "412.121.31", "172.71", "412.106", "412.106.1", "720.11", "720.1"}
+RG_GEPRUEFT = {"131.1", "131.11", "412.121.31", "172.71", "412.106", "412.106.1", "720.11", "720.1", "132.1", "132.11", "611"}
 ZHLEX = "http://www.zhlex.zh.ch/Erlass.html?Open&Ordnr={}"
 
 def rechtsgrundlagen():
@@ -1408,63 +1408,97 @@ def paragraf(nr, nachtrag, para):
     if not m: return ""
     return re.sub(r"\[\^\w+\]", "", m.group(0)).replace("### ", "").strip()
 
-# ---------------------------------------------------------------- Normenhierarchie Personalrecht (Pilot, Auftrag 20.11.2026)
-def hierarchie_personal(texte):
+# ---------------------------------------------------------------- Normenhierarchien (Personalrecht, Finanzen – Aufträge 20.11.2026)
+# Verbindungen von Hand festgelegt; Belegstellen werden aus den aufbereiteten Texten (texte/) gezogen,
+# Verweise aus den Fussnoten gezählt, kommunale Beispiele aus den erfassten Rechtssammlungen gesucht.
+HIERARCHIEN = [
+ {"id": "personal", "titel": "Personalrecht",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "or", "ebene": 0, "titel": "Obligationenrecht (OR)", "fundstelle": "SR 220", "art": "Bundesgesetz",
+    "url": "https://www.fedlex.admin.ch/eli/cc/27/317_321_377/de", "hinweis": "Arbeitsvertrag Art. 319 ff. – im öffentlichen Personalrecht nur, wo das kantonale Recht darauf verweist"},
+   {"id": "pg", "ebene": 1, "titel": "Personalgesetz (PG)", "art": "Gesetz (Kantonsrat)", "ls": "177.10"},
+   {"id": "lpg", "ebene": 1, "titel": "Lehrpersonalgesetz (LPG)", "art": "Gesetz (Kantonsrat)", "ls": "412.31"},
+   {"id": "gg", "ebene": 1, "titel": "Gemeindegesetz (GG)", "art": "Gesetz (Kantonsrat)", "ls": "131.1"},
+   {"id": "pvo", "ebene": 2, "titel": "Personalverordnung (PVO)", "art": "Verordnung (Regierungsrat)", "ls": "177.11"},
+   {"id": "vvo", "ebene": 2, "titel": "Vollzugsverordnung zum Personalgesetz (VVO)", "art": "Verordnung (Regierungsrat)", "ls": "177.111"},
+   {"id": "lpvo", "ebene": 2, "titel": "Lehrpersonalverordnung (LPVO)", "art": "Verordnung (Regierungsrat)", "ls": "412.311"},
+   {"id": "gem", "ebene": 3, "titel": "Personalverordnung der Gemeinde / Schulgemeinde", "fundstelle": "kommunal", "art": "Gemeindeerlass",
+    "hinweis": "Platzhalter «Schule XYZ»; Beispiele aus den erfassten Rechtssammlungen",
+    "muster": r"personalverordnung|personalreglement|anstellungs und besoldungsverordnung|\bpevo\b", "ohne": r"anhang|vollz|ausf"}],
+  "kanten": [
+   {"von": "pg", "nach": "or", "art": "verweist auf", "beleg": ("177.10", "§ 18.")},
+   {"von": "pvo", "nach": "pg", "art": "Vollzug", "beleg": ("177.11", "§ 1.")},
+   {"von": "vvo", "nach": "pg", "art": "Vollzug", "beleg_text": "Vollzugsverordnung zum Personalgesetz (VVO) – Titel und Ingress: Vollzug des Personalgesetzes"},
+   {"von": "lpg", "nach": "pg", "art": "subsidiär", "beleg": ("412.31", "§ 2.")},
+   {"von": "lpvo", "nach": "lpg", "art": "Vollzug"},
+   {"von": "lpvo", "nach": "vvo", "art": "verweist auf"},
+   {"von": "gem", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 53.")},
+   {"von": "gem", "nach": "pg", "art": "subsidiär (§ 53 Abs. 2 GG)"}]},
+ {"id": "finanzen", "titel": "Finanzen",
+  "ebenen": ["Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "gg", "ebene": 0, "titel": "Gemeindegesetz (GG)", "art": "Gesetz (Kantonsrat)", "ls": "131.1", "hinweis": "4. Teil: Finanzhaushalt (§§ 84 ff.) – Haushaltsführung, Budget, Ausgaben, Rechnungslegung, Prüfung"},
+   {"id": "fag", "ebene": 0, "titel": "Finanzausgleichsgesetz (FAG)", "art": "Gesetz (Kantonsrat)", "ls": "132.1", "hinweis": "Finanzausgleich zwischen politischen Gemeinden, Schulgemeinden und Kanton"},
+   {"id": "crg", "ebene": 0, "titel": "Gesetz über Controlling und Rechnungslegung (CRG)", "art": "Gesetz (Kantonsrat)", "ls": "611", "hinweis": "Haushaltsrecht des Kantons – für Gemeinden nicht direkt anwendbar; Gemeinden: GG 4. Teil"},
+   {"id": "vgg", "ebene": 1, "titel": "Gemeindeverordnung (VGG)", "art": "Verordnung (Regierungsrat)", "ls": "131.11", "hinweis": "2. Teil: Finanzhaushalt"},
+   {"id": "fav", "ebene": 1, "titel": "Finanzausgleichsverordnung (FAV)", "art": "Verordnung (Regierungsrat)", "ls": "132.11"},
+   {"id": "go", "ebene": 2, "titel": "Gemeindeordnung – Finanzbefugnisse", "fundstelle": "kommunal", "art": "Gemeindeordnung (Stimmberechtigte)",
+    "hinweis": "Regelt Ausgaben- und Kreditkompetenzen von Gemeindeversammlung, Vorstand bzw. Schulpflege", "muster": r"gemeindeordnung|\(go\)", "ohne": r"sekundarschul.*politische|protokoll"},
+   {"id": "fin", "ebene": 2, "titel": "Finanzreglement / Haushaltsregeln", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
+    "hinweis": "Finanzkompetenzen, Haushaltführung, Aktivierungsgrenze, Fonds", "muster": r"finanzreglement|finanzordnung|finanzkompetenz|haushalt|aktivierung|globalbudget|ausgabenkompetenz|fonds|sonderrechnung"},
+   {"id": "geb", "ebene": 2, "titel": "Gebührenverordnung / Gebührentarif", "fundstelle": "kommunal", "art": "Gemeindeerlass",
+    "hinweis": "Allgemeine Gebühren; Spezialgebühren (Wasser, Abwasser, Abfall) in eigenen Erlassen", "muster": r"gebuehrenverordnung|gebuehrenreglement|gebuehrentarif|gebuehrenordnung|allgemeiner gebuehrentarif", "ohne": r"wasser|abwasser|siedlung|abfall|feuerwehr|bauwesen"}],
+  "kanten": [
+   {"von": "vgg", "nach": "gg", "art": "Vollzug", "beleg": ("131.11", "§ 47.")},
+   {"von": "fav", "nach": "fag", "art": "Vollzug", "beleg": ("132.11", "§ 1.")},
+   {"von": "go", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 104.")},
+   {"von": "go", "nach": "fag", "art": "betrifft (Ausgleich)", "beleg": ("132.1", "§ 1.")},
+   {"von": "fin", "nach": "go", "art": "gestützt auf"},
+   {"von": "fin", "nach": "gg", "art": "Grundsätze", "beleg": ("131.1", "§ 84.")},
+   {"von": "fin", "nach": "vgg", "art": "verweist auf", "beleg": ("131.11", "§ 8.")},
+   {"von": "geb", "nach": "gg", "art": "Verursacherprinzip", "beleg": ("131.1", "§ 84.")}]},
+]
+
+def hierarchie(texte, spec):
     akt = {nr: e["fassungen"][-1]["nachtrag"] for nr, e in texte["erlasse"].items() if e["fassungen"]}
-    def beleg(nr, para): return {"fundstelle": f"LS {nr}", "stelle": para, "text": paragraf(nr, akt.get(nr, ""), para)} if nr in akt else None
-    knoten = [
-        {"id": "or", "ebene": 0, "titel": "Obligationenrecht (OR)", "fundstelle": "SR 220", "art": "Bundesgesetz",
-         "url": "https://www.fedlex.admin.ch/eli/cc/27/317_321_377/de", "hinweis": "Arbeitsvertrag Art. 319 ff. – im öffentlichen Personalrecht nur, wo das kantonale Recht darauf verweist"},
-        {"id": "pg", "ebene": 1, "titel": "Personalgesetz (PG)", "fundstelle": "LS 177.10", "art": "Gesetz (Kantonsrat)", "ls": "177.10"},
-        {"id": "lpg", "ebene": 1, "titel": "Lehrpersonalgesetz (LPG)", "fundstelle": "LS 412.31", "art": "Gesetz (Kantonsrat)", "ls": "412.31"},
-        {"id": "gg", "ebene": 1, "titel": "Gemeindegesetz (GG)", "fundstelle": "LS 131.1", "art": "Gesetz (Kantonsrat)", "ls": "131.1"},
-        {"id": "pvo", "ebene": 2, "titel": "Personalverordnung (PVO)", "fundstelle": "LS 177.11", "art": "Verordnung (Regierungsrat)", "ls": "177.11"},
-        {"id": "vvo", "ebene": 2, "titel": "Vollzugsverordnung zum Personalgesetz (VVO)", "fundstelle": "LS 177.111", "art": "Verordnung (Regierungsrat)", "ls": "177.111"},
-        {"id": "lpvo", "ebene": 2, "titel": "Lehrpersonalverordnung (LPVO)", "fundstelle": "LS 412.311", "art": "Verordnung (Regierungsrat)", "ls": "412.311"},
-    ]
-    kanten = [
-        {"von": "pg", "nach": "or", "art": "verweist auf", "beleg": beleg("177.10", "§ 18.") or beleg("177.10", "§ 18 a.")},
-        {"von": "pvo", "nach": "pg", "art": "Vollzug", "beleg": beleg("177.11", "§ 1.")},
-        {"von": "vvo", "nach": "pg", "art": "Vollzug", "beleg": None},
-        {"von": "lpg", "nach": "pg", "art": "subsidiär", "beleg": beleg("412.31", "§ 2.")},
-        {"von": "lpvo", "nach": "lpg", "art": "Vollzug", "beleg": None},
-        {"von": "lpvo", "nach": "vvo", "art": "verweist auf", "beleg": None},
-    ]
-    # Gemeinde: kommunale Personalerlasse aus den erfassten Rechtssammlungen
-    kommunal = []
-    for o in ORGS:
-        for s in o["sections"]:
-            for d in walk(s):
-                t = norm(d["titel"])
-                if re.search(r"personalverordnung|personalreglement|anstellungs und besoldungsverordnung|\bpevo\b", t) and not re.search(r"anhang|vollz|ausf", t):
-                    kommunal.append({"org": o["id"], "orgname": o["kurz"], "typ": o["typ"], "titel": d["titel"], "url": d.get("url")})
-    knoten.append({"id": "gem", "ebene": 3, "titel": "Personalverordnung der Gemeinde / Schulgemeinde", "fundstelle": "kommunal", "art": "Gemeindeerlass",
-                   "hinweis": "Platzhalter «Schule XYZ»; Beispiele aus den erfassten Rechtssammlungen", "beispiele": kommunal})
-    kanten.append({"von": "gem", "nach": "gg", "art": "Grundlage", "beleg": beleg("131.1", "§ 53.")})
-    kanten.append({"von": "gem", "nach": "pg", "art": "subsidiär (§ 53 Abs. 2 GG)", "beleg": None})
-    # Doppelte Beispiele (gleiche Organisation, gleicher Titel) zusammenfassen
-    gesehen, ein = set(), []
-    for x in kommunal:
-        key = (x["org"], norm(x["titel"])[-30:])
-        if key not in gesehen: gesehen.add(key); ein.append(x)
-    knoten[-1]["beispiele"] = ein
-    ls_von = {k["id"]: k.get("ls") for k in knoten}
-    fund = {k["id"]: k["fundstelle"] for k in knoten}
-    for k in kanten:
-        q = ls_von.get(k["von"])
-        if q and q in texte["erlasse"]:
-            k["verweise"] = sum(n for z, n in texte["erlasse"][q]["verweise"] if z == fund[k["nach"]])
-    for k in kanten:
-        if k["von"] == "vvo" and not k["beleg"]:
-            k["beleg"] = {"fundstelle": "LS 177.111", "stelle": "Titel", "text": "Vollzugsverordnung zum Personalgesetz (VVO) – Titel und Ingress: Vollzug des Personalgesetzes"}
+    knoten = [dict(k) for k in spec["knoten"]]
     for k in knoten:
         if k.get("ls"):
+            k["fundstelle"] = "LS " + k["ls"]
             k["url"] = f"http://www.zhlex.zh.ch/Erlass.html?Open&Ordnr={k['ls']}"
             k["text"] = k["ls"] in akt
             k["versionen"] = len(texte["erlasse"].get(k["ls"], {}).get("fassungen", []))
-    return {"id": "personal", "titel": "Personalrecht", "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
-            "knoten": knoten, "kanten": kanten,
-            "hinweis": "Pilot: Verbindungen von Hand festgelegt und mit Belegstellen aus den aufbereiteten Texten (ZH-Lex, geltende Fassung) hinterlegt; ausgehende Verweise automatisch aus den Fussnoten gezählt."}
+        if k.get("muster"):
+            bsp, gesehen = [], set()
+            for o in ORGS:
+                for s in o["sections"]:
+                    for d in walk(s):
+                        t = norm(d["titel"])
+                        if re.search(k["muster"], t) and not (k.get("ohne") and re.search(k["ohne"], t)):
+                            key = (o["id"], t[-30:])
+                            if key in gesehen: continue
+                            gesehen.add(key)
+                            bsp.append({"org": o["id"], "orgname": o["kurz"], "typ": o["typ"], "titel": d["titel"], "url": d.get("url")})
+            k["beispiele"] = bsp
+            k.pop("muster"); k.pop("ohne", None)
+    fund = {k["id"]: k["fundstelle"] for k in knoten}
+    ls_von = {k["id"]: k.get("ls") for k in knoten}
+    kanten = []
+    for x in spec["kanten"]:
+        k = {"von": x["von"], "nach": x["nach"], "art": x["art"], "beleg": None}
+        if x.get("beleg") and x["beleg"][0] in akt:
+            nr, para = x["beleg"]
+            text = paragraf(nr, akt[nr], para)
+            if text: k["beleg"] = {"fundstelle": "LS " + nr, "stelle": para, "text": text}
+        elif x.get("beleg_text"):
+            k["beleg"] = {"fundstelle": fund[x["von"]], "stelle": "Titel", "text": x["beleg_text"]}
+        q = ls_von.get(x["von"])
+        if q and q in texte["erlasse"]:
+            k["verweise"] = sum(n for z, n in texte["erlasse"][q]["verweise"] if z == fund[x["nach"]])
+        kanten.append(k)
+    return {"id": spec["id"], "titel": spec["titel"], "ebenen": spec["ebenen"], "knoten": knoten, "kanten": kanten,
+            "hinweis": "Pilot: Verbindungen von Hand festgelegt und mit Belegstellen aus den aufbereiteten Texten (ZH-Lex, geltende Fassung) hinterlegt; Verweise automatisch aus den Fussnoten gezählt; kommunale Beispiele aus den erfassten Rechtssammlungen."}
 
 # ---------------------------------------------------------------- Übersicht
 WM = ('<span class="wm" role="img" aria-label="EduKSX-Codex"><span aria-hidden="true"><span class="v">E</span><span class="n">du</span>'
@@ -1486,7 +1520,7 @@ def render_daten(gemeinden):
     for o in ORGS: leitfaden_pruefung(o); doc_datum_version(o); analyse_info(o)
     TX = texte_index()
     daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN, "rechtsgrundlagen": rechtsgrundlagen(),
-             "texte": TX, "hierarchien": [hierarchie_personal(TX)],
+             "texte": TX, "hierarchien": [hierarchie(TX, sp) for sp in HIERARCHIEN],
              "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
     return ("/* Erzeugt von tools/build.py – nicht von Hand bearbeiten. */\nwindow.CODEX = "
             + json.dumps(daten, ensure_ascii=False, separators=(",", ":")) + ";\n")
@@ -1515,7 +1549,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.9.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.10.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1523,7 +1557,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.9.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.10.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

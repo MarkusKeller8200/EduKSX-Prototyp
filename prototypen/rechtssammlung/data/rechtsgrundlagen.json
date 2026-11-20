@@ -616,6 +616,36 @@
    "relevanz": "Anforderungen an ein Lehrmittel für Sprachförderung und DaZ",
    "quelle": "Bildungsrat",
    "quelle_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html"
+  },
+  {
+   "nr": 63,
+   "sachbereich": 5,
+   "erlass": "Finanzausgleichsgesetz (FAG), LS 132.1",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Ressourcen- und Lastenausgleich, Beiträge des Kantons an die Gemeinden – auch an Schulgemeinden",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Thema Finanzen)"
+  },
+  {
+   "nr": 64,
+   "sachbereich": 5,
+   "erlass": "Finanzausgleichsverordnung (FAV), LS 132.11",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Vollzug des Finanzausgleichs: Berechnung und Auszahlung der Beiträge",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Thema Finanzen)"
+  },
+  {
+   "nr": 65,
+   "sachbereich": 5,
+   "erlass": "Gesetz über Controlling und Rechnungslegung (CRG), LS 611",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Haushaltsrecht des Kantons; für Gemeinden nur über Verweise relevant (Gemeinden: GG 4. Teil)",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Thema Finanzen)"
   }
  ]
 }

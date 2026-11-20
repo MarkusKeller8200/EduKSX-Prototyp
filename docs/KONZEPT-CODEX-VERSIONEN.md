@@ -1,6 +1,6 @@
 # Konzept: EduKSX-Codex – Versionen, Abgleich, Textfassung und Normenhierarchie (#32)
 
-Stand: 2026-11-20 (Codex 0.9.0) · Status: **IN ARBEIT**
+Stand: 2026-11-20 (Codex 0.10.0) · Status: **IN ARBEIT**
 
 Ein Konzept ist eine Entscheidungsgrundlage, keine Freigabe: umgesetzt wird erst, was als Issue freigegeben ist.
 
@@ -143,6 +143,9 @@ Reglemente).
 - **Status:** **BESCHLOSSEN** 2026-11-20 – Pilot Personalrecht umgesetzt (Codex 0.9.0): OR → PG / LPG / GG → PVO / VVO /
   LPVO → Personalverordnung der Gemeinde (17 Beispiele aus den erfassten Rechtssammlungen). Verbindungen von Hand,
   Belegstellen (PG § 18, PVO § 1, LPG § 2, GG § 53) automatisch aus den Textfassungen; Verweise aus den Fussnoten gezählt.
+  Erweitert (Codex 0.10.0, #34): Thema **Finanzen** – GG / FAG / CRG → VGG / FAV → Gemeindeordnung (Finanzbefugnisse),
+  Finanzreglement, Gebührenverordnung; Belegstellen GG § 84 und § 104, VGG § 8 und § 47, FAG § 1, FAV § 1. CRG nur als
+  Bezug (Haushaltsrecht des Kantons). Themen werden in `HIERARCHIEN` (tools/build.py) beschrieben und über Reiter gewählt.
 
 ## 5. Issues
 
@@ -150,3 +153,4 @@ Reglemente).
 |---|---|---|
 | #32 | Codex 0.8.0: Quellenkatalog A–F, Veröffentlicht/Version, Versionshistorik, Analyse-Version | `_3 Beta-Test` |
 | #33 | Textfassung Markdown, Änderungen farbig, Normenhierarchie Personalrecht (Kapitel 3 und 4) | `_3 Beta-Test` |
+| #34 | Finanzrecht (FAG, FAV, CRG), Fassungen GG/VGG, Normenhierarchie Finanzen | `_3 Beta-Test` |

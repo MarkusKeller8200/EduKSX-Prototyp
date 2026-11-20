@@ -71,7 +71,7 @@
      "delta": {
       "neu": 1,
       "gestrichen": 0,
-      "geaendert": 11
+      "geaendert": 10
      }
     },
     {
@@ -86,7 +86,7 @@
      "delta": {
       "neu": 28,
       "gestrichen": 10,
-      "geaendert": 15
+      "geaendert": 14
      }
     },
     {
@@ -101,7 +101,7 @@
      "delta": {
       "neu": 4,
       "gestrichen": 0,
-      "geaendert": 3
+      "geaendert": 1
      }
     },
     {
@@ -161,7 +161,7 @@
      "delta": {
       "neu": 3,
       "gestrichen": 0,
-      "geaendert": 2
+      "geaendert": 1
      }
     },
     {
@@ -176,7 +176,7 @@
      "delta": {
       "neu": 14,
       "gestrichen": 16,
-      "geaendert": 11
+      "geaendert": 8
      }
     },
     {
@@ -191,7 +191,7 @@
      "delta": {
       "neu": 9,
       "gestrichen": 2,
-      "geaendert": 3
+      "geaendert": 0
      }
     },
     {
@@ -221,7 +221,7 @@
      "delta": {
       "neu": 16,
       "gestrichen": 0,
-      "geaendert": 5
+      "geaendert": 2
      }
     },
     {
@@ -236,7 +236,7 @@
      "delta": {
       "neu": 2,
       "gestrichen": 1,
-      "geaendert": 5
+      "geaendert": 2
      }
     },
     {
@@ -251,7 +251,7 @@
      "delta": {
       "neu": 1,
       "gestrichen": 5,
-      "geaendert": 4
+      "geaendert": 2
      }
     },
     {
@@ -266,7 +266,7 @@
      "delta": {
       "neu": 39,
       "gestrichen": 1,
-      "geaendert": 10
+      "geaendert": 7
      }
     },
     {
@@ -311,7 +311,7 @@
      "delta": {
       "neu": 76,
       "gestrichen": 19,
-      "geaendert": 13
+      "geaendert": 11
      }
     },
     {
@@ -402,7 +402,7 @@
      "delta": {
       "neu": 5,
       "gestrichen": 0,
-      "geaendert": 20
+      "geaendert": 14
      }
     },
     {
@@ -432,7 +432,7 @@
      "delta": {
       "neu": 34,
       "gestrichen": 11,
-      "geaendert": 12
+      "geaendert": 7
      }
     },
     {
@@ -447,7 +447,7 @@
      "delta": {
       "neu": 7,
       "gestrichen": 2,
-      "geaendert": 25
+      "geaendert": 16
      }
     },
     {
@@ -492,7 +492,7 @@
      "delta": {
       "neu": 86,
       "gestrichen": 5,
-      "geaendert": 15
+      "geaendert": 9
      }
     },
     {
@@ -507,7 +507,7 @@
      "delta": {
       "neu": 4,
       "gestrichen": 6,
-      "geaendert": 17
+      "geaendert": 12
      }
     },
     {
@@ -537,7 +537,7 @@
      "delta": {
       "neu": 2,
       "gestrichen": 1,
-      "geaendert": 10
+      "geaendert": 5
      }
     }
    ]
@@ -583,7 +583,7 @@
      "delta": {
       "neu": 32,
       "gestrichen": 24,
-      "geaendert": 23
+      "geaendert": 22
      }
     },
     {
@@ -613,7 +613,7 @@
      "delta": {
       "neu": 4,
       "gestrichen": 11,
-      "geaendert": 4
+      "geaendert": 2
      }
     },
     {
@@ -658,7 +658,7 @@
      "delta": {
       "neu": 6,
       "gestrichen": 6,
-      "geaendert": 7
+      "geaendert": 4
      }
     },
     {
@@ -733,7 +733,7 @@
      "delta": {
       "neu": 5,
       "gestrichen": 1,
-      "geaendert": 3
+      "geaendert": 1
      }
     },
     {
@@ -748,7 +748,7 @@
      "delta": {
       "neu": 27,
       "gestrichen": 19,
-      "geaendert": 18
+      "geaendert": 16
      }
     },
     {
@@ -763,7 +763,7 @@
      "delta": {
       "neu": 18,
       "gestrichen": 8,
-      "geaendert": 25
+      "geaendert": 21
      }
     },
     {
@@ -778,7 +778,7 @@
      "delta": {
       "neu": 18,
       "gestrichen": 9,
-      "geaendert": 13
+      "geaendert": 7
      }
     },
     {
@@ -823,7 +823,7 @@
      "delta": {
       "neu": 4,
       "gestrichen": 6,
-      "geaendert": 33
+      "geaendert": 32
      }
     },
     {
@@ -838,7 +838,7 @@
      "delta": {
       "neu": 19,
       "gestrichen": 2,
-      "geaendert": 7
+      "geaendert": 4
      }
     },
     {
@@ -853,7 +853,7 @@
      "delta": {
       "neu": 9,
       "gestrichen": 18,
-      "geaendert": 10
+      "geaendert": 7
      }
     },
     {
@@ -868,7 +868,7 @@
      "delta": {
       "neu": 8,
       "gestrichen": 2,
-      "geaendert": 3
+      "geaendert": 0
      }
     },
     {
@@ -1272,6 +1272,76 @@
    "titel": "Gemeindegesetz (GG)",
    "fassungen": [
     {
+     "nachtrag": "099",
+     "veroeffentlicht": "01.01.2018",
+     "in_kraft_bis": "01.04.2019",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_1-2015_04_20-2018_01_01-099.html",
+     "seiten": 42,
+     "absaetze": 853,
+     "fussnoten": 16,
+     "pdf_sha256": "cd6d4f046df5949f690c4d9d17be7618b3f8471cc57fc244c915ee147442a6d9"
+    },
+    {
+     "nachtrag": "104",
+     "veroeffentlicht": "01.04.2019",
+     "in_kraft_bis": "01.06.2019",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_1-2015_04_20-2018_01_01-104.html",
+     "seiten": 42,
+     "absaetze": 852,
+     "fussnoten": 17,
+     "pdf_sha256": "1a3c0ae078de161601d22284ae55d5c23ad0e6289f29fcdd1689bc0a1ffee589",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 2,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "105",
+     "veroeffentlicht": "01.06.2019",
+     "in_kraft_bis": "01.01.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_1-2015_04_20-2018_01_01-105.html",
+     "seiten": 42,
+     "absaetze": 853,
+     "fussnoten": 18,
+     "pdf_sha256": "f6ca60493edd72d2363b3f545c8c11fc7d37f3fb84ab5a67453f5fe66bc6f2bf",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "115",
+     "veroeffentlicht": "01.01.2022",
+     "in_kraft_bis": "01.10.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_1-2015_04_20-2018_01_01-115.html",
+     "seiten": 42,
+     "absaetze": 853,
+     "fussnoten": 19,
+     "pdf_sha256": "ac5f36276ef70882513f8dbebda0a009990cb37fdf8724c2ea8e414f0cdf3528",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "118",
+     "veroeffentlicht": "01.10.2022",
+     "in_kraft_bis": "01.04.2026",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_1-2015_04_20-2018_01_01-118.html",
+     "seiten": 42,
+     "absaetze": 853,
+     "fussnoten": 20,
+     "pdf_sha256": "fa9cc5889c1ce7ee89e178c4bc84520a28b57befdcdf67188baa53abd544248c",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
      "nachtrag": "132",
      "veroeffentlicht": "01.04.2026",
      "in_kraft_bis": "",
@@ -1279,7 +1349,526 @@
      "seiten": 42,
      "absaetze": 856,
      "fussnoten": 21,
-     "pdf_sha256": "713343fbeed4815bc1ab47f62aa6562e5cadfe7f40fe678a1700327b3b6236af"
+     "pdf_sha256": "713343fbeed4815bc1ab47f62aa6562e5cadfe7f40fe678a1700327b3b6236af",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 0,
+      "geaendert": 3
+     }
+    }
+   ]
+  },
+  "131.11": {
+   "ordnungsnummer": "131.11",
+   "titel": "Gemeindeverordnung (VGG)",
+   "fassungen": [
+    {
+     "nachtrag": "099",
+     "veroeffentlicht": "01.01.2018",
+     "in_kraft_bis": "01.01.2019",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-099.html",
+     "seiten": 67,
+     "absaetze": 290,
+     "fussnoten": 8,
+     "pdf_sha256": "967ce86edca147ce82aec089806473b0e8d81b171f7207586888e34eeb19ff4b"
+    },
+    {
+     "nachtrag": "103",
+     "veroeffentlicht": "01.01.2019",
+     "in_kraft_bis": "01.01.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-103.html",
+     "seiten": 66,
+     "absaetze": 290,
+     "fussnoten": 10,
+     "pdf_sha256": "fd62bcfa9c976200436a6e2c45174d89834455705aecc419ea79509ed5a50af0",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "107",
+     "veroeffentlicht": "01.01.2020",
+     "in_kraft_bis": "01.08.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-107.html",
+     "seiten": 66,
+     "absaetze": 290,
+     "fussnoten": 11,
+     "pdf_sha256": "98af0245be744d31a1f22a024e76826a8d9ade1cb8f5fa340ae7f0f6b2aecc1a",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "110",
+     "veroeffentlicht": "01.08.2020",
+     "in_kraft_bis": "01.01.2021",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-110.html",
+     "seiten": 66,
+     "absaetze": 290,
+     "fussnoten": 11,
+     "pdf_sha256": "d5a801654e0883b40cb1a8a99cfa865981e06ec52f9818c071aab47d6ca448c3",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "111",
+     "veroeffentlicht": "01.01.2021",
+     "in_kraft_bis": "01.01.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-111.html",
+     "seiten": 66,
+     "absaetze": 290,
+     "fussnoten": 13,
+     "pdf_sha256": "9e6ba88e3d5b82118d57abcd17157853cbb28de3b2bb9fec5b168b209c62bd1e",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "115",
+     "veroeffentlicht": "01.01.2022",
+     "in_kraft_bis": "01.12.2023",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-115.html",
+     "seiten": 69,
+     "absaetze": 290,
+     "fussnoten": 15,
+     "pdf_sha256": "8a651aa44d636efdd0c71ea8243182c0ce64458f0a490de5ed68c1cc5c7fcafd",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "122",
+     "veroeffentlicht": "01.12.2023",
+     "in_kraft_bis": "01.12.2023",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-122.html",
+     "seiten": 69,
+     "absaetze": 296,
+     "fussnoten": 17,
+     "pdf_sha256": "94aa88fb0046d2ced6eab8dd0e849dee5450bce366d0ad44294651d4abb88a41",
+     "delta": {
+      "neu": 6,
+      "gestrichen": 0,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "123",
+     "veroeffentlicht": "01.12.2023",
+     "in_kraft_bis": "01.05.2024",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-123.html",
+     "seiten": 69,
+     "absaetze": 296,
+     "fussnoten": 17,
+     "pdf_sha256": "94aa88fb0046d2ced6eab8dd0e849dee5450bce366d0ad44294651d4abb88a41",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "125",
+     "veroeffentlicht": "01.05.2024",
+     "in_kraft_bis": "01.08.2025",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-125.html",
+     "seiten": 70,
+     "absaetze": 296,
+     "fussnoten": 20,
+     "pdf_sha256": "c88407c124c6bc996a730ef68b4595fa249764d6b5c9e48cd8162d310e60aefc",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "130",
+     "veroeffentlicht": "01.08.2025",
+     "in_kraft_bis": "01.08.2026",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-130.html",
+     "seiten": 70,
+     "absaetze": 297,
+     "fussnoten": 21,
+     "pdf_sha256": "f9ffa1b365ab703d860d6f80ca61f17a381527eeb8217f3f2fcdfd4f2dbaab3d",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "134",
+     "veroeffentlicht": "01.08.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-134.html",
+     "seiten": 71,
+     "absaetze": 297,
+     "fussnoten": 23,
+     "pdf_sha256": "f7462f88ba6ba8ed26f3a202e8d14b6ac5e4fde3f7f50db9a7df901791c41c38",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 3
+     }
+    }
+   ]
+  },
+  "132.1": {
+   "ordnungsnummer": "132.1",
+   "titel": "Finanzausgleichsgesetz (FAG)",
+   "fassungen": [
+    {
+     "nachtrag": "075",
+     "veroeffentlicht": "01.01.2012",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-132_1-2010_07_12-2012_01_01-075.html",
+     "seiten": 16,
+     "absaetze": 174,
+     "fussnoten": 21,
+     "pdf_sha256": "24d1c389b78f176afc18629d57bee7a84204d4caf37e49f9954732d6844616a6"
+    }
+   ]
+  },
+  "132.11": {
+   "ordnungsnummer": "132.11",
+   "titel": "Finanzausgleichsverordnung (FAV)",
+   "fassungen": [
+    {
+     "nachtrag": "075",
+     "veroeffentlicht": "01.01.2012",
+     "in_kraft_bis": "01.08.2017",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-132_11-2011_08_17-2012_01_01-075.html",
+     "seiten": 17,
+     "absaetze": 231,
+     "fussnoten": 7,
+     "pdf_sha256": "3ccc3d4fa4064756dcb2b2afaed972bf5294014b164e3d94ba8f6e7dbd85844c"
+    },
+    {
+     "nachtrag": "098",
+     "veroeffentlicht": "01.08.2017",
+     "in_kraft_bis": "01.01.2019",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-132_11-2011_08_17-2012_01_01-098.html",
+     "seiten": 17,
+     "absaetze": 239,
+     "fussnoten": 9,
+     "pdf_sha256": "ac3d05bf7852b763542044842b0428f158dc567daf1b3b1212cb77b5848275a8",
+     "delta": {
+      "neu": 8,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "103",
+     "veroeffentlicht": "01.01.2019",
+     "in_kraft_bis": "01.08.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-132_11-2011_08_17-2012_01_01-103.html",
+     "seiten": 17,
+     "absaetze": 239,
+     "fussnoten": 11,
+     "pdf_sha256": "0cdab1d5e922ffdd921f6d8f82315f297c7800af79231cd4f8b91f01f9070516",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "110",
+     "veroeffentlicht": "01.08.2020",
+     "in_kraft_bis": "01.01.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-132_11-2011_08_17-2012_01_01-110.html",
+     "seiten": 17,
+     "absaetze": 239,
+     "fussnoten": 12,
+     "pdf_sha256": "ae8c28388b6fc98600bedec6dee504915dcc028beb3e41d65735898d1135c875",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "115",
+     "veroeffentlicht": "01.01.2022",
+     "in_kraft_bis": "01.06.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-132_11-2011_08_17-2012_01_01-115.html",
+     "seiten": 17,
+     "absaetze": 238,
+     "fussnoten": 12,
+     "pdf_sha256": "c469bf4b302d07ee4341d47b408e364f3c64383e5a1423ea114c4fbff3dad34c",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 1,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "117",
+     "veroeffentlicht": "01.06.2022",
+     "in_kraft_bis": "01.07.2026",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-132_11-2011_08_17-2012_01_01-117.html",
+     "seiten": 17,
+     "absaetze": 237,
+     "fussnoten": 13,
+     "pdf_sha256": "f381eaa053d96fa7a361515aefa361f832150d4b1977f4e3be2bf0f1af27fe2a",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 1,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "133",
+     "veroeffentlicht": "01.07.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-132_11-2011_08_17-2012_01_01-133.html",
+     "seiten": 17,
+     "absaetze": 237,
+     "fussnoten": 14,
+     "pdf_sha256": "6d6281bdc92181a8833abf30f32ebcd2fc1090665b018087f7da0b381a739597",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 13
+     }
+    }
+   ]
+  },
+  "611": {
+   "ordnungsnummer": "611",
+   "titel": "Gesetz über Controlling und Rechnungslegung (CRG)",
+   "fassungen": [
+    {
+     "nachtrag": "058",
+     "veroeffentlicht": "01.10.2007",
+     "in_kraft_bis": "01.11.2007",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09--058.html",
+     "seiten": 15,
+     "absaetze": 301,
+     "fussnoten": 12,
+     "pdf_sha256": "420d95117d77b034824f9e0b4fbd2dd8f84813b9a7048d220bf0c7c65507f31e"
+    },
+    {
+     "nachtrag": "059",
+     "veroeffentlicht": "01.11.2007",
+     "in_kraft_bis": "01.04.2008",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09--059.html",
+     "seiten": 15,
+     "absaetze": 301,
+     "fussnoten": 12,
+     "pdf_sha256": "59455f67b502f3697b18e875a34b915fc850c1acec5ccc69aa8a87d3848ef869",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "060",
+     "veroeffentlicht": "01.04.2008",
+     "in_kraft_bis": "01.04.2009",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09-2008_04_01-060.html",
+     "seiten": 16,
+     "absaetze": 303,
+     "fussnoten": 12,
+     "pdf_sha256": "264930aba692826dcc7ba9391f335ff2eee2be77c8848224e88ba11e60d3c1bf",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "064",
+     "veroeffentlicht": "01.04.2009",
+     "in_kraft_bis": "01.05.2012",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09-2008_04_01-064.html",
+     "seiten": 16,
+     "absaetze": 306,
+     "fussnoten": 14,
+     "pdf_sha256": "10ea8ecfbddcc9ed43714e4f4bab998400c575725be6ab396ed1e89f8441645a",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 0,
+      "geaendert": 5
+     }
+    },
+    {
+     "nachtrag": "077",
+     "veroeffentlicht": "01.05.2012",
+     "in_kraft_bis": "06.05.2013",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09-2008_04_01-077.html",
+     "seiten": 16,
+     "absaetze": 305,
+     "fussnoten": 15,
+     "pdf_sha256": "08f50cbba351da739503a6bf668ee1f373d433bbf5e0fc9591364e610093e12e",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 1,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "081",
+     "veroeffentlicht": "06.05.2013",
+     "in_kraft_bis": "01.11.2014",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09-2008_04_01-081.html",
+     "seiten": 16,
+     "absaetze": 307,
+     "fussnoten": 16,
+     "pdf_sha256": "c3d2e1fdd5f3428d59b38c63959c528b1a0ef61b31c231d22d7f5f0b7cf094f6",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "087",
+     "veroeffentlicht": "01.11.2014",
+     "in_kraft_bis": "01.01.2016",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09-2008_04_01-087.html",
+     "seiten": 17,
+     "absaetze": 311,
+     "fussnoten": 18,
+     "pdf_sha256": "d362b3c57862d68309f248195b5154179bfa74ee5ef007a29507fef23d2811ec",
+     "delta": {
+      "neu": 4,
+      "gestrichen": 0,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "091",
+     "veroeffentlicht": "01.01.2016",
+     "in_kraft_bis": "01.01.2017",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09-2008_04_01-091.html",
+     "seiten": 17,
+     "absaetze": 314,
+     "fussnoten": 20,
+     "pdf_sha256": "c0ad1d075fabb84af531832ed93e2ec2dcfff19e8c858d745079dd10fae56e87",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "095",
+     "veroeffentlicht": "01.01.2017",
+     "in_kraft_bis": "01.04.2017",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09-2008_04_01-095.html",
+     "seiten": 17,
+     "absaetze": 312,
+     "fussnoten": 22,
+     "pdf_sha256": "767dd16c1d2119a4166225994112ee6526e824d1713271a37ddcc0cc3b021e90",
+     "delta": {
+      "neu": 5,
+      "gestrichen": 7,
+      "geaendert": 5
+     }
+    },
+    {
+     "nachtrag": "096",
+     "veroeffentlicht": "01.04.2017",
+     "in_kraft_bis": "01.03.2018",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09-2008_04_01-096.html",
+     "seiten": 17,
+     "absaetze": 312,
+     "fussnoten": 24,
+     "pdf_sha256": "a4f96e01a0740faa46f8017b4e8ea003ada098c273b203d69aa05536727f0e81",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 1,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "100",
+     "veroeffentlicht": "01.03.2018",
+     "in_kraft_bis": "01.01.2021",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09-2008_04_01-100.html",
+     "seiten": 17,
+     "absaetze": 311,
+     "fussnoten": 25,
+     "pdf_sha256": "906b227eccd177247bf6aa9cf7b977b6590d426cb3bb1b6381f0a0a345da332f",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 1,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "111",
+     "veroeffentlicht": "01.01.2021",
+     "in_kraft_bis": "01.01.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09-2008_04_01-111.html",
+     "seiten": 17,
+     "absaetze": 300,
+     "fussnoten": 27,
+     "pdf_sha256": "585418cf6f4e2f869668d88f45c4b147008cc211bc1f0412de8ec632bed2a95d",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 11,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "115",
+     "veroeffentlicht": "01.01.2022",
+     "in_kraft_bis": "01.07.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09-2008_04_01-115.html",
+     "seiten": 17,
+     "absaetze": 299,
+     "fussnoten": 28,
+     "pdf_sha256": "918285e04001805bffaa1714ff95b31bcb62c2734a1b655d500934804b322eae",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 2,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "117",
+     "veroeffentlicht": "01.07.2022",
+     "in_kraft_bis": "01.07.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09-2008_04_01-117.html",
+     "seiten": 17,
+     "absaetze": 299,
+     "fussnoten": 29,
+     "pdf_sha256": "c3044e632e323c8931f56a9033d46adeb75ba5b8120f3b8f3c6a5ef4ad71963a",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "118",
+     "veroeffentlicht": "01.07.2022",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-611-2006_01_09-2008_04_01-118.html",
+     "seiten": 17,
+     "absaetze": 300,
+     "fussnoten": 29,
+     "pdf_sha256": "d2d96e66bbc6db16e6a4dc0964ef6e4e504568371290600d5170ca1f15de080e",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
     }
    ]
   }

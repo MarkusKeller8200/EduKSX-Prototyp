@@ -529,8 +529,8 @@
   }
 
   // ------------------------------------------------------------------ Normenhierarchie
-  function hierarchie() {
-    var H = D.hierarchien[0], K = {}; H.knoten.forEach(function (k) { K[k.id] = k; });
+  function hierarchie(id) {
+    var H = D.hierarchien.filter(function (x) { return x.id === id; })[0] || D.hierarchien[0], K = {}; H.knoten.forEach(function (k) { K[k.id] = k; });
     var detail = h("section", { cls: "karte hierarchie-detail", "aria-live": "polite" }, h("p", { cls: "muted", text: "Erlass anklicken, um Grundlage, Belegstellen und Versionen zu sehen." }));
     var buehne = h("div", { cls: "hierarchie" });
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg"); svg.setAttribute("class", "hierarchie-linien"); svg.setAttribute("aria-hidden", "true");
@@ -596,7 +596,11 @@
     }
     var ro = window.ResizeObserver ? new ResizeObserver(function () { linien(); }) : null;
     setTimeout(function () { linien(); if (ro) ro.observe(buehne); }, 0);
-    return [kopf("Normenhierarchie – " + H.titel, "Vom Bundesrecht über Gesetz und Verordnung des Kantons bis zum Erlass der Gemeinde. Pfeile zeigen auf die übergeordnete Norm."),
+    var themen = h("div", { cls: "reiter", role: "tablist", "aria-label": "Thema wählen" }, D.hierarchien.map(function (x) {
+      return h("a", { href: link("hierarchie", x.id), role: "tab", "aria-selected": x.id === H.id ? "true" : "false", cls: "reiterlink", text: x.titel });
+    }));
+    return [kopf("Normenhierarchie – " + H.titel, "Vom übergeordneten Recht über Gesetz und Verordnung des Kantons bis zum Erlass der Gemeinde. Pfeile zeigen auf die übergeordnete Norm."),
+      themen,
       h("p", { cls: "small muted", text: H.hinweis }),
       h("div", { cls: "hierarchie-legende small" }, h("span", { cls: "lg lg-vollzug", text: "Vollzug" }), h("span", { cls: "lg lg-subsidiaer", text: "subsidiär anwendbar" }), h("span", { cls: "lg lg-verweis", text: "verweist auf" }), h("span", { cls: "lg lg-grundlage", text: "Grundlage" })),
       h("div", { cls: "hierarchie-rahmen" }, buehne, detail)];
@@ -978,7 +982,7 @@
     else if (r.art === "abgleich") inhalt = abgleich();
     else if (r.art === "texte") inhalt = texteListe();
     else if (r.art === "text") inhalt = textAnsicht(r.a, r.b);
-    else if (r.art === "hierarchie") inhalt = hierarchie();
+    else if (r.art === "hierarchie") inhalt = hierarchie(r.a);
     else if (r.art === "org" && ORG[r.a]) inhalt = !r.b ? organisation(ORG[r.a]) : r.b.indexOf("ansicht-") === 0 ? ansicht(ORG[r.a], r.b) : rubrik(ORG[r.a], r.b);
     else inhalt = nichtGefunden();
     var rahmen = document.getElementById("rahmen");

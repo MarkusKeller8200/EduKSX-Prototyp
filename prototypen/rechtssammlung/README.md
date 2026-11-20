@@ -1,6 +1,6 @@
 # Prototyp: Rechtssammlung
 
-**Status:** in-arbeit · **Version:** 0.9.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
+**Status:** in-arbeit · **Version:** 0.10.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
 
 ## Frage
 
@@ -28,13 +28,13 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 | `docs/evaluation.md` | Evaluation mit Menüstruktur und vollständiger Dateiliste je Organisation |
 | `data/rechtssammlungen.json` | Normalisiertes Datenmodell (Rubrik → Unterordner → Dokument) |
 | `data/gemeinden-zh.csv` | 160 politische Gemeinden mit Website (aus Verwaltungs-E-Mail), CMS, Status |
-| `data/raw/zhlex-versionen.json` | Fassungen (Nachträge) von 26 kantonalen Erlassen aus ZH-Lex mit Publikations-, Inkraftsetzungs- und Aufhebungsdatum, abgerufen 20.11.2026 |
+| `data/raw/zhlex-versionen.json` | Fassungen (Nachträge) von 29 kantonalen Erlassen aus ZH-Lex mit Publikations-, Inkraftsetzungs- und Aufhebungsdatum, abgerufen 20.11.2026 |
 | `data/raw/` | Rohdaten aus den Websites |
-| `data/rechtsgrundlagen.json` | Gesetzestexte & Verordnungen: 62 Rechtsgrundlagen für Schulen (Bund, Kanton, Bildungsrat, Gemeinde) mit Sachbereich, Artikel und Quelle; Fundstelle, Ebene und Direktlink ergänzt `tools/build.py` |
+| `data/rechtsgrundlagen.json` | Gesetzestexte & Verordnungen: 65 Rechtsgrundlagen für Schulen (62 aus der Liste, ergänzt um FAG, FAV, CRG; Bund, Kanton, Bildungsrat, Gemeinde) mit Sachbereich, Artikel und Quelle; Fundstelle, Ebene und Direktlink ergänzt `tools/build.py` |
 | `quellen/` | Leitfaden systematische Rechtssammlung (Original von zh.ch und PDF für die Vorschau), Herkunft in `quellen/README.md` |
-| `texte/` | Textfassungen (Markdown) je ZH-Lex-Fassung und Unterschiede je Fassungspaar (JSON), erzeugt von `tools/texte.py` |
+| `texte/` | Textfassungen (Markdown) je ZH-Lex-Fassung und Unterschiede je Fassungspaar (JSON), erzeugt von `tools/texte.py` – 12 Erlasse, u. a. VSG, VSV, LPVO, GG, VGG, FAV, CRG |
 | `tools/texte.py` | Vorab-Aufbereitung: ZH-Lex-PDF laden, in Markdown umwandeln, Unterschiede berechnen (`python3 tools/texte.py 412.100`) |
-| `tools/build.py` | Generator: Datenmodell, Schulgemeinden (60) mit Einheitsgemeinde-Herleitung, Struktur-Matrix, Nachbauten |
+| `tools/build.py` | Generator: Datenmodell, Normenhierarchien (`HIERARCHIEN`: Personalrecht, Finanzen), Schulgemeinden (60) mit Einheitsgemeinde-Herleitung, Struktur-Matrix, Nachbauten |
 
 ## Erfasst (Stand 17.11.2026)
 

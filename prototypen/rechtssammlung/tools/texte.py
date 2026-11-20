@@ -46,6 +46,7 @@ BINDEWORT = {"und", "oder", "bis", "sowie", "bzw.", "noch", "als", "statt"}
 
 def trennung(t):
     """Silbentrennung «Volks- schule» auflösen, aber «Kinder- und Jugendheim» behalten."""
+    t = re.sub(r"(?<=[a-zäöüß]) - (?=[a-zäöüß]{2,})(?!(?:und|oder|bis|sowie)\b)", "- ", t)   # abgelöster Trennstrich «Neubeurtei - lung»
     return re.sub(r"(?<=\w)- (\S+)", lambda m: ("- " + m.group(1)) if m.group(1).rstrip(",.;:") in BINDEWORT or not re.match(r"[a-zäöüß]", m.group(1)) else m.group(1), t)
 
 def zeilenende(woerter):

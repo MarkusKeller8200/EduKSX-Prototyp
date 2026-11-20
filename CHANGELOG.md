@@ -116,4 +116,9 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Laufzeit) – VSG, VSV und LPVO mit allen Fassungen, Änderungen zwischen Fassungen farbig markiert («nur Änderungen»);
   Normenhierarchie Personalrecht (OR → PG/LPG/GG → PVO/VVO/LPVO → Gemeinde) mit Belegstellen und kommunalen Beispielen;
   Markdown-Dateien in `texte/` werden auf GitHub Pages veröffentlicht (`tools/seite_bauen.py`) (#33).
+- EduKSX-Codex 0.10.0: Finanzrecht – FAG (LS 132.1), FAV (LS 132.11) und CRG (LS 611) in den Rechtsgrundlagen
+  (jetzt 37 Erlasse Bund und Kanton); alle Fassungen von GG (6) und VGG (11) sowie FAV und CRG als Text mit Änderungen;
+  Normenhierarchie mit Reitern «Personalrecht» und «Finanzen» (GG/FAG/CRG → VGG/FAV → Gemeindeordnung,
+  Finanzreglement, Gebührenverordnung mit Belegstellen und kommunalen Beispielen); abgelöste Trennstriche in der
+  Textaufbereitung werden zusammengefügt (#34).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.
