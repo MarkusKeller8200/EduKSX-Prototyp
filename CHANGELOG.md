@@ -181,4 +181,6 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Rechtsetzung & Information; Stimmberechtigte, Gemeindeversammlung & Parlament; Behörden & Kommissionen; Wahlen &
   Behördenmitglieder; Prüfung & Aufsicht; Zusammenarbeit & Gemeindestrukturen), Gruppe «Ressourcen»; jetzt 24 Themen;
   Rechtsgrundlagen 78–79 (GPR, VPR); Elternfrage «Wer entscheidet an unserer Schule?» (#46).
+- EduKSX-Codex 0.24.0: Normenhierarchie – Themenwahl als Übersicht in Spalten nach Gruppen statt Reiterleiste; alle 24 Themen auf
+  einen Blick, Kurzbezeichnungen, gewähltes Thema hervorgehoben (#52).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

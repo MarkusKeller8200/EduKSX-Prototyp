@@ -661,10 +661,13 @@
     }
     var ro = window.ResizeObserver ? new ResizeObserver(function () { linien(); }) : null;
     setTimeout(function () { linien(); if (ro) ro.observe(buehne); }, 0);
-    var letzteGruppe = null;
-    var themen = h("div", { cls: "reiter reiter-gruppen", role: "tablist", "aria-label": "Thema wählen – geordnet nach Bezug zur Volksschule" }, D.hierarchien.map(function (x) {
-      var g = x.gruppe !== letzteGruppe ? h("span", { cls: "reiter-gruppe", "aria-hidden": "true", text: x.gruppe }) : null; letzteGruppe = x.gruppe;
-      return [g, h("a", { href: link("hierarchie", x.id, org ? org.id : null), role: "tab", "aria-selected": x.id === H.id ? "true" : "false", cls: "reiterlink", text: x.titel })];
+    var gruppen = [], gIdx = {};
+    D.hierarchien.forEach(function (x) { if (!(x.gruppe in gIdx)) { gIdx[x.gruppe] = gruppen.length; gruppen.push({ titel: x.gruppe, themen: [] }); } gruppen[gIdx[x.gruppe]].themen.push(x); });
+    var themen = h("nav", { cls: "themenwahl", "aria-label": "Thema wählen – geordnet nach Bezug zur Volksschule" }, gruppen.map(function (g) {
+      return h("div", { cls: "themengruppe" + (g.titel === H.gruppe ? " aktiv" : "") }, h("div", { cls: "themengruppe-titel", text: g.titel }),
+        h("ul", null, g.themen.map(function (x) {
+          return h("li", null, h("a", { href: link("hierarchie", x.id, org ? org.id : null), title: x.titel, "aria-current": x.id === H.id ? "page" : null, cls: x.id === H.id ? "aktiv" : null, text: x.kurz || x.titel }));
+        })));
     }));
     var orgWahl = h("select", { "aria-label": "Organisation wählen", onchange: function () { location.hash = link("hierarchie", H.id, this.value || null); } },
       [h("option", { value: "", text: "alle erfassten Organisationen" })].concat(D.organisationen.slice().sort(function (a, b) { return a.kurz.localeCompare(b.kurz, "de"); }).map(function (o) {

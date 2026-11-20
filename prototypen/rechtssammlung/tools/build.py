@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.23.1 – Generator.
+"""EduKSX-Codex Prototyp 0.24.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -2112,6 +2112,11 @@ REIHENFOLGE = ["volksschule", "schulpflicht", "tagesstrukturen", "sonderpaedagog
                "gemeindeorganisation", "stimmberechtigte", "behoerden", "wahlen", "organisation", "kontrolle", "zusammenarbeit", "verfahren",
                "finanzen", "datenschutz", "beschaffung"]
 HIERARCHIEN.sort(key=lambda h: REIHENFOLGE.index(h["id"]))
+KURZTITEL = {"schulpflicht": "Schulpflicht & Schulort", "tagesstrukturen": "Tagesstrukturen & Angebote", "kindesschutz": "Kindesschutz",
+             "absenzen": "Absenzen & Urlaub", "unterricht": "Unterricht & Medien", "beurteilung": "Beurteilung & Laufbahn",
+             "gemeindeorganisation": "Gemeinde & Information", "stimmberechtigte": "Versammlung & Parlament", "behoerden": "Behörden & Kommissionen",
+             "wahlen": "Wahlen & Behördenmitglieder", "organisation": "Schulorganisation & Qualität", "kontrolle": "Prüfung & Aufsicht",
+             "zusammenarbeit": "Zusammenarbeit & Strukturen", "verfahren": "Verfahren & Rechtsschutz", "beschaffung": "Beschaffung & Bau"}
 GRUPPEN = {"volksschule": "Schule", "schulpflicht": "Schule", "tagesstrukturen": "Schule",
            "sonderpaedagogik": "Kinder", "kindesschutz": "Kinder", "gesundheit": "Kinder", "eltern": "Eltern", "absenzen": "Eltern", "kosten": "Eltern",
            "personal": "Personal", "unterricht": "Unterricht", "beurteilung": "Unterricht", "sprache": "Unterricht",
@@ -2257,7 +2262,7 @@ def hierarchie(texte, spec):
         if q and q in texte["erlasse"]:
             k["verweise"] = sum(n for z, n in texte["erlasse"][q]["verweise"] if z == fund[x["nach"]])
         kanten.append(k)
-    return {"id": spec["id"], "titel": spec["titel"], "gruppe": GRUPPEN.get(spec["id"], ""), "ebenen": spec["ebenen"], "knoten": knoten, "kanten": kanten,
+    return {"id": spec["id"], "titel": spec["titel"], "gruppe": GRUPPEN.get(spec["id"], ""), "kurz": KURZTITEL.get(spec["id"], spec["titel"]), "ebenen": spec["ebenen"], "knoten": knoten, "kanten": kanten,
             "hinweis": "Pilot: Verbindungen von Hand festgelegt und mit Belegstellen aus den aufbereiteten Texten (ZH-Lex, geltende Fassung) hinterlegt; Verweise automatisch aus den Fussnoten gezählt; kommunale Beispiele aus den erfassten Rechtssammlungen."}
 
 # ---------------------------------------------------------------- Übersicht
@@ -2317,7 +2322,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.23.1 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.24.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2325,7 +2330,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.23.1 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.24.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

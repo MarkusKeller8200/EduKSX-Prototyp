@@ -36,6 +36,11 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – EduKSX-Codex 0.24.0
+
+- Rückmeldung: Themenauswahl unübersichtlich. Umgesetzt (#52 → `_3 Beta-Test`): `KURZTITEL` in tools/build.py, Navigation
+  `.themenwahl` (CSS-Spalten, Gruppen ungeteilt). Version 0.24.0, weil eine parallele Sitzung 0.23.1 vergeben hat (#51).
+
 ### Sitzung 2026-11-20 – Umsetzungsgrundlagen nach DB-/API-Standard (#51)
 
 - Architektur (PR #66, gemerged): DB-Standard 1.3 (A8, DB-E13), API-Standard 1.2 (A8, API-E37) – englische Namen,

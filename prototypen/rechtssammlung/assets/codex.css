@@ -183,3 +183,14 @@ table.matrix tbody th { white-space: normal; }
 .chip:hover, .chip:focus-visible { border-color: var(--brand-blue); }
 .eltern-frage h2 { margin-top: 0; } .eltern-frage .fragen { margin: 0 0 .6rem; } .eltern-frage .fragen li { font-style: italic; }
 .beleg-block { margin: .3rem 0; } .beleg-block summary { cursor: pointer; }
+
+/* Themenwahl Normenhierarchie: alle Themen auf einen Blick, nach Gruppen */
+.themenwahl { columns: 3 210px; column-gap: 2rem; margin: .5rem 0 1rem; padding: .7rem .9rem;
+  border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
+.themengruppe { break-inside: avoid; display: inline-block; width: 100%; margin-bottom: .6rem; }
+.themengruppe-titel { font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-foreground); padding-bottom: .2rem; margin-bottom: .2rem; border-bottom: 1px solid var(--border); }
+.themengruppe.aktiv .themengruppe-titel { color: var(--foreground); font-weight: 600; border-bottom-color: var(--brand-orange, #f08c00); }
+.themengruppe ul { list-style: none; margin: 0; padding: 0; }
+.themengruppe li a { display: block; padding: .12rem .35rem; margin: 0 -.35rem; border-radius: 4px; font-size: .86rem; line-height: 1.3; color: inherit; text-decoration: none; }
+.themengruppe li a:hover, .themengruppe li a:focus-visible { background: var(--muted); }
+.themengruppe li a.aktiv { background: var(--secondary); color: var(--secondary-foreground); font-weight: 600; box-shadow: inset 3px 0 0 var(--brand-orange, #f08c00); }
