@@ -170,7 +170,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Codex 0.21.0: Elternwegweiser (12 Elternfragen mit Zitaten aus Bund und Kanton, Links in die Normenhierarchie,
   Reglemente der gewählten Gemeinde); Normenhierarchie mit getrennten Gruppen Kinder und Eltern und neuen Themen «Absenzen,
   Urlaub, Jokertage» und «Kosten für Eltern» (jetzt 18 Themen) (#45).
-- EduKSX-Codex 0.22.0: Normenhierarchie – neue Gruppe «Behörden & Organisation» mit sechs Themen (Gemeindeorganisation,
+- EduKSX-Codex 0.23.0: Normenhierarchie – neue Gruppe «Behörden & Organisation» mit sechs Themen (Gemeindeorganisation,
   Rechtsetzung & Information; Stimmberechtigte, Gemeindeversammlung & Parlament; Behörden & Kommissionen; Wahlen &
   Behördenmitglieder; Prüfung & Aufsicht; Zusammenarbeit & Gemeindestrukturen), Gruppe «Ressourcen»; jetzt 24 Themen;
   Rechtsgrundlagen 78–79 (GPR, VPR); Elternfrage «Wer entscheidet an unserer Schule?» (#46).
