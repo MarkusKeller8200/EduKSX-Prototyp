@@ -158,4 +158,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Codex 0.20.0: Normenhierarchie mit fünf weiteren Themen aus dem Volksschulgesetz – Schulorganisation & Qualität,
   Schulpflicht/Schulort/Privatschulen, Tagesstrukturen & ergänzende Angebote, Beurteilung & Schullaufbahn, Sprache & Integration
   (jetzt 16 Themen); Finanzen, Personal und Verfahren um VSG-Bestimmungen erweitert; Rechtsgrundlagen 70–77 (#44).
+- EduKSX-Codex 0.20.1: Musikschulgesetz (LS 410.6), Musikschulverordnung (LS 410.61), Kinder- und Jugendhilfegesetz (LS 852.1),
+  Mittelschulgesetz (LS 413.21), Aufnahme Gymnasium (LS 413.250.1), Aufnahme Maturitätsschulen (LS 413.250.2) und RSA 2009 (LS 414.16)
+  mit allen Fassungen des geltenden Erlasses als Text und Änderungen (#44).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

@@ -3653,6 +3653,76 @@
    "titel": "Kinder- und Jugendhilfegesetz (KJHG)",
    "fassungen": [
     {
+     "nachtrag": "075",
+     "veroeffentlicht": "01.01.2012",
+     "in_kraft_bis": "01.01.2013",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-852_1-2011_03_14-2012_01_01-075.html",
+     "seiten": 11,
+     "absaetze": 199,
+     "fussnoten": 11,
+     "pdf_sha256": "5529f115e60576ed02f5bef80d85a33809c1af184acd04c1a0129d1629fd6b25"
+    },
+    {
+     "nachtrag": "079",
+     "veroeffentlicht": "01.01.2013",
+     "in_kraft_bis": "01.01.2015",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-852_1-2011_03_14-2012_01_01-079.html",
+     "seiten": 11,
+     "absaetze": 196,
+     "fussnoten": 12,
+     "pdf_sha256": "77a1eff7f3c79df3a2856e8d7269fa7e046823fc80adc0069210a396f2a9ac4d",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 4,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "092",
+     "veroeffentlicht": "01.01.2015",
+     "in_kraft_bis": "01.04.2016",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-852_1-2011_03_14-2012_01_01-092.html",
+     "seiten": 11,
+     "absaetze": 196,
+     "fussnoten": 13,
+     "pdf_sha256": "26d01971823bd0544791e1f71122923ab3e1d126d5c407970e4117159a43f821",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "092a",
+     "veroeffentlicht": "01.04.2016",
+     "in_kraft_bis": "01.01.2017",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-852_1-2011_03_14-2012_01_01-092a.html",
+     "seiten": 11,
+     "absaetze": 189,
+     "fussnoten": 15,
+     "pdf_sha256": "4c60905392d1224c5b0cf574e3631db2920c51bf0f200c0d31d21e99fa442a09",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 8,
+      "geaendert": 4
+     }
+    },
+    {
+     "nachtrag": "095",
+     "veroeffentlicht": "01.01.2017",
+     "in_kraft_bis": "01.08.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-852_1-2011_03_14-2012_01_01-095.html",
+     "seiten": 12,
+     "absaetze": 208,
+     "fussnoten": 16,
+     "pdf_sha256": "45ec58c776d86b4aaa085af97ab980d5b3372280915ccfd09a1a535ed6bf5b2c",
+     "delta": {
+      "neu": 19,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    },
+    {
      "nachtrag": "110",
      "veroeffentlicht": "01.08.2020",
      "in_kraft_bis": "",
@@ -3660,7 +3730,12 @@
      "seiten": 15,
      "absaetze": 256,
      "fussnoten": 24,
-     "pdf_sha256": "584f23216693334448a5f0266d60da2b5e877a97310fe1a67c7581633710e3d5"
+     "pdf_sha256": "584f23216693334448a5f0266d60da2b5e877a97310fe1a67c7581633710e3d5",
+     "delta": {
+      "neu": 60,
+      "gestrichen": 12,
+      "geaendert": 24
+     }
     }
    ]
   },
@@ -3669,6 +3744,46 @@
    "titel": "Reglement für die Aufnahme in die Gymnasien mit Anschluss an die 6. Klasse der Primarschule",
    "fassungen": [
     {
+     "nachtrag": "068",
+     "veroeffentlicht": "01.03.2010",
+     "in_kraft_bis": "22.08.2011",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_250_1-2010_01_13-2010_03_01-068.html",
+     "seiten": 6,
+     "absaetze": 85,
+     "fussnoten": 5,
+     "pdf_sha256": "81ed1a6942d010865e734c57338b4dc1d4637839bd895b3ba0c0984be5387da5"
+    },
+    {
+     "nachtrag": "075",
+     "veroeffentlicht": "22.08.2011",
+     "in_kraft_bis": "20.08.2012",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_250_1-2010_01_13-2010_03_01-075.html",
+     "seiten": 6,
+     "absaetze": 83,
+     "fussnoten": 6,
+     "pdf_sha256": "8f707b1670ded2a52885bed198912989adb2c560dcf79c20ff05a32766fae278",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 2,
+      "geaendert": 4
+     }
+    },
+    {
+     "nachtrag": "078",
+     "veroeffentlicht": "20.08.2012",
+     "in_kraft_bis": "01.08.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_250_1-2010_01_13-2010_03_01-078.html",
+     "seiten": 5,
+     "absaetze": 74,
+     "fussnoten": 8,
+     "pdf_sha256": "15e74ea839c688c03cf0f77d01ccf5445dff45e850060984b9c665700f02cc73",
+     "delta": {
+      "neu": 4,
+      "gestrichen": 13,
+      "geaendert": 9
+     }
+    },
+    {
      "nachtrag": "117",
      "veroeffentlicht": "01.08.2022",
      "in_kraft_bis": "",
@@ -3676,7 +3791,12 @@
      "seiten": 8,
      "absaetze": 129,
      "fussnoten": 10,
-     "pdf_sha256": "6a051f46040a604de933db4c8a795911961e490a60e3a5fd0930efb6c7879150"
+     "pdf_sha256": "6a051f46040a604de933db4c8a795911961e490a60e3a5fd0930efb6c7879150",
+     "delta": {
+      "neu": 80,
+      "gestrichen": 25,
+      "geaendert": 13
+     }
     }
    ]
   },
@@ -3685,6 +3805,31 @@
    "titel": "Verordnung über die Aufnahme in die Maturitätsschulen im Anschluss an die Sekundarstufe und nach Abschluss der beruflichen Grundbildung (VAM)",
    "fassungen": [
     {
+     "nachtrag": "118",
+     "veroeffentlicht": "01.08.2022",
+     "in_kraft_bis": "01.01.2024",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_250_2-2019_04_03-2022_08_01-118.html",
+     "seiten": 15,
+     "absaetze": 271,
+     "fussnoten": 8,
+     "pdf_sha256": "d583b9fcff585f079839efda82d2bb2dbf2a82da2b751f85da69b7ac77212130"
+    },
+    {
+     "nachtrag": "123",
+     "veroeffentlicht": "01.01.2024",
+     "in_kraft_bis": "01.01.2026",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_250_2-2019_04_03-2022_08_01-123.html",
+     "seiten": 15,
+     "absaetze": 273,
+     "fussnoten": 9,
+     "pdf_sha256": "fdf011af02ec456f381c2c014199ab23ff6dbc44cc4544b48dc5df76f3c5aeaa",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 1,
+      "geaendert": 5
+     }
+    },
+    {
      "nachtrag": "131",
      "veroeffentlicht": "01.01.2026",
      "in_kraft_bis": "",
@@ -3692,7 +3837,12 @@
      "seiten": 15,
      "absaetze": 275,
      "fussnoten": 11,
-     "pdf_sha256": "dc5d5ff4e56ec5052d9f7e500277239fd9b39bfac8dd39471e334367e42bb412"
+     "pdf_sha256": "dc5d5ff4e56ec5052d9f7e500277239fd9b39bfac8dd39471e334367e42bb412",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 1,
+      "geaendert": 3
+     }
     }
    ]
   },
@@ -3701,6 +3851,181 @@
    "titel": "Mittelschulgesetz (MSG)",
    "fassungen": [
     {
+     "nachtrag": "042",
+     "veroeffentlicht": "01.10.2003",
+     "in_kraft_bis": "31.12.2003",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_21-1999_06_13--042.html",
+     "seiten": 9,
+     "absaetze": 115,
+     "fussnoten": 6,
+     "pdf_sha256": "821c5b0fdeec077490e747a41116ac3a30466b186e1e5a02fc2715648e388824"
+    },
+    {
+     "nachtrag": "043",
+     "veroeffentlicht": "01.10.2003",
+     "in_kraft_bis": "21.08.2006",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_21-1999_06_13--043.html",
+     "seiten": 9,
+     "absaetze": 118,
+     "fussnoten": 9,
+     "pdf_sha256": "01c0a246e9d9af7f3b2616ec6f63604c0edaa51eccf167f706b3cb0034b4ed71",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 0,
+      "geaendert": 7
+     }
+    },
+    {
+     "nachtrag": "054",
+     "veroeffentlicht": "21.08.2006",
+     "in_kraft_bis": "01.03.2011",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_21-1999_06_13--054.html",
+     "seiten": 10,
+     "absaetze": 164,
+     "fussnoten": 10,
+     "pdf_sha256": "c003d206194db22dd03fcf5e09495add2b463379d6473ec66390f12b5167fc33",
+     "delta": {
+      "neu": 50,
+      "gestrichen": 4,
+      "geaendert": 30
+     }
+    },
+    {
+     "nachtrag": "072",
+     "veroeffentlicht": "01.03.2011",
+     "in_kraft_bis": "01.01.2012",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_21-1999_06_13-1999_11_01-072.html",
+     "seiten": 10,
+     "absaetze": 165,
+     "fussnoten": 11,
+     "pdf_sha256": "bce2e0c3dc1cb0fd4b3ef6459c6a4d0a5d38ce7315d358f4ccbb5910bfd4efcd",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 1,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "075",
+     "veroeffentlicht": "01.01.2012",
+     "in_kraft_bis": "01.08.2014",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_21-1999_06_13-1999_11_01-075.html",
+     "seiten": 11,
+     "absaetze": 173,
+     "fussnoten": 12,
+     "pdf_sha256": "5575518ce316002366356917ce4a11879aaa8aad383b2f5c3b492b633f683802",
+     "delta": {
+      "neu": 8,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "086",
+     "veroeffentlicht": "01.08.2014",
+     "in_kraft_bis": "01.08.2016",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_21-1999_06_13-1999_11_01-086.html",
+     "seiten": 11,
+     "absaetze": 174,
+     "fussnoten": 13,
+     "pdf_sha256": "a7c2ec23977737d53ecdec7645cf86c2d3967d899214bef90372443e3ed14acc",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 1,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "093",
+     "veroeffentlicht": "01.08.2016",
+     "in_kraft_bis": "01.01.2017",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_21-1999_06_13-1999_11_01-093.html",
+     "seiten": 11,
+     "absaetze": 174,
+     "fussnoten": 14,
+     "pdf_sha256": "3fffa59fd2acacf66f08c3e9c50bc30971c65241c351a4644300a89509deda0a",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "095",
+     "veroeffentlicht": "01.01.2017",
+     "in_kraft_bis": "25.02.2019",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_21-1999_06_13-1999_11_01-095.html",
+     "seiten": 11,
+     "absaetze": 186,
+     "fussnoten": 17,
+     "pdf_sha256": "d9c036ec3e5fd42267d69df97b9c2ee468fc45ab6532fd16ead92966c8d47065",
+     "delta": {
+      "neu": 12,
+      "gestrichen": 0,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "104",
+     "veroeffentlicht": "25.02.2019",
+     "in_kraft_bis": "01.08.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_21-1999_06_13-1999_11_01-104.html",
+     "seiten": 12,
+     "absaetze": 193,
+     "fussnoten": 19,
+     "pdf_sha256": "0539279ed6feda1eee5c4fdcc66c6a99b62a0cc373d340707959845b9d7cd114",
+     "delta": {
+      "neu": 7,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "110",
+     "veroeffentlicht": "01.08.2020",
+     "in_kraft_bis": "01.01.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_21-1999_06_13-1999_11_01-110.html",
+     "seiten": 12,
+     "absaetze": 194,
+     "fussnoten": 20,
+     "pdf_sha256": "ee0a15a2839ed3dd6e1b7d81bf28a488affe78402970093ec7fbe81f340bc04b",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "115",
+     "veroeffentlicht": "01.01.2022",
+     "in_kraft_bis": "01.08.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_21-1999_06_13-1999_11_01-115.html",
+     "seiten": 14,
+     "absaetze": 221,
+     "fussnoten": 23,
+     "pdf_sha256": "8b6cf50f7057f7d0d3effebd953799c0bfee8e784ae2fb4783c0f95656206fbc",
+     "delta": {
+      "neu": 27,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "117",
+     "veroeffentlicht": "01.08.2022",
+     "in_kraft_bis": "01.04.2026",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_21-1999_06_13-1999_11_01-117.html",
+     "seiten": 14,
+     "absaetze": 221,
+     "fussnoten": 24,
+     "pdf_sha256": "83feed92158df5cfaab634408661a87e827f59959c6232b0ca15cb1969588b97",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
      "nachtrag": "132",
      "veroeffentlicht": "01.04.2026",
      "in_kraft_bis": "",
@@ -3708,7 +4033,12 @@
      "seiten": 14,
      "absaetze": 224,
      "fussnoten": 26,
-     "pdf_sha256": "6054b2c2b68cb4f366d5c7018d404a9339c5e568d4cbbdf5bec37e27bd3772b7"
+     "pdf_sha256": "6054b2c2b68cb4f366d5c7018d404a9339c5e568d4cbbdf5bec37e27bd3772b7",
+     "delta": {
+      "neu": 9,
+      "gestrichen": 6,
+      "geaendert": 7
+     }
     }
    ]
   },
@@ -3717,6 +4047,16 @@
    "titel": "Gesetz über den Beitritt zum Regionalen Schulabkommen über die gegenseitige Aufnahme von Auszubildenden und Ausrichtung von Beiträgen (RSA 2009)",
    "fassungen": [
     {
+     "nachtrag": "068",
+     "veroeffentlicht": "01.08.2009",
+     "in_kraft_bis": "01.01.2016",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-414_16-2009_12_07-2009_08_01-068.html",
+     "seiten": 10,
+     "absaetze": 76,
+     "fussnoten": 4,
+     "pdf_sha256": "9d470e9a72973c9cdfc1470b01592d618d2795cfb0f51f17d872f90fea79315c"
+    },
+    {
      "nachtrag": "091",
      "veroeffentlicht": "01.01.2016",
      "in_kraft_bis": "",
@@ -3724,7 +4064,12 @@
      "seiten": 9,
      "absaetze": 99,
      "fussnoten": 4,
-     "pdf_sha256": "f43b1e54eae099e10ded8c7a2f6bfe43e203a5eb4669e849cffa0cde282485c9"
+     "pdf_sha256": "f43b1e54eae099e10ded8c7a2f6bfe43e203a5eb4669e849cffa0cde282485c9",
+     "delta": {
+      "neu": 41,
+      "gestrichen": 18,
+      "geaendert": 13
+     }
     }
    ]
   }
