@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.21.0 – Generator.
+"""EduKSX-Codex Prototyp 0.22.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1252,7 +1252,7 @@ RG_ALIAS = [  # Titelanfang ohne Fundstelle → (Abkürzung, Fundstelle)
  (r"^Gemeindeordnung der jeweiligen Schulgemeinde", ("GO", "kommunal")),
  (r"^Kommunales Personalreglement", ("", "kommunal")),
 ]
-RG_GEPRUEFT = {"131.1", "131.11", "412.121.31", "172.71", "412.106", "412.106.1", "720.11", "720.1", "132.1", "132.11", "611", "810.1", "818.22", "818.11", "410.6", "410.61", "852.1", "413.21", "413.250.1", "413.250.2", "414.16"}
+RG_GEPRUEFT = {"131.1", "131.11", "412.121.31", "172.71", "412.106", "412.106.1", "720.11", "720.1", "132.1", "132.11", "611", "810.1", "818.22", "818.11", "410.6", "410.61", "852.1", "413.21", "413.250.1", "413.250.2", "414.16", "161", "161.1"}
 ZHLEX = "http://www.zhlex.zh.ch/Erlass.html?Open&Ordnr={}"
 
 def rechtsgrundlagen():
@@ -1936,6 +1936,108 @@ HIERARCHIEN = [
    {"von": "kom", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 11.")},
    {"von": "kom", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 11.")},
    {"von": "kom", "nach": "musg", "art": "Elternbeiträge Musikschule", "beleg": ("410.6", "§ 9.")}]},
+ {"id": "gemeindeorganisation", "titel": "Gemeindeorganisation, Rechtsetzung & Information",
+  "ebenen": ["Kanton – Verfassung", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "kv", "ebene": 0, "titel": "Verfassung des Kantons Zürich (KV)", "art": "Verfassung (Stimmberechtigte)", "ls": "101", "hinweis": "Art. 85 Gemeindeautonomie, Art. 89 Gemeindeordnung"},
+   {"id": "gg", "ebene": 1, "titel": "Gemeindegesetz (GG) – Grundlagen", "art": "Gesetz (Kantonsrat)", "ls": "131.1",
+    "hinweis": "§ 2 Autonomie, § 3 Gliederung, § 4 Rechtsetzung, § 5 Gemeindeorgane, § 6 Protokoll, § 7 Publikation, § 8 Schweigepflicht, § 43 Ausschluss der Öffentlichkeit"},
+   {"id": "idg", "ebene": 1, "titel": "Gesetz über die Information und den Datenschutz (IDG) – Öffentlichkeitsprinzip", "art": "Gesetz (Kantonsrat)", "ls": "170.4", "hinweis": "§ 20 Zugang zu Informationen"},
+   {"id": "vgg", "ebene": 2, "titel": "Gemeindeverordnung (VGG) – Rechtssammlung", "art": "Verordnung (Regierungsrat)", "ls": "131.11", "hinweis": "§ 2: Inhalt der Rechtssammlung (Gemeindeordnung, Gemeinde- und Behördenerlasse, Zweckverbandsstatuten)"},
+   {"id": "go", "ebene": 3, "titel": "Gemeindeordnung", "fundstelle": "kommunal", "art": "Gemeindeordnung (Stimmberechtigte)", "muster": r"gemeindeordnung|\(go\)", "ohne": r"protokoll"},
+   {"id": "pub", "ebene": 3, "titel": "Publikation, Information, Rechtssammlung", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
+    "hinweis": "Publikationsorgan, Informationsreglement, Kommunikation – und die systematische Rechtssammlung selbst (Leitfaden, Pflichtkatalog)",
+    "muster": r"publikation|amtsblatt|informationsreglement|informationskonzept|kommunikation|oeffentlichkeitsprinzip|rechtssammlung", "ohne": r"protokoll|beschluss"}],
+  "kanten": [
+   {"von": "gg", "nach": "kv", "art": "Grundlage", "beleg": ("101", "suche:Art. 85 ¹")},
+   {"von": "vgg", "nach": "gg", "art": "Vollzug", "beleg": ("131.11", "§ 2."), "beleg_oben": ("131.1", "§ 7.")},
+   {"von": "go", "nach": "kv", "art": "Grundlage", "beleg": ("101", "suche:Art. 89 ¹")},
+   {"von": "go", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 4."), "beleg_unten": ("131.1", "§ 5.")},
+   {"von": "pub", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 7."), "beleg_unten": ("131.1", "§ 6.")},
+   {"von": "pub", "nach": "vgg", "art": "Grundlage", "beleg": ("131.11", "§ 2.")},
+   {"von": "pub", "nach": "idg", "art": "Öffentlichkeitsprinzip", "beleg": ("170.4", "§ 20.")}]},
+ {"id": "stimmberechtigte", "titel": "Stimmberechtigte, Gemeindeversammlung & Parlament",
+  "ebenen": ["Kanton – Verfassung", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "kv", "ebene": 0, "titel": "Verfassung des Kantons Zürich (KV)", "art": "Verfassung (Stimmberechtigte)", "ls": "101", "hinweis": "Art. 86 Volksrechte in der Gemeinde, Art. 87 Organe der Gemeinde"},
+   {"id": "gg", "ebene": 1, "titel": "Gemeindegesetz (GG) – Stimmberechtigte, Versammlung, Parlament", "art": "Gesetz (Kantonsrat)", "ls": "131.1",
+    "hinweis": "§§ 9–13 Urnengeschäfte, Antragsrecht; §§ 14–26 Gemeindeversammlung (Einberufung, beleuchtender Bericht, Abstimmung, Wahlen); §§ 27–37 Gemeindeparlament"},
+   {"id": "gpr", "ebene": 1, "titel": "Gesetz über die politischen Rechte (GPR)", "art": "Gesetz (Kantonsrat)", "ls": "161"},
+   {"id": "vpr", "ebene": 2, "titel": "Verordnung über die politischen Rechte (VPR)", "art": "Verordnung (Regierungsrat)", "ls": "161.1"},
+   {"id": "go", "ebene": 3, "titel": "Gemeindeordnung – Zuständigkeiten der Stimmberechtigten", "fundstelle": "kommunal", "art": "Gemeindeordnung (Stimmberechtigte)", "muster": r"gemeindeordnung|\(go\)", "ohne": r"protokoll"},
+   {"id": "gv", "ebene": 3, "titel": "Geschäftsordnung Gemeindeversammlung / Parlament", "fundstelle": "kommunal", "art": "Gemeinde- oder Parlamentserlass",
+    "muster": r"gemeindeversammlung|parlament|geschaeftsordnung des gemeinderat|geschaeftsordnung gemeinderat", "ohne": r"protokoll|einladung|beleuchtend"}],
+  "kanten": [
+   {"von": "gg", "nach": "kv", "art": "Grundlage", "beleg": ("101", "suche:Art. 86 ¹")},
+   {"von": "gpr", "nach": "kv", "art": "Umsetzung", "beleg": ("161", "§ 1.")},
+   {"von": "vpr", "nach": "gpr", "art": "Vollzug", "beleg": ("161.1", "Ingress")},
+   {"von": "gg", "nach": "gpr", "art": "verweist auf", "beleg": ("131.1", "§ 13.")},
+   {"von": "go", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 15."), "beleg_unten": ("131.1", "§ 10.")},
+   {"von": "gv", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 18."), "beleg_unten": ("131.1", "§ 20.")},
+   {"von": "gv", "nach": "go", "art": "gestützt auf"}]},
+ {"id": "behoerden", "titel": "Behörden & Kommissionen",
+  "ebenen": ["Kanton – Gesetze", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "gg", "ebene": 0, "titel": "Gemeindegesetz (GG) – Behörden", "art": "Gesetz (Kantonsrat)", "ls": "131.1",
+    "hinweis": "§§ 38–46 Beschlussfassung, Ausstand, Ausschluss der Öffentlichkeit, Aufgabenübertragung, beratende Kommissionen; §§ 47–52 Gemeindevorstand, Kommissionen; §§ 54–57 Schulpflege"},
+   {"id": "vrg", "ebene": 0, "titel": "Verwaltungsrechtspflegegesetz (VRG) – Ausstand", "art": "Gesetz (Kantonsrat)", "ls": "175.2", "hinweis": "§ 5 a Ausstand"},
+   {"id": "vsg", "ebene": 0, "titel": "Volksschulgesetz (VSG) – Schulpflege", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 42 Aufgaben der Schulpflege, Übertragung an Schulleitung, Leitung Bildung, Verwaltung"},
+   {"id": "gs", "ebene": 1, "titel": "Geschäftsordnung der Behörde", "fundstelle": "kommunal", "art": "Behördenerlass", "muster": r"geschaeftsordnung|geschaeftsreglement", "ohne": r"gemeindeversammlung|parlament|kommission|geschaeftsordnung des gemeinderat"},
+   {"id": "kom", "ebene": 1, "titel": "Kommissionen (Reglemente)", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
+    "muster": r"kommission.*(reglement|ordnung|verordnung)|(reglement|ordnung|verordnung).*kommission", "ohne": r"rechnungspruefung|geschaeftspruefung"},
+   {"id": "komp", "ebene": 1, "titel": "Kompetenzen und Delegation (Funktionendiagramm, Unterschriften)", "fundstelle": "kommunal", "art": "Behördenerlass",
+    "muster": r"kompetenz|funktionendiagramm|unterschrift|zustaendigkeitsordnung|delegation", "ohne": r"befoerderung|kompetenzzentrum|anstaltsvertrag"}],
+  "kanten": [
+   {"von": "gg", "nach": "vrg", "art": "Ausstand", "beleg": ("131.1", "§ 42."), "beleg_oben": ("175.2", "§ 5 a.")},
+   {"von": "gs", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 38."), "beleg_unten": ("131.1", "§ 39.")},
+   {"von": "kom", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 51."), "beleg_unten": ("131.1", "§ 50.")},
+   {"von": "komp", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 44."), "beleg_unten": ("131.1", "§ 45.")},
+   {"von": "komp", "nach": "vsg", "art": "Delegation Schulpflege", "beleg": ("412.100", "§ 42.")}]},
+ {"id": "wahlen", "titel": "Wahlen & Behördenmitglieder",
+  "ebenen": ["Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "gpr", "ebene": 0, "titel": "Gesetz über die politischen Rechte (GPR) – Wahlen", "art": "Gesetz (Kantonsrat)", "ls": "161",
+    "hinweis": "§ 23 Wohnsitzpflicht, §§ 25–30 Unvereinbarkeit, § 32 Amtsdauer, § 40 Wahl der Gemeindeorgane, § 47 Teilämter, §§ 54 ff. stille Wahl"},
+   {"id": "gg", "ebene": 0, "titel": "Gemeindegesetz (GG) – Wahlen, Schulpflege", "art": "Gesetz (Kantonsrat)", "ls": "131.1", "hinweis": "§ 26 Wahlverfahren an der Versammlung, § 55 Zusammensetzung der Schulpflege"},
+   {"id": "vpr", "ebene": 1, "titel": "Verordnung über die politischen Rechte (VPR)", "art": "Verordnung (Regierungsrat)", "ls": "161.1"},
+   {"id": "go", "ebene": 2, "titel": "Gemeindeordnung – Wahlart, Mitgliederzahl, Amtsdauer", "fundstelle": "kommunal", "art": "Gemeindeordnung (Stimmberechtigte)", "muster": r"gemeindeordnung|\(go\)", "ohne": r"protokoll"},
+   {"id": "ent", "ebene": 2, "titel": "Entschädigung der Behördenmitglieder", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
+    "muster": r"entschaedigungsverordnung|entschaedigungsreglement|\bevo\b|entschaedigung (der )?behoerde|behoerdenentschaedigung|sitzungsgeld", "ohne": r"beschluss|anpassung"}],
+  "kanten": [
+   {"von": "vpr", "nach": "gpr", "art": "Vollzug", "beleg": ("161.1", "Ingress"), "beleg_unten": ("161.1", "§ 27.")},
+   {"von": "gg", "nach": "gpr", "art": "verweist auf", "beleg": ("131.1", "§ 26.")},
+   {"von": "go", "nach": "gpr", "art": "Grundlage", "beleg": ("161", "§ 40."), "beleg_unten": ("161", "§ 25.")},
+   {"von": "go", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 55.")},
+   {"von": "ent", "nach": "go", "art": "gestützt auf"}]},
+ {"id": "kontrolle", "titel": "Prüfung & Aufsicht",
+  "ebenen": ["Kanton – Gesetze", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "gg", "ebene": 0, "titel": "Gemeindegesetz (GG) – Prüfung und Aufsicht", "art": "Gesetz (Kantonsrat)", "ls": "131.1",
+    "hinweis": "§§ 58–62 Rechnungsprüfungs- und Geschäftsprüfungskommission; §§ 163–169 Aufsicht (Bezirksrat, Kanton), §§ 170–172 Neubeurteilung und Weiterzug"},
+   {"id": "vsg", "ebene": 0, "titel": "Volksschulgesetz (VSG) – Aufsicht", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 73 Aufsicht und Ersatzvornahme; §§ 47–49 Qualitätssicherung"},
+   {"id": "rpk", "ebene": 1, "titel": "Rechnungsprüfungs- und Geschäftsprüfungskommission", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
+    "muster": r"rechnungspruefung|geschaeftspruefung|\brpk\b|\bgpk\b", "ohne": r"bericht|abschied|antrag|anpassung|entschaedigung"}],
+  "kanten": [
+   {"von": "vsg", "nach": "gg", "art": "Aufsicht", "beleg": ("412.100", "§ 73."), "beleg_oben": ("131.1", "§ 164.")},
+   {"von": "rpk", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 58."), "beleg_unten": ("131.1", "§ 59.")}]},
+ {"id": "zusammenarbeit", "titel": "Zusammenarbeit & Gemeindestrukturen",
+  "ebenen": ["Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "gg", "ebene": 0, "titel": "Gemeindegesetz (GG) – Zusammenarbeit, Zusammenschluss", "art": "Gesetz (Kantonsrat)", "ls": "131.1",
+    "hinweis": "§§ 63–70 Aufgabenträger, Ausgliederung; §§ 71–83 Anschlussvertrag, Zusammenarbeitsvertrag, Zweckverband, gemeinsame Anstalt; §§ 151–162 Zusammenschluss, § 154 Übernahme der Schulaufgaben"},
+   {"id": "vsg", "ebene": 0, "titel": "Volksschulgesetz (VSG) – Schulträger", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 41 Schulträger"},
+   {"id": "vgg", "ebene": 1, "titel": "Gemeindeverordnung (VGG)", "art": "Verordnung (Regierungsrat)", "ls": "131.11", "hinweis": "§ 2: Zweckverbandsstatuten gehören in die Rechtssammlung"},
+   {"id": "zv", "ebene": 2, "titel": "Zweckverbände und Verträge im Schulbereich", "fundstelle": "kommunal", "art": "Rechtsetzender Vertrag / Statuten",
+    "hinweis": "Nur Schule, Kinder und Jugend; weitere Zweckverbände (Feuerwehr, Wasser, Abfall …) sind ausgeblendet",
+    "muster": r"(zweckverband|statuten|anschlussvertrag|zusammenarbeitsvertrag|interkommunal|gemeinsame anstalt|leistungsvereinbarung|vereinbarung).*(schul|psycholog|sonder|musik|bildung|jugend|kind|hort|betreu)|(schul|psycholog|sonder|musik|bildung|jugend|kind|hort|betreu).*(zweckverband|statuten|anschlussvertrag|vertrag|vereinbarung)",
+    "ohne": r"protokoll|beschluss|kindes und erwachsenenschutz|kesb|pflege|forst"},
+   {"id": "eg", "ebene": 2, "titel": "Einheitsgemeinde (Übernahme der Schulaufgaben)", "fundstelle": "kommunal", "art": "Gemeindeordnung / Zusammenschlussvertrag",
+    "hinweis": "Politische Gemeinde übernimmt die Schulaufgaben (§ 154 GG) – in der Gemeindeliste mit «EG» vermerkt"}],
+  "kanten": [
+   {"von": "zv", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 73."), "beleg_unten": ("131.1", "§ 71.")},
+   {"von": "zv", "nach": "vgg", "art": "Rechtssammlung", "beleg": ("131.11", "§ 2.")},
+   {"von": "eg", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 154.")},
+   {"von": "eg", "nach": "vsg", "art": "Schulträger", "beleg": ("412.100", "§ 41.")}]},
 ]
 
 # ---------------------------------------------------------------- Elternwegweiser (Auftrag 20.11.2026, Variante B)
@@ -1974,6 +2076,9 @@ ELTERNFRAGEN = [
  {"id": "daten", "titel": "Daten & Fotos", "fragen": ["Welche Daten über mein Kind darf die Schule bearbeiten und weitergeben?", "Darf die Schule Fotos veröffentlichen?"],
   "stellen": [("412.100", "§ 3 a."), ("170.4", "§ 16.")], "themen": ["datenschutz"],
   "muster": r"datenschutz|foto|bildrecht|medien|video", "ohne": r"oeffentliche[mn]? grund|parkhaus|schuetzenstube|forsthaus"},
+ {"id": "entscheid", "titel": "Wer entscheidet an unserer Schule?", "fragen": ["Wer ist zuständig – Schulpflege, Schulleitung, Gemeindeversammlung?", "Wie wird die Schulpflege gewählt?"],
+  "stellen": [("412.100", "§ 42."), ("412.100", "§ 44."), ("131.1", "§ 15."), ("131.1", "§ 55."), ("161", "§ 40.")], "themen": ["behoerden", "organisation", "wahlen", "stimmberechtigte"],
+  "muster": r"organisationsstatut|funktionendiagramm|gemeindeordnung|geschaeftsordnung.*schul|geschaeftsreglement.*schul|kompetenz", "ohne": r"protokoll|gemeinderat|werkkommission|befoerderung"},
  {"id": "beschwerde", "titel": "Nicht einverstanden – was tun?", "fragen": ["Wie verlange ich eine Begründung oder Neubeurteilung?", "Wie und wo kann ich Rekurs erheben?"],
   "stellen": [("412.100", "§ 74."), ("412.100", "§ 75."), ("131.1", "§ 170."), ("175.2", "§ 19.")], "themen": ["verfahren"],
   "muster": r"rekurs|beschwerde|neubeurteilung|ombuds|anlaufstelle"},
@@ -2002,12 +2107,18 @@ def elternwegweiser(texte):
     return out
 
 # Reihenfolge nach Bezug zur Volksschule (Auftrag 20.11.2026): Schule → Kinder → Personal → Unterricht → Organisation und Ressourcen
-REIHENFOLGE = ["volksschule", "organisation", "schulpflicht", "tagesstrukturen", "sonderpaedagogik", "kindesschutz", "gesundheit", "eltern", "absenzen", "kosten", "personal", "unterricht", "beurteilung", "sprache", "datenschutz", "finanzen", "verfahren", "beschaffung"]
+REIHENFOLGE = ["volksschule", "schulpflicht", "tagesstrukturen", "sonderpaedagogik", "kindesschutz", "gesundheit", "eltern", "absenzen", "kosten",
+               "personal", "unterricht", "beurteilung", "sprache",
+               "gemeindeorganisation", "stimmberechtigte", "behoerden", "wahlen", "organisation", "kontrolle", "zusammenarbeit", "verfahren",
+               "finanzen", "datenschutz", "beschaffung"]
 HIERARCHIEN.sort(key=lambda h: REIHENFOLGE.index(h["id"]))
-GRUPPEN = {"volksschule": "Schule", "organisation": "Schule", "schulpflicht": "Schule", "tagesstrukturen": "Schule",
+GRUPPEN = {"volksschule": "Schule", "schulpflicht": "Schule", "tagesstrukturen": "Schule",
            "sonderpaedagogik": "Kinder", "kindesschutz": "Kinder", "gesundheit": "Kinder", "eltern": "Eltern", "absenzen": "Eltern", "kosten": "Eltern",
            "personal": "Personal", "unterricht": "Unterricht", "beurteilung": "Unterricht", "sprache": "Unterricht",
-           "datenschutz": "Organisation & Ressourcen", "finanzen": "Organisation & Ressourcen", "verfahren": "Organisation & Ressourcen", "beschaffung": "Organisation & Ressourcen"}
+           "gemeindeorganisation": "Behörden & Organisation", "stimmberechtigte": "Behörden & Organisation", "behoerden": "Behörden & Organisation",
+           "wahlen": "Behörden & Organisation", "organisation": "Behörden & Organisation", "kontrolle": "Behörden & Organisation",
+           "zusammenarbeit": "Behörden & Organisation", "verfahren": "Behörden & Organisation",
+           "finanzen": "Ressourcen", "datenschutz": "Ressourcen", "beschaffung": "Ressourcen"}
 
 # ---------------------------------------------------------------- Maschinelle Verbindungen (Auftrag 20.11.2026, Punkt 4)
 # Aus den Textfassungen: Ingress («gestützt auf …») = Grundlage, § 1 / Art. 1 mit «Vollzug» = Vollzug, Fussnoten = Verweise.
@@ -2206,7 +2317,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.21.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.22.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2214,7 +2325,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.21.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.22.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

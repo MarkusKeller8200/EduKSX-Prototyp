@@ -4072,6 +4072,38 @@
      }
     }
    ]
+  },
+  "161": {
+   "ordnungsnummer": "161",
+   "titel": "Gesetz über die politischen Rechte (GPR)",
+   "fassungen": [
+    {
+     "nachtrag": "133",
+     "veroeffentlicht": "01.07.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-161-2003_09_01-2005_01_01-133.html",
+     "seiten": 47,
+     "absaetze": 852,
+     "fussnoten": 56,
+     "pdf_sha256": "276bb1d696af27073b564f120a0d2e85bd8c3e8fafc3db448bc15e4ef33d914c"
+    }
+   ]
+  },
+  "161.1": {
+   "ordnungsnummer": "161.1",
+   "titel": "Verordnung über die politischen Rechte (VPR)",
+   "fassungen": [
+    {
+     "nachtrag": "133",
+     "veroeffentlicht": "01.07.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-161_1-2004_10_27-2005_01_01-133.html",
+     "seiten": 24,
+     "absaetze": 408,
+     "fussnoten": 31,
+     "pdf_sha256": "e5163d031737ff14d2587ac9e99ec1250d531e6484246a4dd6ea25b9c0d77af3"
+    }
+   ]
   }
  },
  "stand": "20.11.2026"

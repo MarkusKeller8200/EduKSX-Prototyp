@@ -36,6 +36,12 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – EduKSX-Codex 0.22.0
+
+- Auftrag: Organisation ergänzen (Behörden, Gemeindeversammlung, Organisationsstruktur). Umgesetzt (#46 → `_3 Beta-Test`);
+  GPR (LS 161) und VPR (LS 161.1) in ZH-Lex geprüft, geltende Fassung als Text. Kommunale Beispiele bei Zweckverbänden auf Schule,
+  Kinder und Jugend eingeschränkt.
+
 ### Sitzung 2026-11-20 – EduKSX-Codex 0.21.0
 
 - Auftrag: Themen aus Elternsicht, Variante B (Wegweiser statt doppelter Hierarchien). Umgesetzt (#45 → `_3 Beta-Test`):

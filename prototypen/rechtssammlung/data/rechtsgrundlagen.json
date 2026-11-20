@@ -766,6 +766,26 @@
    "quelle": "ZH-Lex",
    "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
    "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Themen aus dem Volksschulgesetz)"
+  },
+  {
+   "nr": 78,
+   "sachbereich": 2,
+   "erlass": "Gesetz über die politischen Rechte (GPR), LS 161",
+   "stelle": "§§ 23–47, 54",
+   "relevanz": "Wahl der Schulpflege, Wählbarkeit, Unvereinbarkeit, Amtsdauer, stille Wahl; Abstimmungen an der Urne",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Themen Behörden & Organisation)"
+  },
+  {
+   "nr": 79,
+   "sachbereich": 2,
+   "erlass": "Verordnung über die politischen Rechte (VPR), LS 161.1",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Vollzug der Wahlen und Abstimmungen, Wahlvorschläge, Teilämter",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Themen Behörden & Organisation)"
   }
  ]
 }
