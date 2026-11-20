@@ -44,7 +44,7 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
   Skript kopiert. Erzeugen/prüfen: `python3 tools/umsetzung_bauen.py [--pruefen]` (Definitionen der API in
   `tools/umsetzung/api_<modul>.py`, Parser in `tools/umsetzung/modell.py`), danach `python3 tools/entwickler_bauen.py`.
 - Geprüft: PostgreSQL 16 (127 Tabellen, 6 Ansichten, 1561 Kommentare; `time.daily_totals` rechnet 540 Min. Ist),
-  openapi-spec-validator, Tests grün. `core-referenz.sql` ist ersetzt, aber noch da – Löschen nach Rückfrage.
+  openapi-spec-validator, Tests grün. `core-referenz.sql` gelöscht (nach Rückfrage), ersetzt durch `standardtabellen.sql`.
 
 ### Sitzung 2026-11-20 – EduKSX-Codex 0.23.0
 
