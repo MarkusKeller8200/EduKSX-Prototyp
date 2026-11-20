@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.17.0 – Generator.
+"""EduKSX-Codex Prototyp 0.18.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1497,25 +1497,40 @@ HIERARCHIEN = [
   "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
   "knoten": [
    {"id": "or", "ebene": 0, "titel": "Obligationenrecht (OR)", "sr": "220", "art": "Bundesgesetz",
-    "url": "https://www.fedlex.admin.ch/eli/cc/27/317_321_377/de", "hinweis": "Arbeitsvertrag Art. 319 ff. – im öffentlichen Personalrecht nur, wo das kantonale Recht darauf verweist"},
-   {"id": "pg", "ebene": 1, "titel": "Personalgesetz (PG)", "art": "Gesetz (Kantonsrat)", "ls": "177.10"},
-   {"id": "lpg", "ebene": 1, "titel": "Lehrpersonalgesetz (LPG)", "art": "Gesetz (Kantonsrat)", "ls": "412.31"},
-   {"id": "gg", "ebene": 1, "titel": "Gemeindegesetz (GG)", "art": "Gesetz (Kantonsrat)", "ls": "131.1"},
+    "url": "https://www.fedlex.admin.ch/eli/cc/27/317_321_377/de", "hinweis": "Arbeitsvertrag Art. 319 ff. – im öffentlichen Personalrecht nur, wo das kantonale Recht darauf verweist (z. B. missbräuchliche Kündigung, Art. 336 OR)"},
+   {"id": "lpg", "ebene": 1, "titel": "Lehrpersonalgesetz (LPG) – Lehrpersonen und Schulleitungen", "art": "Gesetz (Kantonsrat)", "ls": "412.31",
+    "hinweis": "Kantonales Recht für Lehrpersonen und Schulleitungen der Volksschule (§ 1); die Gemeinde stellt an (§ 7)"},
+   {"id": "pg", "ebene": 1, "titel": "Personalgesetz (PG)", "art": "Gesetz (Kantonsrat)", "ls": "177.10",
+    "hinweis": "Gilt direkt für das Staatspersonal; für Lehrpersonen ergänzend (§ 2 LPG), für Gemeindepersonal sinngemäss, soweit die Gemeinde nichts regelt (§ 53 Abs. 2 GG)"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Schulleitung, Leitung Bildung", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
+    "hinweis": "§ 43 Leitung Bildung (kommunal angestellt), § 44 Schulleitung mit personeller Führung"},
+   {"id": "gg", "ebene": 1, "titel": "Gemeindegesetz (GG) – Gemeindepersonal", "art": "Gesetz (Kantonsrat)", "ls": "131.1",
+    "hinweis": "§ 53: Arbeitsverhältnis öffentlich-rechtlich; eigenes Recht der Gemeinde, sonst kantonales Personalrecht sinngemäss"},
+   {"id": "lpvo", "ebene": 2, "titel": "Lehrpersonalverordnung (LPVO)", "art": "Verordnung (Regierungsrat)", "ls": "412.311",
+    "hinweis": "§ 3: Die Schulpflege übt die Arbeitgeberrechte aus; Lohnskalen im Anhang"},
    {"id": "pvo", "ebene": 2, "titel": "Personalverordnung (PVO)", "art": "Verordnung (Regierungsrat)", "ls": "177.11"},
    {"id": "vvo", "ebene": 2, "titel": "Vollzugsverordnung zum Personalgesetz (VVO)", "art": "Verordnung (Regierungsrat)", "ls": "177.111"},
-   {"id": "lpvo", "ebene": 2, "titel": "Lehrpersonalverordnung (LPVO)", "art": "Verordnung (Regierungsrat)", "ls": "412.311"},
-   {"id": "gem", "ebene": 3, "titel": "Personalverordnung der Gemeinde / Schulgemeinde", "fundstelle": "kommunal", "art": "Gemeindeerlass",
-    "hinweis": "Platzhalter «Schule XYZ»; Beispiele aus den erfassten Rechtssammlungen",
+   {"id": "anst", "ebene": 3, "titel": "Zuständigkeiten Personal der Schule (Organisationsstatut, Funktionendiagramm)", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
+    "hinweis": "Für Lehrpersonen und Schulleitungen regelt die Gemeinde keine Löhne oder Anstellungsbedingungen, sondern nur, wer anstellt, beurteilt und führt",
+    "muster": r"organisationsstatut|funktionendiagramm|personalfuehrung|personaladministration|mitarbeiterbeurteilung|kompetenz.*personal|personal.*kompetenz",
+    "ohne": r"gemeinderat|werkkommission|\brfo\b|\bika\b|\bara|befoerderung|beilagen"},
+   {"id": "gem", "ebene": 3, "titel": "Personalverordnung der Gemeinde / Schulgemeinde – übriges Personal", "fundstelle": "kommunal", "art": "Gemeindeerlass",
+    "hinweis": "Schulverwaltung, Hausdienst, Betreuung, Leitung Bildung; ohne eigene Verordnung gilt das kantonale Personalrecht sinngemäss (§ 53 Abs. 2 GG)",
     "muster": r"personalverordnung|personalreglement|anstellungs und besoldungsverordnung|\bpevo\b", "ohne": r"anhang|vollz|ausf"}],
   "kanten": [
-   {"von": "pg", "nach": "or", "art": "verweist auf", "beleg": ("177.10", "§ 18."), "beleg_oben": ("sr-220", "Art. 319")},
-   {"von": "pvo", "nach": "pg", "art": "Vollzug", "beleg": ("177.11", "§ 1.")},
-   {"von": "vvo", "nach": "pg", "art": "Vollzug", "beleg_text": "Vollzugsverordnung zum Personalgesetz (VVO) – Titel und Ingress: Vollzug des Personalgesetzes"},
+   {"von": "pg", "nach": "or", "art": "verweist auf", "beleg": ("177.10", "§ 18."), "beleg_oben": ("sr-220", "Art. 336")},
    {"von": "lpg", "nach": "pg", "art": "subsidiär", "beleg": ("412.31", "§ 2.")},
-   {"von": "lpvo", "nach": "lpg", "art": "Vollzug"},
+   {"von": "pvo", "nach": "pg", "art": "Vollzug", "beleg": ("177.11", "§ 1.")},
+   {"von": "vvo", "nach": "pg", "art": "Vollzug", "beleg_text": "Vollzugsverordnung zum Personalgesetz (VVO) – Titel: Vollzug des Personalgesetzes"},
+   {"von": "lpvo", "nach": "lpg", "art": "Vollzug", "beleg": ("412.311", "§ 1.")},
    {"von": "lpvo", "nach": "vvo", "art": "verweist auf"},
+   {"von": "anst", "nach": "lpg", "art": "Grundlage", "beleg": ("412.31", "§ 7.")},
+   {"von": "anst", "nach": "lpvo", "art": "Grundlage", "beleg": ("412.311", "§ 3.")},
+   {"von": "anst", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 44.")},
    {"von": "gem", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 53.")},
-   {"von": "gem", "nach": "pg", "art": "subsidiär (§ 53 Abs. 2 GG)"}]},
+   {"von": "gem", "nach": "pg", "art": "subsidiär (§ 53 Abs. 2 GG)"},
+   {"von": "gem", "nach": "pvo", "art": "subsidiär (§ 53 Abs. 2 GG)"},
+   {"von": "gem", "nach": "vsg", "art": "Leitung Bildung", "beleg": ("412.100", "§ 43.")}]},
  {"id": "finanzen", "titel": "Finanzen",
   "ebenen": ["Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
   "knoten": [
@@ -1714,6 +1729,11 @@ HIERARCHIEN = [
    {"von": "kom", "nach": "lm", "art": "verweist auf"},
    {"von": "kom", "nach": "vsg", "art": "gestützt auf", "beleg": ("412.100", "§ 21.")}]},
 ]
+# Reihenfolge nach Bezug zur Volksschule (Auftrag 20.11.2026): Schule → Kinder → Personal → Unterricht → Organisation und Ressourcen
+REIHENFOLGE = ["volksschule", "sonderpaedagogik", "kindesschutz", "personal", "unterricht", "datenschutz", "finanzen", "verfahren", "beschaffung"]
+HIERARCHIEN.sort(key=lambda h: REIHENFOLGE.index(h["id"]))
+GRUPPEN = {"volksschule": "Schule", "sonderpaedagogik": "Kinder", "kindesschutz": "Kinder", "personal": "Personal", "unterricht": "Unterricht",
+           "datenschutz": "Organisation & Ressourcen", "finanzen": "Organisation & Ressourcen", "verfahren": "Organisation & Ressourcen", "beschaffung": "Organisation & Ressourcen"}
 
 # ---------------------------------------------------------------- Maschinelle Verbindungen (Auftrag 20.11.2026, Punkt 4)
 # Aus den Textfassungen: Ingress («gestützt auf …») = Grundlage, § 1 / Art. 1 mit «Vollzug» = Vollzug, Fussnoten = Verweise.
@@ -1852,7 +1872,7 @@ def hierarchie(texte, spec):
         if q and q in texte["erlasse"]:
             k["verweise"] = sum(n for z, n in texte["erlasse"][q]["verweise"] if z == fund[x["nach"]])
         kanten.append(k)
-    return {"id": spec["id"], "titel": spec["titel"], "ebenen": spec["ebenen"], "knoten": knoten, "kanten": kanten,
+    return {"id": spec["id"], "titel": spec["titel"], "gruppe": GRUPPEN.get(spec["id"], ""), "ebenen": spec["ebenen"], "knoten": knoten, "kanten": kanten,
             "hinweis": "Pilot: Verbindungen von Hand festgelegt und mit Belegstellen aus den aufbereiteten Texten (ZH-Lex, geltende Fassung) hinterlegt; Verweise automatisch aus den Fussnoten gezählt; kommunale Beispiele aus den erfassten Rechtssammlungen."}
 
 # ---------------------------------------------------------------- Übersicht
@@ -1911,7 +1931,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.17.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.18.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1919,7 +1939,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.17.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.18.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

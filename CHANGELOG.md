@@ -144,4 +144,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Codex 0.17.0: Normenhierarchie – kommunale Beispiele geschärft (ohne Behördenbeschlüsse und fachfremde Treffer); neue
   Themen «Verfahren & Rechtsschutz» (BV, KV, VRG, GG, VSG → Gemeinde) und «Unterricht & Medien» (URG, VSG, IDG, Bildungsrat → Schule),
   jetzt 9 Themen; Textfassungen KV und VRG; Konzept Kapitel 4a mit nächsten Schritten (#41).
+- EduKSX-Codex 0.18.0: Normenhierarchie – Themen nach Bezug zur Volksschule geordnet und gruppiert (Schule, Kinder, Personal,
+  Unterricht, Organisation & Ressourcen); Personalrecht überarbeitet: Strang Lehrpersonen/Schulleitungen (LPG, LPVO, VSG § 44,
+  Zuständigkeiten der Schulpflege) getrennt vom übrigen Gemeindepersonal (GG § 53), Belegstelle OR Art. 336 korrigiert (#42).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

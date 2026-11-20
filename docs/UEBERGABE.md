@@ -36,6 +36,11 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – EduKSX-Codex 0.18.0
+
+- Auftrag: Personalrecht prüfen, Themen nach Volksschulbezug ordnen. Umgesetzt (#42 → `_3 Beta-Test`): `REIHENFOLGE` und
+  `GRUPPEN` in tools/build.py; Personalrecht neu mit Knoten vsg und anst.
+
 ### Sitzung 2026-11-20 – EduKSX-Codex 0.17.0
 
 - Punkte 2, 5, 8 umgesetzt (#41 → `_3 Beta-Test`). Nächste Schritte als Vorschlag in `docs/KONZEPT-CODEX-VERSIONEN.md` Kapitel 4a

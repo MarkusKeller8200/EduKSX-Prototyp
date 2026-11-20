@@ -555,7 +555,8 @@
           k.versionen ? h("span", { cls: "small", text: "⟲ " + k.versionen + (k.versionen === 1 ? " Fassung" : " Fassungen") + " aufbereitet" }) : null,
           b2 ? h("span", { cls: "small", text: org ? (b2.length ? b2.length + (b2.length === 1 ? " Dokument in " : " Dokumente in ") + org.kurz : "kein Dokument in " + org.kurz + " gefunden") : b2.length + " Beispiele aus erfassten Gemeinden" }) : null,
           k.liste ? h("span", { cls: "small", text: k.liste.length + (k.liste.length === 1 ? " Beschluss" : " Beschlüsse") }) : null,
-          k.themen && k.themen.length > 1 ? h("span", { cls: "small muted", text: "auch in: " + k.themen.filter(function (t) { return t[0] !== H.id; }).map(function (t) { return t[1]; }).join(", ") }) : null);
+          k.themen && k.themen.length > 1 ? (function () { var w = k.themen.filter(function (t) { return t[0] !== H.id; });
+            return h("span", { cls: "small muted", title: w.map(function (t) { return t[1]; }).join(", "), text: w.length > 2 ? "auch in " + w.length + " weiteren Themen" : "auch in: " + w.map(function (t) { return t[1]; }).join(", ") }); })() : null);
         boxen[k.id] = b; zelle.appendChild(b);
       });
       reihe.appendChild(zelle); buehne.appendChild(reihe);
@@ -657,8 +658,10 @@
     }
     var ro = window.ResizeObserver ? new ResizeObserver(function () { linien(); }) : null;
     setTimeout(function () { linien(); if (ro) ro.observe(buehne); }, 0);
-    var themen = h("div", { cls: "reiter", role: "tablist", "aria-label": "Thema wählen" }, D.hierarchien.map(function (x) {
-      return h("a", { href: link("hierarchie", x.id, org ? org.id : null), role: "tab", "aria-selected": x.id === H.id ? "true" : "false", cls: "reiterlink", text: x.titel });
+    var letzteGruppe = null;
+    var themen = h("div", { cls: "reiter reiter-gruppen", role: "tablist", "aria-label": "Thema wählen – geordnet nach Bezug zur Volksschule" }, D.hierarchien.map(function (x) {
+      var g = x.gruppe !== letzteGruppe ? h("span", { cls: "reiter-gruppe", "aria-hidden": "true", text: x.gruppe }) : null; letzteGruppe = x.gruppe;
+      return [g, h("a", { href: link("hierarchie", x.id, org ? org.id : null), role: "tab", "aria-selected": x.id === H.id ? "true" : "false", cls: "reiterlink", text: x.titel })];
     }));
     var orgWahl = h("select", { "aria-label": "Organisation wählen", onchange: function () { location.hash = link("hierarchie", H.id, this.value || null); } },
       [h("option", { value: "", text: "alle erfassten Organisationen" })].concat(D.organisationen.slice().sort(function (a, b) { return a.kurz.localeCompare(b.kurz, "de"); }).map(function (o) {

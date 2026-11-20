@@ -173,3 +173,6 @@ td.mz { max-width: 15rem; } ul.mz-docs a, ul.mz-docs span { overflow-wrap: anywh
 table.matrix tbody th { max-width: 22rem; } table.matrix tbody th .small { font-weight: 400; }
 table.matrix tbody th { white-space: normal; }
 .h-box strong { overflow-wrap: anywhere; hyphens: auto; }
+.reiter-gruppen { flex-wrap: wrap; align-items: flex-end; row-gap: .4rem; }
+.reiter-gruppe { font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted-foreground); padding: 0 .3rem 0 .9rem; align-self: center; border-left: 1px solid var(--border); }
+.reiter-gruppe:first-child { border-left: 0; padding-left: 0; }
