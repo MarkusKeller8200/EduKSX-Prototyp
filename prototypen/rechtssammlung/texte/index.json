@@ -1871,6 +1871,735 @@
      }
     }
    ]
+  },
+  "410.1": {
+   "ordnungsnummer": "410.1",
+   "titel": "Bildungsgesetz (BiG)",
+   "fassungen": [
+    {
+     "nachtrag": "044",
+     "veroeffentlicht": "01.04.2004",
+     "in_kraft_bis": "01.10.2004",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-410_1-2002_07_01--044.html",
+     "seiten": 3,
+     "absaetze": 37,
+     "fussnoten": 11,
+     "pdf_sha256": "cf2fb931eef765615f237ae8ab5642f64c9e7969e81dbb7f9c545a57487ef51c"
+    },
+    {
+     "nachtrag": "047",
+     "veroeffentlicht": "01.10.2004",
+     "in_kraft_bis": "01.01.2008",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-410_1-2002_07_01--047.html",
+     "seiten": 6,
+     "absaetze": 65,
+     "fussnoten": 13,
+     "pdf_sha256": "5ee3c9a8920a77d59bb5332f573e6e5b0b887b4b647fe58a8d2e2b3a8bb1219a",
+     "delta": {
+      "neu": 35,
+      "gestrichen": 7,
+      "geaendert": 5
+     }
+    },
+    {
+     "nachtrag": "059",
+     "veroeffentlicht": "01.01.2008",
+     "in_kraft_bis": "01.07.2010",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-410_1-2002_07_01--059.html",
+     "seiten": 6,
+     "absaetze": 100,
+     "fussnoten": 13,
+     "pdf_sha256": "4ba662ac9b055738724b5e9f0527e1e082d405bb9e306b05825064b0bdcfd2b7",
+     "delta": {
+      "neu": 38,
+      "gestrichen": 3,
+      "geaendert": 17
+     }
+    },
+    {
+     "nachtrag": "069",
+     "veroeffentlicht": "01.07.2010",
+     "in_kraft_bis": "01.05.2016",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-410_1-2002_07_01-2003_07_01-069.html",
+     "seiten": 6,
+     "absaetze": 101,
+     "fussnoten": 15,
+     "pdf_sha256": "36efb066d8cfa69be5c34d0fb2b8df6397ba6fabdebf4a0247db673b10dd53b7",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "093",
+     "veroeffentlicht": "01.05.2016",
+     "in_kraft_bis": "01.01.2017",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-410_1-2002_07_01-2003_07_01-093.html",
+     "seiten": 7,
+     "absaetze": 104,
+     "fussnoten": 18,
+     "pdf_sha256": "695791791336f69e1e094a1b1ddfea16021b71ec0e2d2fa184613ae766f95e9f",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "095",
+     "veroeffentlicht": "01.01.2017",
+     "in_kraft_bis": "01.01.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-410_1-2002_07_01-2003_07_01-095.html",
+     "seiten": 8,
+     "absaetze": 116,
+     "fussnoten": 21,
+     "pdf_sha256": "e3ede66bea8f2d3cd8819466678e5e3e293bfa29a15002614c8d7a97106145fa",
+     "delta": {
+      "neu": 13,
+      "gestrichen": 1,
+      "geaendert": 4
+     }
+    },
+    {
+     "nachtrag": "107",
+     "veroeffentlicht": "01.01.2020",
+     "in_kraft_bis": "31.12.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-410_1-2002_07_01-2003_07_01-107.html",
+     "seiten": 9,
+     "absaetze": 121,
+     "fussnoten": 22,
+     "pdf_sha256": "fe3d727f0012c06ba31b14251ffd19189ca364ba6bf123b4cf908da0835baaae",
+     "delta": {
+      "neu": 6,
+      "gestrichen": 1,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "111",
+     "veroeffentlicht": "01.01.2021",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-410_1-2002_07_01-2003_07_01-111.html",
+     "seiten": 12,
+     "absaetze": 201,
+     "fussnoten": 24,
+     "pdf_sha256": "e29e0078a15fc6a7e4a49dff30c4ea72c3c2aaffd6b32a9e2ca37b7198532298",
+     "delta": {
+      "neu": 92,
+      "gestrichen": 12,
+      "geaendert": 3
+     }
+    }
+   ]
+  },
+  "412.103": {
+   "ordnungsnummer": "412.103",
+   "titel": "Verordnung über die sonderpädagogischen Massnahmen (VSM)",
+   "fassungen": [
+    {
+     "nachtrag": "062",
+     "veroeffentlicht": "18.08.2008",
+     "in_kraft_bis": "01.02.2010",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_103-2007_07_11-2008_08_18-062.html",
+     "seiten": 8,
+     "absaetze": 139,
+     "fussnoten": 5,
+     "pdf_sha256": "5119ed52429c0380cf3133678cf4929e9f40effa35c4b4fcd69aceb7f7f07189"
+    },
+    {
+     "nachtrag": "068",
+     "veroeffentlicht": "01.02.2010",
+     "in_kraft_bis": "23.08.2010",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_103-2007_07_11-2008_08_18-068.html",
+     "seiten": 9,
+     "absaetze": 147,
+     "fussnoten": 6,
+     "pdf_sha256": "839aa3e79e9290f0137361f74b5cecc476115bf2c22e3b5f632d976771f5510f",
+     "delta": {
+      "neu": 9,
+      "gestrichen": 1,
+      "geaendert": 7
+     }
+    },
+    {
+     "nachtrag": "071",
+     "veroeffentlicht": "23.08.2010",
+     "in_kraft_bis": "01.07.2011",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_103-2007_07_11-2008_08_18-071.html",
+     "seiten": 9,
+     "absaetze": 147,
+     "fussnoten": 7,
+     "pdf_sha256": "a616f35d3752913b6761e1045d41b2421570a3c901de8e77e1238308a9fc76e1",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 1,
+      "geaendert": 4
+     }
+    },
+    {
+     "nachtrag": "073",
+     "veroeffentlicht": "01.07.2011",
+     "in_kraft_bis": "01.08.2012",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_103-2007_07_11-2008_08_18-073.html",
+     "seiten": 9,
+     "absaetze": 148,
+     "fussnoten": 8,
+     "pdf_sha256": "0584c5851f6d62a094f1f9b4d0dc1c53f7d3d5933d7e61903fb7cf59aca1274d",
+     "delta": {
+      "neu": 5,
+      "gestrichen": 4,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "078",
+     "veroeffentlicht": "01.08.2012",
+     "in_kraft_bis": "01.01.2014",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_103-2007_07_11-2008_08_18-078.html",
+     "seiten": 9,
+     "absaetze": 147,
+     "fussnoten": 9,
+     "pdf_sha256": "9db16f11990f3f2dbd1502394f2681ff257ba8cf2b2ebdc3ee2465f9470c0033",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 1,
+      "geaendert": 6
+     }
+    },
+    {
+     "nachtrag": "083",
+     "veroeffentlicht": "01.01.2014",
+     "in_kraft_bis": "01.08.2016",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_103-2007_07_11-2008_08_18-083.html",
+     "seiten": 9,
+     "absaetze": 146,
+     "fussnoten": 10,
+     "pdf_sha256": "586ac55ce64c913e024ac4d992c0d35134bdf2b7338cb9e17e5cfc4addf37342",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 1,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "093",
+     "veroeffentlicht": "01.08.2016",
+     "in_kraft_bis": "01.08.2017",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_103-2007_07_11-2008_08_18-093.html",
+     "seiten": 10,
+     "absaetze": 155,
+     "fussnoten": 12,
+     "pdf_sha256": "3465f1ce838e87a16453c339ba01edb63b25e0b99ecfa3b10c78dc3cd4935344",
+     "delta": {
+      "neu": 27,
+      "gestrichen": 18,
+      "geaendert": 4
+     }
+    },
+    {
+     "nachtrag": "097",
+     "veroeffentlicht": "01.08.2017",
+     "in_kraft_bis": "01.08.2019",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_103-2007_07_11-2008_08_18-097.html",
+     "seiten": 10,
+     "absaetze": 152,
+     "fussnoten": 13,
+     "pdf_sha256": "d33c76ee0127baf7fa7d9ab3755b85b16f4f84f1355ea982b297e7c3aed7d1a1",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 4,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "105",
+     "veroeffentlicht": "01.08.2019",
+     "in_kraft_bis": "01.08.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_103-2007_07_11-2008_08_18-105.html",
+     "seiten": 10,
+     "absaetze": 157,
+     "fussnoten": 15,
+     "pdf_sha256": "6bd5b35850d60f2e57f27b79edf7d7141c5a5e12aaed045865da70def4520e1b",
+     "delta": {
+      "neu": 5,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "109",
+     "veroeffentlicht": "01.08.2020",
+     "in_kraft_bis": "01.01.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_103-2007_07_11-2008_08_18-109.html",
+     "seiten": 11,
+     "absaetze": 158,
+     "fussnoten": 16,
+     "pdf_sha256": "2ce3c00b055f961eeb701f212729aa0af1e2fc72b0e46e226922f8091d448325",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "115",
+     "veroeffentlicht": "01.01.2022",
+     "in_kraft_bis": "01.08.2026",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_103-2007_07_11-2008_08_18-115.html",
+     "seiten": 13,
+     "absaetze": 195,
+     "fussnoten": 20,
+     "pdf_sha256": "3a35145e0966db6c807b2a880161bc1eefc7aaaaadbf69dd3195da39b392505c",
+     "delta": {
+      "neu": 55,
+      "gestrichen": 18,
+      "geaendert": 9
+     }
+    },
+    {
+     "nachtrag": "133",
+     "veroeffentlicht": "01.08.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_103-2007_07_11-2008_08_18-133.html",
+     "seiten": 13,
+     "absaetze": 196,
+     "fussnoten": 22,
+     "pdf_sha256": "64459122f9261327e7fe036b5d257f396e937f52e902856c6c91499a0b8cc5eb",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 1,
+      "geaendert": 2
+     }
+    }
+   ]
+  },
+  "412.121.31": {
+   "ordnungsnummer": "412.121.31",
+   "titel": "Reglement über die Ausstellung der Schulzeugnisse (Zeugnisreglement)",
+   "fassungen": [
+    {
+     "nachtrag": "063",
+     "veroeffentlicht": "16.08.2008",
+     "in_kraft_bis": "01.06.2009",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_121_31-2008_09_01-2008_08_16-063.html",
+     "seiten": 4,
+     "absaetze": 52,
+     "fussnoten": 2,
+     "pdf_sha256": "343b3887f737dddbff3ca2d0493111107b3de0bb0221ac890802a0fe460dedc6"
+    },
+    {
+     "nachtrag": "065",
+     "veroeffentlicht": "01.06.2009",
+     "in_kraft_bis": "15.08.2010",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_121_31-2008_09_01-2008_08_16-065.html",
+     "seiten": 5,
+     "absaetze": 53,
+     "fussnoten": 3,
+     "pdf_sha256": "f9726f7165740a4ec4986faa76ca4bf37eb263992fbb73676f665ff2f8b42623",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "070",
+     "veroeffentlicht": "15.08.2010",
+     "in_kraft_bis": "16.08.2010",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_121_31-2008_09_01-2008_08_16-070.html",
+     "seiten": 4,
+     "absaetze": 51,
+     "fussnoten": 3,
+     "pdf_sha256": "e5661433483e67bb47a981a4aab2a751dfa38709f0ca4033bedf650ee0adfc44",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 2,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "082",
+     "veroeffentlicht": "19.08.2013",
+     "in_kraft_bis": "20.08.2018",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_121_31-2008_09_01-2008_08_16-082.html",
+     "seiten": 4,
+     "absaetze": 53,
+     "fussnoten": 7,
+     "pdf_sha256": "30ed79cfe57d3c3fce93fd214d2181aff476be7c0365e9d87693471f600bf43e",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 0,
+      "geaendert": 5
+     }
+    },
+    {
+     "nachtrag": "102",
+     "veroeffentlicht": "20.08.2018",
+     "in_kraft_bis": "19.08.2019",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_121_31-2008_09_01-2008_08_16-102.html",
+     "seiten": 4,
+     "absaetze": 53,
+     "fussnoten": 10,
+     "pdf_sha256": "7ba9d42dcc5e2f292209ee9bf62bc62e7ffab74d7e794f5f71043fadad9a2d86",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 3,
+      "geaendert": 14
+     }
+    },
+    {
+     "nachtrag": "106",
+     "veroeffentlicht": "19.08.2019",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_121_31-2008_09_01-2008_08_16-106.html",
+     "seiten": 4,
+     "absaetze": 54,
+     "fussnoten": 11,
+     "pdf_sha256": "de72089fea7f8d32704f242650e255932124cd8b6f1e8a2ece9e3f38c72e9d43",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    }
+   ]
+  },
+  "170.4": {
+   "ordnungsnummer": "170.4",
+   "titel": "Gesetz über die Information und den Datenschutz (IDG)",
+   "fassungen": [
+    {
+     "nachtrag": "057",
+     "veroeffentlicht": "01.06.2007",
+     "in_kraft_bis": "01.10.2008",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_4-2007_02_12-2008_10_01-057.html",
+     "seiten": 12,
+     "absaetze": 200,
+     "fussnoten": 15,
+     "pdf_sha256": "d85ed937a4a32dae89d9ded4824e57a8c974421fdbe7d1ee8fa176bf45ef377d"
+    },
+    {
+     "nachtrag": "062",
+     "veroeffentlicht": "01.10.2008",
+     "in_kraft_bis": "01.07.2010",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_4-2007_02_12-2008_10_01-062.html",
+     "seiten": 12,
+     "absaetze": 200,
+     "fussnoten": 17,
+     "pdf_sha256": "1e7b4a2c253c29ba3f2b3c986c0539248740dd6803d62ff7754fe723f9891e96",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 3,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "069",
+     "veroeffentlicht": "01.07.2010",
+     "in_kraft_bis": "01.09.2010",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_4-2007_02_12-2008_10_01-069.html",
+     "seiten": 12,
+     "absaetze": 204,
+     "fussnoten": 18,
+     "pdf_sha256": "03bcfff93ac35b2d1ac31db0335473de27e65605d791b59bc8053eb168558c24",
+     "delta": {
+      "neu": 4,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "070",
+     "veroeffentlicht": "01.09.2010",
+     "in_kraft_bis": "01.01.2011",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_4-2007_02_12-2008_10_01-070.html",
+     "seiten": 12,
+     "absaetze": 205,
+     "fussnoten": 19,
+     "pdf_sha256": "db7b223505368b4e8be64e65f184ce4d0bbab4a3e931abb00e34c05fab4fd7f5",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 1,
+      "geaendert": 4
+     }
+    },
+    {
+     "nachtrag": "071",
+     "veroeffentlicht": "01.01.2011",
+     "in_kraft_bis": "06.05.2013",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_4-2007_02_12-2008_10_01-071.html",
+     "seiten": 12,
+     "absaetze": 203,
+     "fussnoten": 20,
+     "pdf_sha256": "c9b675a0ceddd92512d9725de36591ee5c63479a26f3311eaa2338452ca7cf42",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 2,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "081",
+     "veroeffentlicht": "06.05.2013",
+     "in_kraft_bis": "06.05.2013",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_4-2007_02_12-2008_10_01-081.html",
+     "seiten": 13,
+     "absaetze": 203,
+     "fussnoten": 22,
+     "pdf_sha256": "f396b6342ee4151af629f5c93cae0eeca6bf2284b64c8d14e1ea744d03534940",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 1,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "083",
+     "veroeffentlicht": "06.05.2013",
+     "in_kraft_bis": "01.01.2015",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_4-2007_02_12-2008_10_01-083.html",
+     "seiten": 13,
+     "absaetze": 203,
+     "fussnoten": 22,
+     "pdf_sha256": "a062a6ad0b4fae807143b42f68379f398e1afff64abb3e743b04e3a538d65a24",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "087",
+     "veroeffentlicht": "01.01.2015",
+     "in_kraft_bis": "01.05.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_4-2007_02_12-2008_10_01-087.html",
+     "seiten": 13,
+     "absaetze": 205,
+     "fussnoten": 23,
+     "pdf_sha256": "181595daa2b5c08f37138bd67714007b37b09027cc61054b3c5aca39e600ce9b",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 1,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "108",
+     "veroeffentlicht": "01.05.2020",
+     "in_kraft_bis": "01.06.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_4-2007_02_12-2008_10_01-108.html",
+     "seiten": 13,
+     "absaetze": 205,
+     "fussnoten": 26,
+     "pdf_sha256": "3318fb7634bb8a9d6b4a3b4da9b96ae2247cbf3048980c45c921def162311ead",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "109",
+     "veroeffentlicht": "01.06.2020",
+     "in_kraft_bis": "01.10.2022",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_4-2007_02_12-2008_10_01-109.html",
+     "seiten": 14,
+     "absaetze": 237,
+     "fussnoten": 28,
+     "pdf_sha256": "4730f712b2d2c9681267feff52fdbdbddcb16943b7c2b0637f4a944dd2adf8d2",
+     "delta": {
+      "neu": 42,
+      "gestrichen": 10,
+      "geaendert": 16
+     }
+    },
+    {
+     "nachtrag": "118",
+     "veroeffentlicht": "01.10.2022",
+     "in_kraft_bis": "01.05.2024",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_4-2007_02_12-2008_10_01-118.html",
+     "seiten": 14,
+     "absaetze": 233,
+     "fussnoten": 29,
+     "pdf_sha256": "da3bef69650fef75075a5ce3b4760c4b7ab5c8c530069c769f0f279ac75832fb",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 6,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "125",
+     "veroeffentlicht": "01.05.2024",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_4-2007_02_12-2008_10_01-125.html",
+     "seiten": 15,
+     "absaetze": 236,
+     "fussnoten": 30,
+     "pdf_sha256": "865fa7a4d0476a2a4284759b00b571d87487767b61175ecba62dad92648efdec",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    }
+   ]
+  },
+  "170.41": {
+   "ordnungsnummer": "170.41",
+   "titel": "Verordnung über die Information und den Datenschutz (IDV)",
+   "fassungen": [
+    {
+     "nachtrag": "062",
+     "veroeffentlicht": "01.10.2008",
+     "in_kraft_bis": "01.01.2018",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_41-2008_05_28-2008_10_01-062.html",
+     "seiten": 12,
+     "absaetze": 177,
+     "fussnoten": 7,
+     "pdf_sha256": "7c32ca7f5f6d074c115925ef5c942bf861524829b418f90895d29dbe3fc73ea0"
+    },
+    {
+     "nachtrag": "099",
+     "veroeffentlicht": "01.01.2018",
+     "in_kraft_bis": "24.01.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_41-2008_05_28-2008_10_01-099.html",
+     "seiten": 12,
+     "absaetze": 177,
+     "fussnoten": 7,
+     "pdf_sha256": "caf3ea181fe0f729cc201b6aee30310118744efbcd31d85f9ac6e6881e1049e1",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 6
+     }
+    },
+    {
+     "nachtrag": "108",
+     "veroeffentlicht": "24.01.2020",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_41-2008_05_28-2008_10_01-108.html",
+     "seiten": 12,
+     "absaetze": 178,
+     "fussnoten": 8,
+     "pdf_sha256": "17a14127f631e815d7ee43a5a5473a0a70dae60ec5798e531ed1e8e10142a400",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 0,
+      "geaendert": 3
+     }
+    }
+   ]
+  },
+  "170.8": {
+   "ordnungsnummer": "170.8",
+   "titel": "Verordnung über die Informationsverwaltung und -sicherheit (IVSV)",
+   "fassungen": [
+    {
+     "nachtrag": "107",
+     "veroeffentlicht": "01.01.2020",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_8-2019_09_03-2020_01_01-107.html",
+     "seiten": 4,
+     "absaetze": 67,
+     "fussnoten": 3,
+     "pdf_sha256": "0eb94b4b99bd59dd69330db6eb6fc43da8773a13b76cf85f7f463ef4c4e11f8b"
+    }
+   ]
+  },
+  "170.6": {
+   "ordnungsnummer": "170.6",
+   "titel": "Archivgesetz",
+   "fassungen": [
+    {
+     "nachtrag": "083",
+     "veroeffentlicht": "15.01.2014",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_6-1995_09_24-1999_01_01-083.html",
+     "seiten": 4,
+     "absaetze": 76,
+     "fussnoten": 9,
+     "pdf_sha256": "434094937464439d4510701707f0264393c28ff3aeedb77fb06845beb86b31c3"
+    }
+   ]
+  },
+  "170.61": {
+   "ordnungsnummer": "170.61",
+   "titel": "Archivverordnung",
+   "fassungen": [
+    {
+     "nachtrag": "083",
+     "veroeffentlicht": "15.01.2014",
+     "in_kraft_bis": "01.07.2015",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_61-1998_12_09-1999_01_01-083.html",
+     "seiten": 8,
+     "absaetze": 132,
+     "fussnoten": 7,
+     "pdf_sha256": "8288730feb31a6c04f1dad58f3c25836c2ef9923d60dd05aec7dcfab00323156"
+    },
+    {
+     "nachtrag": "089",
+     "veroeffentlicht": "01.07.2015",
+     "in_kraft_bis": "01.01.2020",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_61-1998_12_09-1999_01_01-089.html",
+     "seiten": 8,
+     "absaetze": 132,
+     "fussnoten": 8,
+     "pdf_sha256": "18bddd74ab0c8313d2bb75ec56a5593ff448177217b6480b2902570093d34cd3",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "107",
+     "veroeffentlicht": "01.01.2020",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_61-1998_12_09-1999_01_01-107.html",
+     "seiten": 7,
+     "absaetze": 109,
+     "fussnoten": 10,
+     "pdf_sha256": "ba587c77aa05e714cdf5c98be360d498c0275f87a5422586a1dfe100300358c9",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 25,
+      "geaendert": 2
+     }
+    }
+   ]
+  },
+  "172.71": {
+   "ordnungsnummer": "172.71",
+   "titel": "Gesetz über die Auslagerung von Informatikdienstleistungen",
+   "fassungen": [
+    {
+     "nachtrag": "027",
+     "veroeffentlicht": "",
+     "in_kraft_bis": "01.10.2008",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-172_71-1999_08_23--027.html",
+     "seiten": 2,
+     "absaetze": 13,
+     "fussnoten": 2,
+     "pdf_sha256": "e521dead98bafb01da6540b46e6314846eba8c17af1bad99f98feb6c30c6724e"
+    },
+    {
+     "nachtrag": "062",
+     "veroeffentlicht": "01.10.2008",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-172_71-1999_08_23-2000_01_01-062.html",
+     "seiten": 2,
+     "absaetze": 18,
+     "fussnoten": 3,
+     "pdf_sha256": "6e375baf89c206cd5310a9921bbe1a1f2d7524ddefbaa66734c20b20b8ac494f",
+     "delta": {
+      "neu": 7,
+      "gestrichen": 2,
+      "geaendert": 5
+     }
+    }
+   ]
   }
  },
  "stand": "20.11.2026"

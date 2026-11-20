@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.10.0 – Generator.
+"""EduKSX-Codex Prototyp 0.11.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1404,6 +1404,9 @@ def verweise(nr, nachtrag):
 def paragraf(nr, nachtrag, para):
     """Text eines Paragrafen (Überschrift und Absätze) aus der Markdown-Fassung."""
     md = _md(nr, nachtrag)
+    if para == "Ingress":
+        m = re.search(r"^\(vom [^\n]*", md, re.M)
+        return re.sub(r"\) \d+,", ")", re.sub(r"\[\^\w+\]", "", m.group(0))).strip() if m else ""
     m = re.search(r"^### " + re.escape(para) + r"[^\n]*\n\n(.*?)(?=\n### |\n## |\n---\n|\Z)", md, re.S | re.M)
     if not m: return ""
     return re.sub(r"\[\^\w+\]", "", m.group(0)).replace("### ", "").strip()
@@ -1458,6 +1461,75 @@ HIERARCHIEN = [
    {"von": "fin", "nach": "gg", "art": "Grundsätze", "beleg": ("131.1", "§ 84.")},
    {"von": "fin", "nach": "vgg", "art": "verweist auf", "beleg": ("131.11", "§ 8.")},
    {"von": "geb", "nach": "gg", "art": "Verursacherprinzip", "beleg": ("131.1", "§ 84.")}]},
+ {"id": "volksschule", "titel": "Volksschule",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Bildungsrat", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "bv", "ebene": 0, "titel": "Bundesverfassung (BV)", "fundstelle": "SR 101", "art": "Verfassung", "url": "https://www.fedlex.admin.ch/eli/cc/1999/404/de",
+    "hinweis": "Art. 19 Anspruch auf ausreichenden und unentgeltlichen Grundschulunterricht; Art. 62 Schulwesen ist Sache der Kantone"},
+   {"id": "big", "ebene": 1, "titel": "Bildungsgesetz (BiG)", "art": "Gesetz (Kantonsrat)", "ls": "410.1", "hinweis": "Rahmen für das ganze Bildungswesen; 6. Teil: Bildungsrat"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG)", "art": "Gesetz (Kantonsrat)", "ls": "412.100"},
+   {"id": "vsv", "ebene": 2, "titel": "Volksschulverordnung (VSV)", "art": "Verordnung (Regierungsrat)", "ls": "412.101"},
+   {"id": "vsm", "ebene": 2, "titel": "Verordnung über die sonderpädagogischen Massnahmen (VSM)", "art": "Verordnung (Regierungsrat)", "ls": "412.103"},
+   {"id": "lp", "ebene": 3, "titel": "Lehrplan 21 und Lektionentafel", "fundstelle": "Bildungsratsbeschlüsse", "art": "Beschluss (Bildungsrat)",
+    "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-4-volksschule-lehrplan-fuer-die-volksschule-des-kantons-zuerich.html",
+    "hinweis": "Verbindliche Unterrichtsvorgaben; nicht in der Gesetzessammlung, sondern als Bildungsratsbeschlüsse publiziert",
+    "liste": [{"titel": "BRB 4/2017 – Lehrplan für die Volksschule", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-4-volksschule-lehrplan-fuer-die-volksschule-des-kantons-zuerich.html"},
+              {"titel": "BRB 5/2017 – Lektionentafel Kindergarten, Primar- und Sekundarstufe", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-5-volksschule-lektionentafel-fuer-die-kindergarten-primar-und-sekundarstufe.html"},
+              {"titel": "BRB 1/2019 – Anpassung Lektionentafel Sekundarschule", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2019-brb-1-anpassung-lektionentafel-sekundarschule.html"},
+              {"titel": "BRB 5/2021 – weitere Anpassung Lektionentafel", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2021-brb-05.html"},
+              {"titel": "BRB 8/2026 – Lehrmittel Sprachförderung und DaZ", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html"}]},
+   {"id": "zr", "ebene": 3, "titel": "Zeugnisreglement", "art": "Reglement (Bildungsrat)", "ls": "412.121.31",
+    "liste": [{"titel": "BRB 5/2025 – Anpassungen Beurteilung und Zeugnis", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2025-brb-05.html", "hinweis": "Beurteilung in RKE und MI in der Primarstufe"}]},
+   {"id": "go", "ebene": 4, "titel": "Gemeindeordnung (Schulgemeinde)", "fundstelle": "kommunal", "art": "Gemeindeordnung (Stimmberechtigte)",
+    "hinweis": "Organisation der Schulpflege, Leitung Bildung, Vertretung der Lehrpersonen", "muster": r"gemeindeordnung|\(go\)", "ohne": r"protokoll"},
+   {"id": "os", "ebene": 4, "titel": "Organisationsstatut", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
+    "hinweis": "Zuständigkeiten und Entscheidbefugnisse von Schulpflege, Schulleitung und Schulverwaltung", "muster": r"organisationsstatut|schulorganisation|organisationsreglement|kompetenzregelung|funktionendiagramm"},
+   {"id": "so", "ebene": 4, "titel": "Schul- und Betreuungsreglemente", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
+    "hinweis": "Schulordnung, Tagesstrukturen und Betreuung, Absenzen, Disziplin, Schulweg, Sonderpädagogik", "muster": r"schulordnung|schulreglement|tagesstruktur|betreuung|hort|absenz|disziplin|schulweg|sonderpaedagog|schulergaenzend|mittagstisch|musikschul", "ohne": r"zweckverband|alters|pflegeheim|spitex"}],
+  "kanten": [
+   {"von": "big", "nach": "bv", "art": "Grundlage", "beleg": ("410.1", "§ 2.")},
+   {"von": "vsg", "nach": "big", "art": "Rahmen", "beleg": ("410.1", "§ 8.")},
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 1.")},
+   {"von": "vsm", "nach": "vsg", "art": "Vollzug", "beleg": ("412.103", "§ 1.")},
+   {"von": "lp", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 21.")},
+   {"von": "lp", "nach": "big", "art": "Zuständigkeit Bildungsrat", "beleg": ("410.1", "§ 21.")},
+   {"von": "zr", "nach": "vsg", "art": "Grundlage", "beleg": ("412.121.31", "Ingress")},
+   {"von": "go", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 42.")},
+   {"von": "os", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 41 a.")},
+   {"von": "os", "nach": "go", "art": "im Rahmen der"},
+   {"von": "so", "nach": "os", "art": "gestützt auf"},
+   {"von": "so", "nach": "vsv", "art": "verweist auf"}]},
+ {"id": "datenschutz", "titel": "Datenschutz & ICT",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "dsg", "ebene": 0, "titel": "Datenschutzgesetz des Bundes (DSG)", "fundstelle": "SR 235.1", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/2022/491/de",
+    "hinweis": "Gilt für Private und Bundesorgane – für die Volksschule nicht direkt; massgebend wird es bei privaten Dienstleistern (z. B. Cloud- und Software-Anbieter)"},
+   {"id": "dsv", "ebene": 0, "titel": "Datenschutzverordnung (DSV)", "fundstelle": "SR 235.11", "art": "Verordnung (Bundesrat)", "url": "https://www.fedlex.admin.ch/eli/cc/2022/568/de"},
+   {"id": "idg", "ebene": 1, "titel": "Gesetz über die Information und den Datenschutz (IDG)", "art": "Gesetz (Kantonsrat)", "ls": "170.4",
+    "hinweis": "Massgebend für Schulgemeinden und Schulen als öffentliche Organe (§ 3 IDG)"},
+   {"id": "vsgd", "ebene": 1, "titel": "Volksschulgesetz – Bearbeitung von Personendaten", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§§ 3 a ff. VSG: besondere Bestimmungen für Schülerdaten"},
+   {"id": "archg", "ebene": 1, "titel": "Archivgesetz (ArchG)", "art": "Gesetz (Kantonsrat)", "ls": "170.6"},
+   {"id": "ausl", "ebene": 1, "titel": "Gesetz über die Auslagerung von Informatikdienstleistungen", "art": "Gesetz (Kantonsrat)", "ls": "172.71"},
+   {"id": "idv", "ebene": 2, "titel": "Verordnung über die Information und den Datenschutz (IDV)", "art": "Verordnung (Regierungsrat)", "ls": "170.41"},
+   {"id": "ivsv", "ebene": 2, "titel": "Verordnung über die Informationsverwaltung und -sicherheit (IVSV)", "art": "Verordnung (Regierungsrat)", "ls": "170.8"},
+   {"id": "archv", "ebene": 2, "titel": "Archivverordnung (ArchV)", "art": "Verordnung (Regierungsrat)", "ls": "170.61"},
+   {"id": "dsk", "ebene": 3, "titel": "Datenschutz-, Informatik- und Nutzungsreglemente", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
+    "hinweis": "Datenschutz, Informationssicherheit, ICT-Nutzung, Videoüberwachung, Social Media", "muster": r"datenschutz|informatik|\bict\b|informationssicherheit|video|social media|nutzungsrichtlinie|nutzungsreglement|internet|e-mail|digital"},
+   {"id": "akten", "ebene": 3, "titel": "Archiv- und Aktenreglement", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
+    "hinweis": "Aktenplan, Registratur, Aufbewahrung und Archivierung", "muster": r"archiv|aktenplan|registratur|aktenfuehrung|aufbewahrung"}],
+  "kanten": [
+   {"von": "dsv", "nach": "dsg", "art": "Vollzug"},
+   {"von": "idg", "nach": "dsg", "art": "nicht direkt anwendbar", "beleg": ("170.4", "§ 2.")},
+   {"von": "vsgd", "nach": "idg", "art": "besondere Bestimmungen", "beleg": ("412.100", "§ 3 a.")},
+   {"von": "idv", "nach": "idg", "art": "Vollzug", "beleg": ("170.41", "§ 1.")},
+   {"von": "ivsv", "nach": "idg", "art": "Vollzug", "beleg": ("170.8", "Ingress")},
+   {"von": "archv", "nach": "archg", "art": "Vollzug", "beleg": ("170.61", "§ 1.")},
+   {"von": "ausl", "nach": "idg", "art": "verweist auf", "beleg": ("172.71", "§ 3.")},
+   {"von": "dsk", "nach": "idg", "art": "Grundlage", "beleg": ("170.4", "§ 3.")},
+   {"von": "dsk", "nach": "ivsv", "art": "Grundlage", "beleg": ("170.8", "§ 1.")},
+   {"von": "dsk", "nach": "ausl", "art": "bei Auslagerung"},
+   {"von": "akten", "nach": "archg", "art": "Grundlage", "beleg": ("170.6", "§ 6.")},
+   {"von": "akten", "nach": "archv", "art": "subsidiär (§ 1 Abs. 2 ArchV)"}]},
 ]
 
 def hierarchie(texte, spec):
@@ -1549,7 +1621,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.10.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.11.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1557,7 +1629,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.10.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.11.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

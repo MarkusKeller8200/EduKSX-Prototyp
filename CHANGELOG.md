@@ -121,4 +121,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Normenhierarchie mit Reitern «Personalrecht» und «Finanzen» (GG/FAG/CRG → VGG/FAV → Gemeindeordnung,
   Finanzreglement, Gebührenverordnung mit Belegstellen und kommunalen Beispielen); abgelöste Trennstriche in der
   Textaufbereitung werden zusammengefügt (#34).
+- EduKSX-Codex 0.11.0: Normenhierarchien «Volksschule» (BV → BiG/VSG → VSV/VSM → Bildungsrat mit Lehrplan,
+  Lektionentafel und Zeugnisreglement → Gemeindeordnung, Organisationsstatut, Schulreglemente) und «Datenschutz & ICT»
+  (DSG/DSV → IDG, VSG §§ 3 a ff., ArchG, Auslagerungsgesetz → IDV, IVSV, ArchV → kommunale Reglemente); neue Linienart
+  «nicht direkt anwendbar»; Liste der Bildungsratsbeschlüsse im Detail; Textfassungen für 9 weitere Erlasse (jetzt 21) (#35).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

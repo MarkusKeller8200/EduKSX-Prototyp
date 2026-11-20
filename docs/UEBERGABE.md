@@ -62,6 +62,14 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 - Offen: Stempeln per NFC-Tag (Idee, noch kein Issue – Antwort Projektleitung ausstehend).
 - Offen: weitere Schritte («der ganze Rest») je als Issue nach Freigabe; Icon «time» vorläufig, nicht im Icon-Set.
 
+### Sitzung 2026-11-20 (02:05–02:40) – EduKSX-Codex 0.11.0
+
+- Auftrag: weitere Themen für die Normenhierarchie – zuerst Volksschule und Datenschutz, einchecken, dann Sonderpädagogik,
+  Beschaffung/Bau, Kindesschutz.
+- Umgesetzt (#35 → `_3 Beta-Test`): `HIERARCHIEN` um «volksschule» und «datenschutz» erweitert; Knotenfeld `liste`
+  (z. B. Bildungsratsbeschlüsse), Belegstelle «Ingress»; Linienart «nicht direkt anwendbar».
+- Texte neu: BiG, VSM, Zeugnisreglement, IDG, IDV, IVSV, ArchG, ArchV, Auslagerungsgesetz (21 Erlasse).
+
 ### Sitzung 2026-11-20 (02:10–02:50) – EduKSX-Codex 0.10.0
 
 - Auftrag: FAG und CRG aufnehmen, GG und VGG mit allen Fassungen als Text, Normenhierarchie Finanzen.

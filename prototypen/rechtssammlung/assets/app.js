@@ -543,7 +543,8 @@
         var b = h("button", { type: "button", cls: "h-box", "data-id": k.id, onclick: function () { waehle(k.id); } },
           h("strong", { text: k.titel }), h("span", { cls: "small muted", text: k.fundstelle + " · " + k.art }),
           k.versionen ? h("span", { cls: "small", text: "⟲ " + k.versionen + (k.versionen === 1 ? " Fassung" : " Fassungen") + " aufbereitet" }) : null,
-          k.beispiele ? h("span", { cls: "small", text: k.beispiele.length + " Beispiele aus erfassten Gemeinden" }) : null);
+          k.beispiele ? h("span", { cls: "small", text: k.beispiele.length + " Beispiele aus erfassten Gemeinden" }) : null,
+          k.liste ? h("span", { cls: "small", text: k.liste.length + (k.liste.length === 1 ? " Beschluss" : " Beschlüsse") }) : null);
         boxen[k.id] = b; zelle.appendChild(b);
       });
       reihe.appendChild(zelle); buehne.appendChild(reihe);
@@ -559,7 +560,7 @@
         var l = document.createElementNS("http://www.w3.org/2000/svg", "path");
         var my = (y1 + y2) / 2;
         l.setAttribute("d", "M" + x1 + "," + y1 + " C" + x1 + "," + my + " " + x2 + "," + my + " " + x2 + "," + y2);
-        l.setAttribute("class", "h-linie h-" + (/Vollzug/.test(k.art) ? "vollzug" : /subsidi/.test(k.art) ? "subsidiaer" : /Grundlage/.test(k.art) ? "grundlage" : "verweis"));
+        l.setAttribute("class", "h-linie h-" + (/nicht direkt/.test(k.art) ? "nicht" : /Vollzug/.test(k.art) ? "vollzug" : /subsidi/.test(k.art) ? "subsidiaer" : /Grundlage/.test(k.art) ? "grundlage" : "verweis"));
         l.setAttribute("marker-end", "url(#pfeil)");
         svg.appendChild(l);
         var t = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -577,7 +578,7 @@
       var tx = k.ls && D.texte.erlasse[k.ls];
       detail.textContent = "";
       detail.appendChild(h("h2", { text: k.titel }));
-      detail.appendChild(fakten([["Fundstelle", k.fundstelle], ["Art", k.art], ["Amtliche Fassung", k.url ? extern(k.url, k.ls ? "ZH-Lex ↗" : "Fedlex ↗") : "–"],
+      detail.appendChild(fakten([["Fundstelle", k.fundstelle], ["Art", k.art], ["Amtliche Fassung", k.url ? extern(k.url, k.ls ? "ZH-Lex ↗" : /fedlex/.test(k.url) ? "Fedlex ↗" : "zh.ch ↗") : "–"],
         ["Textfassung", tx ? h("a", { href: link("text", k.ls, tx.fassungen[tx.fassungen.length - 1].nachtrag), text: tx.voll ? "Text und Änderungen (" + tx.fassungen.length + " Fassungen)" : "Text (geltende Fassung)" }) : "–"],
         ["Hinweis", k.hinweis || ""]].filter(function (x) { return x[1]; })));
       function kante(x, richtung) {
@@ -589,6 +590,10 @@
       if (hoch.length) { detail.appendChild(h("h3", { text: "Übergeordnet" })); detail.appendChild(h("ul", null, hoch.map(function (x) { return kante(x, "hoch"); }))); }
       if (runter.length) { detail.appendChild(h("h3", { text: "Untergeordnet" })); detail.appendChild(h("ul", null, runter.map(function (x) { return kante(x, "runter"); }))); }
       if (tx && tx.verweise.length) detail.appendChild(h("p", { cls: "small" }, h("strong", { text: "Verweist (Fussnoten) auf: " }), tx.verweise.slice(0, 8).map(function (v) { return v[0] + " (" + v[1] + ")"; }).join(", ")));
+      if (k.liste) {
+        detail.appendChild(h("h3", { text: "Beschlüsse und Erlasse" }));
+        detail.appendChild(h("ul", null, k.liste.map(function (b) { return h("li", null, b.url ? extern(b.url, b.titel + " ↗") : b.titel, b.hinweis ? h("span", { cls: "small muted", text: " – " + b.hinweis }) : null); })));
+      }
       if (k.beispiele) {
         detail.appendChild(h("h3", { text: "Beispiele aus den erfassten Rechtssammlungen" }));
         detail.appendChild(h("ul", null, k.beispiele.map(function (b) { return h("li", null, b.url ? extern(b.url, b.titel + " ↗") : b.titel, " – ", h("a", { href: link("org", b.org), text: b.orgname })); })));
@@ -602,7 +607,7 @@
     return [kopf("Normenhierarchie – " + H.titel, "Vom übergeordneten Recht über Gesetz und Verordnung des Kantons bis zum Erlass der Gemeinde. Pfeile zeigen auf die übergeordnete Norm."),
       themen,
       h("p", { cls: "small muted", text: H.hinweis }),
-      h("div", { cls: "hierarchie-legende small" }, h("span", { cls: "lg lg-vollzug", text: "Vollzug" }), h("span", { cls: "lg lg-subsidiaer", text: "subsidiär anwendbar" }), h("span", { cls: "lg lg-verweis", text: "verweist auf" }), h("span", { cls: "lg lg-grundlage", text: "Grundlage" })),
+      h("div", { cls: "hierarchie-legende small" }, h("span", { cls: "lg lg-vollzug", text: "Vollzug" }), h("span", { cls: "lg lg-subsidiaer", text: "subsidiär anwendbar" }), h("span", { cls: "lg lg-verweis", text: "verweist auf" }), h("span", { cls: "lg lg-grundlage", text: "Grundlage" }), H.kanten.some(function (x) { return /nicht direkt/.test(x.art); }) ? h("span", { cls: "lg lg-nicht", text: "nicht direkt anwendbar" }) : null),
       h("div", { cls: "hierarchie-rahmen" }, buehne, detail)];
   }
 

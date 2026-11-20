@@ -1,6 +1,6 @@
 # Konzept: EduKSX-Codex – Versionen, Abgleich, Textfassung und Normenhierarchie (#32)
 
-Stand: 2026-11-20 (Codex 0.10.0) · Status: **IN ARBEIT**
+Stand: 2026-11-20 (Codex 0.11.0) · Status: **IN ARBEIT**
 
 Ein Konzept ist eine Entscheidungsgrundlage, keine Freigabe: umgesetzt wird erst, was als Issue freigegeben ist.
 
@@ -146,6 +146,9 @@ Reglemente).
   Erweitert (Codex 0.10.0, #34): Thema **Finanzen** – GG / FAG / CRG → VGG / FAV → Gemeindeordnung (Finanzbefugnisse),
   Finanzreglement, Gebührenverordnung; Belegstellen GG § 84 und § 104, VGG § 8 und § 47, FAG § 1, FAV § 1. CRG nur als
   Bezug (Haushaltsrecht des Kantons). Themen werden in `HIERARCHIEN` (tools/build.py) beschrieben und über Reiter gewählt.
+  Erweitert (Codex 0.11.0, #35): **Volksschule** mit eigener Ebene «Bildungsrat» (Lehrplan, Lektionentafel,
+  Zeugnisreglement) und **Datenschutz & ICT** mit der Linienart «nicht direkt anwendbar» (IDG → DSG: für Schulen gilt das
+  kantonale Recht, das DSG nur bei privaten Dienstleistern).
 
 ## 5. Issues
 
@@ -153,4 +156,5 @@ Reglemente).
 |---|---|---|
 | #32 | Codex 0.8.0: Quellenkatalog A–F, Veröffentlicht/Version, Versionshistorik, Analyse-Version | `_3 Beta-Test` |
 | #33 | Textfassung Markdown, Änderungen farbig, Normenhierarchie Personalrecht (Kapitel 3 und 4) | `_3 Beta-Test` |
+| #35 | Normenhierarchien Volksschule und Datenschutz & ICT | `_3 Beta-Test` |
 | #34 | Finanzrecht (FAG, FAV, CRG), Fassungen GG/VGG, Normenhierarchie Finanzen | `_3 Beta-Test` |
