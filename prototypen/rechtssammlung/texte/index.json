@@ -2756,6 +2756,567 @@
      "pdf_sha256": "95eb54853290b153bcd7a8b5af9d6e8c607c0959d7c383516f2ae8bf1934e561"
     }
    ]
+  },
+  "sr-151.3": {
+   "ordnungsnummer": "SR 151.3",
+   "titel": "Behindertengleichstellungsgesetz (BehiG)",
+   "titel_amtlich": "Bundesgesetz über die Beseitigung von Benachteiligungen von Menschen mit Behinderungen",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 1,
+   "fassungen": [
+    {
+     "nachtrag": "20200701",
+     "veroeffentlicht": "01.07.2020",
+     "in_kraft_bis": "",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2003/667/20200701/de",
+     "absaetze": 55,
+     "fussnoten": 36,
+     "artikel": 24,
+     "html_sha256": "beadd96475b1d1f5eccb19738775596f8f1ba748d9bde2c225e3e841f08ffca8"
+    }
+   ]
+  },
+  "sr-101": {
+   "ordnungsnummer": "SR 101",
+   "titel": "Bundesverfassung (BV)",
+   "titel_amtlich": "Bundesverfassung der Schweizerischen Eidgenossenschaft",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 7,
+   "fassungen": [
+    {
+     "nachtrag": "20210101",
+     "veroeffentlicht": "01.01.2021",
+     "in_kraft_bis": "07.03.2021",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1999/404/20210101/de",
+     "absaetze": 567,
+     "fussnoten": 170,
+     "artikel": 229,
+     "html_sha256": "855cf6403396ddd09a7bb4b18dc5e6b9195102e26664e9fcc83a7c698fc55db4"
+    },
+    {
+     "nachtrag": "20210307",
+     "veroeffentlicht": "07.03.2021",
+     "in_kraft_bis": "28.11.2021",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1999/404/20210307/de",
+     "absaetze": 570,
+     "fussnoten": 173,
+     "artikel": 230,
+     "html_sha256": "d8dda8efe771763feb5bc325d77dcc1e2440b44059f1cc571215860066f84c91",
+     "delta": {
+      "neu": 12,
+      "gestrichen": 6,
+      "geaendert": 7
+     }
+    },
+    {
+     "nachtrag": "20211128",
+     "veroeffentlicht": "28.11.2021",
+     "in_kraft_bis": "13.02.2022",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1999/404/20211128/de",
+     "absaetze": 574,
+     "fussnoten": 176,
+     "artikel": 231,
+     "html_sha256": "d000e7a4f1e885d2a1a8f8cfe0edd6f3669215e1db5fe0718f8a9e6d48754213",
+     "delta": {
+      "neu": 10,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "20220213",
+     "veroeffentlicht": "13.02.2022",
+     "in_kraft_bis": "01.01.2024",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1999/404/20220213/de",
+     "absaetze": 574,
+     "fussnoten": 181,
+     "artikel": 231,
+     "html_sha256": "681945d8956a40ab9f97995b8786376bd6531fd4b9a37ad307fd39241d75c20a",
+     "delta": {
+      "neu": 9,
+      "gestrichen": 6,
+      "geaendert": 13
+     }
+    },
+    {
+     "nachtrag": "20240101",
+     "veroeffentlicht": "01.01.2024",
+     "in_kraft_bis": "03.03.2024",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1999/404/20240101/de",
+     "absaetze": 586,
+     "fussnoten": 185,
+     "artikel": 232,
+     "html_sha256": "3efe908478ca7a065d605f6ae5b5de8c5dd7982593161f3c204f776c2009944c",
+     "delta": {
+      "neu": 38,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "20240303",
+     "veroeffentlicht": "03.03.2024",
+     "in_kraft_bis": "01.01.2029",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1999/404/20240303/de",
+     "absaetze": 589,
+     "fussnoten": 187,
+     "artikel": 232,
+     "html_sha256": "d74801e08fd3938edb1755bccabd984cc874aa806c5a027673b4b6393936506c",
+     "delta": {
+      "neu": 4,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    }
+   ]
+  },
+  "sr-0.107": {
+   "ordnungsnummer": "SR 0.107",
+   "titel": "UN-Kinderrechtskonvention (KRK)",
+   "titel_amtlich": "Übereinkommen über die Rechte des Kindes",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 4,
+   "fassungen": [
+    {
+     "nachtrag": "20161025",
+     "veroeffentlicht": "25.10.2016",
+     "in_kraft_bis": "27.02.2023",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1998/2055_2055_2055/20161025/de",
+     "absaetze": 0,
+     "fussnoten": 13,
+     "artikel": 54,
+     "html_sha256": "656e59a998cef6e63f7595a2dd51d6fa29ab73f835622bee8e423de2a2a00aa5"
+    },
+    {
+     "nachtrag": "20230227",
+     "veroeffentlicht": "27.02.2023",
+     "in_kraft_bis": "07.05.2026",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1998/2055_2055_2055/20230227/de",
+     "absaetze": 0,
+     "fussnoten": 12,
+     "artikel": 54,
+     "html_sha256": "d43a6e22e75b9dea32267fed35ac613ab37bd908db140bcaba33f8ed063aa339",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "20260507",
+     "veroeffentlicht": "07.05.2026",
+     "in_kraft_bis": "12.06.2026",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1998/2055_2055_2055/20260507/de",
+     "absaetze": 0,
+     "fussnoten": 12,
+     "artikel": 54,
+     "html_sha256": "5581542e9abe6c5123d1861bd3171bab1a1723d92f45c321c5ad54580aaa162d",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "20260612",
+     "veroeffentlicht": "12.06.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1998/2055_2055_2055/20260612/de",
+     "absaetze": 0,
+     "fussnoten": 12,
+     "artikel": 54,
+     "html_sha256": "fabdb700076bd220b050667c1c671feae3387cc11031cba752538367f72222c4",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    }
+   ]
+  },
+  "sr-210": {
+   "ordnungsnummer": "SR 210",
+   "titel": "Zivilgesetzbuch (ZGB)",
+   "titel_amtlich": "Schweizerisches Zivilgesetzbuch",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 12,
+   "fassungen": [
+    {
+     "nachtrag": "20240101",
+     "veroeffentlicht": "01.01.2024",
+     "in_kraft_bis": "01.01.2025",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233/20240101/de",
+     "absaetze": 2460,
+     "fussnoten": 824,
+     "artikel": 1274,
+     "html_sha256": "1c95b7296901fd6ff83f91f24305b67f857435cfcbeeebab1da500c44e5ac5cf"
+    },
+    {
+     "nachtrag": "20250101",
+     "veroeffentlicht": "01.01.2025",
+     "in_kraft_bis": "01.01.2026",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233/20250101/de",
+     "absaetze": 2465,
+     "fussnoten": 839,
+     "artikel": 1277,
+     "html_sha256": "132fac8f487a5c1135541eae90f6a424870d1fec4e896120dfcb1828d767aac0",
+     "delta": {
+      "neu": 15,
+      "gestrichen": 3,
+      "geaendert": 5
+     }
+    },
+    {
+     "nachtrag": "20260101",
+     "veroeffentlicht": "01.01.2026",
+     "in_kraft_bis": "01.07.2026",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233/20260101/de",
+     "absaetze": 2465,
+     "fussnoten": 840,
+     "artikel": 1277,
+     "html_sha256": "262499e4a4a2952f30954f45f9e3f397631f9de2eaf8579aa760ff196811d636",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "20260701",
+     "veroeffentlicht": "01.07.2026",
+     "in_kraft_bis": "01.01.2027",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233/20260701/de",
+     "absaetze": 2467,
+     "fussnoten": 845,
+     "artikel": 1277,
+     "html_sha256": "94736626508f74b933cbe6081bbe274fec7a32c43c4c888792337260264883bd",
+     "delta": {
+      "neu": 4,
+      "gestrichen": 2,
+      "geaendert": 1
+     }
+    }
+   ]
+  },
+  "sr-220": {
+   "ordnungsnummer": "SR 220",
+   "titel": "Obligationenrecht (OR)",
+   "titel_amtlich": "Bundesgesetz betreffend die Ergänzung des Schweizerischen Zivilgesetzbuches (Fünfter Teil: Obligationenrecht)",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 15,
+   "fassungen": [
+    {
+     "nachtrag": "20250708",
+     "veroeffentlicht": "08.07.2025",
+     "in_kraft_bis": "01.10.2025",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/27/317_321_377/20250708/de",
+     "absaetze": 3268,
+     "fussnoten": 933,
+     "artikel": 1685,
+     "html_sha256": "36b8071b00b506b3d4a763be328e5ae79df3fa12cbced4143ac8d77d02f0484c"
+    },
+    {
+     "nachtrag": "20251001",
+     "veroeffentlicht": "01.10.2025",
+     "in_kraft_bis": "01.01.2026",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/27/317_321_377/20251001/de",
+     "absaetze": 3270,
+     "fussnoten": 935,
+     "artikel": 1685,
+     "html_sha256": "32e2576dfb1d6d4c8bbb313164cc9a508f966ca717d62412b0c6486a1f114efe",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "20260101",
+     "veroeffentlicht": "01.01.2026",
+     "in_kraft_bis": "01.10.2026",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/27/317_321_377/20260101/de",
+     "absaetze": 3275,
+     "fussnoten": 944,
+     "artikel": 1686,
+     "html_sha256": "f05e0bb84bd58561e2ab7371bb8bdae0012024d94650d61cd2fac26b8483d382",
+     "delta": {
+      "neu": 13,
+      "gestrichen": 1,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "20261001",
+     "veroeffentlicht": "01.10.2026",
+     "in_kraft_bis": "01.07.2027",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/27/317_321_377/20261001/de",
+     "absaetze": 3257,
+     "fussnoten": 947,
+     "artikel": 1685,
+     "html_sha256": "9d1245fd6dd3d9db05b6a847f403070da150f4e6c7ba139762c8a8547a7623bf",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 20,
+      "geaendert": 6
+     }
+    }
+   ]
+  },
+  "sr-231.1": {
+   "ordnungsnummer": "SR 231.1",
+   "titel": "Urheberrechtsgesetz (URG)",
+   "titel_amtlich": "Bundesgesetz über das Urheberrecht und verwandte Schutzrechte",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 4,
+   "fassungen": [
+    {
+     "nachtrag": "20200401",
+     "veroeffentlicht": "01.04.2020",
+     "in_kraft_bis": "01.01.2022",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1993/1798_1798_1798/20200401/de",
+     "absaetze": 240,
+     "fussnoten": 108,
+     "artikel": 112,
+     "html_sha256": "659ce5c4c509bd4700aa598a1ff7214cfb91ccdafb46f7f94fcd75727132583d"
+    },
+    {
+     "nachtrag": "20220101",
+     "veroeffentlicht": "01.01.2022",
+     "in_kraft_bis": "01.07.2023",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1993/1798_1798_1798/20220101/de",
+     "absaetze": 240,
+     "fussnoten": 108,
+     "artikel": 112,
+     "html_sha256": "b7393b267d24515d4b42a20e85385a33c5ccee72108536a0f0e416cbd064953f",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 19
+     }
+    },
+    {
+     "nachtrag": "20230701",
+     "veroeffentlicht": "01.07.2023",
+     "in_kraft_bis": "01.07.2025",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1993/1798_1798_1798/20230701/de",
+     "absaetze": 240,
+     "fussnoten": 110,
+     "artikel": 112,
+     "html_sha256": "84371429c8cd72db62ee723e1860a2d0d48184d465695fb437f4d504ae13e5ac",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "20250701",
+     "veroeffentlicht": "01.07.2025",
+     "in_kraft_bis": "",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1993/1798_1798_1798/20250701/de",
+     "absaetze": 252,
+     "fussnoten": 112,
+     "artikel": 113,
+     "html_sha256": "6094431ebd06812c9ce1d97711e63b4d8ea041514c5cc22e514be306d1e2cfa5",
+     "delta": {
+      "neu": 26,
+      "gestrichen": 7,
+      "geaendert": 6
+     }
+    }
+   ]
+  },
+  "sr-235.1": {
+   "ordnungsnummer": "SR 235.1",
+   "titel": "Datenschutzgesetz (DSG)",
+   "titel_amtlich": "Bundesgesetz über den Datenschutz",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 3,
+   "fassungen": [
+    {
+     "nachtrag": "20230901",
+     "veroeffentlicht": "01.09.2023",
+     "in_kraft_bis": "01.04.2025",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2022/491/20230901/de",
+     "absaetze": 185,
+     "fussnoten": 30,
+     "artikel": 77,
+     "html_sha256": "412115f46fc7a5a90e49a1ecb476b0e160980414a342e97d7617c83435a834ec"
+    },
+    {
+     "nachtrag": "20250401",
+     "veroeffentlicht": "01.04.2025",
+     "in_kraft_bis": "07.07.2025",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2022/491/20250401/de",
+     "absaetze": 185,
+     "fussnoten": 31,
+     "artikel": 77,
+     "html_sha256": "d39c4be5be4cbe3c4290e70093dd39707a51e2cf42c84b6a141cef3c5629bedd",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "20250707",
+     "veroeffentlicht": "07.07.2025",
+     "in_kraft_bis": "",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2022/491/20250707/de",
+     "absaetze": 185,
+     "fussnoten": 32,
+     "artikel": 77,
+     "html_sha256": "df118586815082ed76306ba32e8ee3679019f4dde7f26c1a34724f4abb8a0a9d",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    }
+   ]
+  },
+  "sr-235.11": {
+   "ordnungsnummer": "SR 235.11",
+   "titel": "Datenschutzverordnung (DSV)",
+   "titel_amtlich": "Verordnung über den Datenschutz",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 5,
+   "fassungen": [
+    {
+     "nachtrag": "20230901",
+     "veroeffentlicht": "01.09.2023",
+     "in_kraft_bis": "01.01.2024",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2022/568/20230901/de",
+     "absaetze": 94,
+     "fussnoten": 9,
+     "artikel": 47,
+     "html_sha256": "b2bbfcf93f7ff3a27050714d5574c106d85511e050206518447c903408c367b6"
+    },
+    {
+     "nachtrag": "20240101",
+     "veroeffentlicht": "01.01.2024",
+     "in_kraft_bis": "15.09.2024",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2022/568/20240101/de",
+     "absaetze": 94,
+     "fussnoten": 10,
+     "artikel": 47,
+     "html_sha256": "b4b3e46277c53f8d4db295344445714476688c9b7fdd274eec92fdd795b43e07",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "20240915",
+     "veroeffentlicht": "15.09.2024",
+     "in_kraft_bis": "01.04.2025",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2022/568/20240915/de",
+     "absaetze": 94,
+     "fussnoten": 16,
+     "artikel": 47,
+     "html_sha256": "40aa2e73ee6fb02354637724cbeab40f242b3e7ca0e2acea4ffec6988246d11a",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    },
+    {
+     "nachtrag": "20250401",
+     "veroeffentlicht": "01.04.2025",
+     "in_kraft_bis": "01.12.2025",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2022/568/20250401/de",
+     "absaetze": 94,
+     "fussnoten": 17,
+     "artikel": 47,
+     "html_sha256": "5feb900966008050b1c4150b2c1164969c7e8b8e940e072f86cefd9d51c4aa58",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 1,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "20251201",
+     "veroeffentlicht": "01.12.2025",
+     "in_kraft_bis": "",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2022/568/20251201/de",
+     "absaetze": 94,
+     "fussnoten": 25,
+     "artikel": 48,
+     "html_sha256": "c1418daef24a18b9c91f8d4e3d2a9c9bbc7e0ba373b207d93e49bb0754cc9d50",
+     "delta": {
+      "neu": 6,
+      "gestrichen": 3,
+      "geaendert": 2
+     }
+    }
+   ]
+  },
+  "sr-311.0": {
+   "ordnungsnummer": "SR 311.0",
+   "titel": "Strafgesetzbuch (StGB)",
+   "titel_amtlich": "Schweizerisches Strafgesetzbuch",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 20,
+   "fassungen": [
+    {
+     "nachtrag": "20260101",
+     "veroeffentlicht": "01.01.2026",
+     "in_kraft_bis": "12.06.2026",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799/20260101/de",
+     "absaetze": 720,
+     "fussnoten": 609,
+     "artikel": 477,
+     "html_sha256": "b2159bf213daf6ccbc41840d7b660a4f29d132b653d5a58e76ac880b5a13da5e"
+    },
+    {
+     "nachtrag": "20260612",
+     "veroeffentlicht": "12.06.2026",
+     "in_kraft_bis": "01.10.2026",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799/20260612/de",
+     "absaetze": 720,
+     "fussnoten": 612,
+     "artikel": 477,
+     "html_sha256": "f322fb9a364617da627563830641597a982af17231612dbfcdc05784916b79e8",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "20261001",
+     "veroeffentlicht": "01.10.2026",
+     "in_kraft_bis": "01.11.2026",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799/20261001/de",
+     "absaetze": 720,
+     "fussnoten": 612,
+     "artikel": 477,
+     "html_sha256": "1de262997d2e581efa4b024a7efd87496387948fd66c660cedbe562b8df90619",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 1,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "20261101",
+     "veroeffentlicht": "01.11.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799/20261101/de",
+     "absaetze": 720,
+     "fussnoten": 613,
+     "artikel": 477,
+     "html_sha256": "b1afea46c2e11df82e316b0d64df71b2a3642d39ca0252ddc4438376b560b024",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    }
+   ]
   }
  },
  "stand": "20.11.2026"

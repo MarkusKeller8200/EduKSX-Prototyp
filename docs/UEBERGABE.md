@@ -36,6 +36,12 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – EduKSX-Codex 0.14.0
+
+- Punkt 3 umgesetzt (#38 → `_3 Beta-Test`): `tools/fedlex.py` (SPARQL fedlex.data.admin.ch + HTML-Filestore, beide aus dem
+  Arbeitsbereich erreichbar), Texte in `texte/sr-<SR>/<JJJJMMTT>.md`, Index-Feld `fundstelle`; künftige Stände nur als Metadaten.
+- Hinweis: Die Ordner `texte/sr-*` wurden während der Arbeit einmal gelöscht und neu erzeugt (eigene, noch nicht eingecheckte Dateien).
+
 ### Sitzung 2026-11-20 – EduKSX-Codex 0.13.0
 
 - Auftrag: offene Punkte ohne Prüfung von aussen, Reihenfolge 7 → 6 → 3 → 4 → 2, dazu 5 (Themen «Verfahren & Rechtsschutz»,

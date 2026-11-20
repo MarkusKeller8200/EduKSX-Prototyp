@@ -132,4 +132,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Codex 0.13.0: Normenhierarchie – Linien verteilt angedockt, Beschriftungen ohne Überlappung, Hervorhebung der
   Verbindungen beim Klick; Ansicht je Organisation («Ansicht für», Route `#/hierarchie/<thema>/<org>`); Querbezüge «auch in» /
   «Kommt vor in» in Hierarchie, Rechtsgrundlagen und Textansicht (#37).
+- EduKSX-Codex 0.14.0: Bundesrecht aus Fedlex (`tools/fedlex.py`) – 9 Bundeserlasse als Textfassung mit Änderungen
+  zwischen den Ständen, Fassungsliste aller Konsolidierungen in den Rechtsgrundlagen (Historik, «künftig»), Belegstellen aus
+  BV, OR, DSG, DSV, BehiG, KRK, ZGB und StGB in der Normenhierarchie (#38).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

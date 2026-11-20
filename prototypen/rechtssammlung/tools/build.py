@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.13.0 – Generator.
+"""EduKSX-Codex Prototyp 0.14.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1313,6 +1313,27 @@ def zhlex_versionen(nr):
 
 ERLASSENDE = [(r"^Verfassung", "Stimmberechtigte"), (r"^Reglement", "Bildungsrat"), (r"[Vv]erordnung", "Regierungsrat"),
               (r"[Gg]esetz", "Kantonsrat")]
+STAND_ISO = "20261120"
+FEDLEX_RAW = ROOT / "data" / "raw" / "fedlex-versionen.json"
+def fedlex_versionen(fund):
+    """Konsolidierte Fassungen («Stand am») aus Fedlex, neueste zuerst; mit Textfassung, wo aufbereitet."""
+    m = re.match(r"SR (\d+(?:\.\d+)*)", fund or "")
+    if not m or not FEDLEX_RAW.exists(): return []
+    raw = json.loads(FEDLEX_RAW.read_text(encoding="utf-8")).get(m.group(1))
+    if not raw: return []
+    idx = json.loads((TEXTE / "index.json").read_text(encoding="utf-8"))["erlasse"].get("sr-" + m.group(1), {})
+    da = {f["nachtrag"] for f in idx.get("fassungen", [])}
+    def ch(x): return f"{x[6:8]}.{x[4:6]}.{x[:4]}" if x else ""
+    out = []
+    for stand, bis in reversed(raw["v"]):
+        v = {"version": "Stand " + ch(stand), "inkraft": ch(stand), "in_kraft_bis": bis, "veroeffentlicht": None, "quelle": "Fedlex",
+             "url": f"https://www.fedlex.admin.ch/eli/cc/{raw['eli']}/{stand}/de"}
+        if stand in da: v.update(text_key="sr-" + m.group(1), text_nachtrag=stand)
+        if stand > STAND_ISO: v["kuenftig"] = True
+        out.append(v)
+    geltend = [v for v in out if not v.get("kuenftig")]
+    return geltend[:1] + [v for v in out if v.get("kuenftig")] + geltend[1:]   # geltende Fassung zuerst
+
 def rg_metadaten(e):
     """Felder nach Entscheid 20.11.2026: Quellenklasse, herausgebende Behörde, massgebende Publikationsstelle, Downloadort, Versionen."""
     fund = e["fundstelle"]
@@ -1324,8 +1345,11 @@ def rg_metadaten(e):
                  downloadort="Rechtssammlung der Schule XYZ", veroeffentlicht=None, version=None, versionen=[])
     elif e["ebene"] == "Bund":
         her = "Bundesrat" if re.search(r"verordnung", e["titel"], re.I) else "UNO / Bundesversammlung" if "Konvention" in e["titel"] else "Bundesversammlung"
-        e.update(klasse="A", herausgeber=her, publikationsstelle="Fedlex SR (Erstpublikation AS)", downloadort=e["quelle_url"],
-                 veroeffentlicht=None, version=None, versionen=[], version_hinweis="Stand bei Fedlex noch nicht abgefragt")
+        fv = fedlex_versionen(fund)
+        akt = fv[0] if fv else None
+        e.update(klasse="A", herausgeber=her, publikationsstelle="Fedlex SR (Erstpublikation AS)", downloadort=akt["url"] if akt else e["quelle_url"],
+                 veroeffentlicht=akt["inkraft"] if akt else None, version=akt["version"] if akt else None, versionen=fv)
+        if not fv: e["version_hinweis"] = "Stand bei Fedlex noch nicht abgefragt"
     else:
         nummern = re.findall(r"\d{3}(?:\.\d+)*", fund)
         zv = zhlex_versionen(nummern[0]) if nummern else None
@@ -1383,15 +1407,16 @@ def texte_index():
     idx = json.loads(p.read_text(encoding="utf-8"))
     for nr, e in idx["erlasse"].items():
         fs = e["fassungen"]
+        e["fundstelle"] = e["ordnungsnummer"] if str(e.get("ordnungsnummer", "")).startswith("SR") else "LS " + nr
         e["voll"] = len(fs) > 1                       # alle Fassungen aufbereitet (sonst nur geltende)
-        e["verweise"] = verweise(nr, fs[-1]["nachtrag"]) if fs else []
+        e["verweise"] = verweise(nr, fs[-1]["nachtrag"], e["fundstelle"]) if fs else []
     return idx
 
 def _md(nr, nachtrag):
     p = TEXTE / nr / f"{nachtrag}.md"
     return p.read_text(encoding="utf-8") if p.exists() else ""
 
-def verweise(nr, nachtrag):
+def verweise(nr, nachtrag, eigen=None):
     """Ausgehende Verweise der geltenden Fassung: Fussnoten mit LS-/SR-Nummer, gezählt nach Zielerlass."""
     md = _md(nr, nachtrag); fn = {}
     for m in re.finditer(r"^\[\^(\w+)\]: (.*)$", md, re.M):
@@ -1399,7 +1424,7 @@ def verweise(nr, nachtrag):
     zaehl = {}
     for ref in re.findall(r"\[\^(\w+)\]", md.split("\n---\n\n[^")[0] if "\n---\n\n[^" in md else md):
         for z in fn.get(ref, []): zaehl[z] = zaehl.get(z, 0) + 1
-    return sorted(([z, n] for z, n in zaehl.items() if z != "LS " + nr), key=lambda x: -x[1])
+    return sorted(([z, n] for z, n in zaehl.items() if z != (eigen or "LS " + nr)), key=lambda x: -x[1])
 
 def paragraf(nr, nachtrag, para):
     """Text eines Paragrafen (Überschrift und Absätze) aus der Markdown-Fassung."""
@@ -1410,7 +1435,7 @@ def paragraf(nr, nachtrag, para):
     if para == "Ingress":
         m = re.search(r"^\(vom [^\n]*", md, re.M)
         return re.sub(r"\) \d+,", ")", re.sub(r"\[\^\w+\]", "", m.group(0))).strip() if m else ""
-    m = re.search(r"^### " + re.escape(para) + r"[^\n]*\n\n(.*?)(?=\n### |\n## |\n---\n|\Z)", md, re.S | re.M)
+    m = re.search(r"^### " + re.escape(para) + r"(?![\d])[^\n]*\n\n(.*?)(?=\n### |\n## |\n---\n|\Z)", md, re.S | re.M)
     if not m: return ""
     return re.sub(r"\[\^\w+\]", "", m.group(0)).replace("### ", "").strip()
 
@@ -1421,7 +1446,7 @@ HIERARCHIEN = [
  {"id": "personal", "titel": "Personalrecht",
   "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
   "knoten": [
-   {"id": "or", "ebene": 0, "titel": "Obligationenrecht (OR)", "fundstelle": "SR 220", "art": "Bundesgesetz",
+   {"id": "or", "ebene": 0, "titel": "Obligationenrecht (OR)", "sr": "220", "art": "Bundesgesetz",
     "url": "https://www.fedlex.admin.ch/eli/cc/27/317_321_377/de", "hinweis": "Arbeitsvertrag Art. 319 ff. – im öffentlichen Personalrecht nur, wo das kantonale Recht darauf verweist"},
    {"id": "pg", "ebene": 1, "titel": "Personalgesetz (PG)", "art": "Gesetz (Kantonsrat)", "ls": "177.10"},
    {"id": "lpg", "ebene": 1, "titel": "Lehrpersonalgesetz (LPG)", "art": "Gesetz (Kantonsrat)", "ls": "412.31"},
@@ -1433,7 +1458,7 @@ HIERARCHIEN = [
     "hinweis": "Platzhalter «Schule XYZ»; Beispiele aus den erfassten Rechtssammlungen",
     "muster": r"personalverordnung|personalreglement|anstellungs und besoldungsverordnung|\bpevo\b", "ohne": r"anhang|vollz|ausf"}],
   "kanten": [
-   {"von": "pg", "nach": "or", "art": "verweist auf", "beleg": ("177.10", "§ 18.")},
+   {"von": "pg", "nach": "or", "art": "verweist auf", "beleg": ("177.10", "§ 18."), "beleg_oben": ("sr-220", "Art. 319")},
    {"von": "pvo", "nach": "pg", "art": "Vollzug", "beleg": ("177.11", "§ 1.")},
    {"von": "vvo", "nach": "pg", "art": "Vollzug", "beleg_text": "Vollzugsverordnung zum Personalgesetz (VVO) – Titel und Ingress: Vollzug des Personalgesetzes"},
    {"von": "lpg", "nach": "pg", "art": "subsidiär", "beleg": ("412.31", "§ 2.")},
@@ -1467,7 +1492,7 @@ HIERARCHIEN = [
  {"id": "volksschule", "titel": "Volksschule",
   "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Bildungsrat", "Gemeinde / Schulgemeinde"],
   "knoten": [
-   {"id": "bv", "ebene": 0, "titel": "Bundesverfassung (BV)", "fundstelle": "SR 101", "art": "Verfassung", "url": "https://www.fedlex.admin.ch/eli/cc/1999/404/de",
+   {"id": "bv", "ebene": 0, "titel": "Bundesverfassung (BV)", "sr": "101", "art": "Verfassung", "url": "https://www.fedlex.admin.ch/eli/cc/1999/404/de",
     "hinweis": "Art. 19 Anspruch auf ausreichenden und unentgeltlichen Grundschulunterricht; Art. 62 Schulwesen ist Sache der Kantone"},
    {"id": "big", "ebene": 1, "titel": "Bildungsgesetz (BiG)", "art": "Gesetz (Kantonsrat)", "ls": "410.1", "hinweis": "Rahmen für das ganze Bildungswesen; 6. Teil: Bildungsrat"},
    {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG)", "art": "Gesetz (Kantonsrat)", "ls": "412.100"},
@@ -1490,7 +1515,7 @@ HIERARCHIEN = [
    {"id": "so", "ebene": 4, "titel": "Schul- und Betreuungsreglemente", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
     "hinweis": "Schulordnung, Tagesstrukturen und Betreuung, Absenzen, Disziplin, Schulweg, Sonderpädagogik", "muster": r"schulordnung|schulreglement|tagesstruktur|betreuung|hort|absenz|disziplin|schulweg|sonderpaedagog|schulergaenzend|mittagstisch|musikschul", "ohne": r"zweckverband|alters|pflegeheim|spitex"}],
   "kanten": [
-   {"von": "big", "nach": "bv", "art": "Grundlage", "beleg": ("410.1", "§ 2.")},
+   {"von": "big", "nach": "bv", "art": "Grundlage", "beleg": ("sr-101", "Art. 62")},
    {"von": "vsg", "nach": "big", "art": "Rahmen", "beleg": ("410.1", "§ 8.")},
    {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 1.")},
    {"von": "vsm", "nach": "vsg", "art": "Vollzug", "beleg": ("412.103", "§ 1.")},
@@ -1505,9 +1530,9 @@ HIERARCHIEN = [
  {"id": "datenschutz", "titel": "Datenschutz & ICT",
   "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
   "knoten": [
-   {"id": "dsg", "ebene": 0, "titel": "Datenschutzgesetz des Bundes (DSG)", "fundstelle": "SR 235.1", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/2022/491/de",
+   {"id": "dsg", "ebene": 0, "titel": "Datenschutzgesetz des Bundes (DSG)", "sr": "235.1", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/2022/491/de",
     "hinweis": "Gilt für Private und Bundesorgane – für die Volksschule nicht direkt; massgebend wird es bei privaten Dienstleistern (z. B. Cloud- und Software-Anbieter)"},
-   {"id": "dsv", "ebene": 0, "titel": "Datenschutzverordnung (DSV)", "fundstelle": "SR 235.11", "art": "Verordnung (Bundesrat)", "url": "https://www.fedlex.admin.ch/eli/cc/2022/568/de"},
+   {"id": "dsv", "ebene": 0, "titel": "Datenschutzverordnung (DSV)", "sr": "235.11", "art": "Verordnung (Bundesrat)", "url": "https://www.fedlex.admin.ch/eli/cc/2022/568/de"},
    {"id": "idg", "ebene": 1, "titel": "Gesetz über die Information und den Datenschutz (IDG)", "art": "Gesetz (Kantonsrat)", "ls": "170.4",
     "hinweis": "Massgebend für Schulgemeinden und Schulen als öffentliche Organe (§ 3 IDG)"},
    {"id": "vsgd", "ebene": 1, "titel": "Volksschulgesetz – Bearbeitung von Personendaten", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§§ 3 a ff. VSG: besondere Bestimmungen für Schülerdaten"},
@@ -1521,8 +1546,8 @@ HIERARCHIEN = [
    {"id": "akten", "ebene": 3, "titel": "Archiv- und Aktenreglement", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
     "hinweis": "Aktenplan, Registratur, Aufbewahrung und Archivierung", "muster": r"archiv|aktenplan|registratur|aktenfuehrung|aufbewahrung"}],
   "kanten": [
-   {"von": "dsv", "nach": "dsg", "art": "Vollzug"},
-   {"von": "idg", "nach": "dsg", "art": "nicht direkt anwendbar", "beleg": ("170.4", "§ 2.")},
+   {"von": "dsv", "nach": "dsg", "art": "Vollzug", "beleg": ("sr-235.11", "Ingress")},
+   {"von": "idg", "nach": "dsg", "art": "nicht direkt anwendbar", "beleg": ("170.4", "§ 2."), "beleg_oben": ("sr-235.1", "Art. 2")},
    {"von": "vsgd", "nach": "idg", "art": "besondere Bestimmungen", "beleg": ("412.100", "§ 3 a.")},
    {"von": "idv", "nach": "idg", "art": "Vollzug", "beleg": ("170.41", "§ 1.")},
    {"von": "ivsv", "nach": "idg", "art": "Vollzug", "beleg": ("170.8", "Ingress")},
@@ -1536,7 +1561,7 @@ HIERARCHIEN = [
  {"id": "sonderpaedagogik", "titel": "Sonderpädagogik",
   "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
   "knoten": [
-   {"id": "behig", "ebene": 0, "titel": "Behindertengleichstellungsgesetz (BehiG)", "fundstelle": "SR 151.3", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/2003/667/de",
+   {"id": "behig", "ebene": 0, "titel": "Behindertengleichstellungsgesetz (BehiG)", "sr": "151.3", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/2003/667/de",
     "hinweis": "Art. 20: Die Kantone sorgen für eine angepasste Grundschulung und fördern die Integration in die Regelschule"},
    {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz – Sonderpädagogische Massnahmen", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§§ 33–40 VSG; Finanzierung §§ 64 ff."},
    {"id": "vsm", "ebene": 2, "titel": "Verordnung über die sonderpädagogischen Massnahmen (VSM)", "art": "Verordnung (Regierungsrat)", "ls": "412.103"},
@@ -1546,7 +1571,7 @@ HIERARCHIEN = [
    {"id": "kom", "ebene": 3, "titel": "Konzepte und Reglemente Sonderpädagogik", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
     "hinweis": "Förderkonzept, Integrative Förderung, Therapien, DaZ, Begabtenförderung, Schulpsychologie", "muster": r"sonderpaedagog|integrativ|foerder|therapie|logopaed|psychomotor|\bdaz\b|deutsch als zweit|begab|schulpsycholog|sonderschul", "ohne": r"jugendfoerder|wohn|energie|kultur|sport|wirtschaft|wald|natur"}],
   "kanten": [
-   {"von": "vsg", "nach": "behig", "art": "verweist auf", "beleg": ("412.100", "§ 33.")},
+   {"von": "vsg", "nach": "behig", "art": "Umsetzung", "beleg": ("sr-151.3", "Art. 20"), "beleg_unten": ("412.100", "§ 33.")},
    {"von": "vsm", "nach": "vsg", "art": "Vollzug", "beleg": ("412.103", "§ 1.")},
    {"von": "vfiso", "nach": "vsg", "art": "Vollzug", "beleg": ("412.106", "Ingress")},
    {"von": "auf", "nach": "vsg", "art": "Vollzug", "beleg": ("412.106.1", "Ingress")},
@@ -1575,29 +1600,29 @@ HIERARCHIEN = [
  {"id": "kindesschutz", "titel": "Kindesschutz & Schweigepflicht",
   "ebenen": ["Völkerrecht", "Bund", "Kanton", "Gemeinde / Schulgemeinde"],
   "knoten": [
-   {"id": "ukrk", "ebene": 0, "titel": "UN-Kinderrechtskonvention (KRK)", "fundstelle": "SR 0.107", "art": "Staatsvertrag", "url": "https://www.fedlex.admin.ch/eli/cc/1998/2055_2055_2055/de",
+   {"id": "ukrk", "ebene": 0, "titel": "UN-Kinderrechtskonvention (KRK)", "sr": "0.107", "art": "Staatsvertrag", "url": "https://www.fedlex.admin.ch/eli/cc/1998/2055_2055_2055/de",
     "hinweis": "Art. 3 Kindeswohl, Art. 12 Anhörung, Art. 28/29 Recht auf Bildung"},
-   {"id": "zgb", "ebene": 1, "titel": "Zivilgesetzbuch (ZGB) – elterliche Sorge und Kindesschutz", "fundstelle": "SR 210", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233/de",
+   {"id": "zgb", "ebene": 1, "titel": "Zivilgesetzbuch (ZGB) – elterliche Sorge und Kindesschutz", "sr": "210", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233/de",
     "hinweis": "Art. 301–303 elterliche Sorge und Erziehung; Art. 307 ff. Kindesschutzmassnahmen; Art. 314c ff. Melderechte und -pflichten"},
-   {"id": "stgb", "ebene": 1, "titel": "Strafgesetzbuch (StGB) – Amts- und Berufsgeheimnis", "fundstelle": "SR 311.0", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799/de",
+   {"id": "stgb", "ebene": 1, "titel": "Strafgesetzbuch (StGB) – Amts- und Berufsgeheimnis", "sr": "311.0", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799/de",
     "hinweis": "Art. 320 Amtsgeheimnis (Behörden, Lehrpersonen), Art. 321 Berufsgeheimnis (z. B. Schulpsychologie, Therapie)"},
    {"id": "vsg", "ebene": 2, "titel": "Volksschulgesetz – Meldepflicht und Zusammenarbeit", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 50 Grundsätze, § 51 Meldepflicht"},
    {"id": "vsv", "ebene": 2, "titel": "Volksschulverordnung – Information der Kindesschutzbehörde", "art": "Verordnung (Regierungsrat)", "ls": "412.101"},
    {"id": "kom", "ebene": 3, "titel": "Abläufe Kindesschutz, Krisen und Gewalt", "fundstelle": "kommunal", "art": "Behördenerlass oder Merkblatt",
     "hinweis": "Meist Leitfäden und Merkblätter statt Erlasse", "muster": r"kindesschutz|gefaehrdung|krise|notfall|meldung|schweigepflicht|gewalt|mobbing|praevention|sucht", "ohne": r"informationstafel|feuerwehr|zivilschutz"}],
   "kanten": [
-   {"von": "zgb", "nach": "ukrk", "art": "Grundlage"},
-   {"von": "vsg", "nach": "zgb", "art": "verweist auf", "beleg": ("412.100", "§ 51.")},
-   {"von": "vsg", "nach": "ukrk", "art": "Mitwirkung (Art. 12 KRK)", "beleg": ("412.100", "§ 50.")},
-   {"von": "vsg", "nach": "stgb", "art": "Amtsgeheimnis"},
+   {"von": "zgb", "nach": "ukrk", "art": "Umsetzung", "beleg": ("sr-0.107", "Art. 3")},
+   {"von": "vsg", "nach": "zgb", "art": "verweist auf", "beleg": ("412.100", "§ 51."), "beleg_oben": ("sr-210", "Art. 307")},
+   {"von": "vsg", "nach": "ukrk", "art": "Mitwirkung (Art. 12 KRK)", "beleg": ("412.100", "§ 50."), "beleg_oben": ("sr-0.107", "Art. 12")},
+   {"von": "vsg", "nach": "stgb", "art": "Amtsgeheimnis", "beleg": ("sr-311.0", "Art. 320")},
    {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 58.")},
    {"von": "kom", "nach": "vsg", "art": "gestützt auf"},
-   {"von": "kom", "nach": "zgb", "art": "verweist auf"}]},
+   {"von": "kom", "nach": "zgb", "art": "Melderecht", "beleg": ("sr-210", "Art. 314c")}]},
 ]
 
 def querbezuege(hs, texte):
     """Querbezüge: in welchen Themen kommt ein Erlass vor (Schlüssel LS-Nummer bzw. SR-Fundstelle)."""
-    def schluessel(k): return k.get("ls") or (k["fundstelle"] if k["fundstelle"] != "kommunal" else None)
+    def schluessel(k): return k["fundstelle"] if k["fundstelle"] != "kommunal" else None
     wo = {}
     for H in hs:
         for k in H["knoten"]:
@@ -1608,7 +1633,7 @@ def querbezuege(hs, texte):
             sk = schluessel(k)
             if sk: k["themen"] = wo[sk]
     for nr, e in texte["erlasse"].items():
-        e["themen"] = wo.get(nr, [])
+        e["themen"] = wo.get(e["fundstelle"], [])
     QUERBEZUG.update(wo)
     return hs
 
@@ -1618,9 +1643,13 @@ def hierarchie(texte, spec):
     akt = {nr: e["fassungen"][-1]["nachtrag"] for nr, e in texte["erlasse"].items() if e["fassungen"]}
     knoten = [dict(k) for k in spec["knoten"]]
     for k in knoten:
-        if k.get("ls"):
+        if k.get("sr"):
+            k["ls"] = "sr-" + k.pop("sr")
+            k["fundstelle"] = "SR " + k["ls"][3:]
+        elif k.get("ls"):
             k["fundstelle"] = "LS " + k["ls"]
             k["url"] = f"http://www.zhlex.zh.ch/Erlass.html?Open&Ordnr={k['ls']}"
+        if k.get("ls"):
             k["text"] = k["ls"] in akt
             k["versionen"] = len(texte["erlasse"].get(k["ls"], {}).get("fassungen", []))
         if k.get("muster"):
@@ -1645,8 +1674,14 @@ def hierarchie(texte, spec):
             nr, para = x["beleg"]
             text = paragraf(nr, akt[nr], para)
             stelle = para[6:].split(" ¹")[0] + " (Anhang IVöB)" if para.startswith("suche:") else para
-            if text: k["beleg"] = {"fundstelle": "LS " + nr, "stelle": stelle, "text": text}
-        elif x.get("beleg_text"):
+            if text: k["beleg"] = {"fundstelle": texte["erlasse"][nr]["fundstelle"], "stelle": stelle, "text": text}
+        zusatz = []
+        for schl in ("beleg_oben", "beleg_unten"):
+            if x.get(schl) and x[schl][0] in akt:
+                t2 = paragraf(x[schl][0], akt[x[schl][0]], x[schl][1])
+                if t2: zusatz.append({"fundstelle": texte["erlasse"][x[schl][0]]["fundstelle"], "stelle": x[schl][1], "text": t2})
+        if zusatz: k["weitere_belege"] = zusatz
+        if not k["beleg"] and x.get("beleg_text"):
             k["beleg"] = {"fundstelle": fund[x["von"]], "stelle": "Titel", "text": x["beleg_text"]}
         q = ls_von.get(x["von"])
         if q and q in texte["erlasse"]:
@@ -1680,7 +1715,7 @@ def render_daten(gemeinden):
     for e in daten["rechtsgrundlagen"]["eintraege"]:
         t = []
         for nr in re.findall(r"\d+(?:\.\d+)*", e.get("fundstelle") or ""):
-            for sk in (("SR " + nr,) if (e.get("fundstelle") or "").startswith("SR") else (nr,)):
+            for sk in (("SR " + nr,) if (e.get("fundstelle") or "").startswith("SR") else ("LS " + nr,)):
                 for x in QUERBEZUG.get(sk, []):
                     if x not in t: t.append(x)
         e["themen"] = t
@@ -1711,7 +1746,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.13.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.14.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1719,7 +1754,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.13.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.14.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),
