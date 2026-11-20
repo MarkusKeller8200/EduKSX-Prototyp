@@ -125,4 +125,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Lektionentafel und Zeugnisreglement → Gemeindeordnung, Organisationsstatut, Schulreglemente) und «Datenschutz & ICT»
   (DSG/DSV → IDG, VSG §§ 3 a ff., ArchG, Auslagerungsgesetz → IDV, IVSV, ArchV → kommunale Reglemente); neue Linienart
   «nicht direkt anwendbar»; Liste der Bildungsratsbeschlüsse im Detail; Textfassungen für 9 weitere Erlasse (jetzt 21) (#35).
+- EduKSX-Codex 0.12.0: Normenhierarchien «Sonderpädagogik» (BehiG → VSG → VSM, VFiSo, Aufsicht, SpiV → Gemeinde),
+  «Beschaffung & Bau» (neue Ebene Konkordat: IVöB → BeiG IVöB, PBG → SVO → Beschaffungsrichtlinien, BZO) und
+  «Kindesschutz & Schweigepflicht» (KRK → ZGB, StGB → VSG, VSV → Gemeinde) – jetzt 7 Themen; Textfassungen für
+  6 weitere Erlasse (jetzt 27) (#36).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

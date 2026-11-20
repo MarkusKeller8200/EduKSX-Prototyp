@@ -1,6 +1,6 @@
 # Konzept: EduKSX-Codex – Versionen, Abgleich, Textfassung und Normenhierarchie (#32)
 
-Stand: 2026-11-20 (Codex 0.11.0) · Status: **IN ARBEIT**
+Stand: 2026-11-20 (Codex 0.12.0) · Status: **IN ARBEIT**
 
 Ein Konzept ist eine Entscheidungsgrundlage, keine Freigabe: umgesetzt wird erst, was als Issue freigegeben ist.
 
@@ -149,6 +149,8 @@ Reglemente).
   Erweitert (Codex 0.11.0, #35): **Volksschule** mit eigener Ebene «Bildungsrat» (Lehrplan, Lektionentafel,
   Zeugnisreglement) und **Datenschutz & ICT** mit der Linienart «nicht direkt anwendbar» (IDG → DSG: für Schulen gilt das
   kantonale Recht, das DSG nur bei privaten Dienstleistern).
+  Erweitert (Codex 0.12.0, #36): **Sonderpädagogik**, **Beschaffung & Bau** (Ebene «Interkantonal (Konkordat)» für die
+  IVöB) und **Kindesschutz & Schweigepflicht** (Ebene «Völkerrecht» für die KRK) – insgesamt 7 Themen.
 
 ## 5. Issues
 
@@ -156,5 +158,6 @@ Reglemente).
 |---|---|---|
 | #32 | Codex 0.8.0: Quellenkatalog A–F, Veröffentlicht/Version, Versionshistorik, Analyse-Version | `_3 Beta-Test` |
 | #33 | Textfassung Markdown, Änderungen farbig, Normenhierarchie Personalrecht (Kapitel 3 und 4) | `_3 Beta-Test` |
+| #36 | Normenhierarchien Sonderpädagogik, Beschaffung & Bau, Kindesschutz | `_3 Beta-Test` |
 | #35 | Normenhierarchien Volksschule und Datenschutz & ICT | `_3 Beta-Test` |
 | #34 | Finanzrecht (FAG, FAV, CRG), Fassungen GG/VGG, Normenhierarchie Finanzen | `_3 Beta-Test` |

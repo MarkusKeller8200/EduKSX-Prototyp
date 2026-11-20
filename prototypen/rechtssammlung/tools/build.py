@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.11.0 – Generator.
+"""EduKSX-Codex Prototyp 0.12.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1404,6 +1404,9 @@ def verweise(nr, nachtrag):
 def paragraf(nr, nachtrag, para):
     """Text eines Paragrafen (Überschrift und Absätze) aus der Markdown-Fassung."""
     md = _md(nr, nachtrag)
+    if para.startswith("suche:"):
+        m = re.search(r"^" + re.escape(para[6:]) + r"[^\n]*", md, re.M)
+        return re.sub(r"\[\^\w+\]", "", m.group(0)).strip() if m else ""
     if para == "Ingress":
         m = re.search(r"^\(vom [^\n]*", md, re.M)
         return re.sub(r"\) \d+,", ")", re.sub(r"\[\^\w+\]", "", m.group(0))).strip() if m else ""
@@ -1530,6 +1533,66 @@ HIERARCHIEN = [
    {"von": "dsk", "nach": "ausl", "art": "bei Auslagerung"},
    {"von": "akten", "nach": "archg", "art": "Grundlage", "beleg": ("170.6", "§ 6.")},
    {"von": "akten", "nach": "archv", "art": "subsidiär (§ 1 Abs. 2 ArchV)"}]},
+ {"id": "sonderpaedagogik", "titel": "Sonderpädagogik",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "behig", "ebene": 0, "titel": "Behindertengleichstellungsgesetz (BehiG)", "fundstelle": "SR 151.3", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/2003/667/de",
+    "hinweis": "Art. 20: Die Kantone sorgen für eine angepasste Grundschulung und fördern die Integration in die Regelschule"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz – Sonderpädagogische Massnahmen", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§§ 33–40 VSG; Finanzierung §§ 64 ff."},
+   {"id": "vsm", "ebene": 2, "titel": "Verordnung über die sonderpädagogischen Massnahmen (VSM)", "art": "Verordnung (Regierungsrat)", "ls": "412.103"},
+   {"id": "vfiso", "ebene": 2, "titel": "Verordnung über die Finanzierung der Sonderschulung (VFiSo)", "art": "Verordnung (Regierungsrat)", "ls": "412.106"},
+   {"id": "auf", "ebene": 2, "titel": "Verordnung über die Aufsicht über die Sonderschulung", "art": "Verordnung (Bildungsdirektion)", "ls": "412.106.1"},
+   {"id": "spiv", "ebene": 2, "titel": "Spitalschulverordnung (SpiV)", "art": "Verordnung (Regierungsrat)", "ls": "412.107"},
+   {"id": "kom", "ebene": 3, "titel": "Konzepte und Reglemente Sonderpädagogik", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
+    "hinweis": "Förderkonzept, Integrative Förderung, Therapien, DaZ, Begabtenförderung, Schulpsychologie", "muster": r"sonderpaedagog|integrativ|foerder|therapie|logopaed|psychomotor|\bdaz\b|deutsch als zweit|begab|schulpsycholog|sonderschul", "ohne": r"jugendfoerder|wohn|energie|kultur|sport|wirtschaft|wald|natur"}],
+  "kanten": [
+   {"von": "vsg", "nach": "behig", "art": "verweist auf", "beleg": ("412.100", "§ 33.")},
+   {"von": "vsm", "nach": "vsg", "art": "Vollzug", "beleg": ("412.103", "§ 1.")},
+   {"von": "vfiso", "nach": "vsg", "art": "Vollzug", "beleg": ("412.106", "Ingress")},
+   {"von": "auf", "nach": "vsg", "art": "Vollzug", "beleg": ("412.106.1", "Ingress")},
+   {"von": "spiv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.107", "Ingress")},
+   {"von": "kom", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 35.")},
+   {"von": "kom", "nach": "vsm", "art": "Grundlage", "beleg": ("412.103", "§ 6.")}]},
+ {"id": "beschaffung", "titel": "Beschaffung & Bau",
+  "ebenen": ["Interkantonal (Konkordat)", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "ivoeb", "ebene": 0, "titel": "Interkantonale Vereinbarung über das öffentliche Beschaffungswesen (IVöB)", "fundstelle": "LS 720.1 (Anhang)", "art": "Konkordat",
+    "url": "http://www.zhlex.zh.ch/Erlass.html?Open&Ordnr=720.1", "hinweis": "Vom 15. November 2019; gilt für Kanton und Gemeinden – Text im Anhang zum Beitrittsgesetz"},
+   {"id": "beig", "ebene": 1, "titel": "Gesetz über den Beitritt zur IVöB (BeiG IVöB)", "art": "Gesetz (Kantonsrat)", "ls": "720.1"},
+   {"id": "pbg", "ebene": 1, "titel": "Planungs- und Baugesetz (PBG)", "art": "Gesetz (Kantonsrat)", "ls": "700.1", "hinweis": "Schulhausbauten, Umbauten, Nutzungsänderungen; Pflicht der Gemeinden zur Bau- und Zonenordnung (§ 45)"},
+   {"id": "svo", "ebene": 2, "titel": "Submissionsverordnung (SVO)", "art": "Verordnung (Regierungsrat)", "ls": "720.11"},
+   {"id": "besch", "ebene": 3, "titel": "Beschaffungsrichtlinien / Vergabereglement", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
+    "hinweis": "Zuständigkeiten und Schwellenwerte für Beschaffungen", "muster": r"beschaffung|submission|vergabe|einkauf", "ohne": r"pacht|landvergabe"},
+   {"id": "bzo", "ebene": 3, "titel": "Bau- und Zonenordnung (BZO)", "fundstelle": "kommunal", "art": "Gemeindeerlass (Stimmberechtigte)",
+    "hinweis": "Nur bei politischen Gemeinden; massgebend für Schulbauten", "muster": r"bau und zonenordnung|bau- und zonenordnung|bauordnung|\bbzo\b|zonenplan|baureglement", "ohne": r"gebuehr|foerderung"}],
+  "kanten": [
+   {"von": "beig", "nach": "ivoeb", "art": "Beitritt", "beleg": ("720.1", "§ 1.")},
+   {"von": "svo", "nach": "beig", "art": "Vollzug", "beleg": ("720.11", "Ingress")},
+   {"von": "svo", "nach": "ivoeb", "art": "verweist auf", "beleg": ("720.11", "§ 2.")},
+   {"von": "besch", "nach": "ivoeb", "art": "Grundlage", "beleg": ("720.1", "suche:Art. 4 ¹ Im Staatsvertragsbereich")},
+   {"von": "besch", "nach": "svo", "art": "verweist auf"},
+   {"von": "bzo", "nach": "pbg", "art": "Grundlage", "beleg": ("700.1", "§ 45.")}]},
+ {"id": "kindesschutz", "titel": "Kindesschutz & Schweigepflicht",
+  "ebenen": ["Völkerrecht", "Bund", "Kanton", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "ukrk", "ebene": 0, "titel": "UN-Kinderrechtskonvention (KRK)", "fundstelle": "SR 0.107", "art": "Staatsvertrag", "url": "https://www.fedlex.admin.ch/eli/cc/1998/2055_2055_2055/de",
+    "hinweis": "Art. 3 Kindeswohl, Art. 12 Anhörung, Art. 28/29 Recht auf Bildung"},
+   {"id": "zgb", "ebene": 1, "titel": "Zivilgesetzbuch (ZGB) – elterliche Sorge und Kindesschutz", "fundstelle": "SR 210", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233/de",
+    "hinweis": "Art. 301–303 elterliche Sorge und Erziehung; Art. 307 ff. Kindesschutzmassnahmen; Art. 314c ff. Melderechte und -pflichten"},
+   {"id": "stgb", "ebene": 1, "titel": "Strafgesetzbuch (StGB) – Amts- und Berufsgeheimnis", "fundstelle": "SR 311.0", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799/de",
+    "hinweis": "Art. 320 Amtsgeheimnis (Behörden, Lehrpersonen), Art. 321 Berufsgeheimnis (z. B. Schulpsychologie, Therapie)"},
+   {"id": "vsg", "ebene": 2, "titel": "Volksschulgesetz – Meldepflicht und Zusammenarbeit", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 50 Grundsätze, § 51 Meldepflicht"},
+   {"id": "vsv", "ebene": 2, "titel": "Volksschulverordnung – Information der Kindesschutzbehörde", "art": "Verordnung (Regierungsrat)", "ls": "412.101"},
+   {"id": "kom", "ebene": 3, "titel": "Abläufe Kindesschutz, Krisen und Gewalt", "fundstelle": "kommunal", "art": "Behördenerlass oder Merkblatt",
+    "hinweis": "Meist Leitfäden und Merkblätter statt Erlasse", "muster": r"kindesschutz|gefaehrdung|krise|notfall|meldung|schweigepflicht|gewalt|mobbing|praevention|sucht", "ohne": r"informationstafel|feuerwehr|zivilschutz"}],
+  "kanten": [
+   {"von": "zgb", "nach": "ukrk", "art": "Grundlage"},
+   {"von": "vsg", "nach": "zgb", "art": "verweist auf", "beleg": ("412.100", "§ 51.")},
+   {"von": "vsg", "nach": "ukrk", "art": "Mitwirkung (Art. 12 KRK)", "beleg": ("412.100", "§ 50.")},
+   {"von": "vsg", "nach": "stgb", "art": "Amtsgeheimnis"},
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 58.")},
+   {"von": "kom", "nach": "vsg", "art": "gestützt auf"},
+   {"von": "kom", "nach": "zgb", "art": "verweist auf"}]},
 ]
 
 def hierarchie(texte, spec):
@@ -1562,7 +1625,8 @@ def hierarchie(texte, spec):
         if x.get("beleg") and x["beleg"][0] in akt:
             nr, para = x["beleg"]
             text = paragraf(nr, akt[nr], para)
-            if text: k["beleg"] = {"fundstelle": "LS " + nr, "stelle": para, "text": text}
+            stelle = para[6:].split(" ¹")[0] + " (Anhang IVöB)" if para.startswith("suche:") else para
+            if text: k["beleg"] = {"fundstelle": "LS " + nr, "stelle": stelle, "text": text}
         elif x.get("beleg_text"):
             k["beleg"] = {"fundstelle": fund[x["von"]], "stelle": "Titel", "text": x["beleg_text"]}
         q = ls_von.get(x["von"])
@@ -1621,7 +1685,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.11.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.12.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1629,7 +1693,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.11.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.12.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

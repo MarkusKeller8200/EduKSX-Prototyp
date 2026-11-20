@@ -2600,6 +2600,162 @@
      }
     }
    ]
+  },
+  "412.106": {
+   "ordnungsnummer": "412.106",
+   "titel": "Verordnung über die Finanzierung der Sonderschulung (VFiSo)",
+   "fassungen": [
+    {
+     "nachtrag": "115",
+     "veroeffentlicht": "01.01.2022",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_106-2021_10_06-2022_01_01-115.html",
+     "seiten": 16,
+     "absaetze": 174,
+     "fussnoten": 8,
+     "pdf_sha256": "da75f24b4a7e55baa8ce33cbc4bab2725db635c417086a9f98eda5ebd6bcaf88"
+    }
+   ]
+  },
+  "412.106.1": {
+   "ordnungsnummer": "412.106.1",
+   "titel": "Verordnung über die Aufsicht über die Sonderschulung",
+   "fassungen": [
+    {
+     "nachtrag": "115",
+     "veroeffentlicht": "01.01.2022",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_106_1-2021_10_07-2022_01_01-115.html",
+     "seiten": 4,
+     "absaetze": 68,
+     "fussnoten": 4,
+     "pdf_sha256": "6493c58c98e3821d0a33024cb64267c3d50e83ab1dbc2a1ed01d2ae3e56bd12e"
+    }
+   ]
+  },
+  "412.107": {
+   "ordnungsnummer": "412.107",
+   "titel": "Spitalschulverordnung (SpiV)",
+   "fassungen": [
+    {
+     "nachtrag": "115",
+     "veroeffentlicht": "01.01.2022",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_107-2021_10_06-2022_01_01-115.html",
+     "seiten": 5,
+     "absaetze": 66,
+     "fussnoten": 12,
+     "pdf_sha256": "990eebb96e06a8571066334013bf08e371dcf13968a3f9a6ba8cdfbb3b3f1295"
+    }
+   ]
+  },
+  "720.1": {
+   "ordnungsnummer": "720.1",
+   "titel": "Gesetz über den Beitritt zur Interkantonalen Vereinbarung über das öffentliche Beschaffungswesen vom 15. November 2019 (BeiG IVöB)",
+   "fassungen": [
+    {
+     "nachtrag": "122",
+     "veroeffentlicht": "01.10.2023",
+     "in_kraft_bis": "01.10.2023",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-720_1-2023_03_20-2023_10_01-122.html",
+     "seiten": 40,
+     "absaetze": 533,
+     "fussnoten": 9,
+     "pdf_sha256": "72b6835bab08dfc0aaf4bdee07c5228a9253ef1194309adb7df2de2a324ef5fd"
+    },
+    {
+     "nachtrag": "123",
+     "veroeffentlicht": "01.10.2023",
+     "in_kraft_bis": "01.10.2023",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-720_1-2023_03_20-2023_10_01-123.html",
+     "seiten": 40,
+     "absaetze": 533,
+     "fussnoten": 9,
+     "pdf_sha256": "0da674577c630728918720d88fe8bb6fd052c8eb881663ec5ab826585e6202a6",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 6
+     }
+    },
+    {
+     "nachtrag": "124",
+     "veroeffentlicht": "01.10.2023",
+     "in_kraft_bis": "01.10.2023",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-720_1-2023_03_20-2023_10_01-124.html",
+     "seiten": 40,
+     "absaetze": 533,
+     "fussnoten": 9,
+     "pdf_sha256": "365bcf070e29d0f1a3285b2e1e1282642bf52be56199eb97abaa785581329859",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "132",
+     "veroeffentlicht": "01.10.2023",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-720_1-2023_03_20-2023_10_01-132.html",
+     "seiten": 40,
+     "absaetze": 326,
+     "fussnoten": 9,
+     "pdf_sha256": "c6cc54ff00d4ee98e242ded897d85a601426749ede10308d60acad8b5effe4b5",
+     "delta": {
+      "neu": 28,
+      "gestrichen": 235,
+      "geaendert": 27
+     }
+    }
+   ]
+  },
+  "720.11": {
+   "ordnungsnummer": "720.11",
+   "titel": "Submissionsverordnung (SVO)",
+   "fassungen": [
+    {
+     "nachtrag": "122",
+     "veroeffentlicht": "01.10.2023",
+     "in_kraft_bis": "01.01.2026",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-720_11-2023_06_28-2023_10_01-122.html",
+     "seiten": 6,
+     "absaetze": 84,
+     "fussnoten": 7,
+     "pdf_sha256": "2a59f18e73a4870ffddbe7308c4e593f30feb989cdc84fe441d8f00d14f3f714"
+    },
+    {
+     "nachtrag": "131",
+     "veroeffentlicht": "01.01.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-720_11-2023_06_28-2023_10_01-131.html",
+     "seiten": 6,
+     "absaetze": 88,
+     "fussnoten": 8,
+     "pdf_sha256": "eda838678f3a63288917ea0ab857449b168871455f34fb9396bb6a3329ee044f",
+     "delta": {
+      "neu": 6,
+      "gestrichen": 2,
+      "geaendert": 2
+     }
+    }
+   ]
+  },
+  "700.1": {
+   "ordnungsnummer": "700.1",
+   "titel": "Planungs- und Baugesetz (PBG)",
+   "fassungen": [
+    {
+     "nachtrag": "134",
+     "veroeffentlicht": "01.08.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-700_1-1975_09_07-1976_04_01-134.html",
+     "seiten": 101,
+     "absaetze": 1603,
+     "fussnoten": 77,
+     "pdf_sha256": "95eb54853290b153bcd7a8b5af9d6e8c607c0959d7c383516f2ae8bf1934e561"
+    }
+   ]
   }
  },
  "stand": "20.11.2026"

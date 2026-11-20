@@ -62,6 +62,13 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 - Offen: Stempeln per NFC-Tag (Idee, noch kein Issue – Antwort Projektleitung ausstehend).
 - Offen: weitere Schritte («der ganze Rest») je als Issue nach Freigabe; Icon «time» vorläufig, nicht im Icon-Set.
 
+### Sitzung 2026-11-20 (02:40–03:00) – EduKSX-Codex 0.12.0
+
+- Restliche Themen umgesetzt (#36 → `_3 Beta-Test`): Sonderpädagogik, Beschaffung & Bau, Kindesschutz & Schweigepflicht.
+- Belegstelle per Textsuche (`("720.1", "suche:Art. 4 ¹ …")`) für Artikel im Anhang (IVöB).
+- Texte neu: VFiSo, Aufsicht Sonderschulung, SpiV, BeiG IVöB, SVO, PBG (nur geltende Fassung, 34 Fassungen vorhanden).
+- Offen: Bundesrecht (Fedlex) noch ohne Textfassung; kommunale Kindesschutz-Abläufe sind meist Merkblätter.
+
 ### Sitzung 2026-11-20 (02:05–02:40) – EduKSX-Codex 0.11.0
 
 - Auftrag: weitere Themen für die Normenhierarchie – zuerst Volksschule und Datenschutz, einchecken, dann Sonderpädagogik,
