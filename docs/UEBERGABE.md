@@ -36,6 +36,11 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – EduKSX-Codex 0.21.0
+
+- Auftrag: Themen aus Elternsicht, Variante B (Wegweiser statt doppelter Hierarchien). Umgesetzt (#45 → `_3 Beta-Test`):
+  `ELTERNFRAGEN`/`elternwegweiser()` in tools/build.py, Seite `#/eltern/<org>`; Gruppen Kinder und Eltern getrennt.
+
 ### Sitzung 2026-11-20 – EduKSX-Codex 0.20.0
 
 - Auftrag: alle Themen aus der Durchsicht des Volksschulgesetzes umsetzen. Umgesetzt (#44 → `_3 Beta-Test`); Ordnungsnummern

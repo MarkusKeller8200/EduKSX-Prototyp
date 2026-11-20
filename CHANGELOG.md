@@ -161,4 +161,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Codex 0.20.1: Musikschulgesetz (LS 410.6), Musikschulverordnung (LS 410.61), Kinder- und Jugendhilfegesetz (LS 852.1),
   Mittelschulgesetz (LS 413.21), Aufnahme Gymnasium (LS 413.250.1), Aufnahme Maturitätsschulen (LS 413.250.2) und RSA 2009 (LS 414.16)
   mit allen Fassungen des geltenden Erlasses als Text und Änderungen (#44).
+- EduKSX-Codex 0.21.0: Elternwegweiser (12 Elternfragen mit Zitaten aus Bund und Kanton, Links in die Normenhierarchie,
+  Reglemente der gewählten Gemeinde); Normenhierarchie mit getrennten Gruppen Kinder und Eltern und neuen Themen «Absenzen,
+  Urlaub, Jokertage» und «Kosten für Eltern» (jetzt 18 Themen) (#45).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

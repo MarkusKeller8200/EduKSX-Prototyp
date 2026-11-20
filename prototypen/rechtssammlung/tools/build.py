@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.20.1 – Generator.
+"""EduKSX-Codex Prototyp 0.21.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1907,11 +1907,106 @@ HIERARCHIEN = [
    {"von": "kom", "nach": "vsm", "art": "Grundlage", "beleg": ("412.103", "§ 12.")},
    {"von": "kom", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 20.")},
    {"von": "kom", "nach": "brb", "art": "verweist auf"}]},
+ {"id": "absenzen", "titel": "Absenzen, Urlaub, Jokertage",
+  "ebenen": ["Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "vsg", "ebene": 0, "titel": "Volksschulgesetz (VSG) – Absenzen und Dispensation", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 28 Absenzen und Dispensation, § 57 Elternpflichten, § 76 Strafbestimmungen"},
+   {"id": "vsv", "ebene": 1, "titel": "Volksschulverordnung (VSV) – Absenzen, Dispensation, Jokertage", "art": "Verordnung (Regierungsrat)", "ls": "412.101",
+    "hinweis": "§ 28 Absenzen, § 29 Dispensation, § 30 Jokertage, § 66 Elternpflichten"},
+   {"id": "abs", "ebene": 2, "titel": "Absenzen- und Urlaubsregelung der Schule", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
+    "hinweis": "Zuständigkeit für Urlaubsgesuche, Fristen, Formulare", "muster": r"absenz|jokertag|dispens|urlaub", "ohne": r"personal|mitarbeit|lehrperson"}],
+  "kanten": [
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 28."), "beleg_unten": ("412.101", "§ 29.")},
+   {"von": "abs", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 30."), "beleg_unten": ("412.101", "§ 29.")},
+   {"von": "abs", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 28.")}]},
+ {"id": "kosten", "titel": "Kosten für Eltern",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "bv", "ebene": 0, "titel": "Bundesverfassung (BV) – unentgeltlicher Grundschulunterricht", "sr": "101", "art": "Verfassung", "url": "https://www.fedlex.admin.ch/eli/cc/1999/404/de", "hinweis": "Art. 19 und 62 Abs. 2: Grundschulunterricht an öffentlichen Schulen ist unentgeltlich"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Unentgeltlichkeit und Elternbeiträge", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 11 Unentgeltlichkeit und Elternbeiträge (z. B. Verpflegung in Lagern), § 30 a Tagesstrukturen"},
+   {"id": "musg", "ebene": 1, "titel": "Musikschulgesetz (MuSG) – Elternbeiträge", "art": "Gesetz (Kantonsrat)", "ls": "410.6", "hinweis": "§ 9 Elternbeiträge an die Musikschule"},
+   {"id": "vsv", "ebene": 2, "titel": "Volksschulverordnung (VSV) – Schulgeld, Verpflegung", "art": "Verordnung (Regierungsrat)", "ls": "412.101", "hinweis": "§ 11 Schulgeld und Verpflegungsbeitrag, § 17 c Kosten der schulärztlichen Untersuchung"},
+   {"id": "musv", "ebene": 2, "titel": "Musikschulverordnung (MuSV)", "art": "Verordnung (Regierungsrat)", "ls": "410.61"},
+   {"id": "kom", "ebene": 3, "titel": "Elternbeiträge und Tarife (Lager, Betreuung, Musikschule)", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
+    "muster": r"elternbeitr|lagerbeitr|kostenbeteiligung|tarif.*(betreu|hort|schul|musik|tagesstruktur)|(betreu|hort|schul|musik).*tarif|beitragsverordnung|schulgeld", "ohne": r"wasser|abwasser|werke|kesb|bibliothek|bau|personal|benuetzer|benutzer|schulraeume|vermiet"}],
+  "kanten": [
+   {"von": "vsg", "nach": "bv", "art": "Umsetzung", "beleg": ("412.100", "§ 11."), "beleg_oben": ("sr-101", "Art. 19")},
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 11."), "beleg_unten": ("412.101", "§ 17 c.")},
+   {"von": "musv", "nach": "musg", "art": "Vollzug", "beleg": ("410.61", "§ 1.")},
+   {"von": "kom", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 11.")},
+   {"von": "kom", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 11.")},
+   {"von": "kom", "nach": "musg", "art": "Elternbeiträge Musikschule", "beleg": ("410.6", "§ 9.")}]},
 ]
+
+# ---------------------------------------------------------------- Elternwegweiser (Auftrag 20.11.2026, Variante B)
+# Fragen aus Sicht der Eltern; je Frage die einschlägigen Stellen (Zitat aus der Textfassung), die passenden Themen der
+# Normenhierarchie und Suchmuster für die Dokumente der gewählten Gemeinde. Kein Rechtsrat – massgebend sind die Erlasse.
+ELTERNFRAGEN = [
+ {"id": "eintritt", "titel": "Schuleintritt & Schulweg", "fragen": ["Wann beginnt die Schulpflicht, kann der Eintritt verschoben werden?", "Welche Schule besucht mein Kind, wie ist der Schulweg geregelt?"],
+  "stellen": [("412.100", "§ 3."), ("412.100", "§ 10."), ("412.101", "§ 2."), ("412.101", "§ 3."), ("412.101", "§ 8.")], "themen": ["schulpflicht"],
+  "muster": r"schulweg|schulbus|zuteilung|einzugsgebiet|einschulung|schuleintritt|rueckstellung|schuelertransport", "ohne": r"beschluss|stellenbeschrieb"},
+ {"id": "absenzen", "titel": "Absenzen, Urlaub, Jokertage", "fragen": ["Mein Kind ist krank – was muss ich melden?", "Wie beantrage ich Urlaub, eine Dispensation oder einen Jokertag?"],
+  "stellen": [("412.100", "§ 28."), ("412.101", "§ 28."), ("412.101", "§ 29."), ("412.101", "§ 30.")], "themen": ["absenzen", "eltern"],
+  "muster": r"absenz|jokertag|dispens|urlaub", "ohne": r"personal|mitarbeit|lehrperson"},
+ {"id": "kosten", "titel": "Kosten für Eltern", "fragen": ["Was ist unentgeltlich, was bezahle ich (Lager, Verpflegung, Betreuung, Musikschule)?"],
+  "stellen": [("sr-101", "Art. 19"), ("412.100", "§ 11."), ("412.101", "§ 11."), ("410.6", "§ 9.")], "themen": ["kosten", "tagesstrukturen"],
+  "muster": r"elternbeitr|lagerbeitr|kostenbeteiligung|tarif|beitragsverordnung|schulgeld", "ohne": r"wasser|abwasser|werke|kesb|bibliothek|bau|personal|gebuehrentarif$|benuetzer|benutzer|schulraeume|vermiet"},
+ {"id": "betreuung", "titel": "Betreuung ausserhalb des Unterrichts", "fragen": ["Welche Betreuung bietet die Gemeinde an (Morgen, Mittag, Nachmittag, Ferien)?"],
+  "stellen": [("412.100", "§ 30 a."), ("412.101", "§ 32 a.")], "themen": ["tagesstrukturen"],
+  "muster": r"tagesstruktur|tagesschule|betreuung|\bhort|mittagstisch|schulergaenzend|ferienbetreuung", "ohne": r"alters|spitex|pflege|kesb"},
+ {"id": "mitwirkung", "titel": "Information & Mitwirkung", "fragen": ["Wie werde ich informiert, wann gibt es Elterngespräche?", "Wo kann ich mitwirken (Elternrat, Elternforum)?"],
+  "stellen": [("412.100", "§ 54."), ("412.100", "§ 55."), ("412.100", "§ 56."), ("412.101", "§ 63."), ("412.101", "§ 65.")], "themen": ["eltern"],
+  "muster": r"elternmitwirkung|elternrat|elternforum|elternmitarbeit|elternorganisation"},
+ {"id": "pflichten", "titel": "Pflichten der Eltern", "fragen": ["Welche Pflichten habe ich gegenüber der Schule?"],
+  "stellen": [("412.100", "§ 57."), ("412.101", "§ 66."), ("sr-210", "Art. 302")], "themen": ["eltern"], "muster": None},
+ {"id": "disziplin", "titel": "Verhalten, Disziplin, Auszeit", "fragen": ["Was darf die Schule bei Fehlverhalten tun?", "Was bedeutet eine Auszeit oder eine vorübergehende Wegweisung?"],
+  "stellen": [("412.100", "§ 52."), ("412.100", "§ 52 a."), ("412.101", "§ 54."), ("412.101", "§ 56."), ("412.101", "§ 57.")], "themen": ["eltern"],
+  "muster": r"disziplin|verhaltens|schulordnung|schulhausordnung", "ohne": r"sammelstelle|entsorg|friedhof|werkhof|personal|mitarbeit"},
+ {"id": "foerderung", "titel": "Förderung & Sonderpädagogik", "fragen": ["Bekommt mein Kind Unterstützung (Integrative Förderung, Therapie, DaZ)?", "Wer entscheidet über sonderpädagogische Massnahmen?"],
+  "stellen": [("412.100", "§ 33."), ("412.100", "§ 34."), ("412.100", "§ 37."), ("412.103", "§ 12.")], "themen": ["sonderpaedagogik", "sprache"],
+  "muster": r"sonderpaedagog|integrativ|therapie|logopaed|\bdaz\b|deutsch als zweit|begab|schulpsycholog", "ohne": r"siedlung|anfrage|befoerderung"},
+ {"id": "uebertritt", "titel": "Zeugnis, Promotion, Übertritt", "fragen": ["Wie wird mein Kind beurteilt?", "Wie läuft der Übertritt in die Sekundarschule oder ans Gymnasium?"],
+  "stellen": [("412.100", "§ 31."), ("412.100", "§ 32."), ("412.101", "§ 39."), ("413.21", "§ 14.")], "themen": ["beurteilung"],
+  "muster": r"zeugnis|promotion|uebertritt|einstufung|stufenwechsel", "ohne": r"mitarbeit|personal"},
+ {"id": "gesundheit", "titel": "Gesundheit", "fragen": ["Welche schulärztlichen Untersuchungen und Impfberatungen gibt es?", "Wie ist die Schulzahnpflege organisiert?"],
+  "stellen": [("412.101", "§ 17."), ("412.101", "§ 18."), ("810.1", "§ 50."), ("818.22", "§ 1.")], "themen": ["gesundheit"],
+  "muster": r"schulaerzt|schularzt|schulzahn|zahnpflege|zahnarzt|zahnklinik|schulgesundheit"},
+ {"id": "daten", "titel": "Daten & Fotos", "fragen": ["Welche Daten über mein Kind darf die Schule bearbeiten und weitergeben?", "Darf die Schule Fotos veröffentlichen?"],
+  "stellen": [("412.100", "§ 3 a."), ("170.4", "§ 16.")], "themen": ["datenschutz"],
+  "muster": r"datenschutz|foto|bildrecht|medien|video", "ohne": r"oeffentliche[mn]? grund|parkhaus|schuetzenstube|forsthaus"},
+ {"id": "beschwerde", "titel": "Nicht einverstanden – was tun?", "fragen": ["Wie verlange ich eine Begründung oder Neubeurteilung?", "Wie und wo kann ich Rekurs erheben?"],
+  "stellen": [("412.100", "§ 74."), ("412.100", "§ 75."), ("131.1", "§ 170."), ("175.2", "§ 19.")], "themen": ["verfahren"],
+  "muster": r"rekurs|beschwerde|neubeurteilung|ombuds|anlaufstelle"},
+]
+
+def elternwegweiser(texte):
+    akt = {nr: e["fassungen"][-1]["nachtrag"] for nr, e in texte["erlasse"].items() if e["fassungen"]}
+    out = []
+    for f in ELTERNFRAGEN:
+        stellen = []
+        for nr, para in f["stellen"]:
+            if nr not in akt: continue
+            t = paragraf(nr, akt[nr], para)
+            if t: stellen.append({"ls": nr, "nachtrag": akt[nr], "fundstelle": texte["erlasse"][nr]["fundstelle"], "titel": texte["erlasse"][nr]["titel"], "stelle": para, "text": t})
+        docs = []
+        if f.get("muster"):
+            for o in ORGS:
+                gesehen = set()
+                for sec in o["sections"]:
+                    for d in walk(sec):
+                        t = norm(d["titel"])
+                        if re.search(BEHOERDE, t) and not re.search(ERLASS, t): continue
+                        if re.search(f["muster"], t) and not (f.get("ohne") and re.search(f["ohne"], t)) and t not in gesehen:
+                            gesehen.add(t); docs.append({"org": o["id"], "titel": d["titel"], "url": d.get("url")})
+        out.append({"id": f["id"], "titel": f["titel"], "fragen": f["fragen"], "stellen": stellen, "themen": f["themen"], "dokumente": docs})
+    return out
+
 # Reihenfolge nach Bezug zur Volksschule (Auftrag 20.11.2026): Schule → Kinder → Personal → Unterricht → Organisation und Ressourcen
-REIHENFOLGE = ["volksschule", "organisation", "schulpflicht", "tagesstrukturen", "sonderpaedagogik", "kindesschutz", "eltern", "gesundheit", "personal", "unterricht", "beurteilung", "sprache", "datenschutz", "finanzen", "verfahren", "beschaffung"]
+REIHENFOLGE = ["volksschule", "organisation", "schulpflicht", "tagesstrukturen", "sonderpaedagogik", "kindesschutz", "gesundheit", "eltern", "absenzen", "kosten", "personal", "unterricht", "beurteilung", "sprache", "datenschutz", "finanzen", "verfahren", "beschaffung"]
 HIERARCHIEN.sort(key=lambda h: REIHENFOLGE.index(h["id"]))
-GRUPPEN = {"volksschule": "Schule", "organisation": "Schule", "schulpflicht": "Schule", "tagesstrukturen": "Schule", "beurteilung": "Unterricht", "sprache": "Unterricht", "sonderpaedagogik": "Kinder & Eltern", "kindesschutz": "Kinder & Eltern", "eltern": "Kinder & Eltern", "gesundheit": "Gesundheit", "personal": "Personal", "unterricht": "Unterricht",
+GRUPPEN = {"volksschule": "Schule", "organisation": "Schule", "schulpflicht": "Schule", "tagesstrukturen": "Schule",
+           "sonderpaedagogik": "Kinder", "kindesschutz": "Kinder", "gesundheit": "Kinder", "eltern": "Eltern", "absenzen": "Eltern", "kosten": "Eltern",
+           "personal": "Personal", "unterricht": "Unterricht", "beurteilung": "Unterricht", "sprache": "Unterricht",
            "datenschutz": "Organisation & Ressourcen", "finanzen": "Organisation & Ressourcen", "verfahren": "Organisation & Ressourcen", "beschaffung": "Organisation & Ressourcen"}
 
 # ---------------------------------------------------------------- Maschinelle Verbindungen (Auftrag 20.11.2026, Punkt 4)
@@ -2074,6 +2169,7 @@ def render_daten(gemeinden):
     for o in ORGS: leitfaden_pruefung(o); doc_datum_version(o); analyse_info(o)
     TX = texte_index()
     daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN, "rechtsgrundlagen": rechtsgrundlagen(), "pflichtkatalog": pflichtkatalog(),
+             "elternwegweiser": elternwegweiser(TX),
              "texte": TX, "hierarchien": querbezuege([abgleich_kanten(hierarchie(TX, sp), TX) for sp in HIERARCHIEN], TX),
              "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
     for e in daten["rechtsgrundlagen"]["eintraege"]:
@@ -2110,7 +2206,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.20.1 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.21.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2118,7 +2214,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.20.1 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.21.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

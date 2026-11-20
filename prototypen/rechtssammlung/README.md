@@ -1,6 +1,6 @@
 # Prototyp: Rechtssammlung
 
-**Status:** in-arbeit · **Version:** 0.20.1 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
+**Status:** in-arbeit · **Version:** 0.21.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
 
 ## Frage
 
@@ -21,6 +21,7 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 |---|---|
 | `index.html` | Übersicht im EduKSX-Auftritt mit Menü links: Bezirk › Politische Gemeinden (Vermerk «EG» = Einheitsgemeinde, «EG ?» = nicht gesichert) / Schulgemeinden › Rubriken |
 | `assets/app.js`, `assets/codex.css` | Menü und Ansichten: Übersicht (Kennzahlen, Fortschritt je Bezirk, Handlungsbedarf), Vergleich, Bezirk, Gemeinde, Schulgemeinden, Organisation (Steckbrief, Nachbau, iFrame-Variante, Original ⟷ Nachbau, Matrix-Spalte), Rubrik mit PDF-Vorschau, Struktur-Matrix |
+| `#/eltern` (Elternwegweiser) | 12 Elternfragen mit Bestimmungen aus Bund und Kanton (Zitat aus den Textfassungen), Links in die Normenhierarchie und Reglemente der gewählten Gemeinde (`ELTERNFRAGEN` in `tools/build.py`) |
 | `assets/daten.js` | Daten für Übersicht und Widget (erzeugt von `tools/build.py`) |
 | `embed/` | Einbettbares Widget (`embed/index.html?org=<id>`): Sachgebiet › Unterordner › Dokument, Suche, PDF-Vorschau, meldet seine Höhe per `postMessage` |
 | `demo/<id>.html` | Nachbau der Original-Seite (Schrift, Farben, Aufbau; ohne Logos) |
@@ -36,7 +37,7 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 | `texte/` | Textfassungen (Markdown) je ZH-Lex-Fassung und Unterschiede je Fassungspaar (JSON), erzeugt von `tools/texte.py` – 29 kantonale Erlasse (u. a. KV, VRG, VSG, VSV, VSM, LPVO, GG, VGG, CRG, IDG, IVSV, SVO, PBG) und 11 Bundeserlasse (BV, KRK, BehiG, ZGB, OR, URG, DSG, DSV, StGB, EpG, PAVO) |
 | `tools/fedlex.py` | Bundesrecht aus Fedlex: Fassungen über den SPARQL-Endpunkt, amtliche HTML-Fassung → Markdown (`texte/sr-<SR>/`), Fassungsliste `data/raw/fedlex-versionen.json` |
 | `tools/texte.py` | Vorab-Aufbereitung: ZH-Lex-PDF laden, in Markdown umwandeln, Unterschiede berechnen (`python3 tools/texte.py 412.100`) |
-| `tools/build.py` | Generator: Datenmodell, Normenhierarchien (`HIERARCHIEN`: 16 Themen nach Bezug zur Volksschule in den Gruppen Schule, Kinder & Eltern, Gesundheit, Personal, Unterricht, Organisation & Ressourcen), Schulgemeinden (60) mit Einheitsgemeinde-Herleitung, Struktur-Matrix, Nachbauten |
+| `tools/build.py` | Generator: Datenmodell, Normenhierarchien (`HIERARCHIEN`: 18 Themen nach Bezug zur Volksschule in den Gruppen Schule, Kinder, Eltern, Personal, Unterricht, Organisation & Ressourcen), Schulgemeinden (60) mit Einheitsgemeinde-Herleitung, Struktur-Matrix, Nachbauten |
 
 ## Erfasst (Stand 17.11.2026)
 

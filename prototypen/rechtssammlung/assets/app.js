@@ -123,6 +123,7 @@
         h("li", null, eintrag(link("gemeinden"), "Alle 160 Gemeinden", r.art === "gemeinden")),
         h("li", null, eintrag(link("schulgemeinden"), "Alle " + D.schulgemeinden.length + " Schulgemeinden", r.art === "schulgemeinden")),
         h("li", null, eintrag(link("matrix"), "Struktur-Matrix", r.art === "matrix")),
+        h("li", null, eintrag(link("eltern"), "Elternwegweiser", r.art === "eltern", h("span", { cls: "anz", text: String(D.elternwegweiser.length) }))),
         h("li", null, eintrag(link("pflicht"), "Pflichtkatalog Schulgemeinde", r.art === "pflicht", h("span", { cls: "anz", text: String(D.pflichtkatalog.kategorien.reduce(function (n, k) { return n + k.eintraege.length; }, 0)) }))),
         h("li", null, eintrag(link("grundlagen"), "Grundlagen (Leitfaden, ZH-Lex)", r.art === "grundlagen")),
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Gesetzestexte & Verordnungen" }),
@@ -1065,6 +1066,35 @@
     return h("div", { cls: "small mz-pflicht", title: z.grund }, ["P", "B", "O"].map(function (st) { return h("span", { cls: "nowrap", text: st + " " + z.stufen[st][0] + "/" + z.stufen[st][1] + " " }); }),
       z.relevanz !== "ja" ? h("div", { cls: "muted", text: z.relevanz === "nein" ? "Katalog nicht anwendbar" : "teilweise anwendbar" }) : null);
   }
+  function elternSeite(orgId) {
+    var org = orgId && ORG[orgId] ? ORG[orgId] : null, W = D.elternwegweiser;
+    var titelH = {}; D.hierarchien.forEach(function (x) { titelH[x.id] = x.titel; });
+    var sel = h("select", { "aria-label": "Gemeinde oder Schule wählen", onchange: function () { location.hash = link("eltern", this.value || null); } },
+      [h("option", { value: "", text: "Gemeinde oder Schule wählen …" })].concat(D.organisationen.slice().sort(function (a, b) { return a.kurz.localeCompare(b.kurz, "de"); }).map(function (o) {
+        var opt = h("option", { value: o.id, text: o.kurz + " (" + o.typ + ")" }); if (org && org.id === o.id) opt.selected = true; return opt; })));
+    var inhalt = h("nav", { cls: "chips", "aria-label": "Themen" }, W.map(function (f) { return h("a", { cls: "chip", href: "#eltern-" + f.id, onclick: function (ev) { ev.preventDefault(); var z = document.getElementById("eltern-" + f.id); if (z) z.scrollIntoView({ behavior: "smooth" }); }, text: f.titel }); }));
+    return [kopf("Elternwegweiser" + (org ? " · " + org.kurz : ""), "Häufige Fragen von Eltern – mit den einschlägigen Bestimmungen aus Bund und Kanton und den Regelungen der gewählten Gemeinde."),
+      h("p", { cls: "meldung info", text: "Übersicht, keine Rechtsauskunft. Massgebend sind die amtlichen Erlasse; im Einzelfall gibt die Schule bzw. die Schulpflege Auskunft." }),
+      h("div", { cls: "filterzeile" }, h("label", { cls: "small", text: "Regelungen anzeigen für " }), sel, org ? h("a", { cls: "small", href: link("org", org.id), text: "Rechtssammlung " + org.kurz + " →" }) : null),
+      inhalt,
+      W.map(function (f) {
+        var docs = org ? f.dokumente.filter(function (d) { return d.org === org.id; }) : [];
+        var anzOrgs = {}; f.dokumente.forEach(function (d) { anzOrgs[d.org] = 1; });
+        return h("section", { cls: "karte eltern-frage", id: "eltern-" + f.id },
+          h("h2", { text: f.titel }),
+          h("ul", { cls: "fragen" }, f.fragen.map(function (q) { return h("li", { text: q }); })),
+          h("h3", { text: "Was gilt? – Bund und Kanton" }),
+          h("div", null, f.stellen.map(function (st) {
+            return h("details", { cls: "beleg-block" }, h("summary", null, h("strong", { text: st.fundstelle + " " + st.stelle.replace(/\.$/, "") }), " – " + st.titel),
+              h("p", { cls: "beleg", text: st.text }), h("p", { cls: "small" }, h("a", { href: link("text", st.ls, st.nachtrag), text: "Im Erlass lesen →" })));
+          })),
+          f.dokumente.length || f.id ? h("h3", { text: org ? "Regelungen in " + org.name : "Regelungen der Gemeinden" }) : null,
+          org ? (docs.length ? h("ul", null, docs.map(function (d) { return h("li", null, d.url ? extern(d.url, d.titel + " ↗") : d.titel); }))
+                             : h("p", { cls: "muted small", text: "In der erfassten Rechtssammlung nicht gefunden – bei der Schule nachfragen." }))
+              : h("p", { cls: "muted small", text: f.dokumente.length ? "In " + Object.keys(anzOrgs).length + " der erfassten Organisationen gefunden – oben eine Gemeinde oder Schule wählen." : "Meist kantonal abschliessend geregelt oder nur als interne Richtlinie vorhanden." }),
+          h("p", { cls: "small" }, h("span", { cls: "muted", text: "Normenhierarchie: " }), f.themen.map(function (t, i) { return [i ? ", " : "", h("a", { href: link("hierarchie", t, org ? org.id : null), text: titelH[t] || t })]; })));
+      })];
+  }
   function pflichtSeite() {
     var PK = D.pflichtkatalog, M = D.matrix, rel = pflichtRelevant();
     function balken(a, b) { return h("span", { cls: "balken klein", title: a + " von " + b }, h("span", { style: "width:" + Math.round(100 * a / Math.max(1, b)) + "%" })); }
@@ -1123,6 +1153,7 @@
     else if (r.art === "sg") inhalt = sgAnsicht(r.a);
     else if (r.art === "matrix") inhalt = matrix(r.a);
     else if (r.art === "pflicht") inhalt = pflichtSeite();
+    else if (r.art === "eltern") inhalt = elternSeite(r.a);
     else if (r.art === "grundlagen") inhalt = grundlagen();
     else if (r.art === "rechtsgrundlagen") inhalt = rechtsgrundlagenAnsicht();
     else if (r.art === "herkunft") inhalt = herkunftsliste();

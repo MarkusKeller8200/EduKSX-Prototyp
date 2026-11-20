@@ -176,3 +176,10 @@ table.matrix tbody th { white-space: normal; }
 .reiter-gruppen { flex-wrap: wrap; align-items: flex-end; row-gap: .4rem; }
 .reiter-gruppe { font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted-foreground); padding: 0 .3rem 0 .9rem; align-self: center; border-left: 1px solid var(--border); }
 .reiter-gruppe:first-child { border-left: 0; padding-left: 0; }
+
+/* Elternwegweiser */
+.chips { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0 1rem; }
+.chip { display: inline-block; padding: .3rem .7rem; border: 1px solid var(--border); border-radius: 999px; font-size: .85rem; text-decoration: none; color: inherit; background: var(--card); }
+.chip:hover, .chip:focus-visible { border-color: var(--brand-blue); }
+.eltern-frage h2 { margin-top: 0; } .eltern-frage .fragen { margin: 0 0 .6rem; } .eltern-frage .fragen li { font-style: italic; }
+.beleg-block { margin: .3rem 0; } .beleg-block summary { cursor: pointer; }
