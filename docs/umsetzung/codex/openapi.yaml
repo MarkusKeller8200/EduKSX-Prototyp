@@ -86,6 +86,16 @@
       "description": "Elternwegweiser"
     },
     {
+      "name": "content-imports",
+      "x-displayName": "Pflege und Import (API, CSV, Excel, KI-Recherche)",
+      "description": "Pflege und Import (API, CSV, Excel, KI-Recherche)"
+    },
+    {
+      "name": "content-exports",
+      "x-displayName": "Export der redaktionellen Inhalte",
+      "description": "Export der redaktionellen Inhalte"
+    },
+    {
       "name": "collection-analyses",
       "x-displayName": "Evaluation und Leitfaden-Prüfung",
       "description": "Evaluation und Leitfaden-Prüfung"
@@ -1983,11 +1993,21 @@
                 "number": 1,
                 "legal_area_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
                 "legal_act_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "title": "Beispiel",
+                "citation": "Beispiel",
                 "location": "Beispiel",
                 "relevance": "Beispiel",
                 "source": "Beispiel",
                 "is_generic_source": false,
-                "is_verified": false
+                "is_verified": false,
+                "content_status": "draft",
+                "review_status": "to_review",
+                "research_note": "Beispiel",
+                "researched_at": "2027-08-23T07:30:00Z",
+                "content_import_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "reviewed_by_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "reviewed_at": "2027-08-23T07:30:00Z",
+                "published_at": "2027-08-23T07:30:00Z"
               }
             }
           }
@@ -2644,10 +2664,10 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Redaktion; Ansicht «Normenhierarchie»",
+        "x-eduksx-purpose": "Redaktion bzw. Import (KI-Recherche, Excel); Ansicht «Normenhierarchie», Themenwahl nach Gruppen",
         "operationId": "listNormHierarchies",
         "summary": "Normenhierarchien auflisten",
-        "description": "Liste der Normenhierarchien (Cursor). Redaktion; Ansicht «Normenhierarchie»",
+        "description": "Liste der Normenhierarchien (Cursor). Redaktion bzw. Import (KI-Recherche, Excel); Ansicht «Normenhierarchie», Themenwahl nach Gruppen",
         "security": [
           {
             "eduksx_ident": [
@@ -2670,7 +2690,7 @@
             "name": "hierarchy_group",
             "in": "query",
             "required": false,
-            "description": "z. B. «Schule»",
+            "description": "z. B. «Schule», «Kinder», «Behörden & Organisation»",
             "schema": {
               "type": "string",
               "title": "Gruppe"
@@ -2726,7 +2746,7 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Redaktion; Ansicht «Normenhierarchie»",
+        "x-eduksx-purpose": "Redaktion bzw. Import (KI-Recherche, Excel); Ansicht «Normenhierarchie», Themenwahl nach Gruppen",
         "operationId": "createNormHierarchy",
         "summary": "Normenhierarchie anlegen",
         "description": "Legt eine Normenhierarchie an.",
@@ -2748,12 +2768,21 @@
               "example": {
                 "hierarchy_key": "Beispiel",
                 "title": "Beispiel",
+                "short_title": "Beispiel",
                 "hierarchy_group": "Beispiel",
                 "levels": [
                   "Beispiel"
                 ],
                 "note": "Beispiel",
                 "position": 1,
+                "content_status": "draft",
+                "review_status": "to_review",
+                "research_note": "Beispiel",
+                "researched_at": "2027-08-23T07:30:00Z",
+                "content_import_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "reviewed_by_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "reviewed_at": "2027-08-23T07:30:00Z",
+                "published_at": "2027-08-23T07:30:00Z",
                 "nodes": [
                   "Beispiel"
                 ],
@@ -2823,7 +2852,7 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Redaktion; Ansicht «Normenhierarchie»",
+        "x-eduksx-purpose": "Redaktion bzw. Import (KI-Recherche, Excel); Ansicht «Normenhierarchie», Themenwahl nach Gruppen",
         "operationId": "getNormHierarchy",
         "summary": "Normenhierarchie lesen",
         "description": "Normenhierarchie mit allen Feldern der Positivliste.",
@@ -2881,7 +2910,7 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Redaktion; Ansicht «Normenhierarchie»",
+        "x-eduksx-purpose": "Redaktion bzw. Import (KI-Recherche, Excel); Ansicht «Normenhierarchie», Themenwahl nach Gruppen",
         "operationId": "updateNormHierarchy",
         "summary": "Normenhierarchie ändern",
         "description": "JSON Merge Patch; fehlendes Feld = unverändert.",
@@ -2970,7 +2999,7 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Redaktion; Ansicht «Normenhierarchie»",
+        "x-eduksx-purpose": "Redaktion bzw. Import (KI-Recherche, Excel); Ansicht «Normenhierarchie», Themenwahl nach Gruppen",
         "operationId": "deleteNormHierarchy",
         "summary": "Normenhierarchie löschen",
         "description": "In den Papierkorb (wiederherstellbar während der Frist).",
@@ -3154,8 +3183,17 @@
                 "source_url": "Beispiel",
                 "match_pattern": "Beispiel",
                 "uncertain_pattern": "Beispiel",
+                "exclusion_pattern": "Beispiel",
                 "remark": "Beispiel",
-                "review_status": "to_review"
+                "position": 1,
+                "content_status": "draft",
+                "review_status": "to_review",
+                "research_note": "Beispiel",
+                "researched_at": "2027-08-23T07:30:00Z",
+                "content_import_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "reviewed_by_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "reviewed_at": "2027-08-23T07:30:00Z",
+                "published_at": "2027-08-23T07:30:00Z"
               }
             }
           }
@@ -3417,10 +3455,10 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Redaktion EduKSX-Codex; Ansicht «Elternwegweiser»",
+        "x-eduksx-purpose": "Redaktion bzw. Import; Ansicht «Elternwegweiser»",
         "operationId": "listParentGuideTopics",
         "summary": "Themen des Elternwegweisers auflisten",
-        "description": "Liste der Themen des Elternwegweisers (Cursor). Redaktion EduKSX-Codex; Ansicht «Elternwegweiser»",
+        "description": "Liste der Themen des Elternwegweisers (Cursor). Redaktion bzw. Import; Ansicht «Elternwegweiser»",
         "security": [
           {
             "eduksx_ident": [
@@ -3488,7 +3526,7 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Redaktion EduKSX-Codex; Ansicht «Elternwegweiser»",
+        "x-eduksx-purpose": "Redaktion bzw. Import; Ansicht «Elternwegweiser»",
         "operationId": "createParentGuideTopic",
         "summary": "Thema des Elternwegweisers anlegen",
         "description": "Legt ein Thema des Elternwegweisers an.",
@@ -3513,9 +3551,21 @@
                 "questions": [
                   "Beispiel"
                 ],
-                "topic_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "match_pattern": "Beispiel",
+                "exclusion_pattern": "Beispiel",
                 "position": 1,
+                "content_status": "draft",
+                "review_status": "to_review",
+                "research_note": "Beispiel",
+                "researched_at": "2027-08-23T07:30:00Z",
+                "content_import_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "reviewed_by_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "reviewed_at": "2027-08-23T07:30:00Z",
+                "published_at": "2027-08-23T07:30:00Z",
                 "provisions": [
+                  "Beispiel"
+                ],
+                "hierarchy_keys": [
                   "Beispiel"
                 ],
                 "document_ids": [
@@ -3584,7 +3634,7 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Redaktion EduKSX-Codex; Ansicht «Elternwegweiser»",
+        "x-eduksx-purpose": "Redaktion bzw. Import; Ansicht «Elternwegweiser»",
         "operationId": "getParentGuideTopic",
         "summary": "Thema des Elternwegweisers lesen",
         "description": "Thema des Elternwegweisers mit allen Feldern der Positivliste.",
@@ -3642,7 +3692,7 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Redaktion EduKSX-Codex; Ansicht «Elternwegweiser»",
+        "x-eduksx-purpose": "Redaktion bzw. Import; Ansicht «Elternwegweiser»",
         "operationId": "updateParentGuideTopic",
         "summary": "Thema des Elternwegweisers ändern",
         "description": "JSON Merge Patch; fehlendes Feld = unverändert.",
@@ -3731,7 +3781,7 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Redaktion EduKSX-Codex; Ansicht «Elternwegweiser»",
+        "x-eduksx-purpose": "Redaktion bzw. Import; Ansicht «Elternwegweiser»",
         "operationId": "deleteParentGuideTopic",
         "summary": "Thema des Elternwegweisers löschen",
         "description": "In den Papierkorb (wiederherstellbar während der Frist).",
@@ -3769,6 +3819,194 @@
           },
           "428": {
             "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      }
+    },
+    "/api/v1/content-imports": {
+      "get": {
+        "tags": [
+          "content-imports"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Pflege-API (Probelauf und Übernahme); Protokoll, wer was wann geändert hat",
+        "operationId": "listContentImports",
+        "summary": "Importläufe auflisten",
+        "description": "Liste der Importläufe (Cursor). Pflege-API (Probelauf und Übernahme); Protokoll, wer was wann geändert hat",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:content-imports.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "content-imports.read",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "name": "source_kind",
+            "in": "query",
+            "required": false,
+            "description": "Art der Lieferung",
+            "schema": {
+              "type": "string",
+              "x-extensible-enum": [
+                "api",
+                "csv",
+                "xlsx",
+                "json",
+                "ai_research",
+                "manual"
+              ],
+              "x-eduksx-labels": {
+                "api": "API",
+                "csv": "CSV-Dateien",
+                "xlsx": "Excel",
+                "json": "JSON-Paket",
+                "ai_research": "KI-Recherche",
+                "manual": "von Hand"
+              },
+              "title": "Herkunft"
+            },
+            "example": "api"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Verlauf des Imports",
+            "schema": {
+              "type": "string",
+              "x-extensible-enum": [
+                "received",
+                "validated",
+                "failed",
+                "applied",
+                "rejected"
+              ],
+              "x-eduksx-labels": {
+                "received": "eingegangen",
+                "validated": "geprüft",
+                "failed": "fehlerhaft",
+                "applied": "übernommen",
+                "rejected": "verworfen"
+              },
+              "title": "Status"
+            },
+            "example": "received"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Importläufe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ContentImport"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/content-imports/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "content-imports"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Pflege-API (Probelauf und Übernahme); Protokoll, wer was wann geändert hat",
+        "operationId": "getContentImport",
+        "summary": "Importlauf lesen",
+        "description": "Importlauf mit allen Feldern der Positivliste.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:content-imports.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "content-imports.read",
+        "responses": {
+          "200": {
+            "description": "Importlauf",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ContentImport"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
           }
         }
       }
@@ -5001,6 +5239,1010 @@
           }
         }
       }
+    },
+    "/api/v1/norm-hierarchies/by-key/{hierarchy_key}": {
+      "parameters": [
+        {
+          "name": "hierarchy_key",
+          "in": "path",
+          "required": true,
+          "description": "Schlüssel der Hierarchie",
+          "schema": {
+            "type": "string",
+            "title": "Schlüssel"
+          },
+          "example": "volksschule"
+        }
+      ],
+      "get": {
+        "tags": [
+          "norm-hierarchies"
+        ],
+        "operationId": "getNormHierarchyByKey",
+        "summary": "Normenhierarchie über den Schlüssel lesen",
+        "description": "Normenhierarchie über den Schlüssel lesen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:norm-hierarchies.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "norm-hierarchies.read",
+        "x-eduksx-data-classes": [
+          "public"
+        ],
+        "x-eduksx-purpose": "Normenhierarchie über den Schlüssel lesen",
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/NormHierarchyDocument"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "norm-hierarchies"
+        ],
+        "operationId": "putNormHierarchyByKey",
+        "summary": "Normenhierarchie anlegen oder vollständig ersetzen",
+        "description": "Idempotent über den Schlüssel; Knoten und Verbindungen werden abgeglichen (nicht aufgeführte entfernt). Ergebnis ist ein Entwurf – öffentlich erst nach Freigabe. Fundstellen werden den Erlassen zugeordnet, Auszüge der Belegstellen aus der geltenden Fassung gelesen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:norm-hierarchies.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "norm-hierarchies.write",
+        "x-eduksx-data-classes": [
+          "public"
+        ],
+        "x-eduksx-purpose": "Normenhierarchie anlegen oder vollständig ersetzen",
+        "parameters": [
+          {
+            "name": "dry_run",
+            "in": "query",
+            "required": false,
+            "description": "nur prüfen, nichts speichern",
+            "schema": {
+              "type": "boolean",
+              "title": "Probelauf"
+            },
+            "example": false
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NormHierarchyDocument"
+              },
+              "example": {
+                "hierarchy_key": "Beispiel",
+                "title": "Beispiel",
+                "short_title": "Beispiel",
+                "hierarchy_group": "Beispiel",
+                "levels": [
+                  "Beispiel"
+                ],
+                "note": "Beispiel",
+                "position": 1,
+                "research_note": "Beispiel",
+                "researched_at": "2027-08-23T07:30:00Z",
+                "nodes": [
+                  "Beispiel"
+                ],
+                "edges": [
+                  "Beispiel"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/NormHierarchyDocument"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "norm-hierarchies"
+        ],
+        "operationId": "deleteNormHierarchyByKey",
+        "summary": "Normenhierarchie löschen",
+        "description": "Normenhierarchie löschen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:norm-hierarchies.delete"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "norm-hierarchies.delete",
+        "x-eduksx-data-classes": [
+          "public"
+        ],
+        "x-eduksx-purpose": "Normenhierarchie löschen",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Gelöscht (Papierkorb)"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/norm-hierarchies/{id}/publication": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "post": {
+        "tags": [
+          "norm-hierarchies"
+        ],
+        "operationId": "publishNormHierarchy",
+        "summary": "Normenhierarchie freigeben (veröffentlichen)",
+        "description": "Normenhierarchie freigeben (veröffentlichen).",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:norm-hierarchies.admin"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "norm-hierarchies.admin",
+        "x-eduksx-data-classes": [
+          "public"
+        ],
+        "x-eduksx-purpose": "Normenhierarchie freigeben (veröffentlichen)",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Publication"
+              },
+              "example": {
+                "is_reviewed": false,
+                "note": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/NormHierarchy"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/parent-guide-topics/by-key/{topic_key}": {
+      "parameters": [
+        {
+          "name": "topic_key",
+          "in": "path",
+          "required": true,
+          "description": "Schlüssel des Themas",
+          "schema": {
+            "type": "string",
+            "title": "Schlüssel"
+          },
+          "example": "absenzen"
+        }
+      ],
+      "put": {
+        "tags": [
+          "parent-guide-topics"
+        ],
+        "operationId": "putParentGuideTopicByKey",
+        "summary": "Thema des Elternwegweisers anlegen oder ersetzen",
+        "description": "Idempotent über den Schlüssel; Ergebnis ist ein Entwurf.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:parent-guide-topics.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "parent-guide-topics.write",
+        "x-eduksx-data-classes": [
+          "public"
+        ],
+        "x-eduksx-purpose": "Thema des Elternwegweisers anlegen oder ersetzen",
+        "parameters": [
+          {
+            "name": "dry_run",
+            "in": "query",
+            "required": false,
+            "description": "nur prüfen",
+            "schema": {
+              "type": "boolean",
+              "title": "Probelauf"
+            },
+            "example": false
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParentGuideTopicDocument"
+              },
+              "example": {
+                "topic_key": "Beispiel",
+                "title": "Beispiel",
+                "questions": [
+                  "Beispiel"
+                ],
+                "provisions": [
+                  "Beispiel"
+                ],
+                "hierarchy_keys": [
+                  "Beispiel"
+                ],
+                "match_pattern": "Beispiel",
+                "exclusion_pattern": "Beispiel",
+                "position": 1,
+                "research_note": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ParentGuideTopicDocument"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "parent-guide-topics"
+        ],
+        "operationId": "deleteParentGuideTopicByKey",
+        "summary": "Thema des Elternwegweisers löschen",
+        "description": "Thema des Elternwegweisers löschen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:parent-guide-topics.delete"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "parent-guide-topics.delete",
+        "x-eduksx-data-classes": [
+          "public"
+        ],
+        "x-eduksx-purpose": "Thema des Elternwegweisers löschen",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Gelöscht (Papierkorb)"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/parent-guide-topics/{id}/publication": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "post": {
+        "tags": [
+          "parent-guide-topics"
+        ],
+        "operationId": "publishParentGuideTopic",
+        "summary": "Thema des Elternwegweisers freigeben",
+        "description": "Thema des Elternwegweisers freigeben.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:parent-guide-topics.admin"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "parent-guide-topics.admin",
+        "x-eduksx-data-classes": [
+          "public"
+        ],
+        "x-eduksx-purpose": "Thema des Elternwegweisers freigeben",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Publication"
+              },
+              "example": {
+                "is_reviewed": false,
+                "note": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ParentGuideTopic"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/mandatory-documents/by-key/{document_key}": {
+      "parameters": [
+        {
+          "name": "document_key",
+          "in": "path",
+          "required": true,
+          "description": "Schlüssel des Pflichtdokuments",
+          "schema": {
+            "type": "string",
+            "title": "Schlüssel"
+          },
+          "example": "p1"
+        }
+      ],
+      "put": {
+        "tags": [
+          "mandatory-documents"
+        ],
+        "operationId": "putMandatoryDocumentByKey",
+        "summary": "Pflichtdokument anlegen oder ersetzen",
+        "description": "Pflichtdokument anlegen oder ersetzen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:mandatory-documents.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "mandatory-documents.write",
+        "x-eduksx-data-classes": [
+          "public"
+        ],
+        "x-eduksx-purpose": "Pflichtdokument anlegen oder ersetzen",
+        "parameters": [
+          {
+            "name": "dry_run",
+            "in": "query",
+            "required": false,
+            "description": "nur prüfen",
+            "schema": {
+              "type": "boolean",
+              "title": "Probelauf"
+            },
+            "example": false
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MandatoryDocumentEntry"
+              },
+              "example": {
+                "document_key": "Beispiel",
+                "category_number": 1,
+                "category_title": "Beispiel",
+                "document": "Beispiel",
+                "obligation": "P",
+                "intake": "Beispiel",
+                "source": "Beispiel",
+                "source_url": "https://example.org/dokument.pdf",
+                "match_pattern": "Beispiel",
+                "uncertain_pattern": "Beispiel",
+                "exclusion_pattern": "Beispiel",
+                "remark": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MandatoryDocument"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/content-imports/bundle": {
+      "post": {
+        "tags": [
+          "content-imports"
+        ],
+        "operationId": "importContentBundle",
+        "summary": "Inhaltspaket (JSON) prüfen oder übernehmen",
+        "description": "Mit «mode=dry_run» (Vorgabe) wird nur geprüft: Schlüssel, Fundstellen, Stellen in den Textfassungen, reguläre Ausdrücke, Verweise zwischen Knoten. Der Prüfbericht zeigt je Datensatz neu/geändert/gelöscht/unverändert. Mit «mode=apply» werden die Änderungen als Entwurf gespeichert.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:content-imports.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "content-imports.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Inhaltspaket (JSON) prüfen oder übernehmen",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "description": "Vorgabe: Probelauf",
+            "schema": {
+              "type": "string",
+              "x-extensible-enum": [
+                "dry_run",
+                "apply"
+              ],
+              "x-eduksx-labels": {
+                "dry_run": "Probelauf",
+                "apply": "Übernahme"
+              },
+              "title": "Modus"
+            },
+            "example": "dry_run"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentBundle"
+              },
+              "example": {
+                "format_version": "Beispiel",
+                "research_note": "Beispiel",
+                "sources": [
+                  "https://example.org/dokument.pdf"
+                ],
+                "researched_at": "2027-08-23T07:30:00Z",
+                "norm_hierarchies": [
+                  "Beispiel"
+                ],
+                "parent_guide_topics": [
+                  "Beispiel"
+                ],
+                "mandatory_documents": [
+                  "Beispiel"
+                ],
+                "legal_bases": [
+                  "Beispiel"
+                ],
+                "delete_keys": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ContentImport"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/content-imports/file": {
+      "post": {
+        "tags": [
+          "content-imports"
+        ],
+        "operationId": "importContentFile",
+        "summary": "CSV- oder Excel-Datei prüfen oder übernehmen",
+        "description": "Excel-Arbeitsmappe bzw. ZIP mit CSV-Dateien nach der Importvorlage (Blätter bzw. Dateien hierarchien, knoten, verbindungen, belege, beschluesse, elternthemen, elternstellen, pflichtdokumente, rechtsgrundlagen, loeschen). Wird in ein Inhaltspaket umgewandelt und wie dieses geprüft.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:content-imports.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "content-imports.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "CSV- oder Excel-Datei prüfen oder übernehmen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "title": "Datei",
+                "description": "Datei mit Angaben",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "contentMediaType": "application/octet-stream",
+                    "title": "Datei",
+                    "description": "hochzuladende Datei"
+                  },
+                  "mode": {
+                    "type": "string",
+                    "x-extensible-enum": [
+                      "dry_run",
+                      "apply"
+                    ],
+                    "x-eduksx-labels": {
+                      "dry_run": "Probelauf",
+                      "apply": "Übernahme"
+                    },
+                    "title": "Modus",
+                    "description": "Vorgabe: Probelauf"
+                  },
+                  "source_kind": {
+                    "type": "string",
+                    "x-extensible-enum": [
+                      "csv",
+                      "xlsx",
+                      "ai_research"
+                    ],
+                    "x-eduksx-labels": {
+                      "csv": "CSV",
+                      "xlsx": "Excel",
+                      "ai_research": "KI-Recherche"
+                    },
+                    "title": "Herkunft",
+                    "description": "Art der Lieferung"
+                  },
+                  "research_note": {
+                    "type": "string",
+                    "title": "Recherche",
+                    "description": "Auftrag, Vorgehen, Quellen"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ContentImport"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/content-imports/{id}/application": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "post": {
+        "tags": [
+          "content-imports"
+        ],
+        "operationId": "applyContentImport",
+        "summary": "Geprüften Probelauf übernehmen",
+        "description": "Übernimmt einen Probelauf ohne Fehler; die Inhalte werden als Entwurf gespeichert und müssen freigegeben werden.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:content-imports.admin"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "content-imports.admin",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Geprüften Probelauf übernehmen",
+        "responses": {
+          "201": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ContentImport"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/content-exports": {
+      "get": {
+        "tags": [
+          "content-exports"
+        ],
+        "operationId": "exportContent",
+        "summary": "Redaktionelle Inhalte exportieren (Vorlage für Änderungen)",
+        "description": "Gleiches Format wie der Import: JSON-Paket, Excel oder ZIP mit CSV. So lassen sich Inhalte herunterladen, ändern und wieder einlesen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:content-exports.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "content-exports.read",
+        "x-eduksx-data-classes": [
+          "public"
+        ],
+        "x-eduksx-purpose": "Redaktionelle Inhalte exportieren (Vorlage für Änderungen)",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "description": "Vorgabe JSON",
+            "schema": {
+              "type": "string",
+              "x-extensible-enum": [
+                "json",
+                "xlsx",
+                "csv"
+              ],
+              "x-eduksx-labels": {
+                "json": "JSON",
+                "xlsx": "Excel",
+                "csv": "CSV (ZIP)"
+              },
+              "title": "Format"
+            },
+            "example": "json"
+          },
+          {
+            "name": "parts",
+            "in": "query",
+            "required": false,
+            "description": "kommagetrennt: norm_hierarchies, parent_guide_topics, mandatory_documents, legal_bases",
+            "schema": {
+              "type": "string",
+              "title": "Teile"
+            },
+            "example": "Beispiel"
+          },
+          {
+            "name": "content_status",
+            "in": "query",
+            "required": false,
+            "description": "Vorgabe veröffentlicht",
+            "schema": {
+              "type": "string",
+              "x-extensible-enum": [
+                "published",
+                "draft",
+                "all"
+              ],
+              "x-eduksx-labels": {
+                "published": "veröffentlicht",
+                "draft": "Entwurf",
+                "all": "alle"
+              },
+              "title": "Status"
+            },
+            "example": "published"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Datei",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "contentMediaType": "application/json"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -5041,13 +6283,18 @@
               "codex:parent-guide-topics.read": "Elternwegweiser – lesen",
               "codex:parent-guide-topics.write": "Elternwegweiser – schreiben",
               "codex:parent-guide-topics.delete": "Elternwegweiser – löschen",
+              "codex:content-imports.read": "Pflege und Import (API, CSV, Excel, KI-Recherche) – lesen",
               "codex:collection-analyses.read": "Evaluation und Leitfaden-Prüfung – lesen",
               "codex:search.read": "Suche und Fundstellen – lesen",
               "codex:norm-hierarchies.admin": "Normenhierarchien – verwalten",
               "codex:matrix.read": "Vergleichsmatrix – lesen",
               "codex:matrix.write": "Vergleichsmatrix – schreiben",
               "codex:collection-analyses.admin": "Evaluation und Leitfaden-Prüfung – verwalten",
-              "codex:embed.read": "Widget für Websites – lesen"
+              "codex:embed.read": "Widget für Websites – lesen",
+              "codex:parent-guide-topics.admin": "Elternwegweiser – verwalten",
+              "codex:content-imports.write": "Pflege und Import (API, CSV, Excel, KI-Recherche) – schreiben",
+              "codex:content-imports.admin": "Pflege und Import (API, CSV, Excel, KI-Recherche) – verwalten",
+              "codex:content-exports.read": "Export der redaktionellen Inhalte – lesen"
             }
           },
           "clientCredentials": {
@@ -5081,13 +6328,18 @@
               "codex:parent-guide-topics.read": "Elternwegweiser – lesen",
               "codex:parent-guide-topics.write": "Elternwegweiser – schreiben",
               "codex:parent-guide-topics.delete": "Elternwegweiser – löschen",
+              "codex:content-imports.read": "Pflege und Import (API, CSV, Excel, KI-Recherche) – lesen",
               "codex:collection-analyses.read": "Evaluation und Leitfaden-Prüfung – lesen",
               "codex:search.read": "Suche und Fundstellen – lesen",
               "codex:norm-hierarchies.admin": "Normenhierarchien – verwalten",
               "codex:matrix.read": "Vergleichsmatrix – lesen",
               "codex:matrix.write": "Vergleichsmatrix – schreiben",
               "codex:collection-analyses.admin": "Evaluation und Leitfaden-Prüfung – verwalten",
-              "codex:embed.read": "Widget für Websites – lesen"
+              "codex:embed.read": "Widget für Websites – lesen",
+              "codex:parent-guide-topics.admin": "Elternwegweiser – verwalten",
+              "codex:content-imports.write": "Pflege und Import (API, CSV, Excel, KI-Recherche) – schreiben",
+              "codex:content-imports.admin": "Pflege und Import (API, CSV, Excel, KI-Recherche) – verwalten",
+              "codex:content-exports.read": "Export der redaktionellen Inhalte – lesen"
             }
           }
         }
@@ -6287,10 +7539,28 @@
             "x-eduksx-data-class": "public"
           },
           "legal_act_id": {
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "format": "uuid",
             "title": "Erlass",
-            "description": "Verweis",
+            "description": "Verweis auf den (ersten) Erlass; leer bei kommunalen Dokumenten und Bildungsratsbeschlüssen",
+            "x-eduksx-data-class": "public"
+          },
+          "title": {
+            "type": "string",
+            "title": "Titel",
+            "description": "Erlass bzw. Dokument, wie angezeigt",
+            "x-eduksx-data-class": "public"
+          },
+          "citation": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Fundstelle",
+            "description": "z. B. «LS 412.100», «LS 412.100 / 412.101», «kommunal», «Bildungsratsbeschlüsse»",
             "x-eduksx-data-class": "public"
           },
           "location": {
@@ -6299,7 +7569,7 @@
               "null"
             ],
             "title": "Stelle",
-            "description": "z. B. «Art. 19, 62»",
+            "description": "z. B. «Art. 19, 62», «BRB 4/2017»",
             "x-eduksx-data-class": "public"
           },
           "relevance": {
@@ -6329,14 +7599,161 @@
           "is_verified": {
             "type": "boolean",
             "title": "Geprüft",
-            "description": "von der Redaktion",
+            "description": "Fundstelle in ZH-Lex bzw. Fedlex geprüft",
             "x-eduksx-data-class": "public"
+          },
+          "content_status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "draft",
+              "published",
+              "archived"
+            ],
+            "x-eduksx-labels": {
+              "draft": "Entwurf",
+              "published": "veröffentlicht",
+              "archived": "archiviert"
+            },
+            "title": "Redaktionsstatus",
+            "description": "Entwurf erst nach Freigabe öffentlich",
+            "x-eduksx-data-class": "public"
+          },
+          "content_status_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Redaktionsstatus (Text)",
+            "description": "deutsches Label zu «content_status» in der gewählten Sprache"
+          },
+          "review_status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "to_review",
+              "reviewed"
+            ],
+            "x-eduksx-labels": {
+              "to_review": "zu prüfen",
+              "reviewed": "geprüft"
+            },
+            "title": "Prüfstatus",
+            "description": "fachliche Prüfung",
+            "x-eduksx-data-class": "internal"
+          },
+          "review_status_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Prüfstatus (Text)",
+            "description": "deutsches Label zu «review_status» in der gewählten Sprache"
+          },
+          "research_note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Recherche",
+            "description": "Quellen und Vorgehen der Recherche (Mensch oder KI)",
+            "x-eduksx-data-class": "internal"
+          },
+          "researched_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Recherchiert am",
+            "description": "Stand der Recherche",
+            "x-eduksx-data-class": "internal"
+          },
+          "content_import_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Importlauf",
+            "description": "letzter Import, der den Datensatz geändert hat",
+            "x-eduksx-data-class": "internal"
+          },
+          "reviewed_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geprüft von",
+            "description": "Redaktion (ohne Constraint)",
+            "x-eduksx-data-class": "internal"
+          },
+          "reviewed_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Geprüft am",
+            "description": "Redaktion",
+            "x-eduksx-data-class": "internal"
+          },
+          "published_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Veröffentlicht am",
+            "description": "Freigabe",
+            "x-eduksx-data-class": "internal"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erstellt am",
+            "description": "Zeitpunkt der Erfassung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erstellt von",
+            "description": "Person, die den Datensatz angelegt hat (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Geändert am",
+            "description": "Zeitpunkt der letzten Änderung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geändert von",
+            "description": "Person der letzten Änderung (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "lock_version": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Version",
+            "description": "optimistisches Sperren; ETag und If-Match",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
           }
         },
         "required": [
           "number",
           "legal_area_id",
-          "legal_act_id"
+          "title"
         ]
       },
       "PublicationSource": {
@@ -6492,7 +7909,7 @@
       "NormHierarchy": {
         "type": "object",
         "title": "Normenhierarchie",
-        "description": "Normenhierarchie eines Themas. Redaktion; Ansicht «Normenhierarchie»",
+        "description": "Normenhierarchie eines Themas. Redaktion bzw. Import (KI-Recherche, Excel); Ansicht «Normenhierarchie», Themenwahl nach Gruppen",
         "properties": {
           "id": {
             "type": "string",
@@ -6505,22 +7922,28 @@
           "hierarchy_key": {
             "type": "string",
             "title": "Schlüssel",
-            "description": "z. B. «volksschule»",
+            "description": "stabil, z. B. «volksschule»; Grundlage für Import und Links",
             "x-eduksx-data-class": "public"
           },
           "title": {
             "type": "string",
             "title": "Thema",
-            "description": "Anzeige",
+            "description": "Seitentitel",
             "x-eduksx-data-class": "public"
           },
-          "hierarchy_group": {
+          "short_title": {
             "type": [
               "string",
               "null"
             ],
+            "title": "Kurztitel",
+            "description": "Themenwahl, z. B. «Versammlung & Parlament»",
+            "x-eduksx-data-class": "public"
+          },
+          "hierarchy_group": {
+            "type": "string",
             "title": "Gruppe",
-            "description": "z. B. «Schule»",
+            "description": "z. B. «Schule», «Kinder», «Behörden & Organisation»",
             "x-eduksx-data-class": "public"
           },
           "levels": {
@@ -6529,7 +7952,7 @@
               "type": "string"
             },
             "title": "Ebenen",
-            "description": "Bund bis Gemeinde",
+            "description": "von oben nach unten, z. B. Bund bis Gemeinde",
             "x-eduksx-data-class": "public"
           },
           "note": {
@@ -6538,15 +7961,162 @@
               "null"
             ],
             "title": "Hinweis",
-            "description": "Erläuterung",
+            "description": "Erläuterung zur Hierarchie",
             "x-eduksx-data-class": "public"
           },
           "position": {
             "type": "integer",
             "format": "int32",
             "title": "Reihenfolge",
-            "description": "Anzeige",
+            "description": "nach Bezug zur Volksschule",
             "x-eduksx-data-class": "public"
+          },
+          "content_status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "draft",
+              "published",
+              "archived"
+            ],
+            "x-eduksx-labels": {
+              "draft": "Entwurf",
+              "published": "veröffentlicht",
+              "archived": "archiviert"
+            },
+            "title": "Redaktionsstatus",
+            "description": "Entwurf erst nach Freigabe öffentlich",
+            "x-eduksx-data-class": "public"
+          },
+          "content_status_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Redaktionsstatus (Text)",
+            "description": "deutsches Label zu «content_status» in der gewählten Sprache"
+          },
+          "review_status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "to_review",
+              "reviewed"
+            ],
+            "x-eduksx-labels": {
+              "to_review": "zu prüfen",
+              "reviewed": "geprüft"
+            },
+            "title": "Prüfstatus",
+            "description": "fachliche Prüfung",
+            "x-eduksx-data-class": "internal"
+          },
+          "review_status_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Prüfstatus (Text)",
+            "description": "deutsches Label zu «review_status» in der gewählten Sprache"
+          },
+          "research_note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Recherche",
+            "description": "Quellen und Vorgehen der Recherche (Mensch oder KI)",
+            "x-eduksx-data-class": "internal"
+          },
+          "researched_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Recherchiert am",
+            "description": "Stand der Recherche",
+            "x-eduksx-data-class": "internal"
+          },
+          "content_import_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Importlauf",
+            "description": "letzter Import, der den Datensatz geändert hat",
+            "x-eduksx-data-class": "internal"
+          },
+          "reviewed_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geprüft von",
+            "description": "Redaktion (ohne Constraint)",
+            "x-eduksx-data-class": "internal"
+          },
+          "reviewed_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Geprüft am",
+            "description": "Redaktion",
+            "x-eduksx-data-class": "internal"
+          },
+          "published_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Veröffentlicht am",
+            "description": "Freigabe",
+            "x-eduksx-data-class": "internal"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erstellt am",
+            "description": "Zeitpunkt der Erfassung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erstellt von",
+            "description": "Person, die den Datensatz angelegt hat (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Geändert am",
+            "description": "Zeitpunkt der letzten Änderung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geändert von",
+            "description": "Person der letzten Änderung (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "lock_version": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Version",
+            "description": "optimistisches Sperren; ETag und If-Match",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
           },
           "nodes": {
             "type": "array",
@@ -6570,12 +8140,13 @@
               ]
             },
             "title": "Verbindungen",
-            "description": "mit Beleg"
+            "description": "mit Belegstellen"
           }
         },
         "required": [
           "hierarchy_key",
           "title",
+          "hierarchy_group",
           "levels"
         ]
       },
@@ -6675,6 +8246,15 @@
             "description": "Treffer nur als «unsicher»",
             "x-eduksx-data-class": "public"
           },
+          "exclusion_pattern": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Ausschlussmuster",
+            "description": "Treffer, die nicht passen",
+            "x-eduksx-data-class": "public"
+          },
           "remark": {
             "type": [
               "string",
@@ -6683,6 +8263,35 @@
             "title": "Bemerkung",
             "description": "Freitext",
             "x-eduksx-data-class": "public"
+          },
+          "position": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Reihenfolge",
+            "description": "innerhalb der Kategorie",
+            "x-eduksx-data-class": "public"
+          },
+          "content_status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "draft",
+              "published",
+              "archived"
+            ],
+            "x-eduksx-labels": {
+              "draft": "Entwurf",
+              "published": "veröffentlicht",
+              "archived": "archiviert"
+            },
+            "title": "Redaktionsstatus",
+            "description": "Entwurf erst nach Freigabe öffentlich",
+            "x-eduksx-data-class": "public"
+          },
+          "content_status_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Redaktionsstatus (Text)",
+            "description": "deutsches Label zu «content_status» in der gewählten Sprache"
           },
           "review_status": {
             "type": "string",
@@ -6695,7 +8304,7 @@
               "reviewed": "geprüft"
             },
             "title": "Prüfstatus",
-            "description": "fachliche Abnahme",
+            "description": "fachliche Prüfung",
             "x-eduksx-data-class": "internal"
           },
           "review_status_label": {
@@ -6703,6 +8312,103 @@
             "readOnly": true,
             "title": "Prüfstatus (Text)",
             "description": "deutsches Label zu «review_status» in der gewählten Sprache"
+          },
+          "research_note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Recherche",
+            "description": "Quellen und Vorgehen der Recherche (Mensch oder KI)",
+            "x-eduksx-data-class": "internal"
+          },
+          "researched_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Recherchiert am",
+            "description": "Stand der Recherche",
+            "x-eduksx-data-class": "internal"
+          },
+          "content_import_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Importlauf",
+            "description": "letzter Import, der den Datensatz geändert hat",
+            "x-eduksx-data-class": "internal"
+          },
+          "reviewed_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geprüft von",
+            "description": "Redaktion (ohne Constraint)",
+            "x-eduksx-data-class": "internal"
+          },
+          "reviewed_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Geprüft am",
+            "description": "Redaktion",
+            "x-eduksx-data-class": "internal"
+          },
+          "published_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Veröffentlicht am",
+            "description": "Freigabe",
+            "x-eduksx-data-class": "internal"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erstellt am",
+            "description": "Zeitpunkt der Erfassung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erstellt von",
+            "description": "Person, die den Datensatz angelegt hat (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Geändert am",
+            "description": "Zeitpunkt der letzten Änderung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geändert von",
+            "description": "Person der letzten Änderung (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
           },
           "lock_version": {
             "type": "integer",
@@ -6724,7 +8430,7 @@
       "ParentGuideTopic": {
         "type": "object",
         "title": "Thema des Elternwegweisers",
-        "description": "Thema des Elternwegweisers (Fragen von Eltern mit Rechtsstellen und Dokumenten). Redaktion EduKSX-Codex; Ansicht «Elternwegweiser»",
+        "description": "Thema des Elternwegweisers (Fragen von Eltern mit Rechtsstellen und Dokumenten). Redaktion bzw. Import; Ansicht «Elternwegweiser»",
         "properties": {
           "id": {
             "type": "string",
@@ -6737,13 +8443,13 @@
           "topic_key": {
             "type": "string",
             "title": "Schlüssel",
-            "description": "z. B. «eintritt»",
+            "description": "z. B. «absenzen»",
             "x-eduksx-data-class": "public"
           },
           "title": {
             "type": "string",
             "title": "Thema",
-            "description": "z. B. «Schuleintritt & Schulweg»",
+            "description": "z. B. «Absenzen, Urlaub, Jokertage»",
             "x-eduksx-data-class": "public"
           },
           "questions": {
@@ -6755,14 +8461,22 @@
             "description": "typische Fragen von Eltern",
             "x-eduksx-data-class": "public"
           },
-          "topic_id": {
+          "match_pattern": {
             "type": [
               "string",
               "null"
             ],
-            "format": "uuid",
-            "title": "Thema (Hierarchie)",
-            "description": "Verweis",
+            "title": "Suchmuster",
+            "description": "Reglemente und Formulare der Gemeinde",
+            "x-eduksx-data-class": "public"
+          },
+          "exclusion_pattern": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Ausschlussmuster",
+            "description": "Treffer, die nicht passen",
             "x-eduksx-data-class": "public"
           },
           "position": {
@@ -6771,6 +8485,153 @@
             "title": "Reihenfolge",
             "description": "Anzeige",
             "x-eduksx-data-class": "public"
+          },
+          "content_status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "draft",
+              "published",
+              "archived"
+            ],
+            "x-eduksx-labels": {
+              "draft": "Entwurf",
+              "published": "veröffentlicht",
+              "archived": "archiviert"
+            },
+            "title": "Redaktionsstatus",
+            "description": "Entwurf erst nach Freigabe öffentlich",
+            "x-eduksx-data-class": "public"
+          },
+          "content_status_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Redaktionsstatus (Text)",
+            "description": "deutsches Label zu «content_status» in der gewählten Sprache"
+          },
+          "review_status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "to_review",
+              "reviewed"
+            ],
+            "x-eduksx-labels": {
+              "to_review": "zu prüfen",
+              "reviewed": "geprüft"
+            },
+            "title": "Prüfstatus",
+            "description": "fachliche Prüfung",
+            "x-eduksx-data-class": "internal"
+          },
+          "review_status_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Prüfstatus (Text)",
+            "description": "deutsches Label zu «review_status» in der gewählten Sprache"
+          },
+          "research_note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Recherche",
+            "description": "Quellen und Vorgehen der Recherche (Mensch oder KI)",
+            "x-eduksx-data-class": "internal"
+          },
+          "researched_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Recherchiert am",
+            "description": "Stand der Recherche",
+            "x-eduksx-data-class": "internal"
+          },
+          "content_import_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Importlauf",
+            "description": "letzter Import, der den Datensatz geändert hat",
+            "x-eduksx-data-class": "internal"
+          },
+          "reviewed_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geprüft von",
+            "description": "Redaktion (ohne Constraint)",
+            "x-eduksx-data-class": "internal"
+          },
+          "reviewed_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Geprüft am",
+            "description": "Redaktion",
+            "x-eduksx-data-class": "internal"
+          },
+          "published_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Veröffentlicht am",
+            "description": "Freigabe",
+            "x-eduksx-data-class": "internal"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erstellt am",
+            "description": "Zeitpunkt der Erfassung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erstellt von",
+            "description": "Person, die den Datensatz angelegt hat (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Geändert am",
+            "description": "Zeitpunkt der letzten Änderung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geändert von",
+            "description": "Person der letzten Änderung (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "lock_version": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Version",
+            "description": "optimistisches Sperren; ETag und If-Match",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
           },
           "provisions": {
             "type": "array",
@@ -6784,6 +8645,14 @@
             "title": "Rechtsstellen",
             "description": "Stellen mit Auszug"
           },
+          "hierarchy_keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Normenhierarchien",
+            "description": "Schlüssel der verknüpften Themen"
+          },
           "document_ids": {
             "type": "array",
             "items": {
@@ -6791,12 +8660,244 @@
               "format": "uuid"
             },
             "title": "Dokumente",
-            "description": "kommunale Dokumente als Beispiele"
+            "description": "kommunale Dokumente als Beispiele (aus dem Suchmuster)"
           }
         },
         "required": [
           "topic_key",
           "title"
+        ]
+      },
+      "ContentImport": {
+        "type": "object",
+        "title": "Importlauf",
+        "description": "Importlauf: Änderungen an redaktionellen Inhalten über API, CSV/Excel oder KI-Recherche. Pflege-API (Probelauf und Übernahme); Protokoll, wer was wann geändert hat",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "ID",
+            "description": "UUID v7, von der Anwendung vergeben",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "source_kind": {
+            "type": "string",
+            "x-extensible-enum": [
+              "api",
+              "csv",
+              "xlsx",
+              "json",
+              "ai_research",
+              "manual"
+            ],
+            "x-eduksx-labels": {
+              "api": "API",
+              "csv": "CSV-Dateien",
+              "xlsx": "Excel",
+              "json": "JSON-Paket",
+              "ai_research": "KI-Recherche",
+              "manual": "von Hand"
+            },
+            "title": "Herkunft",
+            "description": "Art der Lieferung",
+            "x-eduksx-data-class": "internal"
+          },
+          "source_kind_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Herkunft (Text)",
+            "description": "deutsches Label zu «source_kind» in der gewählten Sprache"
+          },
+          "mode": {
+            "type": "string",
+            "x-extensible-enum": [
+              "dry_run",
+              "apply"
+            ],
+            "x-eduksx-labels": {
+              "dry_run": "Probelauf",
+              "apply": "Übernahme"
+            },
+            "title": "Modus",
+            "description": "Probelauf prüft nur, Übernahme schreibt",
+            "x-eduksx-data-class": "internal"
+          },
+          "mode_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Modus (Text)",
+            "description": "deutsches Label zu «mode» in der gewählten Sprache"
+          },
+          "status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "received",
+              "validated",
+              "failed",
+              "applied",
+              "rejected"
+            ],
+            "x-eduksx-labels": {
+              "received": "eingegangen",
+              "validated": "geprüft",
+              "failed": "fehlerhaft",
+              "applied": "übernommen",
+              "rejected": "verworfen"
+            },
+            "title": "Status",
+            "description": "Verlauf des Imports",
+            "x-eduksx-data-class": "internal"
+          },
+          "status_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Status (Text)",
+            "description": "deutsches Label zu «status» in der gewählten Sprache"
+          },
+          "file_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Datei",
+            "description": "Name der gelieferten Datei",
+            "x-eduksx-data-class": "internal"
+          },
+          "file_sha256": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Prüfsumme",
+            "description": "SHA-256 der Lieferung",
+            "x-eduksx-data-class": "internal"
+          },
+          "format_version": {
+            "type": "string",
+            "title": "Formatversion",
+            "description": "Version des Importformats",
+            "x-eduksx-data-class": "internal"
+          },
+          "research_note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Recherche",
+            "description": "Vorgehen, Auftrag, Modell (bei KI)",
+            "x-eduksx-data-class": "internal"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Quellen",
+            "description": "Adressen der verwendeten Quellen",
+            "x-eduksx-data-class": "internal"
+          },
+          "summary": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true,
+            "title": "Zusammenfassung",
+            "description": "Anzahl neu, geändert, gelöscht, unverändert, Fehler je Inhaltsart",
+            "x-eduksx-data-class": "internal"
+          },
+          "applied_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Übernommen am",
+            "description": "Zeitpunkt der Übernahme",
+            "x-eduksx-data-class": "internal"
+          },
+          "applied_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Übernommen von",
+            "description": "Redaktion (ohne Constraint)",
+            "x-eduksx-data-class": "internal"
+          },
+          "based_on_import_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Probelauf",
+            "description": "übernommener Probelauf",
+            "x-eduksx-data-class": "internal"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erstellt am",
+            "description": "Zeitpunkt der Erfassung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erstellt von",
+            "description": "Person, die den Datensatz angelegt hat (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Geändert am",
+            "description": "Zeitpunkt der letzten Änderung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geändert von",
+            "description": "Person der letzten Änderung (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "lock_version": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Version",
+            "description": "optimistisches Sperren; ETag und If-Match",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ContentImportItem"
+                }
+              ]
+            },
+            "title": "Änderungen",
+            "description": "Prüfbericht bzw. Protokoll je Datensatz"
+          }
+        },
+        "required": [
+          "source_kind"
         ]
       },
       "CollectionAnalysis": {
@@ -7169,18 +9270,26 @@
       "HierarchyNode": {
         "type": "object",
         "title": "Knoten",
-        "description": "Erlass auf einer Ebene der Hierarchie",
+        "description": "Erlass oder kommunaler Platzhalter auf einer Ebene der Hierarchie",
         "properties": {
           "node_key": {
             "type": "string",
             "title": "Schlüssel",
-            "description": "z. B. «vsg»"
+            "description": "z. B. «vsg», eindeutig in der Hierarchie"
           },
           "level_index": {
             "type": "integer",
             "format": "int32",
             "title": "Ebene",
-            "description": "Index"
+            "description": "Index in den Ebenen, 0 = oben"
+          },
+          "citation": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Fundstelle",
+            "description": "z. B. «LS 412.100», «SR 101», «kommunal» – ordnet den Erlass zu"
           },
           "legal_act_id": {
             "type": [
@@ -7189,7 +9298,7 @@
             ],
             "format": "uuid",
             "title": "Erlass",
-            "description": "Verweis"
+            "description": "Verweis, aus der Fundstelle ermittelt"
           },
           "title": {
             "type": "string",
@@ -7202,7 +9311,7 @@
               "null"
             ],
             "title": "Art",
-            "description": "z. B. Gesetz"
+            "description": "z. B. «Gesetz (Kantonsrat)»"
           },
           "note": {
             "type": [
@@ -7210,7 +9319,53 @@
               "null"
             ],
             "title": "Hinweis",
-            "description": "massgebende Artikel"
+            "description": "massgebende Paragrafen"
+          },
+          "external_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "title": "Adresse",
+            "description": "Link bei Knoten ohne Erlass"
+          },
+          "match_pattern": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Suchmuster",
+            "description": "regulärer Ausdruck für kommunale Beispiele"
+          },
+          "exclusion_pattern": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Ausschlussmuster",
+            "description": "Treffer, die nicht passen"
+          },
+          "position": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "title": "Reihenfolge",
+            "description": "innerhalb der Ebene"
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/HierarchyNodeLink"
+                }
+              ]
+            },
+            "title": "Beschlüsse",
+            "description": "z. B. Bildungsratsbeschlüsse"
           }
         },
         "required": [
@@ -7219,10 +9374,87 @@
           "title"
         ]
       },
+      "HierarchyNodeLink": {
+        "type": "object",
+        "title": "Beschluss im Knoten",
+        "description": "Eintrag der Liste «Beschlüsse und Erlasse» eines Knotens",
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Titel",
+            "description": "z. B. «BRB 4/2017 – Lehrplan»"
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "title": "Adresse",
+            "description": "Publikation"
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Hinweis",
+            "description": "Kurzbeschreibung"
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "HierarchyEvidence": {
+        "type": "object",
+        "title": "Belegstelle",
+        "description": "Paragraf bzw. Artikel, der eine Verbindung belegt; Auszug aus der geltenden Fassung",
+        "properties": {
+          "citation": {
+            "type": "string",
+            "title": "Fundstelle",
+            "description": "Erlass, z. B. «LS 412.100»"
+          },
+          "location": {
+            "type": "string",
+            "title": "Stelle",
+            "description": "z. B. «§ 41 a», «Art. 62», «Ingress»"
+          },
+          "side": {
+            "type": "string",
+            "x-extensible-enum": [
+              "from",
+              "to",
+              "other"
+            ],
+            "x-eduksx-labels": {
+              "from": "untergeordneter Erlass",
+              "to": "übergeordneter Erlass",
+              "other": "anderer Erlass"
+            },
+            "title": "Seite",
+            "description": "in welchem Erlass der Beleg steht"
+          },
+          "excerpt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Auszug",
+            "description": "aus der geltenden Fassung, nur lesen",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "citation",
+          "location"
+        ]
+      },
       "HierarchyEdge": {
         "type": "object",
         "title": "Verbindung",
-        "description": "Verbindung zwischen zwei Knoten mit Beleg",
+        "description": "Verbindung zwischen zwei Knoten (untergeordnet → übergeordnet) mit Belegstellen",
         "properties": {
           "id": {
             "type": "string",
@@ -7234,41 +9466,72 @@
           "from_node_key": {
             "type": "string",
             "title": "Von",
-            "description": "untergeordnet"
+            "description": "untergeordneter Knoten"
           },
           "to_node_key": {
             "type": "string",
             "title": "Nach",
-            "description": "übergeordnet"
+            "description": "übergeordneter Knoten"
           },
           "relation": {
             "type": "string",
             "title": "Beziehung",
-            "description": "z. B. «Grundlage»"
+            "description": "Anzeige, z. B. «Grundlage», «Vollzug», «subsidiär (§ 53 Abs. 2 GG)»"
           },
-          "evidence_citation": {
+          "relation_type": {
             "type": [
               "string",
               "null"
             ],
-            "title": "Beleg (Fundstelle)",
-            "description": "Erlass"
+            "x-extensible-enum": [
+              "basis",
+              "implementation",
+              "subsidiary",
+              "reference",
+              "not_applicable",
+              "suggestion"
+            ],
+            "x-eduksx-labels": {
+              "basis": "Grundlage",
+              "implementation": "Vollzug",
+              "subsidiary": "subsidiär",
+              "reference": "verweist auf",
+              "not_applicable": "nicht direkt anwendbar",
+              "suggestion": "Vorschlag"
+            },
+            "title": "Linienart",
+            "description": "Darstellung; leer = aus der Beziehung abgeleitet"
           },
-          "evidence_location": {
+          "evidences": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/HierarchyEvidence"
+                }
+              ]
+            },
+            "title": "Belegstellen",
+            "description": "eine oder mehrere"
+          },
+          "reference_count": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "title": "Verweise",
+            "description": "aus den Fussnoten gezählt",
+            "readOnly": true
+          },
+          "machine_relation": {
             "type": [
               "string",
               "null"
             ],
-            "title": "Beleg (Stelle)",
-            "description": "z. B. «Art. 62»"
-          },
-          "evidence_text": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "title": "Beleg (Text)",
-            "description": "Ausschnitt"
+            "title": "Maschinell erkannt",
+            "description": "z. B. «Grundlage (Ingress)»",
+            "readOnly": true
           },
           "status": {
             "type": "string",
@@ -7282,7 +9545,7 @@
             "x-eduksx-labels": {
               "suggested": "Vorschlag",
               "manual": "von Hand",
-              "confirmed": "bestätigt",
+              "confirmed": "maschinell bestätigt",
               "rejected": "abgelehnt",
               "municipal_or_without_text": "kommunal bzw. ohne Text"
             },
@@ -7294,6 +9557,110 @@
           "from_node_key",
           "to_node_key",
           "relation"
+        ]
+      },
+      "NormHierarchyDocument": {
+        "type": "object",
+        "title": "Normenhierarchie (vollständig)",
+        "description": "Ganze Hierarchie mit Knoten und Verbindungen zum Anlegen oder Ersetzen über den Schlüssel; nicht aufgeführte Knoten und Verbindungen werden entfernt",
+        "properties": {
+          "hierarchy_key": {
+            "type": "string",
+            "title": "Schlüssel",
+            "description": "z. B. «volksschule»"
+          },
+          "title": {
+            "type": "string",
+            "title": "Thema",
+            "description": "Seitentitel"
+          },
+          "short_title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Kurztitel",
+            "description": "Themenwahl"
+          },
+          "hierarchy_group": {
+            "type": "string",
+            "title": "Gruppe",
+            "description": "z. B. «Schule»"
+          },
+          "levels": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Ebenen",
+            "description": "von oben nach unten"
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Hinweis",
+            "description": "Erläuterung"
+          },
+          "position": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "title": "Reihenfolge",
+            "description": "Anzeige"
+          },
+          "research_note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Recherche",
+            "description": "Quellen und Vorgehen"
+          },
+          "researched_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Recherchiert am",
+            "description": "Stand"
+          },
+          "nodes": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/HierarchyNode"
+                }
+              ]
+            },
+            "title": "Knoten",
+            "description": "alle Knoten"
+          },
+          "edges": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/HierarchyEdge"
+                }
+              ]
+            },
+            "title": "Verbindungen",
+            "description": "alle Verbindungen"
+          }
+        },
+        "required": [
+          "hierarchy_key",
+          "title",
+          "hierarchy_group",
+          "levels",
+          "nodes",
+          "edges"
         ]
       },
       "EdgeDecision": {
@@ -7322,24 +9689,36 @@
       "ParentGuideProvision": {
         "type": "object",
         "title": "Rechtsstelle",
-        "description": "Stelle eines Erlasses im Elternwegweiser",
+        "description": "Stelle eines Erlasses im Elternwegweiser; Auszug aus der geltenden Fassung",
         "properties": {
-          "act_version_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Fassung",
-            "description": "Erlass und Nachtrag"
-          },
           "citation": {
             "type": "string",
             "title": "Fundstelle",
-            "description": "z. B. «LS 412.100»",
-            "readOnly": true
+            "description": "z. B. «LS 412.100», «SR 101»"
           },
           "location": {
             "type": "string",
             "title": "Stelle",
-            "description": "z. B. «§ 3»"
+            "description": "z. B. «§ 28»"
+          },
+          "legal_act_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erlass",
+            "description": "aus der Fundstelle ermittelt",
+            "readOnly": true
+          },
+          "act_version_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Fassung",
+            "description": "nur wenn eine bestimmte Fassung gemeint ist"
           },
           "excerpt": {
             "type": [
@@ -7347,12 +9726,469 @@
               "null"
             ],
             "title": "Auszug",
-            "description": "Text der Stelle"
+            "description": "Text der Stelle",
+            "readOnly": true
           }
         },
         "required": [
-          "act_version_id",
+          "citation",
           "location"
+        ]
+      },
+      "ParentGuideTopicDocument": {
+        "type": "object",
+        "title": "Thema des Elternwegweisers (vollständig)",
+        "description": "Thema mit Fragen, Rechtsstellen und Normenhierarchien zum Anlegen oder Ersetzen über den Schlüssel",
+        "properties": {
+          "topic_key": {
+            "type": "string",
+            "title": "Schlüssel",
+            "description": "z. B. «absenzen»"
+          },
+          "title": {
+            "type": "string",
+            "title": "Thema",
+            "description": "Anzeige"
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Fragen",
+            "description": "typische Fragen von Eltern"
+          },
+          "provisions": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ParentGuideProvision"
+                }
+              ]
+            },
+            "title": "Rechtsstellen",
+            "description": "Erlass und Stelle"
+          },
+          "hierarchy_keys": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Normenhierarchien",
+            "description": "Schlüssel"
+          },
+          "match_pattern": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Suchmuster",
+            "description": "Reglemente der Gemeinde"
+          },
+          "exclusion_pattern": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Ausschlussmuster",
+            "description": "Treffer, die nicht passen"
+          },
+          "position": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "title": "Reihenfolge",
+            "description": "Anzeige"
+          },
+          "research_note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Recherche",
+            "description": "Quellen und Vorgehen"
+          }
+        },
+        "required": [
+          "topic_key",
+          "title",
+          "questions",
+          "provisions"
+        ]
+      },
+      "MandatoryDocumentEntry": {
+        "type": "object",
+        "title": "Pflichtdokument (Import)",
+        "description": "Eintrag des Pflichtkatalogs mit Kategorie als Nummer",
+        "properties": {
+          "document_key": {
+            "type": "string",
+            "title": "Schlüssel",
+            "description": "z. B. «p1»"
+          },
+          "category_number": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Kategorie",
+            "description": "Nummer"
+          },
+          "category_title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Kategorie (Titel)",
+            "description": "neue Kategorie anlegen"
+          },
+          "document": {
+            "type": "string",
+            "title": "Dokument",
+            "description": "z. B. «Gemeindeordnung»"
+          },
+          "obligation": {
+            "type": "string",
+            "x-extensible-enum": [
+              "P",
+              "B",
+              "O"
+            ],
+            "x-eduksx-labels": {
+              "P": "Pflicht",
+              "B": "bedingte Pflicht",
+              "O": "optional"
+            },
+            "title": "Stufe",
+            "description": "P/B/O"
+          },
+          "intake": {
+            "type": "string",
+            "title": "Aufnahme",
+            "description": "in die Rechtssammlung?"
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Quelle",
+            "description": "Rechtsgrundlage"
+          },
+          "source_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "title": "Quelle (Adresse)",
+            "description": "Link"
+          },
+          "match_pattern": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Suchmuster",
+            "description": "regulärer Ausdruck"
+          },
+          "uncertain_pattern": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Suchmuster unsicher",
+            "description": "nur «unsicher»"
+          },
+          "exclusion_pattern": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Ausschlussmuster",
+            "description": "Treffer, die nicht passen"
+          },
+          "remark": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "Freitext"
+          }
+        },
+        "required": [
+          "document_key",
+          "category_number",
+          "document",
+          "obligation",
+          "intake"
+        ]
+      },
+      "LegalBasisEntry": {
+        "type": "object",
+        "title": "Rechtsgrundlage (Import)",
+        "description": "Eintrag «Rechtsgrundlagen Schule» mit Fundstelle statt ID",
+        "properties": {
+          "number": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Nummer",
+            "description": "Reihenfolge, Schlüssel"
+          },
+          "legal_area_number": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Sachbereich",
+            "description": "Nummer"
+          },
+          "citation": {
+            "type": "string",
+            "title": "Fundstelle",
+            "description": "z. B. «LS 410.6», «LS 412.100 / 412.101», «kommunal», «Bildungsratsbeschlüsse»"
+          },
+          "title": {
+            "type": "string",
+            "title": "Erlass",
+            "description": "Titel bzw. Dokument"
+          },
+          "location": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Stelle",
+            "description": "z. B. «§§ 1–3»"
+          },
+          "relevance": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Relevanz",
+            "description": "Bedeutung für die Schule"
+          },
+          "source_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "title": "Quelle",
+            "description": "Link"
+          }
+        },
+        "required": [
+          "number",
+          "legal_area_number",
+          "citation",
+          "title"
+        ]
+      },
+      "ContentBundle": {
+        "type": "object",
+        "title": "Inhaltspaket",
+        "description": "Lieferung redaktioneller Inhalte (z. B. aus einer KI-Recherche) – alle Teile freiwillig; Einträge werden über den Schlüssel neu angelegt oder ersetzt, «delete_keys» löscht",
+        "properties": {
+          "format_version": {
+            "type": "string",
+            "title": "Formatversion",
+            "description": "«1.0»"
+          },
+          "research_note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Recherche",
+            "description": "Auftrag, Vorgehen, Modell"
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "title": "Quellen",
+            "description": "verwendete Adressen"
+          },
+          "researched_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Recherchiert am",
+            "description": "Stand"
+          },
+          "norm_hierarchies": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/NormHierarchyDocument"
+                }
+              ]
+            },
+            "title": "Normenhierarchien",
+            "description": "vollständig je Thema"
+          },
+          "parent_guide_topics": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ParentGuideTopicDocument"
+                }
+              ]
+            },
+            "title": "Elternwegweiser",
+            "description": "vollständig je Thema"
+          },
+          "mandatory_documents": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/MandatoryDocumentEntry"
+                }
+              ]
+            },
+            "title": "Pflichtkatalog",
+            "description": "je Dokument"
+          },
+          "legal_bases": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/LegalBasisEntry"
+                }
+              ]
+            },
+            "title": "Rechtsgrundlagen",
+            "description": "je Eintrag"
+          },
+          "delete_keys": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true,
+            "title": "Löschen",
+            "description": "je Inhaltsart Liste von Schlüsseln, z. B. {\"norm_hierarchies\": [\"alt\"]}"
+          }
+        },
+        "required": [
+          "format_version"
+        ]
+      },
+      "ContentImportItem": {
+        "type": "object",
+        "title": "Änderung im Import",
+        "description": "Prüfergebnis bzw. Wirkung für einen Datensatz",
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "x-extensible-enum": [
+              "norm_hierarchy",
+              "hierarchy_node",
+              "hierarchy_edge",
+              "parent_guide_topic",
+              "mandatory_document",
+              "legal_basis",
+              "publication_source"
+            ],
+            "x-eduksx-labels": {
+              "norm_hierarchy": "Normenhierarchie",
+              "hierarchy_node": "Knoten",
+              "hierarchy_edge": "Verbindung",
+              "parent_guide_topic": "Elternwegweiser",
+              "mandatory_document": "Pflichtdokument",
+              "legal_basis": "Rechtsgrundlage",
+              "publication_source": "Publikationsquelle"
+            },
+            "title": "Inhaltsart",
+            "description": "Tabelle"
+          },
+          "content_key": {
+            "type": "string",
+            "title": "Schlüssel",
+            "description": "z. B. «volksschule/vsg»"
+          },
+          "action": {
+            "type": "string",
+            "x-extensible-enum": [
+              "create",
+              "update",
+              "delete",
+              "unchanged"
+            ],
+            "x-eduksx-labels": {
+              "create": "neu",
+              "update": "geändert",
+              "delete": "gelöscht",
+              "unchanged": "unverändert"
+            },
+            "title": "Aktion",
+            "description": "Wirkung"
+          },
+          "outcome": {
+            "type": "string",
+            "x-extensible-enum": [
+              "ok",
+              "warning",
+              "error"
+            ],
+            "x-eduksx-labels": {
+              "ok": "in Ordnung",
+              "warning": "Warnung",
+              "error": "Fehler"
+            },
+            "title": "Ergebnis",
+            "description": "Prüfung"
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Meldungen",
+            "description": "z. B. «Fundstelle LS 999 unbekannt»"
+          },
+          "changes": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true,
+            "title": "Änderungen",
+            "description": "Feld: alt → neu"
+          }
+        }
+      },
+      "Publication": {
+        "type": "object",
+        "title": "Freigabe",
+        "description": "Entwurf prüfen und veröffentlichen",
+        "properties": {
+          "is_reviewed": {
+            "type": "boolean",
+            "title": "Fachlich geprüft",
+            "description": "Prüfstatus auf «geprüft» setzen"
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "zur Freigabe"
+          }
+        },
+        "required": [
+          "is_reviewed"
         ]
       },
       "GuidelineCheck": {
@@ -7589,6 +10425,32 @@
           }
         }
       },
+      "ContentPublishedEvent": {
+        "type": "object",
+        "title": "Ereignis Freigabe",
+        "description": "redaktioneller Inhalt veröffentlicht",
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "title": "Inhaltsart",
+            "description": "z. B. «norm_hierarchy»"
+          },
+          "content_key": {
+            "type": "string",
+            "title": "Schlüssel",
+            "description": "z. B. «volksschule»"
+          },
+          "content_import_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Importlauf",
+            "description": "Herkunft"
+          }
+        }
+      },
       "ActVersionEvent": {
         "type": "object",
         "title": "Ereignis neue Fassung",
@@ -7636,6 +10498,26 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ActVersionEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Empfangen"
+          }
+        }
+      }
+    },
+    "codex.content.published": {
+      "post": {
+        "summary": "Redaktioneller Inhalt freigegeben (Normenhierarchie, Elternwegweiser, Pflichtkatalog)",
+        "description": "Ereignis «codex.content.published» an Abonnenten (B7).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContentPublishedEvent"
               }
             }
           }

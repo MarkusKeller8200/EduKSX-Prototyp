@@ -1,6 +1,6 @@
 # Konzept: EduKSX-Codex – Versionen, Abgleich, Textfassung und Normenhierarchie (#32)
 
-Stand: 2026-11-20 (Codex 0.24.0) · Status: **IN ARBEIT**
+Stand: 2026-11-20 (Codex 0.25.0) · Status: **IN ARBEIT**
 
 Ein Konzept ist eine Entscheidungsgrundlage, keine Freigabe: umgesetzt wird erst, was als Issue freigegeben ist.
 
@@ -188,3 +188,4 @@ maschineller Abgleich der Verbindungen (Ingress, § 1, Fussnoten), Ansicht je Or
 | #45 | Elternwegweiser, Gruppen Kinder und Eltern, Themen Absenzen und Kosten | `_3 Beta-Test` |
 | #46 | Normenhierarchie: Gruppe Behörden & Organisation, GPR/VPR | `_3 Beta-Test` |
 | #52 | Normenhierarchie: Themenwahl als Übersicht nach Gruppen | `_3 Beta-Test` |
+| #53 | Redaktionelle Inhalte: Datenmodell, Pflege-API, Import CSV/Excel, KI-Recherche | `_3 Beta-Test` |

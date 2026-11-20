@@ -1,0 +1,14 @@
+WARNING hierarchy_edge     volksschule/so→vsv                       ohne Belegstelle
+WARNING hierarchy_edge     gesundheit/vsvz→gesg                     ohne Belegstelle
+WARNING hierarchy_edge     personal/vvo→pg                          ohne Belegstelle
+WARNING hierarchy_edge     personal/lpvo→vvo                        ohne Belegstelle
+WARNING hierarchy_edge     personal/gem→pg                          ohne Belegstelle
+WARNING hierarchy_edge     personal/gem→pvo                         ohne Belegstelle
+WARNING hierarchy_edge     unterricht/kom→lm                        ohne Belegstelle
+WARNING hierarchy_edge     beurteilung/kom→zr                       ohne Belegstelle
+WARNING hierarchy_edge     sprache/kom→brb                          ohne Belegstelle
+WARNING hierarchy_node     zusammenarbeit/eg                        kommunaler Knoten ohne Suchmuster – keine Beispiele
+WARNING hierarchy_edge     datenschutz/dsv→dsg                      SR 235.11 Ingress: Stelle in der geltenden Fassung nicht gefunden
+WARNING hierarchy_edge     datenschutz/dsk→ausl                     ohne Belegstelle
+WARNING hierarchy_edge     datenschutz/akten→archv                  ohne Belegstelle
+WARNING hierarchy_edge     beschaffung/besch→svo                    ohne Belegstelle

@@ -1,7 +1,7 @@
 # EduKSX-Codex – Anforderungskatalog, Pflichtenheft und Prüfpunkte
 
 Stand: 2026-11-20 · Status: **ENTWURF** · Prototyp [`prototypen/rechtssammlung`](../../../prototypen/rechtssammlung)
-(0.20.x) · Datenbank [`datenbank.sql`](datenbank.sql) · API [`openapi.json`](openapi.json)
+(0.25.x) · Datenbank [`datenbank.sql`](datenbank.sql) · API [`openapi.json`](openapi.json)
 
 Stufen wie in [`KONZEPT-VORLAGE.md`](../../KONZEPT-VORLAGE.md); ohne Vermerk gilt **EMPFOHLEN**.
 
@@ -40,6 +40,13 @@ Geschäftsverwaltung/Beschlüsse, allgemeine Dokumentablage.
 | CDX-F-16 | Redaktion der eigenen Sammlung: Rubriken pflegen, Erlass anlegen, neue Fassung hochladen (Text wird erzeugt), alte Fassung aufheben. | MUSS | – (Ausbau) |
 | CDX-F-17 | Bereitstellung für andere Module: Gesetzestexte für die Hilfe (Staffing), Quellenlinks (Flow), Ereignis bei neuer Fassung. | SOLL | Staffing-Hilfe |
 | CDX-F-18 | Darstellung der Rechtssammlung im Auftritt der Gemeinde (Schrift, Farben, ohne Logo), gekennzeichnet als «keine offizielle Seite», solange Codex nicht die amtliche Sammlung ist. | KANN | Demo-Seiten |
+| CDX-F-19 | Redaktionelle Inhalte (Normenhierarchien, Elternwegweiser, Pflichtkatalog, Rechtsgrundlagen) liegen in der Datenbank und werden ohne Deploy gepflegt; Zuordnung siehe 3.7. | MUSS | heute im Generator `build.py` |
+| CDX-F-20 | Pflege-API über fachliche Schlüssel: Hierarchie, Elternthema und Pflichtdokument per `PUT …/by-key/{key}` anlegen oder vollständig ersetzen, per `DELETE` löschen; `dry_run` prüft ohne zu speichern. | MUSS | `tools/inhalte.py pruefen` |
+| CDX-F-21 | Import als Inhaltspaket (JSON), Excel-Arbeitsmappe oder CSV-Dateien nach Importvorlage; Probelauf mit Prüfbericht je Datensatz (neu, geändert, gelöscht, unverändert; Fehler, Warnungen), danach Übernahme. | MUSS | `tools/inhalte.py`, `data/inhalte/` |
+| CDX-F-22 | Export im selben Format (JSON, Excel, CSV) als Ausgangspunkt für Änderungen («herunterladen – ändern – einlesen»). | MUSS | `tools/inhalte.py export` |
+| CDX-F-23 | Freigabe: Importe und Änderungen über die API sind Entwürfe; öffentlich erst nach fachlicher Prüfung und Freigabe durch die zentrale Redaktion (`…/publication`), mit Ereignis `codex.content.published`. | MUSS | – |
+| CDX-F-24 | Nachvollziehbarkeit: jeder Importlauf mit Herkunft (API, CSV, Excel, KI-Recherche), Recherchevermerk, Quellen, Prüfsumme der Datei und Protokoll je Datensatz; Datensätze verweisen auf den letzten Importlauf. | MUSS | – |
+| CDX-F-25 | KI-gestützte Aktualisierung nach der Anweisung [`KI-RECHERCHE.md`](KI-RECHERCHE.md): Abgleich mit ZH-Lex/Fedlex, Lieferung als Inhaltspaket, nie direkte Veröffentlichung. | SOLL | Recherchen im Chat |
 
 ### 2.2 Nicht fachliche Anforderungen
 
@@ -51,6 +58,8 @@ Geschäftsverwaltung/Beschlüsse, allgemeine Dokumentablage.
 | CDX-NF-04 | Suche < 500 ms über 10 000 Fassungen; Volltextindex Deutsch. | SOLL |
 | CDX-NF-05 | Original-Dateien unverändert in der Dokumentenablage; Codex zeigt Hinweis, dass die Originalquelle massgeblich ist. | MUSS |
 | CDX-NF-06 | Barrierefreie Darstellung von Gesetzestexten (Überschriften, Anker je Paragraf, Fussnoten). | MUSS |
+| CDX-NF-07 | Import idempotent: dasselbe Paket zweimal eingelesen ergibt keine Änderung; Übernahme in einer Transaktion (alles oder nichts). | MUSS |
+| CDX-NF-08 | Importgrösse bis 5 MB bzw. 10 000 Zeilen in unter 30 s geprüft; grössere Lieferungen als Warteschlangen-Job. | SOLL |
 
 ## 3. Pflichtenheft
 
@@ -83,6 +92,14 @@ Erlasse und Fassungen (`/legal-acts`, `…/versions`, `/act-versions/{id}/text|f
 (`/hierarchy-edges/{id}/decision`), Pflichtkatalog und Matrix, Evaluation (`…/analysis`), Widget (`/embed/…`).
 Webhook `codex.act_version.created`.
 
+Pflege (CDX-F-20 bis 23): `GET|PUT|DELETE /norm-hierarchies/by-key/{hierarchy_key}`, `PUT|DELETE
+/parent-guide-topics/by-key/{topic_key}`, `PUT /mandatory-documents/by-key/{document_key}`, Freigabe
+`POST …/{id}/publication`; Importe `POST /content-imports/bundle` (JSON) und `/content-imports/file` (Excel, ZIP mit
+CSV), je mit `mode=dry_run|apply`, Übernahme eines Probelaufs `POST /content-imports/{id}/application`, Protokoll
+`GET /content-imports/{id}`; Export `GET /content-exports?format=json|xlsx|csv`. Webhook `codex.content.published`.
+Fundstellen («LS 412.100», «SR 101») werden auf `legal_acts` aufgelöst; Auszüge der Belegstellen liest der Server
+aus der geltenden Fassung (nie aus der Lieferung).
+
 ### 3.4 Rollen und Berechtigungen
 
 | Recht (Scopes) | Öffentlichkeit | Mitarbeitende | Redaktion Mandant | Redaktion EduKSX-Codex |
@@ -90,6 +107,8 @@ Webhook `codex.act_version.created`.
 | Lesen – `codex:*.read` | ✓ (anonym) | ✓ | ✓ | ✓ |
 | Redaktion – `codex:{publishers,sections,legal-acts,legal-bases}.write` | – | – | eigene Sammlung | ✓ |
 | Zentrale Redaktion – `codex:{municipalities,school-communities,publication-sources,mandatory-documents,matrix,parent-guide-topics}.write`, `codex:norm-hierarchies.admin` | – | – | – | ✓ |
+| Import einreichen (Probelauf, Entwurf) – `codex:content-imports.create`; auch technischer Client einer KI-Recherche | – | – | – | ✓ |
+| Übernahme und Freigabe – `codex:content-imports.admin`, `codex:*.admin` | – | – | – | ✓ (nur Menschen) |
 | Evaluation – `codex:collection-analyses.admin` | – | – | eigene Organisation | ✓ |
 
 ### 3.5 Schnittstellen
@@ -108,6 +127,33 @@ Webhook `codex.act_version.created`.
 
 Aus `data/rechtssammlungen.json`, `rechtsgrundlagen.json`, `pflichtkatalog.json`, `raw/*-versionen.json`, `texte/`
 und den Hierarchien in `tools/build.py` per Importskript. Logos der Gemeinden werden nicht übernommen.
+
+Die redaktionellen Inhalte liegen bereits im Importformat vor: `python3 tools/inhalte.py export` (im Prototyp) erzeugt
+`data/inhalte/codex-inhalte.json|.xlsx` und `csv/` (24 Hierarchien, 160 Knoten, 180 Verbindungen, 13 Elternthemen,
+40 Pflichtdokumente, 79 Rechtsgrundlagen). Erstbefüllung = erster Import dieses Pakets. Ladetest gegen
+`datenbank.sql` mit `tools/inhalte.py sql` erfolgreich (PostgreSQL 16).
+
+### 3.7 Redaktionelle Inhalte – Zuordnung Anzeige → Tabelle
+
+| Anzeige im Prototyp | Heute | Tabelle(n) | Schlüssel | Import-Blatt |
+|---|---|---|---|---|
+| Normenhierarchie: Thema, Gruppe, Kurztitel, Ebenen, Reihenfolge | `HIERARCHIEN`, `GRUPPEN`, `KURZTITEL`, `REIHENFOLGE` | `norm_hierarchies` | `hierarchy_key` | hierarchien |
+| Kasten (Erlass bzw. kommunaler Platzhalter) mit Hinweis, Link, Suchmuster | `knoten` | `hierarchy_nodes` (Erlass über `citation` → `legal_act_id`) | `hierarchy_key` + `node_key` | knoten |
+| Liste «Beschlüsse und Erlasse» im Kasten | `knoten.liste` | `hierarchy_node_links` | Position | beschluesse |
+| Verbindung mit Beziehung und Linienart | `kanten` | `hierarchy_edges` | Von + Nach | verbindungen |
+| Belegstelle(n) mit Auszug | `beleg`, `beleg_oben`, `beleg_unten` | `hierarchy_edge_evidences` (Auszug vom Server) | Position | belege |
+| Maschinelle Vorschläge, Abgleich | `maschinell()` | `hierarchy_edges.status = suggested`, `machine_relation`, `reference_count` | – | – (berechnet) |
+| Elternwegweiser: Thema, Fragen, Suchmuster | `ELTERNFRAGEN` | `parent_guide_topics` | `topic_key` | elternthemen |
+| Rechtsstellen im Elternwegweiser | `ELTERNFRAGEN.stellen` | `parent_guide_provisions` | Position | elternstellen |
+| Verknüpfte Normenhierarchien | `ELTERNFRAGEN.themen` | `parent_guide_topic_hierarchies` | – | elternthemen.hierarchy_keys |
+| Pflichtkatalog mit Kategorien und Suchmustern | `pflichtkatalog.json` | `mandatory_document_categories`, `mandatory_documents` | `document_key` | pflichtdokumente |
+| Rechtsgrundlagen Schule | `rechtsgrundlagen.json` + `RG_ALIAS` | `legal_bases` (+ `legal_areas`) | `number` | rechtsgrundlagen |
+| Publikationsquellen, Quellenklassen | `QUELLENKLASSEN`, `quellenkatalog()` | `publication_sources`, `source_classes` | – | – (Ausbau) |
+| Erlasse und Fassungen | `texte/`, ZH-Lex, Fedlex | `legal_acts`, `act_versions` | `act_key` | – (eigene Importdienste) |
+
+Jede gepflegte Tabelle trägt die Redaktionsspalten `content_status` (Entwurf, veröffentlicht, archiviert),
+`review_status`, `research_note`, `researched_at`, `content_import_id`, `reviewed_*`, `published_at`; Importläufe in
+`content_imports` und `content_import_items`.
 
 ## 4. Prüfpunkte für die produktive Umsetzung
 
@@ -132,3 +178,6 @@ Zusätzlich zu den gemeinsamen Prüfpunkten in [`../README.md`](../README.md#4-g
 2. OFFEN: Import und Textaufbereitung in Python als eigener Dienst oder in PHP?
 3. ZU PRÜFEN: Zugehörigkeit Bachenbülach/Winkel zur Sek Bülach; weitere «EG ?»-Vermerke.
 4. ZU PRÜFEN: Ergänzende Quellen (Bildungsrat, Volksschulamt-Merkblätter) als Erlasse oder als Quellen-Klasse B?
+5. OFFEN: Darf ein technischer Client (KI-Recherche) Probeläufe nur einreichen (EMPFOHLEN) oder auch übernehmen? Freigabe bleibt in jedem Fall beim Menschen.
+6. OFFEN: Wird eine Hierarchie beim Ersetzen versioniert (Historie der Fassungen der Hierarchie) oder genügt das Änderungsprotokoll `data_changes` (EMPFOHLEN für den Start)?
+7. ZU PRÜFEN: Rhythmus der KI-Recherche (EMPFOHLEN monatlich und nach Kantonsrats-Publikationen) und wer den Prüfbericht abnimmt.

@@ -1,0 +1,208 @@
+﻿hierarchy_key;from_node_key;to_node_key;citation;location;side
+volksschule;big;bv;SR 101;Art. 62;to
+volksschule;vsg;big;LS 410.1;§ 8.;to
+volksschule;vsv;vsg;LS 412.101;§ 1.;from
+volksschule;vsm;vsg;LS 412.103;§ 1.;from
+volksschule;lp;vsg;LS 412.100;§ 21.;to
+volksschule;lp;big;LS 410.1;§ 21.;to
+volksschule;zr;vsg;LS 412.121.31;Ingress;from
+volksschule;go;vsg;LS 412.100;§ 42.;to
+volksschule;os;vsg;LS 412.100;§ 41 a.;to
+schulpflicht;vsg;bv;LS 412.100;§ 3.;from
+schulpflicht;vsg;bv;SR 101;Art. 19;to
+schulpflicht;rsa;bv;LS 414.16;§ 1.;from
+schulpflicht;rsa;bv;SR 101;Art. 62;to
+schulpflicht;vsg;rsa;LS 412.100;§ 67 a.;from
+schulpflicht;vsv;vsg;LS 412.101;§ 7.;from
+schulpflicht;vsv;vsg;LS 412.101;§ 67.;from
+schulpflicht;sg;vsg;LS 412.100;§ 11.;to
+schulpflicht;sg;vsv;LS 412.101;§ 8.;to
+schulpflicht;sg;vsv;LS 412.101;§ 11.;to
+tagesstrukturen;vsg;pavo;LS 412.100;§ 30 c.;from
+tagesstrukturen;vsg;pavo;SR 211.222.338;Art. 13;to
+tagesstrukturen;kjhg;pavo;LS 852.1;§ 18 b.;from
+tagesstrukturen;vsv;vsg;LS 412.101;§ 32 a.;from
+tagesstrukturen;vsv;vsg;LS 412.101;§ 32 g.;from
+tagesstrukturen;musv;musg;LS 410.61;§ 1.;from
+tagesstrukturen;ts;vsg;LS 412.100;§ 30 a.;to
+tagesstrukturen;ts;vsv;LS 412.101;§ 32 a.;to
+tagesstrukturen;ts;vsv;LS 412.101;§ 32 b.;to
+tagesstrukturen;ms;musg;LS 410.6;§ 2.;to
+tagesstrukturen;ms;musv;LS 410.61;§ 19.;to
+tagesstrukturen;kb;kjhg;LS 852.1;§ 18.;to
+tagesstrukturen;kb;pavo;SR 211.222.338;Art. 13;to
+sonderpaedagogik;vsg;behig;SR 151.3;Art. 20;to
+sonderpaedagogik;vsg;behig;LS 412.100;§ 33.;from
+sonderpaedagogik;vsm;vsg;LS 412.103;§ 1.;from
+sonderpaedagogik;vfiso;vsg;LS 412.106;Ingress;from
+sonderpaedagogik;auf;vsg;LS 412.106.1;Ingress;from
+sonderpaedagogik;spiv;vsg;LS 412.107;Ingress;from
+sonderpaedagogik;kom;vsg;LS 412.100;§ 35.;to
+sonderpaedagogik;kom;vsm;LS 412.103;§ 6.;to
+kindesschutz;zgb;ukrk;SR 0.107;Art. 3;to
+kindesschutz;vsg;zgb;LS 412.100;§ 51.;from
+kindesschutz;vsg;zgb;SR 210;Art. 307;to
+kindesschutz;vsg;ukrk;LS 412.100;§ 50.;from
+kindesschutz;vsg;ukrk;SR 0.107;Art. 12;to
+kindesschutz;vsg;stgb;SR 311.0;Art. 320;to
+kindesschutz;vsv;vsg;LS 412.101;§ 58.;from
+kindesschutz;kom;zgb;SR 210;Art. 314c;to
+gesundheit;gesg;epg;LS 810.1;§ 50.;from
+gesundheit;gesg;epg;SR 818.101;Art. 21;to
+gesundheit;vvepig;epg;LS 818.11;§ 6.;from
+gesundheit;vsg;gesg;LS 412.100;§ 20.;from
+gesundheit;vsv;vsg;LS 412.101;§ 16.;from
+gesundheit;vsv;epg;LS 412.101;§ 18.;from
+gesundheit;sad;vsg;LS 412.100;§ 20.;to
+gesundheit;sad;vsv;LS 412.101;§ 17.;to
+gesundheit;sad;vsvz;LS 818.22;§ 1.;to
+gesundheit;sad;gesg;LS 810.1;§ 49.;to
+eltern;zgb;krk;SR 0.107;Art. 18;to
+eltern;vsg;zgb;LS 412.100;§ 54.;from
+eltern;vsg;zgb;SR 210;Art. 302;to
+eltern;vsg;krk;LS 412.100;§ 50.;from
+eltern;vsg;krk;SR 0.107;Art. 12;to
+eltern;vsv;vsg;LS 412.101;§ 66.;from
+eltern;vsv;vsg;LS 412.101;§ 28.;from
+eltern;os;vsg;LS 412.100;§ 55.;to
+eltern;os;vsv;LS 412.101;§ 65.;to
+eltern;abs;vsv;LS 412.101;§ 30.;to
+eltern;abs;vsv;LS 412.101;§ 28.;to
+eltern;abs;vsg;LS 412.100;§ 52.;to
+absenzen;vsv;vsg;LS 412.101;§ 28.;from
+absenzen;vsv;vsg;LS 412.101;§ 29.;from
+absenzen;abs;vsv;LS 412.101;§ 30.;to
+absenzen;abs;vsv;LS 412.101;§ 29.;to
+absenzen;abs;vsg;LS 412.100;§ 28.;to
+kosten;vsg;bv;LS 412.100;§ 11.;from
+kosten;vsg;bv;SR 101;Art. 19;to
+kosten;vsv;vsg;LS 412.101;§ 11.;from
+kosten;vsv;vsg;LS 412.101;§ 17 c.;from
+kosten;musv;musg;LS 410.61;§ 1.;from
+kosten;kom;vsg;LS 412.100;§ 11.;to
+kosten;kom;vsv;LS 412.101;§ 11.;to
+kosten;kom;musg;LS 410.6;§ 9.;to
+personal;pg;or;LS 177.10;§ 18.;from
+personal;pg;or;SR 220;Art. 336;to
+personal;lpg;pg;LS 412.31;§ 2.;from
+personal;pvo;pg;LS 177.11;§ 1.;from
+personal;lpvo;lpg;LS 412.311;§ 1.;from
+personal;anst;lpg;LS 412.31;§ 7.;to
+personal;anst;lpvo;LS 412.311;§ 3.;to
+personal;anst;vsg;LS 412.100;§ 44.;to
+personal;anst;vsg;LS 412.100;§ 58.;to
+personal;gem;gg;LS 131.1;§ 53.;to
+personal;gem;vsg;LS 412.100;§ 43.;to
+unterricht;lm;vsg;LS 412.100;§ 22.;to
+unterricht;kom;urg;SR 231.1;Art. 19;to
+unterricht;kom;idg;LS 170.4;§ 3.;to
+unterricht;kom;vsg;LS 412.100;§ 21.;to
+beurteilung;vsv;vsg;LS 412.101;§ 33.;from
+beurteilung;vsv;vsg;LS 412.101;§ 39.;from
+beurteilung;zr;vsg;LS 412.121.31;Ingress;from
+beurteilung;zr;vsg;LS 412.100;§ 31.;to
+beurteilung;aufn6;msg;LS 413.250.1;Ingress;from
+beurteilung;aufn6;msg;LS 413.21;§ 14.;to
+beurteilung;aufn;msg;LS 413.250.2;Ingress;from
+beurteilung;aufn6;vsg;LS 412.100;§ 32.;to
+beurteilung;kom;vsv;LS 412.101;§ 34.;to
+sprache;vsg;bv;LS 412.100;§ 24.;from
+sprache;vsg;bv;SR 101;Art. 70;to
+sprache;vsv;vsg;LS 412.101;§ 13.;from
+sprache;vsv;vsg;LS 412.101;§ 20.;from
+sprache;vsm;vsg;LS 412.103;§ 1.;from
+sprache;brb;vsg;LS 412.100;§ 22.;to
+sprache;kom;vsm;LS 412.103;§ 12.;to
+sprache;kom;vsv;LS 412.101;§ 20.;to
+gemeindeorganisation;gg;kv;LS 101;suche:Art. 85 ¹;to
+gemeindeorganisation;vgg;gg;LS 131.11;§ 2.;from
+gemeindeorganisation;vgg;gg;LS 131.1;§ 7.;to
+gemeindeorganisation;go;kv;LS 101;suche:Art. 89 ¹;to
+gemeindeorganisation;go;gg;LS 131.1;§ 4.;to
+gemeindeorganisation;go;gg;LS 131.1;§ 5.;to
+gemeindeorganisation;pub;gg;LS 131.1;§ 7.;to
+gemeindeorganisation;pub;gg;LS 131.1;§ 6.;to
+gemeindeorganisation;pub;vgg;LS 131.11;§ 2.;to
+gemeindeorganisation;pub;idg;LS 170.4;§ 20.;to
+stimmberechtigte;gg;kv;LS 101;suche:Art. 86 ¹;to
+stimmberechtigte;gpr;kv;LS 161;§ 1.;from
+stimmberechtigte;vpr;gpr;LS 161.1;Ingress;from
+stimmberechtigte;gg;gpr;LS 131.1;§ 13.;from
+stimmberechtigte;go;gg;LS 131.1;§ 15.;to
+stimmberechtigte;go;gg;LS 131.1;§ 10.;to
+stimmberechtigte;gv;gg;LS 131.1;§ 18.;to
+stimmberechtigte;gv;gg;LS 131.1;§ 20.;to
+behoerden;gg;vrg;LS 131.1;§ 42.;from
+behoerden;gg;vrg;LS 175.2;§ 5 a.;to
+behoerden;gs;gg;LS 131.1;§ 38.;to
+behoerden;gs;gg;LS 131.1;§ 39.;to
+behoerden;kom;gg;LS 131.1;§ 51.;to
+behoerden;kom;gg;LS 131.1;§ 50.;to
+behoerden;komp;gg;LS 131.1;§ 44.;to
+behoerden;komp;gg;LS 131.1;§ 45.;to
+behoerden;komp;vsg;LS 412.100;§ 42.;to
+wahlen;vpr;gpr;LS 161.1;Ingress;from
+wahlen;vpr;gpr;LS 161.1;§ 27.;from
+wahlen;gg;gpr;LS 131.1;§ 26.;from
+wahlen;go;gpr;LS 161;§ 40.;to
+wahlen;go;gpr;LS 161;§ 25.;to
+wahlen;go;gg;LS 131.1;§ 55.;to
+organisation;gg;kv;LS 101;suche:Art. 85 ¹;to
+organisation;vsg;gg;LS 412.100;§ 42.;from
+organisation;vsg;gg;LS 131.1;§ 54.;to
+organisation;vsv;vsg;LS 412.101;§ 41.;from
+organisation;vsv;vsg;LS 412.101;§ 49.;from
+organisation;go;kv;LS 101;suche:Art. 89 ¹;to
+organisation;go;gg;LS 131.1;§ 54.;to
+organisation;os;vsg;LS 412.100;§ 41 a.;to
+organisation;os;vsv;LS 412.101;§ 41.;to
+organisation;sp;vsg;LS 412.100;§ 41 b.;to
+organisation;sp;vsv;LS 412.101;§ 42.;to
+organisation;sp;vsv;LS 412.101;§ 48.;to
+organisation;gs;vsg;LS 412.100;§ 45.;to
+kontrolle;vsg;gg;LS 412.100;§ 73.;from
+kontrolle;vsg;gg;LS 131.1;§ 164.;to
+kontrolle;rpk;gg;LS 131.1;§ 58.;to
+kontrolle;rpk;gg;LS 131.1;§ 59.;to
+zusammenarbeit;zv;gg;LS 131.1;§ 73.;to
+zusammenarbeit;zv;gg;LS 131.1;§ 71.;to
+zusammenarbeit;zv;vgg;LS 131.11;§ 2.;to
+zusammenarbeit;eg;gg;LS 131.1;§ 154.;to
+zusammenarbeit;eg;vsg;LS 412.100;§ 41.;to
+verfahren;kv;bv;LS 101;suche:Art. 18 ¹;from
+verfahren;kv;bv;SR 101;Art. 29;to
+verfahren;vrg;kv;LS 101;suche:Art. 77 ¹;to
+verfahren;gg;vrg;LS 131.1;§ 171.;from
+verfahren;vsg;vrg;LS 412.100;§ 75.;from
+verfahren;vsg;vrg;LS 412.100;§ 73.;from
+verfahren;go;kv;LS 101;suche:Art. 89 ¹;to
+verfahren;go;gg;LS 131.1;§ 170.;to
+verfahren;gs;vsg;LS 412.100;§ 74.;to
+finanzen;vgg;gg;LS 131.11;§ 47.;from
+finanzen;fav;fag;LS 132.11;§ 1.;from
+finanzen;go;gg;LS 131.1;§ 104.;to
+finanzen;go;fag;LS 132.1;§ 1.;to
+finanzen;fin;gg;LS 131.1;§ 84.;to
+finanzen;fin;vgg;LS 131.11;§ 8.;to
+finanzen;geb;gg;LS 131.1;§ 84.;to
+finanzen;vfiso;vsgfin;LS 412.106;Ingress;from
+finanzen;vfiso;vsgfin;LS 412.100;§ 64.;to
+finanzen;fin;vsgfin;LS 412.100;§ 66.;to
+finanzen;fin;vsgfin;LS 412.100;§ 61.;to
+finanzen;geb;vsgfin;LS 412.100;§ 11.;to
+datenschutz;dsv;dsg;SR 235.11;Ingress;from
+datenschutz;idg;dsg;LS 170.4;§ 2.;from
+datenschutz;idg;dsg;SR 235.1;Art. 2;to
+datenschutz;vsgd;idg;LS 412.100;§ 3 a.;from
+datenschutz;idv;idg;LS 170.41;§ 1.;from
+datenschutz;ivsv;idg;LS 170.8;Ingress;from
+datenschutz;archv;archg;LS 170.61;§ 1.;from
+datenschutz;ausl;idg;LS 172.71;§ 3.;from
+datenschutz;dsk;idg;LS 170.4;§ 3.;to
+datenschutz;dsk;ivsv;LS 170.8;§ 1.;to
+datenschutz;akten;archg;LS 170.6;§ 6.;to
+beschaffung;beig;ivoeb;LS 720.1;§ 1.;from
+beschaffung;svo;beig;LS 720.11;Ingress;from
+beschaffung;svo;ivoeb;LS 720.11;§ 2.;from
+beschaffung;besch;ivoeb;LS 720.1;suche:Art. 4 ¹ Im Staatsvertragsbereich;other
+beschaffung;bzo;pbg;LS 700.1;§ 45.;to

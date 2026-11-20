@@ -36,6 +36,14 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Codex 0.25.0 – Inhalte in die Datenbank (#53)
+
+- Datenmodell (`docs/umsetzung/codex/datenbank.sql`): Redaktionsspalten (`content_status`, `review_status`, Recherche, Importlauf, Freigabe) auf Hierarchien, Elternthemen, Pflichtdokumenten, Rechtsgrundlagen; neue Tabellen `content_imports`, `content_import_items`, `hierarchy_node_links`, `hierarchy_edge_evidences`, `parent_guide_topic_hierarchies`; `legal_bases` mit Titel/Fundstelle, Erlass optional (BRB, kommunal). Zuordnung Anzeige → Tabelle: Pflichtenheft 3.7.
+- API: `…/by-key/{key}` (GET/PUT/DELETE), `…/publication`, `/content-imports/bundle|file` (dry_run/apply), `/content-imports/{id}/application`, `/content-exports`, Ereignis `codex.content.published`. OpenAPI validiert.
+- `prototypen/rechtssammlung/tools/inhalte.py`: export (→ `data/inhalte/` JSON, XLSX, CSV, Vorlage), pruefen, umwandeln, sql. Rundlauf JSON↔Excel↔CSV verlustfrei; Ladetest in PostgreSQL 16 mit allen 24 Hierarchien, 160 Knoten, 180 Verbindungen, 207 Belegen, 13 Elternthemen, 40 Pflichtdokumenten, 79 Rechtsgrundlagen. 14 Warnungen = bekannte Lücken (Verbindungen ohne Beleg).
+- `docs/umsetzung/codex/KI-RECHERCHE.md`: Auftrag zum Kopieren, Quellen, Schreibweisen, Ablauf (Probelauf → Entwurf → Freigabe durch Menschen).
+- Offen (Pflichtenheft 5.5–5.7): Rechte des KI-Clients, Versionierung von Hierarchien, Rhythmus der Recherche. Implementierung der API selbst erfolgt im Modul.
+
 ### Sitzung 2026-11-20 – EduKSX-Codex 0.24.0
 
 - Rückmeldung: Themenauswahl unübersichtlich. Umgesetzt (#52 → `_3 Beta-Test`): `KURZTITEL` in tools/build.py, Navigation

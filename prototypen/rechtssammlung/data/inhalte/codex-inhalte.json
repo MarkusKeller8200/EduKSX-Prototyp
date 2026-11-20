@@ -1,0 +1,6176 @@
+{
+ "format_version": "1.0",
+ "research_note": "Export der redaktionellen Inhalte aus dem Prototyp EduKSX-Codex (Recherchen im Chat, Stand 20.11.2026)",
+ "sources": [
+  "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+  "https://www.fedlex.admin.ch"
+ ],
+ "researched_at": "2026-11-20T00:00:00+01:00",
+ "norm_hierarchies": [
+  {
+   "hierarchy_key": "volksschule",
+   "title": "Volksschule",
+   "short_title": null,
+   "hierarchy_group": "Schule",
+   "levels": [
+    "Bund",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Bildungsrat",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 0,
+   "nodes": [
+    {
+     "node_key": "bv",
+     "level_index": 0,
+     "citation": "SR 101",
+     "title": "Bundesverfassung (BV)",
+     "act_kind": "Verfassung",
+     "note": "Art. 19 Anspruch auf ausreichenden und unentgeltlichen Grundschulunterricht; Art. 62 Schulwesen ist Sache der Kantone",
+     "position": 0
+    },
+    {
+     "node_key": "big",
+     "level_index": 1,
+     "citation": "LS 410.1",
+     "title": "Bildungsgesetz (BiG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "Rahmen für das ganze Bildungswesen; 6. Teil: Bildungsrat",
+     "position": 1
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 1,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "position": 2
+    },
+    {
+     "node_key": "vsv",
+     "level_index": 2,
+     "citation": "LS 412.101",
+     "title": "Volksschulverordnung (VSV)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 3
+    },
+    {
+     "node_key": "vsm",
+     "level_index": 2,
+     "citation": "LS 412.103",
+     "title": "Verordnung über die sonderpädagogischen Massnahmen (VSM)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 4
+    },
+    {
+     "node_key": "lp",
+     "level_index": 3,
+     "citation": "Bildungsratsbeschlüsse",
+     "title": "Lehrplan 21 und Lektionentafel",
+     "act_kind": "Beschluss (Bildungsrat)",
+     "note": "Verbindliche Unterrichtsvorgaben; nicht in der Gesetzessammlung, sondern als Bildungsratsbeschlüsse publiziert",
+     "external_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-4-volksschule-lehrplan-fuer-die-volksschule-des-kantons-zuerich.html",
+     "position": 5,
+     "links": [
+      {
+       "title": "BRB 4/2017 – Lehrplan für die Volksschule",
+       "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-4-volksschule-lehrplan-fuer-die-volksschule-des-kantons-zuerich.html",
+       "note": null
+      },
+      {
+       "title": "BRB 5/2017 – Lektionentafel Kindergarten, Primar- und Sekundarstufe",
+       "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-5-volksschule-lektionentafel-fuer-die-kindergarten-primar-und-sekundarstufe.html",
+       "note": null
+      },
+      {
+       "title": "BRB 1/2019 – Anpassung Lektionentafel Sekundarschule",
+       "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2019-brb-1-anpassung-lektionentafel-sekundarschule.html",
+       "note": null
+      },
+      {
+       "title": "BRB 5/2021 – weitere Anpassung Lektionentafel",
+       "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2021-brb-05.html",
+       "note": null
+      },
+      {
+       "title": "BRB 8/2026 – Lehrmittel Sprachförderung und DaZ",
+       "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html",
+       "note": null
+      }
+     ]
+    },
+    {
+     "node_key": "zr",
+     "level_index": 3,
+     "citation": "LS 412.121.31",
+     "title": "Zeugnisreglement",
+     "act_kind": "Reglement (Bildungsrat)",
+     "position": 6,
+     "links": [
+      {
+       "title": "BRB 5/2025 – Anpassungen Beurteilung und Zeugnis",
+       "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2025-brb-05.html",
+       "note": "Beurteilung in RKE und MI in der Primarstufe"
+      }
+     ]
+    },
+    {
+     "node_key": "go",
+     "level_index": 4,
+     "citation": "kommunal",
+     "title": "Gemeindeordnung (Schulgemeinde)",
+     "act_kind": "Gemeindeordnung (Stimmberechtigte)",
+     "note": "Organisation der Schulpflege, Leitung Bildung, Vertretung der Lehrpersonen",
+     "match_pattern": "gemeindeordnung|\\(go\\)",
+     "exclusion_pattern": "protokoll",
+     "position": 7
+    },
+    {
+     "node_key": "os",
+     "level_index": 4,
+     "citation": "kommunal",
+     "title": "Organisationsstatut",
+     "act_kind": "Behördenerlass (Schulpflege)",
+     "note": "Zuständigkeiten und Entscheidbefugnisse von Schulpflege, Schulleitung und Schulverwaltung",
+     "match_pattern": "organisationsstatut|schulorganisation|organisationsreglement|kompetenzregelung|funktionendiagramm",
+     "exclusion_pattern": "gemeinderat|gemeindeverwaltung|stadtverwaltung|werkkommission|\\brfo\\b|\\bika\\b|\\bara|befoerderung|beilagen",
+     "position": 8
+    },
+    {
+     "node_key": "so",
+     "level_index": 4,
+     "citation": "kommunal",
+     "title": "Schul- und Betreuungsreglemente",
+     "act_kind": "Gemeinde- oder Behördenerlass",
+     "note": "Schulordnung, Tagesstrukturen und Betreuung, Absenzen, Disziplin, Schulweg, Sonderpädagogik",
+     "match_pattern": "schulordnung|schulreglement|tagesstruktur|betreuung|hort|absenz|disziplin|schulweg|sonderpaedagog|schulergaenzend|mittagstisch|musikschul",
+     "exclusion_pattern": "zweckverband|alters|pflegeheim|spitex|merkblatt|allgemeine geschaeftsbedingungen|vorschul|familienergaenzend",
+     "position": 9
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "big",
+     "to_node_key": "bv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 101",
+       "location": "Art. 62",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "big",
+     "relation": "Rahmen",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 410.1",
+       "location": "§ 8.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 1.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsm",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.103",
+       "location": "§ 1.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "lp",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 21.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "lp",
+     "to_node_key": "big",
+     "relation": "Zuständigkeit Bildungsrat",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 410.1",
+       "location": "§ 21.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "zr",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.121.31",
+       "location": "Ingress",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "go",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 42.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "os",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 41 a.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "os",
+     "to_node_key": "go",
+     "relation": "im Rahmen der",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    },
+    {
+     "from_node_key": "so",
+     "to_node_key": "os",
+     "relation": "gestützt auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    },
+    {
+     "from_node_key": "so",
+     "to_node_key": "vsv",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "schulpflicht",
+   "title": "Schulpflicht, Schulort & Privatschulen",
+   "short_title": "Schulpflicht & Schulort",
+   "hierarchy_group": "Schule",
+   "levels": [
+    "Bund",
+    "Interkantonal",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 1,
+   "nodes": [
+    {
+     "node_key": "bv",
+     "level_index": 0,
+     "citation": "SR 101",
+     "title": "Bundesverfassung (BV) – Grundschulunterricht",
+     "act_kind": "Verfassung",
+     "note": "Art. 19 ausreichender und unentgeltlicher Grundschulunterricht; Art. 62 obligatorisch, unter staatlicher Leitung oder Aufsicht",
+     "position": 0
+    },
+    {
+     "node_key": "rsa",
+     "level_index": 1,
+     "citation": "LS 414.16",
+     "title": "Regionales Schulabkommen (RSA 2009)",
+     "act_kind": "Beitrittsgesetz (Kantonsrat)",
+     "note": "Schulbesuch in anderen Kantonen und Beiträge zwischen den Kantonen",
+     "position": 1
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 2,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Schulpflicht, Schulort, Privatschulen",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 3 Schulpflicht; §§ 10–12 Schulort, Unentgeltlichkeit, Elternbeiträge, Schulgeld; §§ 68–72 Privatschulen und Privatunterricht; § 67 a interkantonale Verträge",
+     "position": 2
+    },
+    {
+     "node_key": "vsv",
+     "level_index": 3,
+     "citation": "LS 412.101",
+     "title": "Volksschulverordnung (VSV) – Schulort, Privatschulen",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§§ 2–3 Schulpflicht, Rückstellung; §§ 7–11 Wohnort, Schulort, Schulweg, Zuteilung, Schulgeld; §§ 67–74 Privatschulen, Privatunterricht",
+     "position": 3
+    },
+    {
+     "node_key": "sg",
+     "level_index": 4,
+     "citation": "kommunal",
+     "title": "Schulweg, Zuteilung, Schulgeld, Elternbeiträge",
+     "act_kind": "Gemeinde- oder Behördenerlass",
+     "match_pattern": "schulgeld|schulweg|schulbus|zuteilung|einzugsgebiet|schulkreis|verpflegungsbeitrag|elternbeitr|schuelertransport",
+     "exclusion_pattern": "beschluss|stellenbeschrieb|merkblatt",
+     "position": 4
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "bv",
+     "relation": "Umsetzung",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 3.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 101",
+       "location": "Art. 19",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "rsa",
+     "to_node_key": "bv",
+     "relation": "Koordination (Art. 62 BV)",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 414.16",
+       "location": "§ 1.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 101",
+       "location": "Art. 62",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "rsa",
+     "relation": "interkantonale Verträge",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 67 a.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 7.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 412.101",
+       "location": "§ 67.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "sg",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 11.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "sg",
+     "to_node_key": "vsv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 8.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 412.101",
+       "location": "§ 11.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "tagesstrukturen",
+   "title": "Tagesstrukturen & ergänzende Angebote",
+   "short_title": "Tagesstrukturen & Angebote",
+   "hierarchy_group": "Schule",
+   "levels": [
+    "Bund",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 2,
+   "nodes": [
+    {
+     "node_key": "pavo",
+     "level_index": 0,
+     "citation": "SR 211.222.338",
+     "title": "Pflegekinderverordnung (PAVO)",
+     "act_kind": "Verordnung (Bundesrat)",
+     "note": "Art. 13 ff.: Bewilligungspflicht für Einrichtungen, die Kinder tagsüber betreuen",
+     "position": 0
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 1,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Tagesstrukturen, ergänzende Angebote",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§§ 15–18 heimatliche Sprache, musikalische Grundbildung, Aufgabenhilfe, Schulsport; §§ 30 a–30 e Tagesstrukturen, Tagesschulen, Kinderhorte, Betreuungsschlüssel",
+     "position": 1
+    },
+    {
+     "node_key": "kjhg",
+     "level_index": 1,
+     "citation": "LS 852.1",
+     "title": "Kinder- und Jugendhilfegesetz (KJHG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§§ 18–18 b familienergänzende Betreuung im Vorschulbereich",
+     "position": 2
+    },
+    {
+     "node_key": "musg",
+     "level_index": 1,
+     "citation": "LS 410.6",
+     "title": "Musikschulgesetz (MuSG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "position": 3
+    },
+    {
+     "node_key": "vsv",
+     "level_index": 2,
+     "citation": "LS 412.101",
+     "title": "Volksschulverordnung (VSV) – Tagesstrukturen, Horte",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§§ 32 a–32 f Angebot, Betreuungsschlüssel, Tagesschulen; §§ 32 g–32 m bewilligungspflichtige Kinderhorte",
+     "position": 4
+    },
+    {
+     "node_key": "musv",
+     "level_index": 2,
+     "citation": "LS 410.61",
+     "title": "Musikschulverordnung (MuSV)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 5
+    },
+    {
+     "node_key": "ts",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Tagesstrukturen, Betreuung, Tarife",
+     "act_kind": "Gemeinde- oder Behördenerlass",
+     "match_pattern": "tagesstruktur|tagesschule|betreuung|\\bhort|mittagstisch|schulergaenzend",
+     "exclusion_pattern": "vorschul|familienergaenzend|alters|spitex|pflege|merkblatt|kesb",
+     "position": 6
+    },
+    {
+     "node_key": "ms",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Musikschule",
+     "act_kind": "Gemeindeerlass oder Vereinbarung",
+     "match_pattern": "musikschul|musikalisch",
+     "position": 7
+    },
+    {
+     "node_key": "kb",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Familienergänzende Kinderbetreuung (Vorschulbereich)",
+     "act_kind": "Gemeindeerlass",
+     "note": "Meist Sache der politischen Gemeinde",
+     "match_pattern": "familienergaenzend|kinderbetreuung|\\bkita|krippe|tagesfamil",
+     "exclusion_pattern": "merkblatt",
+     "position": 8
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "pavo",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 30 c.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 211.222.338",
+       "location": "Art. 13",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kjhg",
+     "to_node_key": "pavo",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 852.1",
+       "location": "§ 18 b.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 32 a.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 412.101",
+       "location": "§ 32 g.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "musv",
+     "to_node_key": "musg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 410.61",
+       "location": "§ 1.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "ts",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 30 a.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "ts",
+     "to_node_key": "vsv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 32 a.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 412.101",
+       "location": "§ 32 b.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "ms",
+     "to_node_key": "musg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 410.6",
+       "location": "§ 2.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "ms",
+     "to_node_key": "musv",
+     "relation": "Beiträge",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 410.61",
+       "location": "§ 19.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kb",
+     "to_node_key": "kjhg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 852.1",
+       "location": "§ 18.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kb",
+     "to_node_key": "pavo",
+     "relation": "Bewilligung",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 211.222.338",
+       "location": "Art. 13",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "sonderpaedagogik",
+   "title": "Sonderpädagogik",
+   "short_title": null,
+   "hierarchy_group": "Kinder",
+   "levels": [
+    "Bund",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 3,
+   "nodes": [
+    {
+     "node_key": "behig",
+     "level_index": 0,
+     "citation": "SR 151.3",
+     "title": "Behindertengleichstellungsgesetz (BehiG)",
+     "act_kind": "Bundesgesetz",
+     "note": "Art. 20: Die Kantone sorgen für eine angepasste Grundschulung und fördern die Integration in die Regelschule",
+     "position": 0
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 1,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz – Sonderpädagogische Massnahmen",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§§ 33–40 VSG; Finanzierung §§ 64 ff.",
+     "position": 1
+    },
+    {
+     "node_key": "vsm",
+     "level_index": 2,
+     "citation": "LS 412.103",
+     "title": "Verordnung über die sonderpädagogischen Massnahmen (VSM)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 2
+    },
+    {
+     "node_key": "vfiso",
+     "level_index": 2,
+     "citation": "LS 412.106",
+     "title": "Verordnung über die Finanzierung der Sonderschulung (VFiSo)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 3
+    },
+    {
+     "node_key": "auf",
+     "level_index": 2,
+     "citation": "LS 412.106.1",
+     "title": "Verordnung über die Aufsicht über die Sonderschulung",
+     "act_kind": "Verordnung (Bildungsdirektion)",
+     "position": 4
+    },
+    {
+     "node_key": "spiv",
+     "level_index": 2,
+     "citation": "LS 412.107",
+     "title": "Spitalschulverordnung (SpiV)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 5
+    },
+    {
+     "node_key": "kom",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Konzepte und Reglemente Sonderpädagogik",
+     "act_kind": "Behördenerlass (Schulpflege)",
+     "note": "Förderkonzept, Integrative Förderung, Therapien, DaZ, Begabtenförderung, Schulpsychologie",
+     "match_pattern": "sonderpaedagog|integrativ|(?<!be)foerder|therapie|logopaed|psychomotor|\\bdaz\\b|deutsch als zweit|begab|schulpsycholog|sonderschul",
+     "exclusion_pattern": "jugendfoerder|wohn|energie|kultur|sport|wirtschaft|wald|natur|siedlung|anfrage",
+     "position": 6
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "behig",
+     "relation": "Umsetzung",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 151.3",
+       "location": "Art. 20",
+       "side": "to"
+      },
+      {
+       "citation": "LS 412.100",
+       "location": "§ 33.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsm",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.103",
+       "location": "§ 1.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vfiso",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.106",
+       "location": "Ingress",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "auf",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.106.1",
+       "location": "Ingress",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "spiv",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.107",
+       "location": "Ingress",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 35.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "vsm",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.103",
+       "location": "§ 6.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "kindesschutz",
+   "title": "Kindesschutz & Schweigepflicht",
+   "short_title": "Kindesschutz",
+   "hierarchy_group": "Kinder",
+   "levels": [
+    "Völkerrecht",
+    "Bund",
+    "Kanton",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 4,
+   "nodes": [
+    {
+     "node_key": "ukrk",
+     "level_index": 0,
+     "citation": "SR 0.107",
+     "title": "UN-Kinderrechtskonvention (KRK)",
+     "act_kind": "Staatsvertrag",
+     "note": "Art. 3 Kindeswohl, Art. 12 Anhörung, Art. 28/29 Recht auf Bildung",
+     "position": 0
+    },
+    {
+     "node_key": "zgb",
+     "level_index": 1,
+     "citation": "SR 210",
+     "title": "Zivilgesetzbuch (ZGB) – elterliche Sorge und Kindesschutz",
+     "act_kind": "Bundesgesetz",
+     "note": "Art. 301–303 elterliche Sorge und Erziehung; Art. 307 ff. Kindesschutzmassnahmen; Art. 314c ff. Melderechte und -pflichten",
+     "position": 1
+    },
+    {
+     "node_key": "stgb",
+     "level_index": 1,
+     "citation": "SR 311.0",
+     "title": "Strafgesetzbuch (StGB) – Amts- und Berufsgeheimnis",
+     "act_kind": "Bundesgesetz",
+     "note": "Art. 320 Amtsgeheimnis (Behörden, Lehrpersonen), Art. 321 Berufsgeheimnis (z. B. Schulpsychologie, Therapie)",
+     "position": 2
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 2,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz – Meldepflicht und Zusammenarbeit",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 50 Grundsätze, § 51 Meldepflicht",
+     "position": 3
+    },
+    {
+     "node_key": "vsv",
+     "level_index": 2,
+     "citation": "LS 412.101",
+     "title": "Volksschulverordnung – Information der Kindesschutzbehörde",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 4
+    },
+    {
+     "node_key": "kom",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Abläufe Kindesschutz, Krisen und Gewalt",
+     "act_kind": "Behördenerlass oder Merkblatt",
+     "note": "Meist Leitfäden und Merkblätter statt Erlasse",
+     "match_pattern": "kindesschutz|gefaehrdung|krise|notfall|meldung|schweigepflicht|gewalt|mobbing|praevention|sucht",
+     "exclusion_pattern": "informationstafel|feuerwehr|zivilschutz|strafrecht",
+     "position": 5
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "zgb",
+     "to_node_key": "ukrk",
+     "relation": "Umsetzung",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 0.107",
+       "location": "Art. 3",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "zgb",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 51.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 210",
+       "location": "Art. 307",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "ukrk",
+     "relation": "Mitwirkung (Art. 12 KRK)",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 50.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 0.107",
+       "location": "Art. 12",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "stgb",
+     "relation": "Amtsgeheimnis",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 311.0",
+       "location": "Art. 320",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 58.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "vsg",
+     "relation": "gestützt auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "zgb",
+     "relation": "Melderecht",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 210",
+       "location": "Art. 314c",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "gesundheit",
+   "title": "Gesundheit",
+   "short_title": null,
+   "hierarchy_group": "Kinder",
+   "levels": [
+    "Bund",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 5,
+   "nodes": [
+    {
+     "node_key": "epg",
+     "level_index": 0,
+     "citation": "SR 818.101",
+     "title": "Epidemiengesetz (EpG)",
+     "act_kind": "Bundesgesetz",
+     "note": "Art. 21: Kantone überprüfen den Impfstatus während der obligatorischen Schulzeit; Art. 40: Massnahmen gegenüber der Bevölkerung (z. B. Schulschliessungen)",
+     "position": 0
+    },
+    {
+     "node_key": "gesg",
+     "level_index": 1,
+     "citation": "LS 810.1",
+     "title": "Gesundheitsgesetz (GesG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 49 Gesundheitsförderung in Schulen, § 50 Prävention und ärztliche Überwachung während der Schulpflicht",
+     "position": 1
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 1,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – schulärztlicher Dienst",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 20: Die Gemeinden bezeichnen die schulärztlichen Dienste",
+     "position": 2
+    },
+    {
+     "node_key": "vsv",
+     "level_index": 2,
+     "citation": "LS 412.101",
+     "title": "Volksschulverordnung (VSV) – Untersuchungen, Impfen",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§ 16 schulärztlicher Dienst, §§ 17–17 c drei schulärztliche Untersuchungen, § 18 Impfen",
+     "position": 3
+    },
+    {
+     "node_key": "vvepig",
+     "level_index": 2,
+     "citation": "LS 818.11",
+     "title": "Vollzugsverordnung zur Epidemiengesetzgebung (VV EpiG)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 4
+    },
+    {
+     "node_key": "vsvz",
+     "level_index": 2,
+     "citation": "LS 818.22",
+     "title": "Verordnung über die Schul- und Volkszahnpflege (VSVZ)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§ 1: Die Gemeinden organisieren die Schulzahnpflege (Prophylaxe, jährliche Untersuchung)",
+     "position": 5
+    },
+    {
+     "node_key": "sad",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Schulärztlicher und schulzahnärztlicher Dienst, Gesundheitsförderung",
+     "act_kind": "Behördenerlass oder Vertrag",
+     "note": "Vertrag mit Schulärztin/Schularzt und Schulzahnklinik, Reglement Schulgesundheit, Präventionskonzept",
+     "match_pattern": "schulaerzt|schularzt|schulzahn|zahnpflege|zahnarzt|zahnklinik|schulgesundheit|gesundheitsfoerder|suchtpraevention|praevention",
+     "exclusion_pattern": "spitex|alters|pflegeheim|friedhof|kommission|brand|feuer",
+     "position": 6
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "gesg",
+     "to_node_key": "epg",
+     "relation": "Umsetzung (Art. 21 EpG)",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 810.1",
+       "location": "§ 50.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 818.101",
+       "location": "Art. 21",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vvepig",
+     "to_node_key": "epg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 818.11",
+       "location": "§ 6.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "gesg",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 20.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 16.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "epg",
+     "relation": "Impfen",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 18.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsvz",
+     "to_node_key": "gesg",
+     "relation": "Gesundheitsgesetzgebung",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    },
+    {
+     "from_node_key": "sad",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 20.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "sad",
+     "to_node_key": "vsv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 17.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "sad",
+     "to_node_key": "vsvz",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 818.22",
+       "location": "§ 1.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "sad",
+     "to_node_key": "gesg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 810.1",
+       "location": "§ 49.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "eltern",
+   "title": "Eltern",
+   "short_title": null,
+   "hierarchy_group": "Eltern",
+   "levels": [
+    "Bund",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 6,
+   "nodes": [
+    {
+     "node_key": "krk",
+     "level_index": 0,
+     "citation": "SR 0.107",
+     "title": "UN-Kinderrechtskonvention (KRK)",
+     "act_kind": "Staatsvertrag",
+     "note": "Art. 18: Eltern tragen die Hauptverantwortung für Erziehung und Entwicklung; Art. 12: Anhörung des Kindes",
+     "position": 0
+    },
+    {
+     "node_key": "zgb",
+     "level_index": 0,
+     "citation": "SR 210",
+     "title": "Zivilgesetzbuch (ZGB) – elterliche Sorge",
+     "act_kind": "Bundesgesetz",
+     "note": "Art. 301–303: Erziehung, gewaltfreie Erziehung; Art. 302 Abs. 3: Zusammenarbeit der Eltern mit Schule und Jugendhilfe",
+     "position": 1
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 1,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Stellung der Eltern",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 28 Absenzen und Dispensation, § 52 Disziplin, §§ 54–57 Zusammenarbeit, Mitwirkung, Elternpflichten",
+     "position": 2
+    },
+    {
+     "node_key": "vsv",
+     "level_index": 2,
+     "citation": "LS 412.101",
+     "title": "Volksschulverordnung (VSV) – Absenzen, Information, Mitwirkung",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§§ 28–30 Absenzen, Dispensation, Jokertage; §§ 59–66 Information, Elterngespräche, Mitwirkung, Elternpflichten",
+     "position": 3
+    },
+    {
+     "node_key": "os",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Elternmitwirkung (Organisationsstatut, Reglement)",
+     "act_kind": "Behördenerlass (Schulpflege)",
+     "note": "Das Organisationsstatut regelt die Mitwirkung der Eltern (§ 55 VSG), oft mit eigenem Reglement Elternrat/Elternforum",
+     "match_pattern": "elternmitwirkung|elternrat|elternforum|elternmitarbeit|elternorganisation",
+     "position": 4
+    },
+    {
+     "node_key": "abs",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Absenzen, Jokertage, Schulordnung",
+     "act_kind": "Behördenerlass (Schulpflege)",
+     "note": "Regeln zu Absenzen, Urlaub, Dispensation, Jokertagen, Verhalten und Disziplin",
+     "match_pattern": "absenz|jokertag|dispens|urlaub von schuel|schulordnung|schulhausordnung|verhaltens|disziplin",
+     "exclusion_pattern": "sammelstelle|entsorg|friedhof|werkhof|personal|mitarbeit|antrag|gesuch|formular|verpflichtungserklaerung",
+     "position": 5
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "zgb",
+     "to_node_key": "krk",
+     "relation": "Umsetzung",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 0.107",
+       "location": "Art. 18",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "zgb",
+     "relation": "Zusammenarbeit (Art. 302 ZGB)",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 54.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 210",
+       "location": "Art. 302",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "krk",
+     "relation": "Mitwirkung",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 50.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 0.107",
+       "location": "Art. 12",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 66.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 412.101",
+       "location": "§ 28.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "os",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 55.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "os",
+     "to_node_key": "vsv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 65.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "abs",
+     "to_node_key": "vsv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 30.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 412.101",
+       "location": "§ 28.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "abs",
+     "to_node_key": "vsg",
+     "relation": "Disziplin",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 52.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "absenzen",
+   "title": "Absenzen, Urlaub, Jokertage",
+   "short_title": "Absenzen & Urlaub",
+   "hierarchy_group": "Eltern",
+   "levels": [
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 7,
+   "nodes": [
+    {
+     "node_key": "vsg",
+     "level_index": 0,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Absenzen und Dispensation",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 28 Absenzen und Dispensation, § 57 Elternpflichten, § 76 Strafbestimmungen",
+     "position": 0
+    },
+    {
+     "node_key": "vsv",
+     "level_index": 1,
+     "citation": "LS 412.101",
+     "title": "Volksschulverordnung (VSV) – Absenzen, Dispensation, Jokertage",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§ 28 Absenzen, § 29 Dispensation, § 30 Jokertage, § 66 Elternpflichten",
+     "position": 1
+    },
+    {
+     "node_key": "abs",
+     "level_index": 2,
+     "citation": "kommunal",
+     "title": "Absenzen- und Urlaubsregelung der Schule",
+     "act_kind": "Behördenerlass (Schulpflege)",
+     "note": "Zuständigkeit für Urlaubsgesuche, Fristen, Formulare",
+     "match_pattern": "absenz|jokertag|dispens|urlaub",
+     "exclusion_pattern": "personal|mitarbeit|lehrperson",
+     "position": 2
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 28.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 412.101",
+       "location": "§ 29.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "abs",
+     "to_node_key": "vsv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 30.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 412.101",
+       "location": "§ 29.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "abs",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 28.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "kosten",
+   "title": "Kosten für Eltern",
+   "short_title": null,
+   "hierarchy_group": "Eltern",
+   "levels": [
+    "Bund",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 8,
+   "nodes": [
+    {
+     "node_key": "bv",
+     "level_index": 0,
+     "citation": "SR 101",
+     "title": "Bundesverfassung (BV) – unentgeltlicher Grundschulunterricht",
+     "act_kind": "Verfassung",
+     "note": "Art. 19 und 62 Abs. 2: Grundschulunterricht an öffentlichen Schulen ist unentgeltlich",
+     "position": 0
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 1,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Unentgeltlichkeit und Elternbeiträge",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 11 Unentgeltlichkeit und Elternbeiträge (z. B. Verpflegung in Lagern), § 30 a Tagesstrukturen",
+     "position": 1
+    },
+    {
+     "node_key": "musg",
+     "level_index": 1,
+     "citation": "LS 410.6",
+     "title": "Musikschulgesetz (MuSG) – Elternbeiträge",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 9 Elternbeiträge an die Musikschule",
+     "position": 2
+    },
+    {
+     "node_key": "vsv",
+     "level_index": 2,
+     "citation": "LS 412.101",
+     "title": "Volksschulverordnung (VSV) – Schulgeld, Verpflegung",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§ 11 Schulgeld und Verpflegungsbeitrag, § 17 c Kosten der schulärztlichen Untersuchung",
+     "position": 3
+    },
+    {
+     "node_key": "musv",
+     "level_index": 2,
+     "citation": "LS 410.61",
+     "title": "Musikschulverordnung (MuSV)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 4
+    },
+    {
+     "node_key": "kom",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Elternbeiträge und Tarife (Lager, Betreuung, Musikschule)",
+     "act_kind": "Gemeinde- oder Behördenerlass",
+     "match_pattern": "elternbeitr|lagerbeitr|kostenbeteiligung|tarif.*(betreu|hort|schul|musik|tagesstruktur)|(betreu|hort|schul|musik).*tarif|beitragsverordnung|schulgeld",
+     "exclusion_pattern": "wasser|abwasser|werke|kesb|bibliothek|bau|personal|benuetzer|benutzer|schulraeume|vermiet",
+     "position": 5
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "bv",
+     "relation": "Umsetzung",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 11.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 101",
+       "location": "Art. 19",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 11.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 412.101",
+       "location": "§ 17 c.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "musv",
+     "to_node_key": "musg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 410.61",
+       "location": "§ 1.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 11.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "vsv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 11.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "musg",
+     "relation": "Elternbeiträge Musikschule",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 410.6",
+       "location": "§ 9.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "personal",
+   "title": "Personalrecht",
+   "short_title": null,
+   "hierarchy_group": "Personal",
+   "levels": [
+    "Bund",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 9,
+   "nodes": [
+    {
+     "node_key": "or",
+     "level_index": 0,
+     "citation": "SR 220",
+     "title": "Obligationenrecht (OR)",
+     "act_kind": "Bundesgesetz",
+     "note": "Arbeitsvertrag Art. 319 ff. – im öffentlichen Personalrecht nur, wo das kantonale Recht darauf verweist (z. B. missbräuchliche Kündigung, Art. 336 OR)",
+     "position": 0
+    },
+    {
+     "node_key": "lpg",
+     "level_index": 1,
+     "citation": "LS 412.31",
+     "title": "Lehrpersonalgesetz (LPG) – Lehrpersonen und Schulleitungen",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "Kantonales Recht für Lehrpersonen und Schulleitungen der Volksschule (§ 1); die Gemeinde stellt an (§ 7)",
+     "position": 1
+    },
+    {
+     "node_key": "pg",
+     "level_index": 1,
+     "citation": "LS 177.10",
+     "title": "Personalgesetz (PG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "Gilt direkt für das Staatspersonal; für Lehrpersonen ergänzend (§ 2 LPG), für Gemeindepersonal sinngemäss, soweit die Gemeinde nichts regelt (§ 53 Abs. 2 GG)",
+     "position": 2
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 1,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Schulleitung, Leitung Bildung, Lehrerschaft",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 43 Leitung Bildung (kommunal angestellt), § 44 Schulleitung mit personeller Führung, § 45 Schulkonferenz; §§ 58–60 Lehrpersonenkonferenz der Volksschule (Mitwirkung der Lehrerschaft)",
+     "position": 3
+    },
+    {
+     "node_key": "gg",
+     "level_index": 1,
+     "citation": "LS 131.1",
+     "title": "Gemeindegesetz (GG) – Gemeindepersonal",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 53: Arbeitsverhältnis öffentlich-rechtlich; eigenes Recht der Gemeinde, sonst kantonales Personalrecht sinngemäss",
+     "position": 4
+    },
+    {
+     "node_key": "lpvo",
+     "level_index": 2,
+     "citation": "LS 412.311",
+     "title": "Lehrpersonalverordnung (LPVO)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§ 3: Die Schulpflege übt die Arbeitgeberrechte aus; Lohnskalen im Anhang",
+     "position": 5
+    },
+    {
+     "node_key": "pvo",
+     "level_index": 2,
+     "citation": "LS 177.11",
+     "title": "Personalverordnung (PVO)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 6
+    },
+    {
+     "node_key": "vvo",
+     "level_index": 2,
+     "citation": "LS 177.111",
+     "title": "Vollzugsverordnung zum Personalgesetz (VVO)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 7
+    },
+    {
+     "node_key": "anst",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Zuständigkeiten Personal der Schule (Organisationsstatut, Funktionendiagramm)",
+     "act_kind": "Behördenerlass (Schulpflege)",
+     "note": "Für Lehrpersonen und Schulleitungen regelt die Gemeinde keine Löhne oder Anstellungsbedingungen, sondern nur, wer anstellt, beurteilt und führt",
+     "match_pattern": "organisationsstatut|funktionendiagramm|personalfuehrung|personaladministration|mitarbeiterbeurteilung|kompetenz.*personal|personal.*kompetenz",
+     "exclusion_pattern": "gemeinderat|werkkommission|\\brfo\\b|\\bika\\b|\\bara|befoerderung|beilagen",
+     "position": 8
+    },
+    {
+     "node_key": "gem",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Personalverordnung der Gemeinde / Schulgemeinde – übriges Personal",
+     "act_kind": "Gemeindeerlass",
+     "note": "Schulverwaltung, Hausdienst, Betreuung, Leitung Bildung; ohne eigene Verordnung gilt das kantonale Personalrecht sinngemäss (§ 53 Abs. 2 GG)",
+     "match_pattern": "personalverordnung|personalreglement|anstellungs und besoldungsverordnung|\\bpevo\\b",
+     "exclusion_pattern": "anhang|vollz|ausf",
+     "position": 9
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "pg",
+     "to_node_key": "or",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 177.10",
+       "location": "§ 18.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 220",
+       "location": "Art. 336",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "lpg",
+     "to_node_key": "pg",
+     "relation": "subsidiär",
+     "relation_type": "subsidiary",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.31",
+       "location": "§ 2.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "pvo",
+     "to_node_key": "pg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 177.11",
+       "location": "§ 1.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vvo",
+     "to_node_key": "pg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": []
+    },
+    {
+     "from_node_key": "lpvo",
+     "to_node_key": "lpg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.311",
+       "location": "§ 1.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "lpvo",
+     "to_node_key": "vvo",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    },
+    {
+     "from_node_key": "anst",
+     "to_node_key": "lpg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.31",
+       "location": "§ 7.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "anst",
+     "to_node_key": "lpvo",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.311",
+       "location": "§ 3.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "anst",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 44.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 412.100",
+       "location": "§ 58.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gem",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 53.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gem",
+     "to_node_key": "pg",
+     "relation": "subsidiär (§ 53 Abs. 2 GG)",
+     "relation_type": "subsidiary",
+     "status": "manual",
+     "evidences": []
+    },
+    {
+     "from_node_key": "gem",
+     "to_node_key": "pvo",
+     "relation": "subsidiär (§ 53 Abs. 2 GG)",
+     "relation_type": "subsidiary",
+     "status": "manual",
+     "evidences": []
+    },
+    {
+     "from_node_key": "gem",
+     "to_node_key": "vsg",
+     "relation": "Leitung Bildung",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 43.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "unterricht",
+   "title": "Unterricht & Medien",
+   "short_title": "Unterricht & Medien",
+   "hierarchy_group": "Unterricht",
+   "levels": [
+    "Bund",
+    "Kanton – Gesetze",
+    "Bildungsrat",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 10,
+   "nodes": [
+    {
+     "node_key": "urg",
+     "level_index": 0,
+     "citation": "SR 231.1",
+     "title": "Urheberrechtsgesetz (URG)",
+     "act_kind": "Bundesgesetz",
+     "note": "Art. 19 Abs. 1 lit. b: Verwendung geschützter Werke durch Lehrpersonen für den Unterricht in der Klasse; Vergütung über Gemeinsame Tarife",
+     "position": 0
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 1,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Lehrplan und Lehrmittel",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 21 Lehrplan, § 22 Lehrmittel",
+     "position": 1
+    },
+    {
+     "node_key": "idg",
+     "level_index": 1,
+     "citation": "LS 170.4",
+     "title": "Gesetz über die Information und den Datenschutz (IDG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "Bilder, Videos und Plattformen im Unterricht: Bearbeitung von Personendaten",
+     "position": 2
+    },
+    {
+     "node_key": "lm",
+     "level_index": 2,
+     "citation": "Bildungsratsbeschlüsse",
+     "title": "Lehrmittel und Lehrplan (Bildungsrat)",
+     "act_kind": "Beschluss (Bildungsrat)",
+     "note": "Obligatorische und zugelassene Lehrmittel; Anforderungen an Lehrmittel",
+     "external_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html",
+     "position": 3,
+     "links": [
+      {
+       "title": "BRB 8/2026 – Anforderungen an ein Lehrmittel für Sprachförderung und DaZ",
+       "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html",
+       "note": null
+      },
+      {
+       "title": "BRB 4/2017 – Lehrplan für die Volksschule",
+       "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-4-volksschule-lehrplan-fuer-die-volksschule-des-kantons-zuerich.html",
+       "note": null
+      }
+     ]
+    },
+    {
+     "node_key": "kom",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Medien-, ICT- und Lehrmittelregelungen der Schule",
+     "act_kind": "Behördenerlass oder Konzept",
+     "note": "Medien- und ICT-Konzept, Nutzungsregeln Geräte, Mediothek/Bibliothek",
+     "match_pattern": "medien|lehrmittel|ict|ipad|tablet|mediothek|schulbibliothek|informatik(konzept| konzept)|nutzungsreglement schueler",
+     "exclusion_pattern": "schuetzenstube|forsthaus|gemeindesaal|gebuehr",
+     "position": 4
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "lm",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 22.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "urg",
+     "relation": "Eigengebrauch im Unterricht",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 231.1",
+       "location": "Art. 19",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "idg",
+     "relation": "Personendaten",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 170.4",
+       "location": "§ 3.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "lm",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "vsg",
+     "relation": "gestützt auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 21.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "beurteilung",
+   "title": "Beurteilung & Schullaufbahn",
+   "short_title": "Beurteilung & Laufbahn",
+   "hierarchy_group": "Unterricht",
+   "levels": [
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Bildungsrat",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 11,
+   "nodes": [
+    {
+     "node_key": "vsg",
+     "level_index": 0,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Beurteilung, Promotion",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 31 Beurteilung, § 32 Promotion und Übertritte",
+     "position": 0
+    },
+    {
+     "node_key": "msg",
+     "level_index": 0,
+     "citation": "LS 413.21",
+     "title": "Mittelschulgesetz (MSG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 14: Aufnahme in die Mittelschulen",
+     "position": 1
+    },
+    {
+     "node_key": "vsv",
+     "level_index": 1,
+     "citation": "LS 412.101",
+     "title": "Volksschulverordnung (VSV) – Schullaufbahn",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§§ 33–40 Schullaufbahnentscheide, Promotion, Repetition, Übertritt, Wechsel in der Sekundarstufe",
+     "position": 2
+    },
+    {
+     "node_key": "aufn6",
+     "level_index": 1,
+     "citation": "LS 413.250.1",
+     "title": "Aufnahme Gymnasium nach der 6. Klasse",
+     "act_kind": "Reglement (Regierungsrat)",
+     "position": 3
+    },
+    {
+     "node_key": "aufn",
+     "level_index": 1,
+     "citation": "LS 413.250.2",
+     "title": "Aufnahme in die Maturitätsschulen nach der Sekundarstufe",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 4
+    },
+    {
+     "node_key": "zr",
+     "level_index": 2,
+     "citation": "LS 412.121.31",
+     "title": "Zeugnisreglement",
+     "act_kind": "Reglement (Bildungsrat)",
+     "position": 5,
+     "links": [
+      {
+       "title": "BRB 5/2025 – Anpassungen Beurteilung und Zeugnis",
+       "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2025-brb-05.html",
+       "note": null
+      }
+     ]
+    },
+    {
+     "node_key": "kom",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Beurteilung, Einstufung, Übertritt in der Schule",
+     "act_kind": "Behördenerlass oder Richtlinie",
+     "note": "Selten als Erlass – meist interne Richtlinien",
+     "match_pattern": "zeugnis|promotion|uebertritt|einstufung|stufenwechsel|lernbericht|beurteilung",
+     "exclusion_pattern": "mitarbeit|personal|schulbeurteilung|beurteilungsteam",
+     "position": 6
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 33.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 412.101",
+       "location": "§ 39.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "zr",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.121.31",
+       "location": "Ingress",
+       "side": "from"
+      },
+      {
+       "citation": "LS 412.100",
+       "location": "§ 31.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "aufn6",
+     "to_node_key": "msg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 413.250.1",
+       "location": "Ingress",
+       "side": "from"
+      },
+      {
+       "citation": "LS 413.21",
+       "location": "§ 14.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "aufn",
+     "to_node_key": "msg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 413.250.2",
+       "location": "Ingress",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "aufn6",
+     "to_node_key": "vsg",
+     "relation": "Übertritt (§ 32 VSG)",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 32.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "vsv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 34.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "zr",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "sprache",
+   "title": "Sprache & Integration",
+   "short_title": null,
+   "hierarchy_group": "Unterricht",
+   "levels": [
+    "Bund",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Bildungsrat",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 12,
+   "nodes": [
+    {
+     "node_key": "bv",
+     "level_index": 0,
+     "citation": "SR 101",
+     "title": "Bundesverfassung (BV) – Sprachen",
+     "act_kind": "Verfassung",
+     "note": "Art. 70: Amtssprachen; die Kantone bestimmen ihre Amtssprachen",
+     "position": 0
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 1,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Sprache, zusätzliche Angebote",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 15 Kurse in heimatlicher Sprache und Kultur, § 24 Unterrichtssprache, § 25 zusätzliche Angebote (QUIMS), § 34 sonderpädagogische Massnahmen inkl. DaZ",
+     "position": 1
+    },
+    {
+     "node_key": "vsv",
+     "level_index": 2,
+     "citation": "LS 412.101",
+     "title": "Volksschulverordnung (VSV) – HSK, QUIMS",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§§ 13–14 Kurse in heimatlicher Sprache und Kultur, § 20 QUIMS",
+     "position": 2
+    },
+    {
+     "node_key": "vsm",
+     "level_index": 2,
+     "citation": "LS 412.103",
+     "title": "Verordnung über die sonderpädagogischen Massnahmen (VSM) – DaZ",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§§ 12 ff. Unterricht in Deutsch als Zweitsprache, § 16 a Aufnahmeklassen Asyl",
+     "position": 3
+    },
+    {
+     "node_key": "brb",
+     "level_index": 3,
+     "citation": "Bildungsratsbeschlüsse",
+     "title": "Lehrmittel DaZ (Bildungsrat)",
+     "act_kind": "Beschluss (Bildungsrat)",
+     "external_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html",
+     "position": 4,
+     "links": [
+      {
+       "title": "BRB 8/2026 – Anforderungen an ein Lehrmittel für Sprachförderung und DaZ",
+       "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html",
+       "note": null
+      }
+     ]
+    },
+    {
+     "node_key": "kom",
+     "level_index": 4,
+     "citation": "kommunal",
+     "title": "DaZ-, Integrations- und QUIMS-Konzepte",
+     "act_kind": "Konzept oder Behördenerlass",
+     "match_pattern": "\\bdaz\\b|deutsch als zweit|integration|quims|\\bhsk\\b|heimatliche sprache|aufnahmeklass|interkulturell|sprachfoerder",
+     "exclusion_pattern": "integrierte sonderschul|integrative foerderung",
+     "position": 5
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "bv",
+     "relation": "Unterrichtssprache",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 24.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 101",
+       "location": "Art. 70",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 13.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 412.101",
+       "location": "§ 20.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsm",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.103",
+       "location": "§ 1.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "brb",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 22.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "vsm",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.103",
+       "location": "§ 12.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "vsv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 20.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "brb",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "gemeindeorganisation",
+   "title": "Gemeindeorganisation, Rechtsetzung & Information",
+   "short_title": "Gemeinde & Information",
+   "hierarchy_group": "Behörden & Organisation",
+   "levels": [
+    "Kanton – Verfassung",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 13,
+   "nodes": [
+    {
+     "node_key": "kv",
+     "level_index": 0,
+     "citation": "LS 101",
+     "title": "Verfassung des Kantons Zürich (KV)",
+     "act_kind": "Verfassung (Stimmberechtigte)",
+     "note": "Art. 85 Gemeindeautonomie, Art. 89 Gemeindeordnung",
+     "position": 0
+    },
+    {
+     "node_key": "gg",
+     "level_index": 1,
+     "citation": "LS 131.1",
+     "title": "Gemeindegesetz (GG) – Grundlagen",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 2 Autonomie, § 3 Gliederung, § 4 Rechtsetzung, § 5 Gemeindeorgane, § 6 Protokoll, § 7 Publikation, § 8 Schweigepflicht, § 43 Ausschluss der Öffentlichkeit",
+     "position": 1
+    },
+    {
+     "node_key": "idg",
+     "level_index": 1,
+     "citation": "LS 170.4",
+     "title": "Gesetz über die Information und den Datenschutz (IDG) – Öffentlichkeitsprinzip",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 20 Zugang zu Informationen",
+     "position": 2
+    },
+    {
+     "node_key": "vgg",
+     "level_index": 2,
+     "citation": "LS 131.11",
+     "title": "Gemeindeverordnung (VGG) – Rechtssammlung",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§ 2: Inhalt der Rechtssammlung (Gemeindeordnung, Gemeinde- und Behördenerlasse, Zweckverbandsstatuten)",
+     "position": 3
+    },
+    {
+     "node_key": "go",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Gemeindeordnung",
+     "act_kind": "Gemeindeordnung (Stimmberechtigte)",
+     "match_pattern": "gemeindeordnung|\\(go\\)",
+     "exclusion_pattern": "protokoll",
+     "position": 4
+    },
+    {
+     "node_key": "pub",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Publikation, Information, Rechtssammlung",
+     "act_kind": "Gemeinde- oder Behördenerlass",
+     "note": "Publikationsorgan, Informationsreglement, Kommunikation – und die systematische Rechtssammlung selbst (Leitfaden, Pflichtkatalog)",
+     "match_pattern": "publikation|amtsblatt|informationsreglement|informationskonzept|kommunikation|oeffentlichkeitsprinzip|rechtssammlung",
+     "exclusion_pattern": "protokoll|beschluss",
+     "position": 5
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "gg",
+     "to_node_key": "kv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 101",
+       "location": "suche:Art. 85 ¹",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vgg",
+     "to_node_key": "gg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.11",
+       "location": "§ 2.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 131.1",
+       "location": "§ 7.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "go",
+     "to_node_key": "kv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 101",
+       "location": "suche:Art. 89 ¹",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "go",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 4.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 131.1",
+       "location": "§ 5.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "pub",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 7.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 131.1",
+       "location": "§ 6.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "pub",
+     "to_node_key": "vgg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.11",
+       "location": "§ 2.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "pub",
+     "to_node_key": "idg",
+     "relation": "Öffentlichkeitsprinzip",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 170.4",
+       "location": "§ 20.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "stimmberechtigte",
+   "title": "Stimmberechtigte, Gemeindeversammlung & Parlament",
+   "short_title": "Versammlung & Parlament",
+   "hierarchy_group": "Behörden & Organisation",
+   "levels": [
+    "Kanton – Verfassung",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 14,
+   "nodes": [
+    {
+     "node_key": "kv",
+     "level_index": 0,
+     "citation": "LS 101",
+     "title": "Verfassung des Kantons Zürich (KV)",
+     "act_kind": "Verfassung (Stimmberechtigte)",
+     "note": "Art. 86 Volksrechte in der Gemeinde, Art. 87 Organe der Gemeinde",
+     "position": 0
+    },
+    {
+     "node_key": "gg",
+     "level_index": 1,
+     "citation": "LS 131.1",
+     "title": "Gemeindegesetz (GG) – Stimmberechtigte, Versammlung, Parlament",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§§ 9–13 Urnengeschäfte, Antragsrecht; §§ 14–26 Gemeindeversammlung (Einberufung, beleuchtender Bericht, Abstimmung, Wahlen); §§ 27–37 Gemeindeparlament",
+     "position": 1
+    },
+    {
+     "node_key": "gpr",
+     "level_index": 1,
+     "citation": "LS 161",
+     "title": "Gesetz über die politischen Rechte (GPR)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "position": 2
+    },
+    {
+     "node_key": "vpr",
+     "level_index": 2,
+     "citation": "LS 161.1",
+     "title": "Verordnung über die politischen Rechte (VPR)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 3
+    },
+    {
+     "node_key": "go",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Gemeindeordnung – Zuständigkeiten der Stimmberechtigten",
+     "act_kind": "Gemeindeordnung (Stimmberechtigte)",
+     "match_pattern": "gemeindeordnung|\\(go\\)",
+     "exclusion_pattern": "protokoll",
+     "position": 4
+    },
+    {
+     "node_key": "gv",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Geschäftsordnung Gemeindeversammlung / Parlament",
+     "act_kind": "Gemeinde- oder Parlamentserlass",
+     "match_pattern": "gemeindeversammlung|parlament|geschaeftsordnung des gemeinderat|geschaeftsordnung gemeinderat",
+     "exclusion_pattern": "protokoll|einladung|beleuchtend",
+     "position": 5
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "gg",
+     "to_node_key": "kv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 101",
+       "location": "suche:Art. 86 ¹",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gpr",
+     "to_node_key": "kv",
+     "relation": "Umsetzung",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 161",
+       "location": "§ 1.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vpr",
+     "to_node_key": "gpr",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 161.1",
+       "location": "Ingress",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gg",
+     "to_node_key": "gpr",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 13.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "go",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 15.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 131.1",
+       "location": "§ 10.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gv",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 18.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 131.1",
+       "location": "§ 20.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gv",
+     "to_node_key": "go",
+     "relation": "gestützt auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "behoerden",
+   "title": "Behörden & Kommissionen",
+   "short_title": "Behörden & Kommissionen",
+   "hierarchy_group": "Behörden & Organisation",
+   "levels": [
+    "Kanton – Gesetze",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 15,
+   "nodes": [
+    {
+     "node_key": "gg",
+     "level_index": 0,
+     "citation": "LS 131.1",
+     "title": "Gemeindegesetz (GG) – Behörden",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§§ 38–46 Beschlussfassung, Ausstand, Ausschluss der Öffentlichkeit, Aufgabenübertragung, beratende Kommissionen; §§ 47–52 Gemeindevorstand, Kommissionen; §§ 54–57 Schulpflege",
+     "position": 0
+    },
+    {
+     "node_key": "vrg",
+     "level_index": 0,
+     "citation": "LS 175.2",
+     "title": "Verwaltungsrechtspflegegesetz (VRG) – Ausstand",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 5 a Ausstand",
+     "position": 1
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 0,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Schulpflege",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 42 Aufgaben der Schulpflege, Übertragung an Schulleitung, Leitung Bildung, Verwaltung",
+     "position": 2
+    },
+    {
+     "node_key": "gs",
+     "level_index": 1,
+     "citation": "kommunal",
+     "title": "Geschäftsordnung der Behörde",
+     "act_kind": "Behördenerlass",
+     "match_pattern": "geschaeftsordnung|geschaeftsreglement",
+     "exclusion_pattern": "gemeindeversammlung|parlament|kommission|geschaeftsordnung des gemeinderat",
+     "position": 3
+    },
+    {
+     "node_key": "kom",
+     "level_index": 1,
+     "citation": "kommunal",
+     "title": "Kommissionen (Reglemente)",
+     "act_kind": "Gemeinde- oder Behördenerlass",
+     "match_pattern": "kommission.*(reglement|ordnung|verordnung)|(reglement|ordnung|verordnung).*kommission",
+     "exclusion_pattern": "rechnungspruefung|geschaeftspruefung",
+     "position": 4
+    },
+    {
+     "node_key": "komp",
+     "level_index": 1,
+     "citation": "kommunal",
+     "title": "Kompetenzen und Delegation (Funktionendiagramm, Unterschriften)",
+     "act_kind": "Behördenerlass",
+     "match_pattern": "kompetenz|funktionendiagramm|unterschrift|zustaendigkeitsordnung|delegation",
+     "exclusion_pattern": "befoerderung|kompetenzzentrum|anstaltsvertrag",
+     "position": 5
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "gg",
+     "to_node_key": "vrg",
+     "relation": "Ausstand",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 42.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 175.2",
+       "location": "§ 5 a.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gs",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 38.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 131.1",
+       "location": "§ 39.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 51.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 131.1",
+       "location": "§ 50.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "komp",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 44.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 131.1",
+       "location": "§ 45.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "komp",
+     "to_node_key": "vsg",
+     "relation": "Delegation Schulpflege",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 42.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "wahlen",
+   "title": "Wahlen & Behördenmitglieder",
+   "short_title": "Wahlen & Behördenmitglieder",
+   "hierarchy_group": "Behörden & Organisation",
+   "levels": [
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 16,
+   "nodes": [
+    {
+     "node_key": "gpr",
+     "level_index": 0,
+     "citation": "LS 161",
+     "title": "Gesetz über die politischen Rechte (GPR) – Wahlen",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 23 Wohnsitzpflicht, §§ 25–30 Unvereinbarkeit, § 32 Amtsdauer, § 40 Wahl der Gemeindeorgane, § 47 Teilämter, §§ 54 ff. stille Wahl",
+     "position": 0
+    },
+    {
+     "node_key": "gg",
+     "level_index": 0,
+     "citation": "LS 131.1",
+     "title": "Gemeindegesetz (GG) – Wahlen, Schulpflege",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 26 Wahlverfahren an der Versammlung, § 55 Zusammensetzung der Schulpflege",
+     "position": 1
+    },
+    {
+     "node_key": "vpr",
+     "level_index": 1,
+     "citation": "LS 161.1",
+     "title": "Verordnung über die politischen Rechte (VPR)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 2
+    },
+    {
+     "node_key": "go",
+     "level_index": 2,
+     "citation": "kommunal",
+     "title": "Gemeindeordnung – Wahlart, Mitgliederzahl, Amtsdauer",
+     "act_kind": "Gemeindeordnung (Stimmberechtigte)",
+     "match_pattern": "gemeindeordnung|\\(go\\)",
+     "exclusion_pattern": "protokoll",
+     "position": 3
+    },
+    {
+     "node_key": "ent",
+     "level_index": 2,
+     "citation": "kommunal",
+     "title": "Entschädigung der Behördenmitglieder",
+     "act_kind": "Gemeinde- oder Behördenerlass",
+     "match_pattern": "entschaedigungsverordnung|entschaedigungsreglement|\\bevo\\b|entschaedigung (der )?behoerde|behoerdenentschaedigung|sitzungsgeld",
+     "exclusion_pattern": "beschluss|anpassung",
+     "position": 4
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "vpr",
+     "to_node_key": "gpr",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 161.1",
+       "location": "Ingress",
+       "side": "from"
+      },
+      {
+       "citation": "LS 161.1",
+       "location": "§ 27.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gg",
+     "to_node_key": "gpr",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 26.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "go",
+     "to_node_key": "gpr",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 161",
+       "location": "§ 40.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 161",
+       "location": "§ 25.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "go",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 55.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "ent",
+     "to_node_key": "go",
+     "relation": "gestützt auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "organisation",
+   "title": "Schulorganisation & Qualität",
+   "short_title": "Schulorganisation & Qualität",
+   "hierarchy_group": "Behörden & Organisation",
+   "levels": [
+    "Kanton – Verfassung",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 17,
+   "nodes": [
+    {
+     "node_key": "kv",
+     "level_index": 0,
+     "citation": "LS 101",
+     "title": "Verfassung des Kantons Zürich (KV)",
+     "act_kind": "Verfassung (Stimmberechtigte)",
+     "note": "Art. 85 Gemeindeautonomie, Art. 89 Gemeindeordnung",
+     "position": 0
+    },
+    {
+     "node_key": "gg",
+     "level_index": 1,
+     "citation": "LS 131.1",
+     "title": "Gemeindegesetz (GG) – Schulpflege",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§§ 54 ff.: Schulpflege in politischen Gemeinden und Schulgemeinden",
+     "position": 1
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 1,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Organisation und Qualität",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§§ 41–46 Schulträger, Organisationsstatut, Schulprogramm, Schulpflege, Leitung Bildung, Schulleitung, Schulkonferenz, Schulverwaltung; §§ 47–49 Qualitätssicherung",
+     "position": 2
+    },
+    {
+     "node_key": "vsv",
+     "level_index": 2,
+     "citation": "LS 412.101",
+     "title": "Volksschulverordnung (VSV) – Organisation und Qualität",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§§ 41–46 Organisationsstatut, Schulprogramm, Schulpflege, Schulkonferenz; §§ 47–53 interne und externe Beurteilung (Fachstelle Schulbeurteilung)",
+     "position": 3
+    },
+    {
+     "node_key": "go",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Gemeindeordnung",
+     "act_kind": "Gemeindeordnung (Stimmberechtigte)",
+     "match_pattern": "gemeindeordnung|\\(go\\)",
+     "exclusion_pattern": "protokoll",
+     "position": 4
+    },
+    {
+     "node_key": "os",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Organisationsstatut, Funktionendiagramm",
+     "act_kind": "Behördenerlass (Schulpflege)",
+     "match_pattern": "organisationsstatut|funktionendiagramm|organisationsreglement.*schul|schulorganisation",
+     "exclusion_pattern": "gemeinderat|werkkommission|beilagen",
+     "position": 5
+    },
+    {
+     "node_key": "sp",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Schulprogramm, Leitbild, Qualität",
+     "act_kind": "Planungsinstrument (Schulkonferenz/Schulpflege)",
+     "note": "Pflicht zur Dokumentation (§ 41 b VSG), nicht zwingend in der Rechtssammlung",
+     "match_pattern": "schulprogramm|jahresplanung|leitbild|qualitaetskonzept|qualitaetsmanagement|schulentwicklung",
+     "position": 6
+    },
+    {
+     "node_key": "gs",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Geschäftsordnung Schulpflege, Schulkonferenz",
+     "act_kind": "Behördenerlass",
+     "match_pattern": "geschaeftsordnung.*schul|geschaeftsreglement.*schul|schulpflege.*geschaefts|schulkonferenz|konvent",
+     "position": 7
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "gg",
+     "to_node_key": "kv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 101",
+       "location": "suche:Art. 85 ¹",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "gg",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 42.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 131.1",
+       "location": "§ 54.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 41.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 412.101",
+       "location": "§ 49.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "go",
+     "to_node_key": "kv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 101",
+       "location": "suche:Art. 89 ¹",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "go",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 54.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "os",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 41 a.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "os",
+     "to_node_key": "vsv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 41.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "os",
+     "to_node_key": "go",
+     "relation": "im Rahmen der",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    },
+    {
+     "from_node_key": "sp",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 41 b.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "sp",
+     "to_node_key": "vsv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 42.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 412.101",
+       "location": "§ 48.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gs",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 45.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gs",
+     "to_node_key": "go",
+     "relation": "gestützt auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "kontrolle",
+   "title": "Prüfung & Aufsicht",
+   "short_title": "Prüfung & Aufsicht",
+   "hierarchy_group": "Behörden & Organisation",
+   "levels": [
+    "Kanton – Gesetze",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 18,
+   "nodes": [
+    {
+     "node_key": "gg",
+     "level_index": 0,
+     "citation": "LS 131.1",
+     "title": "Gemeindegesetz (GG) – Prüfung und Aufsicht",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§§ 58–62 Rechnungsprüfungs- und Geschäftsprüfungskommission; §§ 163–169 Aufsicht (Bezirksrat, Kanton), §§ 170–172 Neubeurteilung und Weiterzug",
+     "position": 0
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 0,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Aufsicht",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 73 Aufsicht und Ersatzvornahme; §§ 47–49 Qualitätssicherung",
+     "position": 1
+    },
+    {
+     "node_key": "rpk",
+     "level_index": 1,
+     "citation": "kommunal",
+     "title": "Rechnungsprüfungs- und Geschäftsprüfungskommission",
+     "act_kind": "Gemeinde- oder Behördenerlass",
+     "match_pattern": "rechnungspruefung|geschaeftspruefung|\\brpk\\b|\\bgpk\\b",
+     "exclusion_pattern": "bericht|abschied|antrag|anpassung|entschaedigung",
+     "position": 2
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "gg",
+     "relation": "Aufsicht",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 73.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 131.1",
+       "location": "§ 164.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "rpk",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 58.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 131.1",
+       "location": "§ 59.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "zusammenarbeit",
+   "title": "Zusammenarbeit & Gemeindestrukturen",
+   "short_title": "Zusammenarbeit & Strukturen",
+   "hierarchy_group": "Behörden & Organisation",
+   "levels": [
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 19,
+   "nodes": [
+    {
+     "node_key": "gg",
+     "level_index": 0,
+     "citation": "LS 131.1",
+     "title": "Gemeindegesetz (GG) – Zusammenarbeit, Zusammenschluss",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§§ 63–70 Aufgabenträger, Ausgliederung; §§ 71–83 Anschlussvertrag, Zusammenarbeitsvertrag, Zweckverband, gemeinsame Anstalt; §§ 151–162 Zusammenschluss, § 154 Übernahme der Schulaufgaben",
+     "position": 0
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 0,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Schulträger",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 41 Schulträger",
+     "position": 1
+    },
+    {
+     "node_key": "vgg",
+     "level_index": 1,
+     "citation": "LS 131.11",
+     "title": "Gemeindeverordnung (VGG)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§ 2: Zweckverbandsstatuten gehören in die Rechtssammlung",
+     "position": 2
+    },
+    {
+     "node_key": "zv",
+     "level_index": 2,
+     "citation": "kommunal",
+     "title": "Zweckverbände und Verträge im Schulbereich",
+     "act_kind": "Rechtsetzender Vertrag / Statuten",
+     "note": "Nur Schule, Kinder und Jugend; weitere Zweckverbände (Feuerwehr, Wasser, Abfall …) sind ausgeblendet",
+     "match_pattern": "(zweckverband|statuten|anschlussvertrag|zusammenarbeitsvertrag|interkommunal|gemeinsame anstalt|leistungsvereinbarung|vereinbarung).*(schul|psycholog|sonder|musik|bildung|jugend|kind|hort|betreu)|(schul|psycholog|sonder|musik|bildung|jugend|kind|hort|betreu).*(zweckverband|statuten|anschlussvertrag|vertrag|vereinbarung)",
+     "exclusion_pattern": "protokoll|beschluss|kindes und erwachsenenschutz|kesb|pflege|forst",
+     "position": 3
+    },
+    {
+     "node_key": "eg",
+     "level_index": 2,
+     "citation": "kommunal",
+     "title": "Einheitsgemeinde (Übernahme der Schulaufgaben)",
+     "act_kind": "Gemeindeordnung / Zusammenschlussvertrag",
+     "note": "Politische Gemeinde übernimmt die Schulaufgaben (§ 154 GG) – in der Gemeindeliste mit «EG» vermerkt",
+     "position": 4
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "zv",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 73.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 131.1",
+       "location": "§ 71.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "zv",
+     "to_node_key": "vgg",
+     "relation": "Rechtssammlung",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.11",
+       "location": "§ 2.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "eg",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 154.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "eg",
+     "to_node_key": "vsg",
+     "relation": "Schulträger",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 41.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "verfahren",
+   "title": "Verfahren & Rechtsschutz",
+   "short_title": "Verfahren & Rechtsschutz",
+   "hierarchy_group": "Behörden & Organisation",
+   "levels": [
+    "Bund",
+    "Kanton – Verfassung",
+    "Kanton – Gesetze",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 20,
+   "nodes": [
+    {
+     "node_key": "bv",
+     "level_index": 0,
+     "citation": "SR 101",
+     "title": "Bundesverfassung (BV) – Verfahrensgarantien",
+     "act_kind": "Verfassung",
+     "note": "Art. 29 Verfahrensgarantien (rechtliches Gehör), Art. 29a Rechtsweggarantie",
+     "position": 0
+    },
+    {
+     "node_key": "kv",
+     "level_index": 1,
+     "citation": "LS 101",
+     "title": "Verfassung des Kantons Zürich (KV)",
+     "act_kind": "Verfassung (Stimmberechtigte)",
+     "note": "Art. 18 Verfahrensgarantien, Art. 77 Rechtsschutz, Art. 85/89 Gemeindeautonomie und Gemeindeordnung",
+     "position": 1
+    },
+    {
+     "node_key": "vrg",
+     "level_index": 2,
+     "citation": "LS 175.2",
+     "title": "Verwaltungsrechtspflegegesetz (VRG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "Akteneinsicht (§ 8), Begründung und Rechtsmittelbelehrung (§ 10), Rekurs (§§ 19 ff.)",
+     "position": 2
+    },
+    {
+     "node_key": "gg",
+     "level_index": 2,
+     "citation": "LS 131.1",
+     "title": "Gemeindegesetz (GG) – Neubeurteilung",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§§ 170 f.: Neubeurteilung von Entscheiden unterstellter Organe",
+     "position": 3
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 2,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Aufsicht und Rechtsschutz",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 73 Aufsicht und Ersatzvornahme, § 74 Begründung und Neubeurteilung, § 75 Rekursinstanzen, § 76 Strafbestimmungen (z. B. Verletzung der Schulpflicht)",
+     "position": 4
+    },
+    {
+     "node_key": "go",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Gemeindeordnung – Zuständigkeiten und Delegation",
+     "act_kind": "Gemeindeordnung (Stimmberechtigte)",
+     "note": "Legt fest, welche Organe entscheiden – Grundlage für Neubeurteilung und Rekurs",
+     "match_pattern": "gemeindeordnung|\\(go\\)",
+     "exclusion_pattern": "protokoll",
+     "position": 5
+    },
+    {
+     "node_key": "gs",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Geschäftsordnung / Organisationsstatut – Delegation an Schulleitung und Verwaltung",
+     "act_kind": "Behördenerlass (Schulpflege)",
+     "note": "Übertragene Entscheide können bei der Schulpflege zur Neubeurteilung gebracht werden",
+     "match_pattern": "organisationsstatut|funktionendiagramm|geschaeftsordnung.*schul|geschaeftsreglement.*schul|schulpflege.*geschaefts",
+     "exclusion_pattern": "gemeinderat|werkkommission|energie|kirch|feuerwehr|forst|wasser|praevention",
+     "position": 6
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "kv",
+     "to_node_key": "bv",
+     "relation": "konkretisiert",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 101",
+       "location": "suche:Art. 18 ¹",
+       "side": "from"
+      },
+      {
+       "citation": "SR 101",
+       "location": "Art. 29",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vrg",
+     "to_node_key": "kv",
+     "relation": "Umsetzung",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 101",
+       "location": "suche:Art. 77 ¹",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gg",
+     "to_node_key": "vrg",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 171.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "vrg",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 75.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 412.100",
+       "location": "§ 73.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "go",
+     "to_node_key": "kv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 101",
+       "location": "suche:Art. 89 ¹",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "go",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 170.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gs",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 74.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gs",
+     "to_node_key": "go",
+     "relation": "gestützt auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "finanzen",
+   "title": "Finanzen",
+   "short_title": null,
+   "hierarchy_group": "Ressourcen",
+   "levels": [
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 21,
+   "nodes": [
+    {
+     "node_key": "gg",
+     "level_index": 0,
+     "citation": "LS 131.1",
+     "title": "Gemeindegesetz (GG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "4. Teil: Finanzhaushalt (§§ 84 ff.) – Haushaltsführung, Budget, Ausgaben, Rechnungslegung, Prüfung",
+     "position": 0
+    },
+    {
+     "node_key": "fag",
+     "level_index": 0,
+     "citation": "LS 132.1",
+     "title": "Finanzausgleichsgesetz (FAG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "Finanzausgleich zwischen politischen Gemeinden, Schulgemeinden und Kanton",
+     "position": 1
+    },
+    {
+     "node_key": "crg",
+     "level_index": 0,
+     "citation": "LS 611",
+     "title": "Gesetz über Controlling und Rechnungslegung (CRG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "Haushaltsrecht des Kantons – für Gemeinden nicht direkt anwendbar; Gemeinden: GG 4. Teil",
+     "position": 2
+    },
+    {
+     "node_key": "vsgfin",
+     "level_index": 0,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Finanzen",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 11 Unentgeltlichkeit und Elternbeiträge; §§ 61–67 Kostenanteil des Kantons, Kosten der Sonderschulung, Mitteleinsatz der Gemeinden, Drittmittel",
+     "position": 3
+    },
+    {
+     "node_key": "vgg",
+     "level_index": 1,
+     "citation": "LS 131.11",
+     "title": "Gemeindeverordnung (VGG)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "2. Teil: Finanzhaushalt",
+     "position": 4
+    },
+    {
+     "node_key": "vfiso",
+     "level_index": 1,
+     "citation": "LS 412.106",
+     "title": "Verordnung über die Finanzierung der Sonderschulung (VFiSo)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 5
+    },
+    {
+     "node_key": "fav",
+     "level_index": 1,
+     "citation": "LS 132.11",
+     "title": "Finanzausgleichsverordnung (FAV)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 6
+    },
+    {
+     "node_key": "go",
+     "level_index": 2,
+     "citation": "kommunal",
+     "title": "Gemeindeordnung – Finanzbefugnisse",
+     "act_kind": "Gemeindeordnung (Stimmberechtigte)",
+     "note": "Regelt Ausgaben- und Kreditkompetenzen von Gemeindeversammlung, Vorstand bzw. Schulpflege",
+     "match_pattern": "gemeindeordnung|\\(go\\)",
+     "exclusion_pattern": "sekundarschul.*politische|protokoll",
+     "position": 7
+    },
+    {
+     "node_key": "fin",
+     "level_index": 2,
+     "citation": "kommunal",
+     "title": "Finanzreglement / Haushaltsregeln",
+     "act_kind": "Gemeinde- oder Behördenerlass",
+     "note": "Finanzkompetenzen, Haushaltführung, Aktivierungsgrenze, Fonds",
+     "match_pattern": "finanzreglement|finanzordnung|finanzkompetenz|haushalt|aktivierung|globalbudget|ausgabenkompetenz|fonds|sonderrechnung",
+     "exclusion_pattern": "mehrwert|oekologie|infrastruktur zuerichsee",
+     "position": 8
+    },
+    {
+     "node_key": "geb",
+     "level_index": 2,
+     "citation": "kommunal",
+     "title": "Gebührenverordnung / Gebührentarif",
+     "act_kind": "Gemeindeerlass",
+     "note": "Allgemeine Gebühren; Spezialgebühren (Wasser, Abwasser, Abfall) in eigenen Erlassen",
+     "match_pattern": "gebuehrenverordnung|gebuehrenreglement|gebuehrentarif|gebuehrenordnung|allgemeiner gebuehrentarif",
+     "exclusion_pattern": "wasser|abwasser|siedlung|abfall|feuerwehr|bauwesen|kesb|werke|bibliothek",
+     "position": 9
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "vgg",
+     "to_node_key": "gg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.11",
+       "location": "§ 47.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "fav",
+     "to_node_key": "fag",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 132.11",
+       "location": "§ 1.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "go",
+     "to_node_key": "gg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 104.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "go",
+     "to_node_key": "fag",
+     "relation": "betrifft (Ausgleich)",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 132.1",
+       "location": "§ 1.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "fin",
+     "to_node_key": "go",
+     "relation": "gestützt auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    },
+    {
+     "from_node_key": "fin",
+     "to_node_key": "gg",
+     "relation": "Grundsätze",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 84.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "fin",
+     "to_node_key": "vgg",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.11",
+       "location": "§ 8.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "geb",
+     "to_node_key": "gg",
+     "relation": "Verursacherprinzip",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 131.1",
+       "location": "§ 84.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vfiso",
+     "to_node_key": "vsgfin",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.106",
+       "location": "Ingress",
+       "side": "from"
+      },
+      {
+       "citation": "LS 412.100",
+       "location": "§ 64.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "fin",
+     "to_node_key": "vsgfin",
+     "relation": "Mitteleinsatz",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 66.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 412.100",
+       "location": "§ 61.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "geb",
+     "to_node_key": "vsgfin",
+     "relation": "Elternbeiträge",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 11.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "datenschutz",
+   "title": "Datenschutz & ICT",
+   "short_title": null,
+   "hierarchy_group": "Ressourcen",
+   "levels": [
+    "Bund",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 22,
+   "nodes": [
+    {
+     "node_key": "dsg",
+     "level_index": 0,
+     "citation": "SR 235.1",
+     "title": "Datenschutzgesetz des Bundes (DSG)",
+     "act_kind": "Bundesgesetz",
+     "note": "Gilt für Private und Bundesorgane – für die Volksschule nicht direkt; massgebend wird es bei privaten Dienstleistern (z. B. Cloud- und Software-Anbieter)",
+     "position": 0
+    },
+    {
+     "node_key": "dsv",
+     "level_index": 0,
+     "citation": "SR 235.11",
+     "title": "Datenschutzverordnung (DSV)",
+     "act_kind": "Verordnung (Bundesrat)",
+     "position": 1
+    },
+    {
+     "node_key": "idg",
+     "level_index": 1,
+     "citation": "LS 170.4",
+     "title": "Gesetz über die Information und den Datenschutz (IDG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "Massgebend für Schulgemeinden und Schulen als öffentliche Organe (§ 3 IDG)",
+     "position": 2
+    },
+    {
+     "node_key": "vsgd",
+     "level_index": 1,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz – Bearbeitung von Personendaten",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§§ 3 a ff. VSG: besondere Bestimmungen für Schülerdaten",
+     "position": 3
+    },
+    {
+     "node_key": "archg",
+     "level_index": 1,
+     "citation": "LS 170.6",
+     "title": "Archivgesetz (ArchG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "position": 4
+    },
+    {
+     "node_key": "ausl",
+     "level_index": 1,
+     "citation": "LS 172.71",
+     "title": "Gesetz über die Auslagerung von Informatikdienstleistungen",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "position": 5
+    },
+    {
+     "node_key": "idv",
+     "level_index": 2,
+     "citation": "LS 170.41",
+     "title": "Verordnung über die Information und den Datenschutz (IDV)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 6
+    },
+    {
+     "node_key": "ivsv",
+     "level_index": 2,
+     "citation": "LS 170.8",
+     "title": "Verordnung über die Informationsverwaltung und -sicherheit (IVSV)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 7
+    },
+    {
+     "node_key": "archv",
+     "level_index": 2,
+     "citation": "LS 170.61",
+     "title": "Archivverordnung (ArchV)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 8
+    },
+    {
+     "node_key": "dsk",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Datenschutz-, Informatik- und Nutzungsreglemente",
+     "act_kind": "Gemeinde- oder Behördenerlass",
+     "note": "Datenschutz, Informationssicherheit, ICT-Nutzung, Videoüberwachung, Social Media",
+     "match_pattern": "datenschutz|informatik|\\bict\\b|informationssicherheit|video|social media|nutzungsrichtlinie|nutzungsreglement|internet|e-mail|digital",
+     "exclusion_pattern": "schuetzenstube|forsthaus|parkhaus|liegenschaften|versand|liste der|oeffentliche[mn]? grund",
+     "position": 9
+    },
+    {
+     "node_key": "akten",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Archiv- und Aktenreglement",
+     "act_kind": "Gemeinde- oder Behördenerlass",
+     "note": "Aktenplan, Registratur, Aufbewahrung und Archivierung",
+     "match_pattern": "archiv|aktenplan|registratur|aktenfuehrung|aufbewahrung",
+     "position": 10
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "dsv",
+     "to_node_key": "dsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 235.11",
+       "location": "Ingress",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "idg",
+     "to_node_key": "dsg",
+     "relation": "nicht direkt anwendbar",
+     "relation_type": "not_applicable",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 170.4",
+       "location": "§ 2.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 235.1",
+       "location": "Art. 2",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsgd",
+     "to_node_key": "idg",
+     "relation": "besondere Bestimmungen",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 3 a.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "idv",
+     "to_node_key": "idg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 170.41",
+       "location": "§ 1.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "ivsv",
+     "to_node_key": "idg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 170.8",
+       "location": "Ingress",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "archv",
+     "to_node_key": "archg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 170.61",
+       "location": "§ 1.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "ausl",
+     "to_node_key": "idg",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 172.71",
+       "location": "§ 3.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "dsk",
+     "to_node_key": "idg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 170.4",
+       "location": "§ 3.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "dsk",
+     "to_node_key": "ivsv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 170.8",
+       "location": "§ 1.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "dsk",
+     "to_node_key": "ausl",
+     "relation": "bei Auslagerung",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    },
+    {
+     "from_node_key": "akten",
+     "to_node_key": "archg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 170.6",
+       "location": "§ 6.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "akten",
+     "to_node_key": "archv",
+     "relation": "subsidiär (§ 1 Abs. 2 ArchV)",
+     "relation_type": "subsidiary",
+     "status": "manual",
+     "evidences": []
+    }
+   ]
+  },
+  {
+   "hierarchy_key": "beschaffung",
+   "title": "Beschaffung & Bau",
+   "short_title": "Beschaffung & Bau",
+   "hierarchy_group": "Ressourcen",
+   "levels": [
+    "Interkantonal (Konkordat)",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 23,
+   "nodes": [
+    {
+     "node_key": "ivoeb",
+     "level_index": 0,
+     "citation": "LS 720.1 (Anhang)",
+     "title": "Interkantonale Vereinbarung über das öffentliche Beschaffungswesen (IVöB)",
+     "act_kind": "Konkordat",
+     "note": "Vom 15. November 2019; gilt für Kanton und Gemeinden – Text im Anhang zum Beitrittsgesetz",
+     "external_url": "http://www.zhlex.zh.ch/Erlass.html?Open&Ordnr=720.1",
+     "position": 0
+    },
+    {
+     "node_key": "beig",
+     "level_index": 1,
+     "citation": "LS 720.1",
+     "title": "Gesetz über den Beitritt zur IVöB (BeiG IVöB)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "position": 1
+    },
+    {
+     "node_key": "pbg",
+     "level_index": 1,
+     "citation": "LS 700.1",
+     "title": "Planungs- und Baugesetz (PBG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "Schulhausbauten, Umbauten, Nutzungsänderungen; Pflicht der Gemeinden zur Bau- und Zonenordnung (§ 45)",
+     "position": 2
+    },
+    {
+     "node_key": "svo",
+     "level_index": 2,
+     "citation": "LS 720.11",
+     "title": "Submissionsverordnung (SVO)",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "position": 3
+    },
+    {
+     "node_key": "besch",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Beschaffungsrichtlinien / Vergabereglement",
+     "act_kind": "Gemeinde- oder Behördenerlass",
+     "note": "Zuständigkeiten und Schwellenwerte für Beschaffungen",
+     "match_pattern": "beschaffung|submission|vergabe|einkauf",
+     "exclusion_pattern": "pacht|landvergabe|abnahme|vergabeentscheid|anhang \\d",
+     "position": 4
+    },
+    {
+     "node_key": "bzo",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Bau- und Zonenordnung (BZO)",
+     "act_kind": "Gemeindeerlass (Stimmberechtigte)",
+     "note": "Nur bei politischen Gemeinden; massgebend für Schulbauten",
+     "match_pattern": "bau und zonenordnung|bau- und zonenordnung|bauordnung|\\bbzo\\b|zonenplan|baureglement",
+     "exclusion_pattern": "gebuehr|foerderung|kernzonenplan|vollzugsrichtlinie",
+     "position": 5
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "beig",
+     "to_node_key": "ivoeb",
+     "relation": "Beitritt",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 720.1",
+       "location": "§ 1.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "svo",
+     "to_node_key": "beig",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 720.11",
+       "location": "Ingress",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "svo",
+     "to_node_key": "ivoeb",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 720.11",
+       "location": "§ 2.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "besch",
+     "to_node_key": "ivoeb",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 720.1",
+       "location": "suche:Art. 4 ¹ Im Staatsvertragsbereich",
+       "side": "other"
+      }
+     ]
+    },
+    {
+     "from_node_key": "besch",
+     "to_node_key": "svo",
+     "relation": "verweist auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": []
+    },
+    {
+     "from_node_key": "bzo",
+     "to_node_key": "pbg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 700.1",
+       "location": "§ 45.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "parent_guide_topics": [
+  {
+   "topic_key": "eintritt",
+   "title": "Schuleintritt & Schulweg",
+   "questions": [
+    "Wann beginnt die Schulpflicht, kann der Eintritt verschoben werden?",
+    "Welche Schule besucht mein Kind, wie ist der Schulweg geregelt?"
+   ],
+   "position": 0,
+   "hierarchy_keys": [
+    "schulpflicht"
+   ],
+   "provisions": [
+    {
+     "citation": "LS 412.100",
+     "location": "§ 3."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 10."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 2."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 3."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 8."
+    }
+   ],
+   "match_pattern": "schulweg|schulbus|zuteilung|einzugsgebiet|einschulung|schuleintritt|rueckstellung|schuelertransport",
+   "exclusion_pattern": "beschluss|stellenbeschrieb"
+  },
+  {
+   "topic_key": "absenzen",
+   "title": "Absenzen, Urlaub, Jokertage",
+   "questions": [
+    "Mein Kind ist krank – was muss ich melden?",
+    "Wie beantrage ich Urlaub, eine Dispensation oder einen Jokertag?"
+   ],
+   "position": 1,
+   "hierarchy_keys": [
+    "absenzen",
+    "eltern"
+   ],
+   "provisions": [
+    {
+     "citation": "LS 412.100",
+     "location": "§ 28."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 28."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 29."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 30."
+    }
+   ],
+   "match_pattern": "absenz|jokertag|dispens|urlaub",
+   "exclusion_pattern": "personal|mitarbeit|lehrperson"
+  },
+  {
+   "topic_key": "kosten",
+   "title": "Kosten für Eltern",
+   "questions": [
+    "Was ist unentgeltlich, was bezahle ich (Lager, Verpflegung, Betreuung, Musikschule)?"
+   ],
+   "position": 2,
+   "hierarchy_keys": [
+    "kosten",
+    "tagesstrukturen"
+   ],
+   "provisions": [
+    {
+     "citation": "SR 101",
+     "location": "Art. 19"
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 11."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 11."
+    },
+    {
+     "citation": "LS 410.6",
+     "location": "§ 9."
+    }
+   ],
+   "match_pattern": "elternbeitr|lagerbeitr|kostenbeteiligung|tarif|beitragsverordnung|schulgeld",
+   "exclusion_pattern": "wasser|abwasser|werke|kesb|bibliothek|bau|personal|gebuehrentarif$|benuetzer|benutzer|schulraeume|vermiet"
+  },
+  {
+   "topic_key": "betreuung",
+   "title": "Betreuung ausserhalb des Unterrichts",
+   "questions": [
+    "Welche Betreuung bietet die Gemeinde an (Morgen, Mittag, Nachmittag, Ferien)?"
+   ],
+   "position": 3,
+   "hierarchy_keys": [
+    "tagesstrukturen"
+   ],
+   "provisions": [
+    {
+     "citation": "LS 412.100",
+     "location": "§ 30 a."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 32 a."
+    }
+   ],
+   "match_pattern": "tagesstruktur|tagesschule|betreuung|\\bhort|mittagstisch|schulergaenzend|ferienbetreuung",
+   "exclusion_pattern": "alters|spitex|pflege|kesb"
+  },
+  {
+   "topic_key": "mitwirkung",
+   "title": "Information & Mitwirkung",
+   "questions": [
+    "Wie werde ich informiert, wann gibt es Elterngespräche?",
+    "Wo kann ich mitwirken (Elternrat, Elternforum)?"
+   ],
+   "position": 4,
+   "hierarchy_keys": [
+    "eltern"
+   ],
+   "provisions": [
+    {
+     "citation": "LS 412.100",
+     "location": "§ 54."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 55."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 56."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 63."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 65."
+    }
+   ],
+   "match_pattern": "elternmitwirkung|elternrat|elternforum|elternmitarbeit|elternorganisation"
+  },
+  {
+   "topic_key": "pflichten",
+   "title": "Pflichten der Eltern",
+   "questions": [
+    "Welche Pflichten habe ich gegenüber der Schule?"
+   ],
+   "position": 5,
+   "hierarchy_keys": [
+    "eltern"
+   ],
+   "provisions": [
+    {
+     "citation": "LS 412.100",
+     "location": "§ 57."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 66."
+    },
+    {
+     "citation": "SR 210",
+     "location": "Art. 302"
+    }
+   ]
+  },
+  {
+   "topic_key": "disziplin",
+   "title": "Verhalten, Disziplin, Auszeit",
+   "questions": [
+    "Was darf die Schule bei Fehlverhalten tun?",
+    "Was bedeutet eine Auszeit oder eine vorübergehende Wegweisung?"
+   ],
+   "position": 6,
+   "hierarchy_keys": [
+    "eltern"
+   ],
+   "provisions": [
+    {
+     "citation": "LS 412.100",
+     "location": "§ 52."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 52 a."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 54."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 56."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 57."
+    }
+   ],
+   "match_pattern": "disziplin|verhaltens|schulordnung|schulhausordnung",
+   "exclusion_pattern": "sammelstelle|entsorg|friedhof|werkhof|personal|mitarbeit"
+  },
+  {
+   "topic_key": "foerderung",
+   "title": "Förderung & Sonderpädagogik",
+   "questions": [
+    "Bekommt mein Kind Unterstützung (Integrative Förderung, Therapie, DaZ)?",
+    "Wer entscheidet über sonderpädagogische Massnahmen?"
+   ],
+   "position": 7,
+   "hierarchy_keys": [
+    "sonderpaedagogik",
+    "sprache"
+   ],
+   "provisions": [
+    {
+     "citation": "LS 412.100",
+     "location": "§ 33."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 34."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 37."
+    },
+    {
+     "citation": "LS 412.103",
+     "location": "§ 12."
+    }
+   ],
+   "match_pattern": "sonderpaedagog|integrativ|therapie|logopaed|\\bdaz\\b|deutsch als zweit|begab|schulpsycholog",
+   "exclusion_pattern": "siedlung|anfrage|befoerderung"
+  },
+  {
+   "topic_key": "uebertritt",
+   "title": "Zeugnis, Promotion, Übertritt",
+   "questions": [
+    "Wie wird mein Kind beurteilt?",
+    "Wie läuft der Übertritt in die Sekundarschule oder ans Gymnasium?"
+   ],
+   "position": 8,
+   "hierarchy_keys": [
+    "beurteilung"
+   ],
+   "provisions": [
+    {
+     "citation": "LS 412.100",
+     "location": "§ 31."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 32."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 39."
+    },
+    {
+     "citation": "LS 413.21",
+     "location": "§ 14."
+    }
+   ],
+   "match_pattern": "zeugnis|promotion|uebertritt|einstufung|stufenwechsel",
+   "exclusion_pattern": "mitarbeit|personal"
+  },
+  {
+   "topic_key": "gesundheit",
+   "title": "Gesundheit",
+   "questions": [
+    "Welche schulärztlichen Untersuchungen und Impfberatungen gibt es?",
+    "Wie ist die Schulzahnpflege organisiert?"
+   ],
+   "position": 9,
+   "hierarchy_keys": [
+    "gesundheit"
+   ],
+   "provisions": [
+    {
+     "citation": "LS 412.101",
+     "location": "§ 17."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 18."
+    },
+    {
+     "citation": "LS 810.1",
+     "location": "§ 50."
+    },
+    {
+     "citation": "LS 818.22",
+     "location": "§ 1."
+    }
+   ],
+   "match_pattern": "schulaerzt|schularzt|schulzahn|zahnpflege|zahnarzt|zahnklinik|schulgesundheit"
+  },
+  {
+   "topic_key": "daten",
+   "title": "Daten & Fotos",
+   "questions": [
+    "Welche Daten über mein Kind darf die Schule bearbeiten und weitergeben?",
+    "Darf die Schule Fotos veröffentlichen?"
+   ],
+   "position": 10,
+   "hierarchy_keys": [
+    "datenschutz"
+   ],
+   "provisions": [
+    {
+     "citation": "LS 412.100",
+     "location": "§ 3 a."
+    },
+    {
+     "citation": "LS 170.4",
+     "location": "§ 16."
+    }
+   ],
+   "match_pattern": "datenschutz|foto|bildrecht|medien|video",
+   "exclusion_pattern": "oeffentliche[mn]? grund|parkhaus|schuetzenstube|forsthaus"
+  },
+  {
+   "topic_key": "entscheid",
+   "title": "Wer entscheidet an unserer Schule?",
+   "questions": [
+    "Wer ist zuständig – Schulpflege, Schulleitung, Gemeindeversammlung?",
+    "Wie wird die Schulpflege gewählt?"
+   ],
+   "position": 11,
+   "hierarchy_keys": [
+    "behoerden",
+    "organisation",
+    "wahlen",
+    "stimmberechtigte"
+   ],
+   "provisions": [
+    {
+     "citation": "LS 412.100",
+     "location": "§ 42."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 44."
+    },
+    {
+     "citation": "LS 131.1",
+     "location": "§ 15."
+    },
+    {
+     "citation": "LS 131.1",
+     "location": "§ 55."
+    },
+    {
+     "citation": "LS 161",
+     "location": "§ 40."
+    }
+   ],
+   "match_pattern": "organisationsstatut|funktionendiagramm|gemeindeordnung|geschaeftsordnung.*schul|geschaeftsreglement.*schul|kompetenz",
+   "exclusion_pattern": "protokoll|gemeinderat|werkkommission|befoerderung"
+  },
+  {
+   "topic_key": "beschwerde",
+   "title": "Nicht einverstanden – was tun?",
+   "questions": [
+    "Wie verlange ich eine Begründung oder Neubeurteilung?",
+    "Wie und wo kann ich Rekurs erheben?"
+   ],
+   "position": 12,
+   "hierarchy_keys": [
+    "verfahren"
+   ],
+   "provisions": [
+    {
+     "citation": "LS 412.100",
+     "location": "§ 74."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 75."
+    },
+    {
+     "citation": "LS 131.1",
+     "location": "§ 170."
+    },
+    {
+     "citation": "LS 175.2",
+     "location": "§ 19."
+    }
+   ],
+   "match_pattern": "rekurs|beschwerde|neubeurteilung|ombuds|anlaufstelle"
+  }
+ ],
+ "mandatory_documents": [
+  {
+   "document_key": "p1",
+   "category_number": 1,
+   "category_title": "Behördenorganisation und Gemeinderecht",
+   "document": "Gemeindeordnung / Schulgemeindeordnung",
+   "obligation": "P",
+   "intake": "Ja",
+   "source": "Gemeindeamt – Genehmigung Gemeindeordnung",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation/genehmigung-gemeindeordnung.html",
+   "match_pattern": "gemeindeordnung|\\(go\\)",
+   "remark": "§ 7 Abs. 2 GG (Rechtssammlung); Genehmigung durch den Regierungsrat"
+  },
+  {
+   "document_key": "p2",
+   "category_number": 1,
+   "category_title": "Behördenorganisation und Gemeinderecht",
+   "document": "Organisationsstatut der Schule",
+   "obligation": "P",
+   "intake": "Normative Bestimmungen ja",
+   "source": "Volksschulamt – Organisation auf Gemeindeebene",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation/schulinfo-organisation-auf-gemeindeebene.html",
+   "match_pattern": "organisationsstatut",
+   "uncertain_pattern": "organisationsreglement|schulorganisation",
+   "remark": "§ 41 a Abs. 2 VSG"
+  },
+  {
+   "document_key": "p3",
+   "category_number": 1,
+   "category_title": "Behördenorganisation und Gemeinderecht",
+   "document": "Geschäftsordnung der Schulpflege",
+   "obligation": "P",
+   "intake": "Ja, soweit rechtsetzender Erlass",
+   "source": "Gemeindeamt",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+   "match_pattern": "geschaeftsordnung|geschaeftsreglement"
+  },
+  {
+   "document_key": "p4",
+   "category_number": 1,
+   "category_title": "Behördenorganisation und Gemeinderecht",
+   "document": "Unterschriften- und Kompetenzenreglement",
+   "obligation": "B",
+   "intake": "Ja, wenn selbstständiger normativer Erlass",
+   "source": "Gemeindeamt",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+   "match_pattern": "unterschrift|kompetenzreglement|kompetenzenreglement|kompetenzregelung|zustaendigkeitsordnung|funktionendiagramm",
+   "uncertain_pattern": "kompetenz",
+   "remark": "Kann in Organisationsstatut oder Geschäftsordnung enthalten sein"
+  },
+  {
+   "document_key": "p5",
+   "category_number": 1,
+   "category_title": "Behördenorganisation und Gemeinderecht",
+   "document": "Entschädigungs- / Besoldungsverordnung der Behörden",
+   "obligation": "B",
+   "intake": "Ja, bei eigenständigem kommunalem Erlass",
+   "source": "Gemeindeamt",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+   "match_pattern": "entschaedigungsverordnung|entschaedigungsreglement|\\bevo\\b|besoldungsverordnung|entschaedigung (der )?behoerde",
+   "uncertain_pattern": "entschaedigung"
+  },
+  {
+   "document_key": "p6",
+   "category_number": 1,
+   "category_title": "Behördenorganisation und Gemeinderecht",
+   "document": "Geschäftsordnung der Schulkonferenz",
+   "obligation": "B",
+   "intake": "Je nach Regelungscharakter",
+   "source": "Volksschulamt – Organisation",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation.html",
+   "match_pattern": "schulkonferenz|konvent"
+  },
+  {
+   "document_key": "p7",
+   "category_number": 1,
+   "category_title": "Behördenorganisation und Gemeinderecht",
+   "document": "Reglement über Behördenkommissionen",
+   "obligation": "B",
+   "intake": "Ja, sofern rechtsetzender Erlass",
+   "source": "Gemeindeamt",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+   "match_pattern": "kommission.*(reglement|ordnung)|(reglement|ordnung).*kommission",
+   "exclusion_pattern": "energie|kirch|feuerwehr|forst|wasser|landwirtschaft|alters|spitex"
+  },
+  {
+   "document_key": "p8",
+   "category_number": 1,
+   "category_title": "Behördenorganisation und Gemeinderecht",
+   "document": "Reglement über beratende Kommissionen",
+   "obligation": "O",
+   "intake": "Bei normativen Bestimmungen",
+   "source": "Gemeindeamt",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+   "match_pattern": "beratende kommission|fachkommission"
+  },
+  {
+   "document_key": "p9",
+   "category_number": 2,
+   "category_title": "Finanzen und Personal",
+   "document": "Kommunales Personalreglement",
+   "obligation": "O",
+   "intake": "Ja, falls erlassen",
+   "source": "Volksschulamt – kantonales und kommunales Personal",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-personal-fuehren/volksschule-kantonales-kommunales-personal.html",
+   "match_pattern": "personalverordnung|personalreglement|\\bpevo\\b|anstellungs",
+   "remark": "Ohne eigenes Recht gilt subsidiär § 53 GG"
+  },
+  {
+   "document_key": "p10",
+   "category_number": 2,
+   "category_title": "Finanzen und Personal",
+   "document": "Kommunales Besoldungs- / Lohnreglement",
+   "obligation": "B",
+   "intake": "Ja, falls eigenständig erlassen",
+   "source": "Volksschulamt – Personal führen",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-personal-fuehren.html",
+   "match_pattern": "besoldung|lohnreglement|lohnordnung|lohnverordnung"
+  },
+  {
+   "document_key": "p11",
+   "category_number": 2,
+   "category_title": "Finanzen und Personal",
+   "document": "Gebührenverordnung",
+   "obligation": "B",
+   "intake": "Ja, wenn kommunale Gebühren normativ geregelt werden",
+   "source": "Gemeindeamt",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+   "match_pattern": "gebuehrenverordnung|gebuehrenordnung",
+   "remark": "Pflicht nur, wenn Gebühren erhoben werden"
+  },
+  {
+   "document_key": "p12",
+   "category_number": 2,
+   "category_title": "Finanzen und Personal",
+   "document": "Gebührenreglement / Gebührentarif",
+   "obligation": "B",
+   "intake": "Ja, falls als generell-abstrakter Erlass ausgestaltet",
+   "source": "Gemeindeamt",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+   "match_pattern": "gebuehrenreglement|gebuehrentarif",
+   "uncertain_pattern": "tarif"
+  },
+  {
+   "document_key": "p13",
+   "category_number": 2,
+   "category_title": "Finanzen und Personal",
+   "document": "Finanzkompetenzenreglement",
+   "obligation": "B",
+   "intake": "Ja, wenn separater Rechtserlass",
+   "source": "Gemeindefinanzen – Finanzhaushalt",
+   "source_url": "https://www.zh.ch/de/steuern-finanzen/gemeindefinanzen/finanzhaushalt-gemeinden.html",
+   "match_pattern": "finanzkompetenz|ausgabenkompetenz|finanzreglement|finanzordnung"
+  },
+  {
+   "document_key": "p14",
+   "category_number": 2,
+   "category_title": "Finanzen und Personal",
+   "document": "Reglement zur Ausgabenbewilligung",
+   "obligation": "O",
+   "intake": "Bei rechtsetzendem Inhalt",
+   "source": "Gemeindefinanzen – Finanzhaushalt",
+   "source_url": "https://www.zh.ch/de/steuern-finanzen/gemeindefinanzen/finanzhaushalt-gemeinden.html",
+   "match_pattern": "ausgabenbewilligung|kreditbewilligung"
+  },
+  {
+   "document_key": "p15",
+   "category_number": 2,
+   "category_title": "Finanzen und Personal",
+   "document": "Spesenreglement",
+   "obligation": "O",
+   "intake": "Bei allgemein verbindlichem Erlass",
+   "source": "Handbuch Personalrecht Kanton",
+   "source_url": "https://www.zh.ch/de/arbeiten-beim-kanton/fuer-hr-profis/handbuch-personalrecht/definition/grundlagen/gesetzliche-grundlagen.html",
+   "match_pattern": "spesen"
+  },
+  {
+   "document_key": "p16",
+   "category_number": 2,
+   "category_title": "Finanzen und Personal",
+   "document": "Reglement für Weiterbildungen",
+   "obligation": "O",
+   "intake": "Je nach Inhalt",
+   "source": "Volksschulamt – Personal führen",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-personal-fuehren.html",
+   "match_pattern": "weiterbildung"
+  },
+  {
+   "document_key": "p17",
+   "category_number": 3,
+   "category_title": "Schulbetrieb und pädagogische Organisation",
+   "document": "Schulprogramm",
+   "obligation": "P",
+   "intake": "Nicht zwingend vollständig als Rechtserlass",
+   "source": "Volksschulamt – Organisation",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation.html",
+   "match_pattern": "schulprogramm",
+   "remark": "Pflicht zur Dokumentation, nicht zwingend zur Publikation"
+  },
+  {
+   "document_key": "p18",
+   "category_number": 3,
+   "category_title": "Schulbetrieb und pädagogische Organisation",
+   "document": "Schulhausordnung / Schulordnung",
+   "obligation": "B",
+   "intake": "Ja, bei verbindlichen allgemeinen Regeln",
+   "source": "Volksschulamt",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html",
+   "match_pattern": "schulordnung|schulhausordnung|schulreglement",
+   "uncertain_pattern": "hausordnung",
+   "exclusion_pattern": "sammelstelle|entsorg|friedhof|werkhof|abfall"
+  },
+  {
+   "document_key": "p19",
+   "category_number": 3,
+   "category_title": "Schulbetrieb und pädagogische Organisation",
+   "document": "Reglement Elternmitwirkung",
+   "obligation": "B",
+   "intake": "Ja, wenn eigenständiger Rechtserlass",
+   "source": "Volksschulamt – Elternmitwirkung",
+   "source_url": "https://www.zh.ch/de/bildung/schulen/volksschule/rechte-und-pflichten-der-eltern/volksschule-elternmitwirkung.html",
+   "match_pattern": "elternmitwirkung|elternrat|elternforum|elternmitarbeit",
+   "remark": "§ 55 VSG: Organisationsstatut regelt die Mitwirkung der Eltern"
+  },
+  {
+   "document_key": "p20",
+   "category_number": 3,
+   "category_title": "Schulbetrieb und pädagogische Organisation",
+   "document": "Schülerpartizipationsreglement",
+   "obligation": "O",
+   "intake": "Je nach Regelungscharakter",
+   "source": "Volksschulamt – Partizipation",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation/schulinfo-eltern-schuelerinnen-und-schueler/partizipation-schuelerinnen-schueler-elternmitwirkung.html",
+   "match_pattern": "partizipation|schuelerrat|schuelerparlament|schuelerinnenrat"
+  },
+  {
+   "document_key": "p21",
+   "category_number": 3,
+   "category_title": "Schulbetrieb und pädagogische Organisation",
+   "document": "Hausaufgabenreglement",
+   "obligation": "O",
+   "intake": "Bei generell verbindlichen lokalen Regeln",
+   "source": "Volksschulamt",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html",
+   "match_pattern": "hausaufgabe"
+  },
+  {
+   "document_key": "p22",
+   "category_number": 3,
+   "category_title": "Schulbetrieb und pädagogische Organisation",
+   "document": "Reglement für Klassenlager und Exkursionen",
+   "obligation": "O",
+   "intake": "Je nach Inhalt",
+   "source": "Volksschulamt",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html",
+   "match_pattern": "klassenlager|lagerreglement|\\blager\\b|exkursion|schulreise"
+  },
+  {
+   "document_key": "p23",
+   "category_number": 3,
+   "category_title": "Schulbetrieb und pädagogische Organisation",
+   "document": "Richtlinien zum Umgang mit Disziplinarmassnahmen",
+   "obligation": "O",
+   "intake": "In der Regel internes Vollzugsdokument",
+   "source": "Volksschulamt – Disziplinarmassnahmen",
+   "source_url": "https://www.zh.ch/de/bildung/schulen/volksschule/rechte-und-pflichten-der-eltern/volksschule-disziplinarmassnahmen.html",
+   "match_pattern": "disziplin"
+  },
+  {
+   "document_key": "p24",
+   "category_number": 3,
+   "category_title": "Schulbetrieb und pädagogische Organisation",
+   "document": "Reglement zur Nutzung privater elektronischer Geräte",
+   "obligation": "O",
+   "intake": "Bei rechtsetzendem Inhalt",
+   "source": "Volksschulamt",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html",
+   "match_pattern": "handy|smartphone|mobiltelefon|elektronische geraete|private geraete"
+  },
+  {
+   "document_key": "p25",
+   "category_number": 3,
+   "category_title": "Schulbetrieb und pädagogische Organisation",
+   "document": "Betreuungstarif / Tagesstrukturreglement",
+   "obligation": "B",
+   "intake": "Ja, soweit Gebühren oder allgemein verbindliche Benutzungsregeln festgelegt werden",
+   "source": "Volksschulamt – Tagesstrukturen, rechtliche Vorgaben",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-schulinfo-unterrichtsergaenzende-angebote/schulinfo-tagesstrukturen/definition/grundlagen/rechtliche-vorgaben.html",
+   "match_pattern": "tagesstruktur|betreuungsreglement|betreuungstarif|betreuungsverordnung|hortreglement|mittagstisch|schulergaenzend",
+   "uncertain_pattern": "betreuung|hort",
+   "exclusion_pattern": "zweckverband.*pfleg|alters|spitex|pflegezentr",
+   "remark": "Pflicht, wenn Tagesstrukturen angeboten werden"
+  },
+  {
+   "document_key": "p26",
+   "category_number": 4,
+   "category_title": "Liegenschaften, Turnhallen und Infrastruktur",
+   "document": "Turnhallen-Nutzungsordnung",
+   "obligation": "O",
+   "intake": "Ja, wenn allgemein verbindliches Reglement",
+   "source": "Gemeindeamt",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+   "match_pattern": "turnhalle|sporthalle|mehrzweckhalle"
+  },
+  {
+   "document_key": "p27",
+   "category_number": 4,
+   "category_title": "Liegenschaften, Turnhallen und Infrastruktur",
+   "document": "Schulraumbenutzungsreglement",
+   "obligation": "O",
+   "intake": "Bei verbindlichen Benutzungsbedingungen",
+   "source": "Gemeindeamt",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+   "match_pattern": "schulraum|raumbenuetzung|raumbenutzung|benuetzungsreglement|benutzungsreglement|benuetzungsordnung|benutzungsordnung",
+   "exclusion_pattern": "gasthof|gemeindesaal|friedhof|forsthaus|kirch"
+  },
+  {
+   "document_key": "p28",
+   "category_number": 4,
+   "category_title": "Liegenschaften, Turnhallen und Infrastruktur",
+   "document": "Reglement für die ausserschulische Nutzung von Schulanlagen",
+   "obligation": "O",
+   "intake": "Ja, soweit generell-abstrakte Regeln festgelegt werden",
+   "source": "Gemeindeamt",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+   "match_pattern": "schulanlage|ausserschulisch",
+   "exclusion_pattern": "video"
+  },
+  {
+   "document_key": "p29",
+   "category_number": 4,
+   "category_title": "Liegenschaften, Turnhallen und Infrastruktur",
+   "document": "Tarifordnung für die Vermietung von Schulräumen",
+   "obligation": "B",
+   "intake": "Ja, wenn die Gemeinde allgemein verbindliche Tarife erlässt",
+   "source": "Gemeindeamt",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+   "match_pattern": "vermietung|benuetzungsgebuehr|benutzungsgebuehr|raumtarif|mietreglement",
+   "exclusion_pattern": "gewomag|wohn|gasthof|alters"
+  },
+  {
+   "document_key": "p30",
+   "category_number": 4,
+   "category_title": "Liegenschaften, Turnhallen und Infrastruktur",
+   "document": "Parkplatzreglement für Schulanlagen",
+   "obligation": "O",
+   "intake": "Bei rechtsetzendem Inhalt",
+   "source": "Gemeindeamt",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+   "match_pattern": "parkplatz|parkier",
+   "exclusion_pattern": "bau und zonen|zonenordnung"
+  },
+  {
+   "document_key": "p31",
+   "category_number": 4,
+   "category_title": "Liegenschaften, Turnhallen und Infrastruktur",
+   "document": "Reglement über die Nutzung von Aussenanlagen und Sportplätzen",
+   "obligation": "O",
+   "intake": "Bei rechtsetzendem Inhalt",
+   "source": "Gemeindeamt",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+   "match_pattern": "aussenanlage|sportplatz|sportanlage|pausenplatz|rasenplatz"
+  },
+  {
+   "document_key": "p32",
+   "category_number": 4,
+   "category_title": "Liegenschaften, Turnhallen und Infrastruktur",
+   "document": "Hausordnung für externe Nutzerinnen und Nutzer",
+   "obligation": "O",
+   "intake": "Je nach Verbindlichkeit und Adressatenkreis",
+   "source": "Gemeindeamt",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+   "match_pattern": "hausordnung.*(extern|vermiet|benut|benuet)"
+  },
+  {
+   "document_key": "p33",
+   "category_number": 5,
+   "category_title": "Datenschutz, ICT und Informationsverwaltung",
+   "document": "Ordnungssystem / Aktenplan",
+   "obligation": "P",
+   "intake": "In der Regel internes Führungsinstrument",
+   "source": "Informationsverwaltung (Kanton)",
+   "source_url": "https://www.zh.ch/de/politik-staat/wie-behoerden-informationen-verwalten.html",
+   "match_pattern": "aktenplan|ordnungssystem|registraturplan",
+   "remark": "§ 2 IVSV verlangt ein Ordnungssystem; Musteraktenplan des Staatsarchivs"
+  },
+  {
+   "document_key": "p34",
+   "category_number": 5,
+   "category_title": "Datenschutz, ICT und Informationsverwaltung",
+   "document": "Reglement Informationsverwaltung und Archivierung",
+   "obligation": "B",
+   "intake": "Normative Teile ja, ansonsten intern",
+   "source": "Staatsarchiv – Archive der Gemeinden",
+   "source_url": "https://www.zh.ch/de/politik-staat/wie-behoerden-informationen-verwalten/wie-gemeinden-archive-fuehren.html",
+   "match_pattern": "informationsverwaltung|archivreglement|archivverordnung|archiv"
+  },
+  {
+   "document_key": "p35",
+   "category_number": 5,
+   "category_title": "Datenschutz, ICT und Informationsverwaltung",
+   "document": "Datenschutzreglement",
+   "obligation": "O",
+   "intake": "Falls als kommunaler Rechtserlass ausgestaltet",
+   "source": "Volksschulamt – Datenschutz und Archivierung",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation/volksschule-datenschutz-archivierung.html",
+   "match_pattern": "datenschutz"
+  },
+  {
+   "document_key": "p36",
+   "category_number": 5,
+   "category_title": "Datenschutz, ICT und Informationsverwaltung",
+   "document": "ICT-Nutzungsreglement Mitarbeitende",
+   "obligation": "O",
+   "intake": "Je nach Regelungscharakter",
+   "source": "Volksschulamt – Datenschutz und Archivierung",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation/volksschule-datenschutz-archivierung.html",
+   "match_pattern": "(ict|informatik|internet|e mail).*(nutzung|benutzung|richtlinie|reglement)",
+   "uncertain_pattern": "nutzungsreglement|nutzungsrichtlinie",
+   "exclusion_pattern": "forsthaus|gemeindesaal|gasthof|friedhof"
+  },
+  {
+   "document_key": "p37",
+   "category_number": 5,
+   "category_title": "Datenschutz, ICT und Informationsverwaltung",
+   "document": "ICT-Nutzungsreglement Schülerinnen und Schüler",
+   "obligation": "O",
+   "intake": "Bei allgemein verbindlichen Vorschriften",
+   "source": "Volksschulamt – Datenschutz und Archivierung",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation/volksschule-datenschutz-archivierung.html",
+   "match_pattern": "(ict|medien|internet).*(schueler|sus)|(schueler|sus).*(ict|medien|internet)"
+  },
+  {
+   "document_key": "p38",
+   "category_number": 5,
+   "category_title": "Datenschutz, ICT und Informationsverwaltung",
+   "document": "Informationssicherheitsleitlinie",
+   "obligation": "O",
+   "intake": "Meist internes Führungsdokument",
+   "source": "Informationsverwaltung (Kanton)",
+   "source_url": "https://www.zh.ch/de/politik-staat/wie-behoerden-informationen-verwalten.html",
+   "match_pattern": "informationssicherheit|sicherheitsleitlinie|leitlinie informations"
+  },
+  {
+   "document_key": "p39",
+   "category_number": 5,
+   "category_title": "Datenschutz, ICT und Informationsverwaltung",
+   "document": "BYOD-Reglement",
+   "obligation": "O",
+   "intake": "Bei rechtsetzendem Inhalt",
+   "source": "Volksschulamt",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html",
+   "match_pattern": "byod|bring your own"
+  },
+  {
+   "document_key": "p40",
+   "category_number": 5,
+   "category_title": "Datenschutz, ICT und Informationsverwaltung",
+   "document": "Reglement Videoüberwachung",
+   "obligation": "B",
+   "intake": "Bei entsprechender Anlage und rechtlicher Regelung",
+   "source": "Datenschutz Kanton Zürich",
+   "source_url": "https://www.zh.ch/de/politik-staat/datenschutz.html",
+   "match_pattern": "video",
+   "remark": "Pflicht, wenn Videoüberwachung betrieben wird"
+  }
+ ],
+ "legal_bases": [
+  {
+   "number": 1,
+   "legal_area_number": 1,
+   "citation": "SR 101",
+   "title": "Bundesverfassung (BV)",
+   "location": "Art. 19, 62",
+   "relevance": "Anspruch auf Grundschulunterricht, Zuständigkeit der Kantone",
+   "source_url": "https://www.fedlex.admin.ch/eli/cc/1999/404/de"
+  },
+  {
+   "number": 2,
+   "legal_area_number": 1,
+   "citation": "LS 410.1",
+   "title": "Bildungsgesetz (BiG)",
+   "location": "§ 2",
+   "relevance": "Grundsätze und Bildungsauftrag",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 3,
+   "legal_area_number": 1,
+   "citation": "LS 412.100",
+   "title": "Volksschulgesetz (VSG)",
+   "location": "Gesamter Erlass",
+   "relevance": "Organisation, Auftrag, Schulpflicht, Schulbetrieb und Zuständigkeiten",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html"
+  },
+  {
+   "number": 4,
+   "legal_area_number": 1,
+   "citation": "LS 412.101",
+   "title": "Volksschulverordnung (VSV)",
+   "location": "Gesamter Erlass",
+   "relevance": "Vollzug des Volksschulgesetzes, Schulorganisation und Unterricht",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-412_101-2006_06_28-2006_08_21-121.html"
+  },
+  {
+   "number": 5,
+   "legal_area_number": 1,
+   "citation": "LS 412.100",
+   "title": "Volksschulgesetz",
+   "location": "§ 21",
+   "relevance": "Lehrplan und Zuständigkeit des Bildungsrates",
+   "source_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-4-volksschule-lehrplan-fuer-die-volksschule-des-kantons-zuerich.html"
+  },
+  {
+   "number": 6,
+   "legal_area_number": 1,
+   "citation": "LS 412.100",
+   "title": "Volksschulgesetz",
+   "location": "§ 31",
+   "relevance": "Beurteilung der Schülerinnen und Schüler",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-schulinfo-unterricht.html"
+  },
+  {
+   "number": 7,
+   "legal_area_number": 1,
+   "citation": "LS 412.100",
+   "title": "Volksschulgesetz",
+   "location": "§§ 33–40",
+   "relevance": "Sonderpädagogische Massnahmen",
+   "source_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html"
+  },
+  {
+   "number": 8,
+   "legal_area_number": 1,
+   "citation": "LS 412.103",
+   "title": "Verordnung über die sonderpädagogischen Massnahmen (VSM)",
+   "location": "§ 6",
+   "relevance": "Integrative Förderung",
+   "source_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2010-brb-2-volksschule-lehrmittel-fuer-den-integrativen-unterricht-berich.html"
+  },
+  {
+   "number": 9,
+   "legal_area_number": 1,
+   "citation": "LS 412.103",
+   "title": "VSM",
+   "location": "§§ 12–16",
+   "relevance": "Deutsch als Zweitsprache (DaZ), Voraussetzungen und Zuweisung",
+   "source_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html"
+  },
+  {
+   "number": 10,
+   "legal_area_number": 1,
+   "citation": "LS 412.103",
+   "title": "VSM",
+   "location": "§ 24",
+   "relevance": "Schulisches Standortgespräch",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 11,
+   "legal_area_number": 1,
+   "citation": "LS 412.121.31",
+   "title": "Reglement über die Ausstellung der Schulzeugnisse",
+   "location": "Gesamter Erlass",
+   "relevance": "Zeugnisse, Beurteilungen und Dokumentation der Leistungen",
+   "source_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2008-brb-30-volksschule-zeugnisreglement-neuerlass.html"
+  },
+  {
+   "number": 12,
+   "legal_area_number": 1,
+   "citation": "LS 412.101",
+   "title": "Volksschulverordnung",
+   "location": "§ 26 Abs. 2",
+   "relevance": "Stundenplan und Schuljahresorganisation",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-anstellung-arbeit/volksschule-arbeitsverhaeltnis_anpassen.html"
+  },
+  {
+   "number": 13,
+   "legal_area_number": 1,
+   "citation": "LS 412.100",
+   "title": "Volksschulgesetz",
+   "location": "§§ 54–56",
+   "relevance": "Zusammenarbeit mit Eltern, Elternmitwirkung und Mitwirkungsrechte",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation.html"
+  },
+  {
+   "number": 14,
+   "legal_area_number": 1,
+   "citation": "LS 412.100 / 412.101",
+   "title": "Volksschulgesetz und Volksschulverordnung",
+   "location": "Sachbereich Disziplin",
+   "relevance": "Disziplinarmassnahmen, Zuständigkeiten und Verfahren",
+   "source_url": "https://www.zh.ch/de/bildung/schulen/volksschule/rechte-und-pflichten-der-eltern/volksschule-disziplinarmassnahmen.html"
+  },
+  {
+   "number": 15,
+   "legal_area_number": 1,
+   "citation": "LS 412.100 / 412.101",
+   "title": "Volksschulgesetz und Volksschulverordnung",
+   "location": "Sachbereich Tagesstrukturen",
+   "relevance": "Schulergänzende Betreuung und Mittagstisch",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-schulinfo-unterrichtsergaenzende-angebote/schulinfo-tagesstrukturen.html"
+  },
+  {
+   "number": 16,
+   "legal_area_number": 2,
+   "citation": "LS 101",
+   "title": "Verfassung des Kantons Zürich",
+   "location": "Gesamter Erlass",
+   "relevance": "Verfassungsrechtliche Grundlagen für Bildung und Gemeindeselbstverwaltung",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 17,
+   "legal_area_number": 2,
+   "citation": "LS 131.1",
+   "title": "Gemeindegesetz (GG)",
+   "location": "Gesamter Erlass",
+   "relevance": "Organisation, Zuständigkeiten und Aufgaben der Schulgemeinden",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_1-2015_04_20-2018_01_01-132.html"
+  },
+  {
+   "number": 18,
+   "legal_area_number": 2,
+   "citation": "LS 131.11",
+   "title": "Gemeindeverordnung (VGG)",
+   "location": "Gesamter Erlass",
+   "relevance": "Vollzug des Gemeindegesetzes, Gemeindeverwaltung und Rechtssammlung",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-125.html"
+  },
+  {
+   "number": 19,
+   "legal_area_number": 2,
+   "citation": "LS 412.100",
+   "title": "Volksschulgesetz",
+   "location": "Bestimmungen zur Schulpflege",
+   "relevance": "Strategische Führung, Aufsicht und Verantwortlichkeiten",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation.html"
+  },
+  {
+   "number": 20,
+   "legal_area_number": 2,
+   "citation": "LS 412.100",
+   "title": "Volksschulgesetz",
+   "location": "Bestimmungen zur Schulleitung",
+   "relevance": "Operative Führung und Schulorganisation",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation.html"
+  },
+  {
+   "number": 21,
+   "legal_area_number": 2,
+   "citation": "LS 412.100",
+   "title": "Volksschulgesetz",
+   "location": "Bestimmungen zum Organisationsstatut",
+   "relevance": "Aufgaben, Kompetenzen, Verantwortlichkeiten und Prozesse",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation/schulinfo-organisation-auf-gemeindeebene.html"
+  },
+  {
+   "number": 22,
+   "legal_area_number": 2,
+   "citation": "LS 131.1",
+   "title": "Gemeindegesetz",
+   "location": "§ 53",
+   "relevance": "Öffentlich-rechtliche Arbeitsverhältnisse des Gemeindepersonals",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-personal-fuehren/volksschule-kantonales-kommunales-personal.html"
+  },
+  {
+   "number": 23,
+   "legal_area_number": 2,
+   "citation": "LS 175.2",
+   "title": "Verwaltungsrechtspflegegesetz (VRG)",
+   "location": "§ 8",
+   "relevance": "Akteneinsicht und verfahrensrechtliche Rechte betroffener Personen",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 24,
+   "legal_area_number": 2,
+   "citation": "kommunal",
+   "title": "Gemeindeordnung der jeweiligen Schulgemeinde",
+   "location": "Kommunale Bestimmungen",
+   "relevance": "Aufgabenverteilung, Behördenkompetenzen und Finanzbefugnisse",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html"
+  },
+  {
+   "number": 25,
+   "legal_area_number": 3,
+   "citation": "LS 412.31",
+   "title": "Lehrpersonalgesetz (LPG)",
+   "location": "Gesamter Erlass",
+   "relevance": "Anstellungsverhältnisse der kantonalen Lehrpersonen und Schulleitungen",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-personal-fuehren.html"
+  },
+  {
+   "number": 26,
+   "legal_area_number": 3,
+   "citation": "LS 412.311",
+   "title": "Lehrpersonalverordnung (LPVO)",
+   "location": "Gesamter Erlass",
+   "relevance": "Vollzug des Lehrpersonalgesetzes, Berufsauftrag, Arbeitszeit, Lohn und Personalführung",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-personal-fuehren.html"
+  },
+  {
+   "number": 27,
+   "legal_area_number": 3,
+   "citation": "LS 177.10",
+   "title": "Personalgesetz (PG)",
+   "location": "§ 46",
+   "relevance": "Mitarbeitendenbeurteilung",
+   "source_url": "https://www.zh.ch/de/arbeiten-beim-kanton/fuer-hr-profis/handbuch-personalrecht/definition/grundlagen/gesetzliche-grundlagen.html"
+  },
+  {
+   "number": 28,
+   "legal_area_number": 3,
+   "citation": "LS 177.11",
+   "title": "Personalverordnung (PVO)",
+   "location": "Gesamter Erlass",
+   "relevance": "Ergänzende personalrechtliche Bestimmungen",
+   "source_url": "https://www.zh.ch/de/arbeiten-beim-kanton/fuer-hr-profis/handbuch-personalrecht/definition/grundlagen/gesetzliche-grundlagen.html"
+  },
+  {
+   "number": 29,
+   "legal_area_number": 3,
+   "citation": "LS 177.111",
+   "title": "Vollzugsverordnung zum Personalgesetz (VVO)",
+   "location": "Gesamter Erlass",
+   "relevance": "Ferien, Urlaub, Arbeitszeit, Spesen und weiterer Personalvollzug",
+   "source_url": "https://www.zh.ch/de/arbeiten-beim-kanton/fuer-hr-profis/handbuch-personalrecht/definition/grundlagen/gesetzliche-grundlagen.html"
+  },
+  {
+   "number": 30,
+   "legal_area_number": 3,
+   "citation": "LS 412.31 / 412.311",
+   "title": "Lehrpersonalgesetz und Lehrpersonalverordnung",
+   "location": "§ 20 LPG; §§ 23–25 LPVO",
+   "relevance": "Mitarbeitendenbeurteilung von Lehrpersonen und Schulleitungen",
+   "source_url": "https://www.zh.ch/content/dam/zhweb/bilder-dokumente/themen/bildung/informationen-fuer-schulen/informationen-fuer-die-volksschule/fuehrung/personal-fuehren/personal-beurteilen-mab/rechtliche_grundlagen_mab.pdf"
+  },
+  {
+   "number": 31,
+   "legal_area_number": 3,
+   "citation": "LS 131.1",
+   "title": "Gemeindegesetz",
+   "location": "§ 53",
+   "relevance": "Personalrecht für kommunal angestellte Schulmitarbeitende",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-personal-fuehren/volksschule-kantonales-kommunales-personal.html"
+  },
+  {
+   "number": 32,
+   "legal_area_number": 3,
+   "citation": "kommunal",
+   "title": "Kommunales Personalreglement",
+   "location": "Kommunale Bestimmungen",
+   "relevance": "Anstellungsbedingungen für Verwaltung, ICT, Schulassistenzen und Betreuungspersonal",
+   "source_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html"
+  },
+  {
+   "number": 33,
+   "legal_area_number": 4,
+   "citation": "LS 170.4",
+   "title": "Gesetz über die Information und den Datenschutz (IDG)",
+   "location": "§§ 4–7",
+   "relevance": "Bearbeitung von Personendaten, Informationsverwaltung und Datenschutzgrundsätze",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 34,
+   "legal_area_number": 4,
+   "citation": "LS 170.41",
+   "title": "Verordnung über die Information und den Datenschutz (IDV)",
+   "location": "Gesamter Erlass",
+   "relevance": "Konkretisierung des kantonalen Informations- und Datenschutzrechts",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 35,
+   "legal_area_number": 4,
+   "citation": "LS 170.8",
+   "title": "Verordnung über die Informationsverwaltung und -sicherheit (IVSV)",
+   "location": "Gesamter Erlass",
+   "relevance": "Informationssicherheit, Verwaltung von Informationen und organisatorische Schutzmassnahmen",
+   "source_url": "https://www.zh.ch/content/dam/zhweb/bilder-dokumente/themen/politik-staat/informationsverwaltung/dokumente_informationsverwaltung/Leitfaden%20Informationsverwaltung%20%28Version%201.0%29.pdf"
+  },
+  {
+   "number": 36,
+   "legal_area_number": 4,
+   "citation": "LS 170.6",
+   "title": "Archivgesetz (ArchG)",
+   "location": "§ 6",
+   "relevance": "Eigenständige Archive der Gemeinden und Schulgemeinden",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 37,
+   "legal_area_number": 4,
+   "citation": "LS 170.61",
+   "title": "Archivverordnung (ArchV)",
+   "location": "Gesamter Erlass",
+   "relevance": "Vollzug der Archivgesetzgebung, Archivierung und Aktenbewirtschaftung",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 38,
+   "legal_area_number": 4,
+   "citation": "LS 172.71",
+   "title": "Gesetz über die Auslagerung von Informatikdienstleistungen",
+   "location": "Gesamter Erlass",
+   "relevance": "Relevanz bei der Auslagerung kantonaler Informatikdienstleistungen; kommunale Anwendbarkeit separat prüfen",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 39,
+   "legal_area_number": 4,
+   "citation": "SR 235.1",
+   "title": "Bundesgesetz über den Datenschutz (DSG)",
+   "location": "Gesamter Erlass",
+   "relevance": "Soweit der bundesrechtliche Geltungsbereich eröffnet ist, insbesondere bei privaten Dienstleistern",
+   "source_url": "https://www.fedlex.admin.ch/eli/cc/2022/491/de"
+  },
+  {
+   "number": 40,
+   "legal_area_number": 4,
+   "citation": "SR 235.11",
+   "title": "Datenschutzverordnung (DSV)",
+   "location": "Gesamter Erlass",
+   "relevance": "Vollzug des Bundesdatenschutzgesetzes im jeweiligen Anwendungsbereich",
+   "source_url": "https://www.fedlex.admin.ch/eli/cc/2022/568/de"
+  },
+  {
+   "number": 41,
+   "legal_area_number": 5,
+   "citation": "LS 131.1",
+   "title": "Gemeindegesetz (GG)",
+   "location": "Finanzhaushaltsbestimmungen",
+   "relevance": "Budgetierung, Rechnungslegung, finanzielle Zuständigkeiten und Kontrolle",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_1-2015_04_20-2018_01_01-132.html"
+  },
+  {
+   "number": 42,
+   "legal_area_number": 5,
+   "citation": "LS 131.11",
+   "title": "Gemeindeverordnung (VGG)",
+   "location": "Finanzhaushaltsbestimmungen",
+   "relevance": "Vollzugsregelungen zur Gemeinderechnung, Haushaltsführung und Finanzverwaltung",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-131_11-2016_06_29-2018_01_01-125.html"
+  },
+  {
+   "number": 43,
+   "legal_area_number": 5,
+   "citation": "LS 720.1 (Anhang)",
+   "title": "Interkantonale Vereinbarung über das öffentliche Beschaffungswesen (IVöB 2019)",
+   "location": "Gesamter Erlass",
+   "relevance": "Öffentliche Beschaffung von ICT, Dienstleistungen, Einrichtungen und Bauleistungen",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 44,
+   "legal_area_number": 5,
+   "citation": "LS 720.1",
+   "title": "Kantonales Beitrittsgesetz zur IVöB",
+   "location": "Gesamter Erlass",
+   "relevance": "Kantonale Umsetzung des öffentlichen Beschaffungsrechts",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 45,
+   "legal_area_number": 5,
+   "citation": "LS 720.11",
+   "title": "Submissionsverordnung (SVO)",
+   "location": "Gesamter Erlass",
+   "relevance": "Ergänzende Vorschriften zum Beschaffungsverfahren",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 46,
+   "legal_area_number": 5,
+   "citation": "LS 700.1",
+   "title": "Planungs- und Baugesetz (PBG)",
+   "location": "Gesamter Erlass",
+   "relevance": "Schulhausbauten, Umbauten, Nutzungsänderungen und baurechtliche Anforderungen",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 47,
+   "legal_area_number": 6,
+   "citation": "SR 0.107",
+   "title": "UN-Kinderrechtskonvention",
+   "location": "Art. 3, 12, 28, 29",
+   "relevance": "Kindeswohl, Mitwirkung und Recht auf Bildung",
+   "source_url": "https://www.fedlex.admin.ch/eli/cc/1998/2055_2055_2055/de"
+  },
+  {
+   "number": 48,
+   "legal_area_number": 6,
+   "citation": "SR 210",
+   "title": "Schweizerisches Zivilgesetzbuch (ZGB)",
+   "location": "Art. 301–303",
+   "relevance": "Elterliche Sorge, Erziehung und Bildung",
+   "source_url": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233/de"
+  },
+  {
+   "number": 49,
+   "legal_area_number": 6,
+   "citation": "SR 210",
+   "title": "Schweizerisches Zivilgesetzbuch (ZGB)",
+   "location": "Art. 307 ff.",
+   "relevance": "Kindesschutz, behördliche Massnahmen",
+   "source_url": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233/de"
+  },
+  {
+   "number": 50,
+   "legal_area_number": 6,
+   "citation": "SR 151.3",
+   "title": "Behindertengleichstellungsgesetz (BehiG)",
+   "location": "Art. 20",
+   "relevance": "Schulung und Integration von Kindern und Jugendlichen mit Behinderungen",
+   "source_url": "https://www.fedlex.admin.ch/eli/cc/2003/667/de"
+  },
+  {
+   "number": 51,
+   "legal_area_number": 6,
+   "citation": "SR 311.0",
+   "title": "Schweizerisches Strafgesetzbuch (StGB)",
+   "location": "Art. 321",
+   "relevance": "Berufsgeheimnis, soweit die betreffende Person darunter fällt",
+   "source_url": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799/de"
+  },
+  {
+   "number": 52,
+   "legal_area_number": 6,
+   "citation": "SR 311.0",
+   "title": "Schweizerisches Strafgesetzbuch (StGB)",
+   "location": "Art. 320",
+   "relevance": "Amtsgeheimnis für erfasste Amtsträgerinnen und Amtsträger",
+   "source_url": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799/de"
+  },
+  {
+   "number": 53,
+   "legal_area_number": 6,
+   "citation": "SR 231.1",
+   "title": "Urheberrechtsgesetz (URG)",
+   "location": "Art. 19",
+   "relevance": "Nutzung urheberrechtlich geschützter Werke im Unterricht",
+   "source_url": "https://www.fedlex.admin.ch/eli/cc/1993/1798_1798_1798/de"
+  },
+  {
+   "number": 54,
+   "legal_area_number": 6,
+   "citation": "LS 412.106",
+   "title": "Verordnung über die Finanzierung der Sonderschulung (VFiSo)",
+   "location": "Gesamter Erlass",
+   "relevance": "Finanzierung der Sonderschulung",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 55,
+   "legal_area_number": 6,
+   "citation": "LS 412.106.1",
+   "title": "Verordnung über die Aufsicht über die Sonderschulung",
+   "location": "Gesamter Erlass",
+   "relevance": "Qualitätssicherung und Aufsicht über die Sonderschulung",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 56,
+   "legal_area_number": 6,
+   "citation": "LS 412.107",
+   "title": "Spitalschulverordnung (SpiV)",
+   "location": "Gesamter Erlass",
+   "relevance": "Schulung bei Spital- und Klinikaufenthalten",
+   "source_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-schulinfo-besonderer-bildungsbedarf/schulinfo-spitalschulung.html"
+  },
+  {
+   "number": 57,
+   "legal_area_number": 7,
+   "citation": "Bildungsratsbeschlüsse",
+   "title": "Einführung Zürcher Lehrplan 21",
+   "location": "BRB 4/2017",
+   "relevance": "Inkraftsetzung des Lehrplans",
+   "source_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-4-volksschule-lehrplan-fuer-die-volksschule-des-kantons-zuerich.html"
+  },
+  {
+   "number": 58,
+   "legal_area_number": 7,
+   "citation": "Bildungsratsbeschlüsse",
+   "title": "Lektionentafel der Volksschule",
+   "location": "BRB 5/2017",
+   "relevance": "Lektionentafeln für Kindergarten, Primar- und Sekundarstufe",
+   "source_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-5-volksschule-lektionentafel-fuer-die-kindergarten-primar-und-sekundarstufe.html"
+  },
+  {
+   "number": 59,
+   "legal_area_number": 7,
+   "citation": "Bildungsratsbeschlüsse",
+   "title": "Anpassung Sekundarstufe",
+   "location": "BRB 1/2019",
+   "relevance": "Anpassung der Lektionentafel",
+   "source_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2019-brb-1-anpassung-lektionentafel-sekundarschule.html"
+  },
+  {
+   "number": 60,
+   "legal_area_number": 7,
+   "citation": "Bildungsratsbeschlüsse",
+   "title": "Anpassung Sekundarstufe",
+   "location": "BRB 5/2021",
+   "relevance": "Weitere Anpassung der Lektionentafel",
+   "source_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2021-brb-05.html"
+  },
+  {
+   "number": 61,
+   "legal_area_number": 7,
+   "citation": "Bildungsratsbeschlüsse",
+   "title": "Anpassungen Beurteilung und Zeugnis",
+   "location": "BRB 5/2025",
+   "relevance": "Beurteilung in RKE und MI in der Primarstufe",
+   "source_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2025-brb-05.html"
+  },
+  {
+   "number": 62,
+   "legal_area_number": 7,
+   "citation": "Bildungsratsbeschlüsse",
+   "title": "Deutsch als Zweitsprache",
+   "location": "BRB 8/2026",
+   "relevance": "Anforderungen an ein Lehrmittel für Sprachförderung und DaZ",
+   "source_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html"
+  },
+  {
+   "number": 63,
+   "legal_area_number": 5,
+   "citation": "LS 132.1",
+   "title": "Finanzausgleichsgesetz (FAG)",
+   "location": "Gesamter Erlass",
+   "relevance": "Ressourcen- und Lastenausgleich, Beiträge des Kantons an die Gemeinden – auch an Schulgemeinden",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 64,
+   "legal_area_number": 5,
+   "citation": "LS 132.11",
+   "title": "Finanzausgleichsverordnung (FAV)",
+   "location": "Gesamter Erlass",
+   "relevance": "Vollzug des Finanzausgleichs: Berechnung und Auszahlung der Beiträge",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 65,
+   "legal_area_number": 5,
+   "citation": "LS 611",
+   "title": "Gesetz über Controlling und Rechnungslegung (CRG)",
+   "location": "Gesamter Erlass",
+   "relevance": "Haushaltsrecht des Kantons; für Gemeinden nur über Verweise relevant (Gemeinden: GG 4. Teil)",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 66,
+   "legal_area_number": 6,
+   "citation": "LS 810.1",
+   "title": "Gesundheitsgesetz (GesG)",
+   "location": "§§ 49–50",
+   "relevance": "Gesundheitsförderung in Schulen; Prävention und ärztliche Überwachung während der Schulpflicht, Impfberatung",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 67,
+   "legal_area_number": 6,
+   "citation": "LS 818.22",
+   "title": "Verordnung über die Schul- und Volkszahnpflege (VSVZ)",
+   "location": "Gesamter Erlass",
+   "relevance": "Schulzahnpflege durch die Gemeinden: Prophylaxe, jährliche Untersuchung",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 68,
+   "legal_area_number": 6,
+   "citation": "LS 818.11",
+   "title": "Vollzugsverordnung zur eidgenössischen Epidemiengesetzgebung (VV EpiG)",
+   "location": "Gesamter Erlass",
+   "relevance": "Vollzug des Epidemienrechts im Kanton, Impfungen auf Kosten des Kantons",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 69,
+   "legal_area_number": 6,
+   "citation": "SR 818.101",
+   "title": "Epidemiengesetz (EpG)",
+   "location": "Art. 21, 40",
+   "relevance": "Förderung von Impfungen, Überprüfung des Impfstatus während der obligatorischen Schulzeit; Massnahmen gegenüber der Bevölkerung (z. B. Schulschliessungen)",
+   "source_url": "https://www.fedlex.admin.ch/eli/cc/2015/297/de"
+  },
+  {
+   "number": 70,
+   "legal_area_number": 1,
+   "citation": "LS 410.6",
+   "title": "Musikschulgesetz (MuSG)",
+   "location": "§§ 1–3",
+   "relevance": "Musikalische Bildung: Aufgaben der Gemeinden, Anerkennung der Musikschulen",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 71,
+   "legal_area_number": 1,
+   "citation": "LS 410.61",
+   "title": "Musikschulverordnung (MuSV)",
+   "location": "Gesamter Erlass",
+   "relevance": "Angebot, Anerkennung und Beiträge von Kanton und Gemeinden an die Musikschulen",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 72,
+   "legal_area_number": 6,
+   "citation": "LS 852.1",
+   "title": "Kinder- und Jugendhilfegesetz (KJHG)",
+   "location": "§§ 18–18 b",
+   "relevance": "Familienergänzende Betreuung im Vorschulbereich (Kindertagesstätten, Tagesfamilien)",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 73,
+   "legal_area_number": 6,
+   "citation": "SR 211.222.338",
+   "title": "Pflegekinderverordnung (PAVO)",
+   "location": "Art. 13–15",
+   "relevance": "Bewilligungspflicht für Einrichtungen, die Kinder tagsüber betreuen",
+   "source_url": "https://www.fedlex.admin.ch/eli/cc/1977/1931_1931_1931/de"
+  },
+  {
+   "number": 74,
+   "legal_area_number": 1,
+   "citation": "LS 413.21",
+   "title": "Mittelschulgesetz (MSG)",
+   "location": "§ 14",
+   "relevance": "Aufnahme in die Mittelschulen (Übertritt aus der Volksschule)",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 75,
+   "legal_area_number": 1,
+   "citation": "LS 413.250.1",
+   "title": "Reglement für die Aufnahme in die Gymnasien mit Anschluss an die 6. Klasse der Primarschule",
+   "location": "Gesamter Erlass",
+   "relevance": "Übertritt Primarstufe – Langgymnasium",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 76,
+   "legal_area_number": 1,
+   "citation": "LS 413.250.2",
+   "title": "Verordnung über die Aufnahme in die Maturitätsschulen im Anschluss an die Sekundarstufe",
+   "location": "Gesamter Erlass",
+   "relevance": "Übertritt Sekundarstufe – Mittelschulen, einheitliche Aufnahmeprüfung",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 77,
+   "legal_area_number": 1,
+   "citation": "LS 414.16",
+   "title": "Gesetz über den Beitritt zum Regionalen Schulabkommen (RSA 2009)",
+   "location": "Gesamter Erlass",
+   "relevance": "Schulbesuch in anderen Kantonen, Schulgeld zwischen Kantonen",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 78,
+   "legal_area_number": 2,
+   "citation": "LS 161",
+   "title": "Gesetz über die politischen Rechte (GPR)",
+   "location": "§§ 23–47, 54",
+   "relevance": "Wahl der Schulpflege, Wählbarkeit, Unvereinbarkeit, Amtsdauer, stille Wahl; Abstimmungen an der Urne",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  },
+  {
+   "number": 79,
+   "legal_area_number": 2,
+   "citation": "LS 161.1",
+   "title": "Verordnung über die politischen Rechte (VPR)",
+   "location": "Gesamter Erlass",
+   "relevance": "Vollzug der Wahlen und Abstimmungen, Wahlvorschläge, Teilämter",
+   "source_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html"
+  }
+ ]
+}

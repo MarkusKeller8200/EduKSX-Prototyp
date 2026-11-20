@@ -1,0 +1,181 @@
+﻿hierarchy_key;from_node_key;to_node_key;relation;relation_type;status
+volksschule;big;bv;Grundlage;basis;manual
+volksschule;vsg;big;Rahmen;reference;manual
+volksschule;vsv;vsg;Vollzug;implementation;manual
+volksschule;vsm;vsg;Vollzug;implementation;manual
+volksschule;lp;vsg;Grundlage;basis;manual
+volksschule;lp;big;Zuständigkeit Bildungsrat;reference;manual
+volksschule;zr;vsg;Grundlage;basis;manual
+volksschule;go;vsg;Grundlage;basis;manual
+volksschule;os;vsg;Grundlage;basis;manual
+volksschule;os;go;im Rahmen der;reference;manual
+volksschule;so;os;gestützt auf;reference;manual
+volksschule;so;vsv;verweist auf;reference;manual
+schulpflicht;vsg;bv;Umsetzung;basis;manual
+schulpflicht;rsa;bv;Koordination (Art. 62 BV);reference;manual
+schulpflicht;vsg;rsa;interkantonale Verträge;reference;manual
+schulpflicht;vsv;vsg;Vollzug;implementation;manual
+schulpflicht;sg;vsg;Grundlage;basis;manual
+schulpflicht;sg;vsv;Grundlage;basis;manual
+tagesstrukturen;vsg;pavo;verweist auf;reference;manual
+tagesstrukturen;kjhg;pavo;verweist auf;reference;manual
+tagesstrukturen;vsv;vsg;Vollzug;implementation;manual
+tagesstrukturen;musv;musg;Vollzug;implementation;manual
+tagesstrukturen;ts;vsg;Grundlage;basis;manual
+tagesstrukturen;ts;vsv;Grundlage;basis;manual
+tagesstrukturen;ms;musg;Grundlage;basis;manual
+tagesstrukturen;ms;musv;Beiträge;reference;manual
+tagesstrukturen;kb;kjhg;Grundlage;basis;manual
+tagesstrukturen;kb;pavo;Bewilligung;reference;manual
+sonderpaedagogik;vsg;behig;Umsetzung;basis;manual
+sonderpaedagogik;vsm;vsg;Vollzug;implementation;manual
+sonderpaedagogik;vfiso;vsg;Vollzug;implementation;manual
+sonderpaedagogik;auf;vsg;Vollzug;implementation;manual
+sonderpaedagogik;spiv;vsg;Vollzug;implementation;manual
+sonderpaedagogik;kom;vsg;Grundlage;basis;manual
+sonderpaedagogik;kom;vsm;Grundlage;basis;manual
+kindesschutz;zgb;ukrk;Umsetzung;basis;manual
+kindesschutz;vsg;zgb;verweist auf;reference;manual
+kindesschutz;vsg;ukrk;Mitwirkung (Art. 12 KRK);reference;manual
+kindesschutz;vsg;stgb;Amtsgeheimnis;reference;manual
+kindesschutz;vsv;vsg;Vollzug;implementation;manual
+kindesschutz;kom;vsg;gestützt auf;reference;manual
+kindesschutz;kom;zgb;Melderecht;reference;manual
+gesundheit;gesg;epg;Umsetzung (Art. 21 EpG);basis;manual
+gesundheit;vvepig;epg;Vollzug;implementation;manual
+gesundheit;vsg;gesg;verweist auf;reference;manual
+gesundheit;vsv;vsg;Vollzug;implementation;manual
+gesundheit;vsv;epg;Impfen;reference;manual
+gesundheit;vsvz;gesg;Gesundheitsgesetzgebung;reference;manual
+gesundheit;sad;vsg;Grundlage;basis;manual
+gesundheit;sad;vsv;Grundlage;basis;manual
+gesundheit;sad;vsvz;Grundlage;basis;manual
+gesundheit;sad;gesg;Grundlage;basis;manual
+eltern;zgb;krk;Umsetzung;basis;manual
+eltern;vsg;zgb;Zusammenarbeit (Art. 302 ZGB);reference;manual
+eltern;vsg;krk;Mitwirkung;reference;manual
+eltern;vsv;vsg;Vollzug;implementation;manual
+eltern;os;vsg;Grundlage;basis;manual
+eltern;os;vsv;Grundlage;basis;manual
+eltern;abs;vsv;Grundlage;basis;manual
+eltern;abs;vsg;Disziplin;reference;manual
+absenzen;vsv;vsg;Vollzug;implementation;manual
+absenzen;abs;vsv;Grundlage;basis;manual
+absenzen;abs;vsg;Grundlage;basis;manual
+kosten;vsg;bv;Umsetzung;basis;manual
+kosten;vsv;vsg;Vollzug;implementation;manual
+kosten;musv;musg;Vollzug;implementation;manual
+kosten;kom;vsg;Grundlage;basis;manual
+kosten;kom;vsv;Grundlage;basis;manual
+kosten;kom;musg;Elternbeiträge Musikschule;reference;manual
+personal;pg;or;verweist auf;reference;manual
+personal;lpg;pg;subsidiär;subsidiary;manual
+personal;pvo;pg;Vollzug;implementation;manual
+personal;vvo;pg;Vollzug;implementation;manual
+personal;lpvo;lpg;Vollzug;implementation;manual
+personal;lpvo;vvo;verweist auf;reference;manual
+personal;anst;lpg;Grundlage;basis;manual
+personal;anst;lpvo;Grundlage;basis;manual
+personal;anst;vsg;Grundlage;basis;manual
+personal;gem;gg;Grundlage;basis;manual
+personal;gem;pg;subsidiär (§ 53 Abs. 2 GG);subsidiary;manual
+personal;gem;pvo;subsidiär (§ 53 Abs. 2 GG);subsidiary;manual
+personal;gem;vsg;Leitung Bildung;reference;manual
+unterricht;lm;vsg;Grundlage;basis;manual
+unterricht;kom;urg;Eigengebrauch im Unterricht;reference;manual
+unterricht;kom;idg;Personendaten;reference;manual
+unterricht;kom;lm;verweist auf;reference;manual
+unterricht;kom;vsg;gestützt auf;reference;manual
+beurteilung;vsv;vsg;Vollzug;implementation;manual
+beurteilung;zr;vsg;Grundlage;basis;manual
+beurteilung;aufn6;msg;Grundlage;basis;manual
+beurteilung;aufn;msg;Grundlage;basis;manual
+beurteilung;aufn6;vsg;Übertritt (§ 32 VSG);reference;manual
+beurteilung;kom;vsv;Grundlage;basis;manual
+beurteilung;kom;zr;verweist auf;reference;manual
+sprache;vsg;bv;Unterrichtssprache;reference;manual
+sprache;vsv;vsg;Vollzug;implementation;manual
+sprache;vsm;vsg;Vollzug;implementation;manual
+sprache;brb;vsg;Grundlage;basis;manual
+sprache;kom;vsm;Grundlage;basis;manual
+sprache;kom;vsv;Grundlage;basis;manual
+sprache;kom;brb;verweist auf;reference;manual
+gemeindeorganisation;gg;kv;Grundlage;basis;manual
+gemeindeorganisation;vgg;gg;Vollzug;implementation;manual
+gemeindeorganisation;go;kv;Grundlage;basis;manual
+gemeindeorganisation;go;gg;Grundlage;basis;manual
+gemeindeorganisation;pub;gg;Grundlage;basis;manual
+gemeindeorganisation;pub;vgg;Grundlage;basis;manual
+gemeindeorganisation;pub;idg;Öffentlichkeitsprinzip;reference;manual
+stimmberechtigte;gg;kv;Grundlage;basis;manual
+stimmberechtigte;gpr;kv;Umsetzung;basis;manual
+stimmberechtigte;vpr;gpr;Vollzug;implementation;manual
+stimmberechtigte;gg;gpr;verweist auf;reference;manual
+stimmberechtigte;go;gg;Grundlage;basis;manual
+stimmberechtigte;gv;gg;Grundlage;basis;manual
+stimmberechtigte;gv;go;gestützt auf;reference;manual
+behoerden;gg;vrg;Ausstand;reference;manual
+behoerden;gs;gg;Grundlage;basis;manual
+behoerden;kom;gg;Grundlage;basis;manual
+behoerden;komp;gg;Grundlage;basis;manual
+behoerden;komp;vsg;Delegation Schulpflege;reference;manual
+wahlen;vpr;gpr;Vollzug;implementation;manual
+wahlen;gg;gpr;verweist auf;reference;manual
+wahlen;go;gpr;Grundlage;basis;manual
+wahlen;go;gg;Grundlage;basis;manual
+wahlen;ent;go;gestützt auf;reference;manual
+organisation;gg;kv;Grundlage;basis;manual
+organisation;vsg;gg;verweist auf;reference;manual
+organisation;vsv;vsg;Vollzug;implementation;manual
+organisation;go;kv;Grundlage;basis;manual
+organisation;go;gg;Grundlage;basis;manual
+organisation;os;vsg;Grundlage;basis;manual
+organisation;os;vsv;Grundlage;basis;manual
+organisation;os;go;im Rahmen der;reference;manual
+organisation;sp;vsg;Grundlage;basis;manual
+organisation;sp;vsv;Grundlage;basis;manual
+organisation;gs;vsg;Grundlage;basis;manual
+organisation;gs;go;gestützt auf;reference;manual
+kontrolle;vsg;gg;Aufsicht;reference;manual
+kontrolle;rpk;gg;Grundlage;basis;manual
+zusammenarbeit;zv;gg;Grundlage;basis;manual
+zusammenarbeit;zv;vgg;Rechtssammlung;reference;manual
+zusammenarbeit;eg;gg;Grundlage;basis;manual
+zusammenarbeit;eg;vsg;Schulträger;reference;manual
+verfahren;kv;bv;konkretisiert;reference;manual
+verfahren;vrg;kv;Umsetzung;basis;manual
+verfahren;gg;vrg;verweist auf;reference;manual
+verfahren;vsg;vrg;verweist auf;reference;manual
+verfahren;go;kv;Grundlage;basis;manual
+verfahren;go;gg;Grundlage;basis;manual
+verfahren;gs;vsg;Grundlage;basis;manual
+verfahren;gs;go;gestützt auf;reference;manual
+finanzen;vgg;gg;Vollzug;implementation;manual
+finanzen;fav;fag;Vollzug;implementation;manual
+finanzen;go;gg;Grundlage;basis;manual
+finanzen;go;fag;betrifft (Ausgleich);reference;manual
+finanzen;fin;go;gestützt auf;reference;manual
+finanzen;fin;gg;Grundsätze;reference;manual
+finanzen;fin;vgg;verweist auf;reference;manual
+finanzen;geb;gg;Verursacherprinzip;reference;manual
+finanzen;vfiso;vsgfin;Vollzug;implementation;manual
+finanzen;fin;vsgfin;Mitteleinsatz;reference;manual
+finanzen;geb;vsgfin;Elternbeiträge;reference;manual
+datenschutz;dsv;dsg;Vollzug;implementation;manual
+datenschutz;idg;dsg;nicht direkt anwendbar;not_applicable;manual
+datenschutz;vsgd;idg;besondere Bestimmungen;reference;manual
+datenschutz;idv;idg;Vollzug;implementation;manual
+datenschutz;ivsv;idg;Vollzug;implementation;manual
+datenschutz;archv;archg;Vollzug;implementation;manual
+datenschutz;ausl;idg;verweist auf;reference;manual
+datenschutz;dsk;idg;Grundlage;basis;manual
+datenschutz;dsk;ivsv;Grundlage;basis;manual
+datenschutz;dsk;ausl;bei Auslagerung;reference;manual
+datenschutz;akten;archg;Grundlage;basis;manual
+datenschutz;akten;archv;subsidiär (§ 1 Abs. 2 ArchV);subsidiary;manual
+beschaffung;beig;ivoeb;Beitritt;reference;manual
+beschaffung;svo;beig;Vollzug;implementation;manual
+beschaffung;svo;ivoeb;verweist auf;reference;manual
+beschaffung;besch;ivoeb;Grundlage;basis;manual
+beschaffung;besch;svo;verweist auf;reference;manual
+beschaffung;bzo;pbg;Grundlage;basis;manual

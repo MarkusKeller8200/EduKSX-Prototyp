@@ -298,6 +298,43 @@ CREATE TABLE act_references (
     UNIQUE (from_act_id, target_citation)
 );
 
+-- ------------------------------------------------------------------ Pflege der Inhalte: Importläufe
+
+-- Importlauf: Änderungen an redaktionellen Inhalten über API, CSV/Excel oder KI-Recherche
+-- Geltungsbereich: global · Datenklasse: intern
+-- Herkunft/Verwendung: Pflege-API (Probelauf und Übernahme); Protokoll, wer was wann geändert hat
+CREATE TABLE content_imports (
+    id                      uuid PRIMARY KEY,
+    source_kind             text NOT NULL CHECK (source_kind IN ('api','csv','xlsx','json','ai_research','manual')),   -- Herkunft | Art der Lieferung | intern | api=API; csv=CSV-Dateien; xlsx=Excel; json=JSON-Paket; ai_research=KI-Recherche; manual=von Hand
+    mode                    text NOT NULL DEFAULT 'dry_run' CHECK (mode IN ('dry_run','apply')),   -- Modus | Probelauf prüft nur, Übernahme schreibt | intern | dry_run=Probelauf; apply=Übernahme
+    status                  text NOT NULL DEFAULT 'received' CHECK (status IN ('received','validated','failed','applied','rejected')),   -- Status | Verlauf des Imports | intern | received=eingegangen; validated=geprüft; failed=fehlerhaft; applied=übernommen; rejected=verworfen
+    file_name               text,                            -- Datei | Name der gelieferten Datei | intern
+    file_sha256             char(64),                        -- Prüfsumme | SHA-256 der Lieferung | intern
+    format_version          text NOT NULL DEFAULT '1.0',     -- Formatversion | Version des Importformats | intern
+    research_note           text,                            -- Recherche | Vorgehen, Auftrag, Modell (bei KI) | intern
+    sources                 text[] NOT NULL DEFAULT '{}',    -- Quellen | Adressen der verwendeten Quellen | intern
+    summary                 jsonb,                           -- Zusammenfassung | Anzahl neu, geändert, gelöscht, unverändert, Fehler je Inhaltsart | intern
+    applied_at              timestamptz,                     -- Übernommen am | Zeitpunkt der Übernahme | intern
+    applied_by_id           uuid,                            -- Übernommen von | Redaktion (ohne Constraint) | intern
+    based_on_import_id      uuid REFERENCES content_imports(id),   -- Probelauf | übernommener Probelauf | intern
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid
+);
+
+-- Einzelne Änderung eines Importlaufs (Protokoll und Prüfbericht)
+-- Geltungsbereich: global · Datenklasse: intern
+-- Herkunft/Verwendung: Pflege-API; Prüfbericht des Probelaufs, Nachvollzug der Übernahme
+CREATE TABLE content_import_items (
+    id                      uuid PRIMARY KEY,
+    content_import_id       uuid NOT NULL REFERENCES content_imports(id) ON DELETE CASCADE,   -- Importlauf | Verweis
+    content_type            text NOT NULL CHECK (content_type IN ('norm_hierarchy','hierarchy_node','hierarchy_edge','parent_guide_topic','mandatory_document','legal_basis','publication_source')),   -- Inhaltsart | betroffene Tabelle | intern | norm_hierarchy=Normenhierarchie; hierarchy_node=Knoten; hierarchy_edge=Verbindung; parent_guide_topic=Elternwegweiser; mandatory_document=Pflichtdokument; legal_basis=Rechtsgrundlage; publication_source=Publikationsquelle
+    content_key             text NOT NULL,                   -- Schlüssel | fachlicher Schlüssel, z. B. «volksschule/vsg» | intern
+    action                  text NOT NULL CHECK (action IN ('create','update','delete','unchanged')),   -- Aktion | Wirkung | intern | create=neu; update=geändert; delete=gelöscht; unchanged=unverändert
+    outcome                 text NOT NULL DEFAULT 'ok' CHECK (outcome IN ('ok','warning','error')),   -- Ergebnis | Prüfung | intern | ok=in Ordnung; warning=Warnung; error=Fehler
+    messages                text[] NOT NULL DEFAULT '{}',    -- Meldungen | Prüfhinweise, z. B. unbekannte Fundstelle | intern
+    changes                 jsonb,                           -- Änderungen | Feld: alt → neu | intern
+    position                integer NOT NULL DEFAULT 0       -- Reihenfolge | Zeile in der Lieferung | intern
+);
+
 -- ------------------------------------------------------------------ Rechtsgrundlagen und Quellen
 
 -- Rechtsgrundlage für Schulen (Erlass, Stelle und Relevanz je Sachbereich)
@@ -307,12 +344,23 @@ CREATE TABLE legal_bases (
     id                      uuid PRIMARY KEY,
     number                  integer NOT NULL UNIQUE,         -- Nummer | Reihenfolge
     legal_area_id           uuid NOT NULL REFERENCES legal_areas(id),   -- Sachbereich | Verweis
-    legal_act_id            uuid NOT NULL REFERENCES legal_acts(id),    -- Erlass | Verweis
-    location                text,                            -- Stelle | z. B. «Art. 19, 62»
+    legal_act_id            uuid REFERENCES legal_acts(id),  -- Erlass | Verweis auf den (ersten) Erlass; leer bei kommunalen Dokumenten und Bildungsratsbeschlüssen
+    title                   text NOT NULL,                   -- Titel | Erlass bzw. Dokument, wie angezeigt
+    citation                text,                            -- Fundstelle | z. B. «LS 412.100», «LS 412.100 / 412.101», «kommunal», «Bildungsratsbeschlüsse»
+    location                text,                            -- Stelle | z. B. «Art. 19, 62», «BRB 4/2017»
     relevance               text,                            -- Relevanz | Bedeutung für die Schule
     source                  text,                            -- Quelle | Herkunft des Eintrags
     is_generic_source       boolean NOT NULL DEFAULT false,  -- Quelle allgemein | nur Startseite statt Fundstelle
-    is_verified             boolean NOT NULL DEFAULT false   -- Geprüft | von der Redaktion
+    is_verified             boolean NOT NULL DEFAULT false,  -- Geprüft | Fundstelle in ZH-Lex bzw. Fedlex geprüft
+    content_status          text NOT NULL DEFAULT 'draft' CHECK (content_status IN ('draft','published','archived')),   -- Redaktionsstatus | Entwurf erst nach Freigabe öffentlich | öffentlich | draft=Entwurf; published=veröffentlicht; archived=archiviert
+    review_status           text NOT NULL DEFAULT 'to_review' CHECK (review_status IN ('to_review','reviewed')),   -- Prüfstatus | fachliche Prüfung | intern | to_review=zu prüfen; reviewed=geprüft
+    research_note           text,                            -- Recherche | Quellen und Vorgehen der Recherche (Mensch oder KI) | intern
+    researched_at           timestamptz,                     -- Recherchiert am | Stand der Recherche | intern
+    content_import_id       uuid REFERENCES content_imports(id) ON DELETE SET NULL,   -- Importlauf | letzter Import, der den Datensatz geändert hat | intern
+    reviewed_by_id          uuid,                            -- Geprüft von | Redaktion (ohne Constraint) | intern
+    reviewed_at             timestamptz,                     -- Geprüft am | Redaktion | intern
+    published_at            timestamptz,                     -- Veröffentlicht am | Freigabe | intern
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid
 );
 
 -- Quellenklasse (A Rechtsnormen, B …)
@@ -347,49 +395,90 @@ CREATE TABLE publication_sources (
 
 -- Normenhierarchie eines Themas
 -- Geltungsbereich: global · Datenklasse: öffentlich
--- Herkunft/Verwendung: Redaktion; Ansicht «Normenhierarchie»
+-- Herkunft/Verwendung: Redaktion bzw. Import (KI-Recherche, Excel); Ansicht «Normenhierarchie», Themenwahl nach Gruppen
 CREATE TABLE norm_hierarchies (
     id                      uuid PRIMARY KEY,
-    hierarchy_key           text NOT NULL UNIQUE,            -- Schlüssel | z. B. «volksschule»
-    title                   text NOT NULL,                   -- Thema | Anzeige
-    hierarchy_group         text,                            -- Gruppe | z. B. «Schule»
-    levels                  text[] NOT NULL,                 -- Ebenen | Bund bis Gemeinde
-    note                    text,                            -- Hinweis | Erläuterung
-    position                integer NOT NULL DEFAULT 0       -- Reihenfolge | Anzeige
+    hierarchy_key           text NOT NULL UNIQUE,            -- Schlüssel | stabil, z. B. «volksschule»; Grundlage für Import und Links
+    title                   text NOT NULL,                   -- Thema | Seitentitel
+    short_title             text,                            -- Kurztitel | Themenwahl, z. B. «Versammlung & Parlament»
+    hierarchy_group         text NOT NULL,                   -- Gruppe | z. B. «Schule», «Kinder», «Behörden & Organisation»
+    levels                  text[] NOT NULL,                 -- Ebenen | von oben nach unten, z. B. Bund bis Gemeinde
+    note                    text,                            -- Hinweis | Erläuterung zur Hierarchie
+    position                integer NOT NULL DEFAULT 0,      -- Reihenfolge | nach Bezug zur Volksschule
+    content_status          text NOT NULL DEFAULT 'draft' CHECK (content_status IN ('draft','published','archived')),   -- Redaktionsstatus | Entwurf erst nach Freigabe öffentlich | öffentlich | draft=Entwurf; published=veröffentlicht; archived=archiviert
+    review_status           text NOT NULL DEFAULT 'to_review' CHECK (review_status IN ('to_review','reviewed')),   -- Prüfstatus | fachliche Prüfung | intern | to_review=zu prüfen; reviewed=geprüft
+    research_note           text,                            -- Recherche | Quellen und Vorgehen der Recherche (Mensch oder KI) | intern
+    researched_at           timestamptz,                     -- Recherchiert am | Stand der Recherche | intern
+    content_import_id       uuid REFERENCES content_imports(id) ON DELETE SET NULL,   -- Importlauf | letzter Import, der den Datensatz geändert hat | intern
+    reviewed_by_id          uuid,                            -- Geprüft von | Redaktion (ohne Constraint) | intern
+    reviewed_at             timestamptz,                     -- Geprüft am | Redaktion | intern
+    published_at            timestamptz,                     -- Veröffentlicht am | Freigabe | intern
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid
 );
 
--- Knoten einer Hierarchie (ein Erlass auf einer Ebene)
+-- Knoten einer Hierarchie (ein Erlass oder ein kommunaler Platzhalter auf einer Ebene)
 -- Geltungsbereich: global · Datenklasse: öffentlich
--- Herkunft/Verwendung: Redaktion; Kasten im Hierarchiebild
+-- Herkunft/Verwendung: Redaktion bzw. Import; Kasten im Hierarchiebild
 CREATE TABLE hierarchy_nodes (
     id                      uuid PRIMARY KEY,
     norm_hierarchy_id       uuid NOT NULL REFERENCES norm_hierarchies(id) ON DELETE CASCADE,   -- Hierarchie | Verweis
-    node_key                text NOT NULL,                   -- Schlüssel | z. B. «vsg»
-    level_index             integer NOT NULL,                -- Ebene | Index in den Ebenen
-    legal_act_id            uuid REFERENCES legal_acts(id),  -- Erlass | leer bei kommunalen Platzhaltern
-    title                   text NOT NULL,                   -- Titel | Anzeige
+    node_key                text NOT NULL,                   -- Schlüssel | z. B. «vsg», eindeutig in der Hierarchie
+    level_index             integer NOT NULL,                -- Ebene | Index in den Ebenen (0 = oben)
+    legal_act_id            uuid REFERENCES legal_acts(id),  -- Erlass | leer bei kommunalen Platzhaltern und Beschlusslisten
+    citation                text,                            -- Fundstelle | z. B. «LS 412.100», «SR 101», «kommunal»; ordnet den Erlass beim Import zu
+    title                   text NOT NULL,                   -- Titel | Anzeige im Kasten
     act_kind                text,                            -- Art | z. B. «Gesetz (Kantonsrat)»
-    note                    text,                            -- Hinweis | z. B. massgebende Artikel
+    note                    text,                            -- Hinweis | massgebende Paragrafen
+    external_url            text,                            -- Adresse | Link bei Knoten ohne Erlass (z. B. Bildungsratsbeschlüsse)
+    match_pattern           text,                            -- Suchmuster | regulärer Ausdruck für kommunale Beispiele
+    exclusion_pattern       text,                            -- Ausschlussmuster | Treffer, die nicht passen
+    position                integer NOT NULL DEFAULT 0,      -- Reihenfolge | innerhalb der Ebene
     UNIQUE (norm_hierarchy_id, node_key)
 );
 
--- Verbindung zwischen zwei Knoten mit Beleg
+-- Beschluss oder Erlass in der Liste eines Knotens (z. B. Bildungsratsbeschlüsse)
 -- Geltungsbereich: global · Datenklasse: öffentlich
--- Herkunft/Verwendung: von Hand oder als bestätigter Vorschlag aus den Verweisen; Linie im Hierarchiebild
+-- Herkunft/Verwendung: Redaktion bzw. Import; «Beschlüsse und Erlasse» im Detail eines Knotens
+CREATE TABLE hierarchy_node_links (
+    id                      uuid PRIMARY KEY,
+    hierarchy_node_id       uuid NOT NULL REFERENCES hierarchy_nodes(id) ON DELETE CASCADE,   -- Knoten | Verweis
+    title                   text NOT NULL,                   -- Titel | z. B. «BRB 4/2017 – Lehrplan für die Volksschule»
+    url                     text,                            -- Adresse | Link zur Publikation
+    note                    text,                            -- Hinweis | Kurzbeschreibung
+    position                integer NOT NULL DEFAULT 0       -- Reihenfolge | Anzeige
+);
+
+-- Verbindung zwischen zwei Knoten (untergeordnet → übergeordnet)
+-- Geltungsbereich: global · Datenklasse: öffentlich
+-- Herkunft/Verwendung: von Hand, Import oder bestätigter maschineller Vorschlag; Linie im Hierarchiebild
 CREATE TABLE hierarchy_edges (
     id                      uuid PRIMARY KEY,
     norm_hierarchy_id       uuid NOT NULL REFERENCES norm_hierarchies(id) ON DELETE CASCADE,   -- Hierarchie | Verweis
     from_node_id            uuid NOT NULL REFERENCES hierarchy_nodes(id) ON DELETE CASCADE,    -- Von | untergeordneter Knoten
     to_node_id              uuid NOT NULL REFERENCES hierarchy_nodes(id) ON DELETE CASCADE,    -- Nach | übergeordneter Knoten
-    relation                text NOT NULL,                   -- Beziehung | z. B. «Grundlage», «Vollzug», «verweist auf»
-    evidence_citation       text,                            -- Beleg (Fundstelle) | Erlass des Belegs
-    evidence_location       text,                            -- Beleg (Stelle) | z. B. «Art. 62»
-    evidence_text           text,                            -- Beleg (Text) | Textausschnitt
-    reference_count         integer,                         -- Verweise | Anzahl gefundener Verweise
-    status                  text NOT NULL DEFAULT 'suggested' CHECK (status IN ('suggested','manual','confirmed','rejected','municipal_or_without_text')),   -- Status | Herkunft und Prüfung | öffentlich | suggested=Vorschlag; manual=von Hand; confirmed=bestätigt; rejected=abgelehnt; municipal_or_without_text=kommunal bzw. ohne Text
+    relation                text NOT NULL,                   -- Beziehung | z. B. «Grundlage», «Vollzug», «verweist auf», «subsidiär», «nicht direkt anwendbar»
+    relation_type           text NOT NULL DEFAULT 'reference' CHECK (relation_type IN ('basis','implementation','subsidiary','reference','not_applicable','suggestion')),   -- Linienart | Darstellung | öffentlich | basis=Grundlage; implementation=Vollzug; subsidiary=subsidiär; reference=verweist auf; not_applicable=nicht direkt anwendbar; suggestion=Vorschlag
+    reference_count         integer,                         -- Verweise | Anzahl Verweise in den Fussnoten
+    machine_relation        text,                            -- Maschinell erkannt | z. B. «Grundlage (Ingress)», leer = nicht gefunden
+    status                  text NOT NULL DEFAULT 'manual' CHECK (status IN ('suggested','manual','confirmed','rejected','municipal_or_without_text')),   -- Status | Herkunft und Prüfung | öffentlich | suggested=Vorschlag; manual=von Hand; confirmed=maschinell bestätigt; rejected=abgelehnt; municipal_or_without_text=kommunal bzw. ohne Text
+    position                integer NOT NULL DEFAULT 0,      -- Reihenfolge | Anzeige im Detail
     verified_by_id          uuid,                            -- Geprüft von | Redaktion (ohne Constraint) | intern
     verified_at             timestamptz,                     -- Geprüft am | Redaktion | intern
-    CHECK (from_node_id <> to_node_id)
+    CHECK (from_node_id <> to_node_id),
+    UNIQUE (norm_hierarchy_id, from_node_id, to_node_id)
+);
+
+-- Belegstelle einer Verbindung (Paragraf bzw. Artikel eines Erlasses)
+-- Geltungsbereich: global · Datenklasse: öffentlich
+-- Herkunft/Verwendung: Redaktion bzw. Import; Text wird aus der geltenden Fassung gelesen («Belegstelle» im Detail)
+CREATE TABLE hierarchy_edge_evidences (
+    id                      uuid PRIMARY KEY,
+    hierarchy_edge_id       uuid NOT NULL REFERENCES hierarchy_edges(id) ON DELETE CASCADE,   -- Verbindung | Verweis
+    legal_act_id            uuid NOT NULL REFERENCES legal_acts(id),   -- Erlass | Erlass des Belegs
+    location                text NOT NULL,                   -- Stelle | z. B. «§ 41 a», «Art. 62», «Ingress» oder «suche:Art. 4 ¹ …»
+    side                    text NOT NULL DEFAULT 'from' CHECK (side IN ('from','to','other')),   -- Seite | Beleg im unteren, oberen oder einem anderen Erlass | öffentlich | from=untergeordneter Erlass; to=übergeordneter Erlass; other=anderer Erlass
+    excerpt                 text,                            -- Auszug | aus der geltenden Fassung, bei neuer Fassung neu erzeugt
+    position                integer NOT NULL DEFAULT 0       -- Reihenfolge | Anzeige
 );
 
 -- ------------------------------------------------------------------ Pflichtkatalog, Matrix, Elternwegweiser
@@ -417,9 +506,18 @@ CREATE TABLE mandatory_documents (
     source_url              text,                            -- Quelle (Adresse) | Link
     match_pattern           text,                            -- Suchmuster | regulärer Ausdruck für die Zuordnung
     uncertain_pattern       text,                            -- Suchmuster unsicher | Treffer nur als «unsicher»
+    exclusion_pattern       text,                            -- Ausschlussmuster | Treffer, die nicht passen
     remark                  text,                            -- Bemerkung | Freitext
-    review_status           text NOT NULL DEFAULT 'to_review' CHECK (review_status IN ('to_review','reviewed')),   -- Prüfstatus | fachliche Abnahme | intern | to_review=zu prüfen; reviewed=geprüft
-    lock_version            integer NOT NULL DEFAULT 1
+    position                integer NOT NULL DEFAULT 0,      -- Reihenfolge | innerhalb der Kategorie
+    content_status          text NOT NULL DEFAULT 'draft' CHECK (content_status IN ('draft','published','archived')),   -- Redaktionsstatus | Entwurf erst nach Freigabe öffentlich | öffentlich | draft=Entwurf; published=veröffentlicht; archived=archiviert
+    review_status           text NOT NULL DEFAULT 'to_review' CHECK (review_status IN ('to_review','reviewed')),   -- Prüfstatus | fachliche Prüfung | intern | to_review=zu prüfen; reviewed=geprüft
+    research_note           text,                            -- Recherche | Quellen und Vorgehen der Recherche (Mensch oder KI) | intern
+    researched_at           timestamptz,                     -- Recherchiert am | Stand der Recherche | intern
+    content_import_id       uuid REFERENCES content_imports(id) ON DELETE SET NULL,   -- Importlauf | letzter Import, der den Datensatz geändert hat | intern
+    reviewed_by_id          uuid,                            -- Geprüft von | Redaktion (ohne Constraint) | intern
+    reviewed_at             timestamptz,                     -- Geprüft am | Redaktion | intern
+    published_at            timestamptz,                     -- Veröffentlicht am | Freigabe | intern
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid
 );
 
 -- Zeile der Vergleichsmatrix (Rubrik › Unterordner › Dokumenttyp)
@@ -463,25 +561,46 @@ CREATE TABLE matrix_cell_acts (
 
 -- Thema des Elternwegweisers (Fragen von Eltern mit Rechtsstellen und Dokumenten)
 -- Geltungsbereich: global · Datenklasse: öffentlich
--- Herkunft/Verwendung: Redaktion EduKSX-Codex; Ansicht «Elternwegweiser»
+-- Herkunft/Verwendung: Redaktion bzw. Import; Ansicht «Elternwegweiser»
 CREATE TABLE parent_guide_topics (
     id                      uuid PRIMARY KEY,
-    topic_key               text NOT NULL UNIQUE,            -- Schlüssel | z. B. «eintritt»
-    title                   text NOT NULL,                   -- Thema | z. B. «Schuleintritt & Schulweg»
+    topic_key               text NOT NULL UNIQUE,            -- Schlüssel | z. B. «absenzen»
+    title                   text NOT NULL,                   -- Thema | z. B. «Absenzen, Urlaub, Jokertage»
     questions               text[] NOT NULL DEFAULT '{}',    -- Fragen | typische Fragen von Eltern
-    topic_id                uuid REFERENCES topics(id),      -- Thema (Hierarchie) | Verweis
-    position                integer NOT NULL DEFAULT 0       -- Reihenfolge | Anzeige
+    match_pattern           text,                            -- Suchmuster | Reglemente und Formulare der Gemeinde
+    exclusion_pattern       text,                            -- Ausschlussmuster | Treffer, die nicht passen
+    position                integer NOT NULL DEFAULT 0,      -- Reihenfolge | Anzeige
+    content_status          text NOT NULL DEFAULT 'draft' CHECK (content_status IN ('draft','published','archived')),   -- Redaktionsstatus | Entwurf erst nach Freigabe öffentlich | öffentlich | draft=Entwurf; published=veröffentlicht; archived=archiviert
+    review_status           text NOT NULL DEFAULT 'to_review' CHECK (review_status IN ('to_review','reviewed')),   -- Prüfstatus | fachliche Prüfung | intern | to_review=zu prüfen; reviewed=geprüft
+    research_note           text,                            -- Recherche | Quellen und Vorgehen der Recherche (Mensch oder KI) | intern
+    researched_at           timestamptz,                     -- Recherchiert am | Stand der Recherche | intern
+    content_import_id       uuid REFERENCES content_imports(id) ON DELETE SET NULL,   -- Importlauf | letzter Import, der den Datensatz geändert hat | intern
+    reviewed_by_id          uuid,                            -- Geprüft von | Redaktion (ohne Constraint) | intern
+    reviewed_at             timestamptz,                     -- Geprüft am | Redaktion | intern
+    published_at            timestamptz,                     -- Veröffentlicht am | Freigabe | intern
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid
+);
+
+-- Normenhierarchie zu einem Thema des Elternwegweisers
+-- Geltungsbereich: global · Datenklasse: öffentlich
+-- Herkunft/Verwendung: Redaktion bzw. Import; Links «Normenhierarchie: …»
+CREATE TABLE parent_guide_topic_hierarchies (
+    parent_guide_topic_id   uuid NOT NULL REFERENCES parent_guide_topics(id) ON DELETE CASCADE,   -- Thema | Verweis
+    norm_hierarchy_id       uuid NOT NULL REFERENCES norm_hierarchies(id) ON DELETE CASCADE,      -- Normenhierarchie | Verweis
+    position                integer NOT NULL DEFAULT 0,      -- Reihenfolge | Anzeige
+    PRIMARY KEY (parent_guide_topic_id, norm_hierarchy_id)
 );
 
 -- Rechtsstelle zu einem Thema des Elternwegweisers
 -- Geltungsbereich: global · Datenklasse: öffentlich
--- Herkunft/Verwendung: Textfassung des Erlasses; Auszug im Elternwegweiser
+-- Herkunft/Verwendung: Redaktion bzw. Import (Erlass + Stelle); Auszug aus der geltenden Fassung im Elternwegweiser
 CREATE TABLE parent_guide_provisions (
     id                      uuid PRIMARY KEY,
     parent_guide_topic_id   uuid NOT NULL REFERENCES parent_guide_topics(id) ON DELETE CASCADE,   -- Thema | Verweis
-    act_version_id          uuid NOT NULL REFERENCES act_versions(id),   -- Fassung | Verweis auf Erlass und Nachtrag
-    location                text NOT NULL,                   -- Stelle | z. B. «§ 3»
-    excerpt                 text,                            -- Auszug | Text der Stelle
+    legal_act_id            uuid NOT NULL REFERENCES legal_acts(id),   -- Erlass | Verweis
+    act_version_id          uuid REFERENCES act_versions(id),   -- Fassung | nur wenn eine bestimmte Fassung gemeint ist; leer = geltende Fassung
+    location                text NOT NULL,                   -- Stelle | z. B. «§ 28»
+    excerpt                 text,                            -- Auszug | Text der Stelle, bei neuer Fassung neu erzeugt
     position                integer NOT NULL DEFAULT 0       -- Reihenfolge | Anzeige
 );
 
@@ -558,6 +677,7 @@ FROM municipalities m GROUP BY m.district;
 -- Ausnahmetabelle (doppelt gespeichert, DB A2)
 -- act_versions.text_markdown: Textfassung neben der Originaldatei – Grund: Volltextsuche und Vergleich; neu erzeugt bei neuer Fassung
 -- parent_guide_provisions.excerpt: Auszug der Stelle – Grund: Anzeige ohne Volltext; neu erzeugt bei neuer Fassung
+-- hierarchy_edge_evidences.excerpt: Auszug der Belegstelle – Grund: Anzeige ohne Volltext; neu erzeugt bei neuer Fassung
 
 -- >>> indizes
 CREATE INDEX organizations_parent_id_index ON organizations (parent_id);
@@ -573,18 +693,26 @@ CREATE INDEX legal_acts_section_id_index ON legal_acts (section_id);
 CREATE INDEX act_versions_legal_act_id_index ON act_versions (legal_act_id);
 CREATE INDEX act_version_differences_new_version_id_index ON act_version_differences (new_version_id);
 CREATE INDEX act_references_to_act_id_index ON act_references (to_act_id);
+CREATE INDEX content_imports_based_on_import_id_index ON content_imports (based_on_import_id);
+CREATE INDEX content_import_items_content_import_id_index ON content_import_items (content_import_id);
 CREATE INDEX legal_bases_legal_area_id_index ON legal_bases (legal_area_id);
 CREATE INDEX legal_bases_legal_act_id_index ON legal_bases (legal_act_id);
+CREATE INDEX legal_bases_content_import_id_index ON legal_bases (content_import_id);
 CREATE INDEX publication_sources_source_class_id_index ON publication_sources (source_class_id);
+CREATE INDEX norm_hierarchies_content_import_id_index ON norm_hierarchies (content_import_id);
 CREATE INDEX hierarchy_nodes_legal_act_id_index ON hierarchy_nodes (legal_act_id);
-CREATE INDEX hierarchy_edges_norm_hierarchy_id_index ON hierarchy_edges (norm_hierarchy_id);
+CREATE INDEX hierarchy_node_links_hierarchy_node_id_index ON hierarchy_node_links (hierarchy_node_id);
 CREATE INDEX hierarchy_edges_from_node_id_index ON hierarchy_edges (from_node_id);
 CREATE INDEX hierarchy_edges_to_node_id_index ON hierarchy_edges (to_node_id);
+CREATE INDEX hierarchy_edge_evidences_hierarchy_edge_id_index ON hierarchy_edge_evidences (hierarchy_edge_id);
+CREATE INDEX hierarchy_edge_evidences_legal_act_id_index ON hierarchy_edge_evidences (legal_act_id);
 CREATE INDEX mandatory_documents_category_id_index ON mandatory_documents (category_id);
+CREATE INDEX mandatory_documents_content_import_id_index ON mandatory_documents (content_import_id);
 CREATE INDEX matrix_rows_mandatory_document_id_index ON matrix_rows (mandatory_document_id);
 CREATE INDEX matrix_cells_publisher_id_index ON matrix_cells (publisher_id);
-CREATE INDEX parent_guide_topics_topic_id_index ON parent_guide_topics (topic_id);
+CREATE INDEX parent_guide_topics_content_import_id_index ON parent_guide_topics (content_import_id);
 CREATE INDEX parent_guide_provisions_parent_guide_topic_id_index ON parent_guide_provisions (parent_guide_topic_id);
+CREATE INDEX parent_guide_provisions_legal_act_id_index ON parent_guide_provisions (legal_act_id);
 CREATE INDEX parent_guide_provisions_act_version_id_index ON parent_guide_provisions (act_version_id);
 CREATE INDEX guideline_checks_guideline_rule_id_index ON guideline_checks (guideline_rule_id);
 -- <<< indizes
@@ -798,16 +926,64 @@ COMMENT ON COLUMN act_references.to_act_id IS 'Ziel-Erlass – leer, wenn noch n
 COMMENT ON COLUMN act_references.target_citation IS 'Ziel (Fundstelle) – z. B. «LS 412.100.1»';
 COMMENT ON COLUMN act_references.location IS 'Stelle – z. B. «Fussnoten»';
 COMMENT ON COLUMN act_references.reference_count IS 'Anzahl – Verweise';
+COMMENT ON TABLE content_imports IS 'Importlauf: Änderungen an redaktionellen Inhalten über API, CSV/Excel oder KI-Recherche – Pflege-API (Probelauf und Übernahme); Protokoll, wer was wann geändert hat';
+COMMENT ON COLUMN content_imports.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN content_imports.source_kind IS 'Herkunft – Art der Lieferung';
+COMMENT ON COLUMN content_imports.mode IS 'Modus – Probelauf prüft nur, Übernahme schreibt';
+COMMENT ON COLUMN content_imports.status IS 'Status – Verlauf des Imports';
+COMMENT ON COLUMN content_imports.file_name IS 'Datei – Name der gelieferten Datei';
+COMMENT ON COLUMN content_imports.file_sha256 IS 'Prüfsumme – SHA-256 der Lieferung';
+COMMENT ON COLUMN content_imports.format_version IS 'Formatversion – Version des Importformats';
+COMMENT ON COLUMN content_imports.research_note IS 'Recherche – Vorgehen, Auftrag, Modell (bei KI)';
+COMMENT ON COLUMN content_imports.sources IS 'Quellen – Adressen der verwendeten Quellen';
+COMMENT ON COLUMN content_imports.summary IS 'Zusammenfassung – Anzahl neu, geändert, gelöscht, unverändert, Fehler je Inhaltsart';
+COMMENT ON COLUMN content_imports.applied_at IS 'Übernommen am – Zeitpunkt der Übernahme';
+COMMENT ON COLUMN content_imports.applied_by_id IS 'Übernommen von – Redaktion (ohne Constraint)';
+COMMENT ON COLUMN content_imports.based_on_import_id IS 'Probelauf – übernommener Probelauf';
+COMMENT ON COLUMN content_imports.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN content_imports.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN content_imports.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN content_imports.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN content_imports.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN content_imports.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN content_imports.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
+COMMENT ON TABLE content_import_items IS 'Einzelne Änderung eines Importlaufs (Protokoll und Prüfbericht) – Pflege-API; Prüfbericht des Probelaufs, Nachvollzug der Übernahme';
+COMMENT ON COLUMN content_import_items.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN content_import_items.content_import_id IS 'Importlauf – Verweis';
+COMMENT ON COLUMN content_import_items.content_type IS 'Inhaltsart – betroffene Tabelle';
+COMMENT ON COLUMN content_import_items.content_key IS 'Schlüssel – fachlicher Schlüssel, z. B. «volksschule/vsg»';
+COMMENT ON COLUMN content_import_items.action IS 'Aktion – Wirkung';
+COMMENT ON COLUMN content_import_items.outcome IS 'Ergebnis – Prüfung';
+COMMENT ON COLUMN content_import_items.messages IS 'Meldungen – Prüfhinweise, z. B. unbekannte Fundstelle';
+COMMENT ON COLUMN content_import_items.changes IS 'Änderungen – Feld: alt → neu';
+COMMENT ON COLUMN content_import_items.position IS 'Reihenfolge – Zeile in der Lieferung';
 COMMENT ON TABLE legal_bases IS 'Rechtsgrundlage für Schulen (Erlass, Stelle und Relevanz je Sachbereich) – Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Schule»';
 COMMENT ON COLUMN legal_bases.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN legal_bases.number IS 'Nummer – Reihenfolge';
 COMMENT ON COLUMN legal_bases.legal_area_id IS 'Sachbereich – Verweis';
-COMMENT ON COLUMN legal_bases.legal_act_id IS 'Erlass – Verweis';
-COMMENT ON COLUMN legal_bases.location IS 'Stelle – z. B. «Art. 19, 62»';
+COMMENT ON COLUMN legal_bases.legal_act_id IS 'Erlass – Verweis auf den (ersten) Erlass; leer bei kommunalen Dokumenten und Bildungsratsbeschlüssen';
+COMMENT ON COLUMN legal_bases.title IS 'Titel – Erlass bzw. Dokument, wie angezeigt';
+COMMENT ON COLUMN legal_bases.citation IS 'Fundstelle – z. B. «LS 412.100», «LS 412.100 / 412.101», «kommunal», «Bildungsratsbeschlüsse»';
+COMMENT ON COLUMN legal_bases.location IS 'Stelle – z. B. «Art. 19, 62», «BRB 4/2017»';
 COMMENT ON COLUMN legal_bases.relevance IS 'Relevanz – Bedeutung für die Schule';
 COMMENT ON COLUMN legal_bases.source IS 'Quelle – Herkunft des Eintrags';
 COMMENT ON COLUMN legal_bases.is_generic_source IS 'Quelle allgemein – nur Startseite statt Fundstelle';
-COMMENT ON COLUMN legal_bases.is_verified IS 'Geprüft – von der Redaktion';
+COMMENT ON COLUMN legal_bases.is_verified IS 'Geprüft – Fundstelle in ZH-Lex bzw. Fedlex geprüft';
+COMMENT ON COLUMN legal_bases.content_status IS 'Redaktionsstatus – Entwurf erst nach Freigabe öffentlich';
+COMMENT ON COLUMN legal_bases.review_status IS 'Prüfstatus – fachliche Prüfung';
+COMMENT ON COLUMN legal_bases.research_note IS 'Recherche – Quellen und Vorgehen der Recherche (Mensch oder KI)';
+COMMENT ON COLUMN legal_bases.researched_at IS 'Recherchiert am – Stand der Recherche';
+COMMENT ON COLUMN legal_bases.content_import_id IS 'Importlauf – letzter Import, der den Datensatz geändert hat';
+COMMENT ON COLUMN legal_bases.reviewed_by_id IS 'Geprüft von – Redaktion (ohne Constraint)';
+COMMENT ON COLUMN legal_bases.reviewed_at IS 'Geprüft am – Redaktion';
+COMMENT ON COLUMN legal_bases.published_at IS 'Veröffentlicht am – Freigabe';
+COMMENT ON COLUMN legal_bases.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN legal_bases.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN legal_bases.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN legal_bases.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN legal_bases.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN legal_bases.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN legal_bases.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
 COMMENT ON TABLE source_classes IS 'Quellenklasse (A Rechtsnormen, B …) – Quellenkatalog; was vollständig aufgenommen wird';
 COMMENT ON COLUMN source_classes.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN source_classes.code IS 'Klasse – Buchstabe';
@@ -826,36 +1002,72 @@ COMMENT ON COLUMN publication_sources.versioning IS 'Versionierung – z. B. «S
 COMMENT ON COLUMN publication_sources.bindingness IS 'Verbindlichkeit – rechtsverbindlich oder Information';
 COMMENT ON COLUMN publication_sources.retrieval IS 'Abruf – Art des Imports';
 COMMENT ON COLUMN publication_sources.retrieved_at IS 'Zuletzt abgerufen – Import';
-COMMENT ON TABLE norm_hierarchies IS 'Normenhierarchie eines Themas – Redaktion; Ansicht «Normenhierarchie»';
+COMMENT ON TABLE norm_hierarchies IS 'Normenhierarchie eines Themas – Redaktion bzw. Import (KI-Recherche, Excel); Ansicht «Normenhierarchie», Themenwahl nach Gruppen';
 COMMENT ON COLUMN norm_hierarchies.id IS 'ID – UUID v7, von der Anwendung vergeben';
-COMMENT ON COLUMN norm_hierarchies.hierarchy_key IS 'Schlüssel – z. B. «volksschule»';
-COMMENT ON COLUMN norm_hierarchies.title IS 'Thema – Anzeige';
-COMMENT ON COLUMN norm_hierarchies.hierarchy_group IS 'Gruppe – z. B. «Schule»';
-COMMENT ON COLUMN norm_hierarchies.levels IS 'Ebenen – Bund bis Gemeinde';
-COMMENT ON COLUMN norm_hierarchies.note IS 'Hinweis – Erläuterung';
-COMMENT ON COLUMN norm_hierarchies.position IS 'Reihenfolge – Anzeige';
-COMMENT ON TABLE hierarchy_nodes IS 'Knoten einer Hierarchie (ein Erlass auf einer Ebene) – Redaktion; Kasten im Hierarchiebild';
+COMMENT ON COLUMN norm_hierarchies.hierarchy_key IS 'Schlüssel – stabil, z. B. «volksschule»; Grundlage für Import und Links';
+COMMENT ON COLUMN norm_hierarchies.title IS 'Thema – Seitentitel';
+COMMENT ON COLUMN norm_hierarchies.short_title IS 'Kurztitel – Themenwahl, z. B. «Versammlung & Parlament»';
+COMMENT ON COLUMN norm_hierarchies.hierarchy_group IS 'Gruppe – z. B. «Schule», «Kinder», «Behörden & Organisation»';
+COMMENT ON COLUMN norm_hierarchies.levels IS 'Ebenen – von oben nach unten, z. B. Bund bis Gemeinde';
+COMMENT ON COLUMN norm_hierarchies.note IS 'Hinweis – Erläuterung zur Hierarchie';
+COMMENT ON COLUMN norm_hierarchies.position IS 'Reihenfolge – nach Bezug zur Volksschule';
+COMMENT ON COLUMN norm_hierarchies.content_status IS 'Redaktionsstatus – Entwurf erst nach Freigabe öffentlich';
+COMMENT ON COLUMN norm_hierarchies.review_status IS 'Prüfstatus – fachliche Prüfung';
+COMMENT ON COLUMN norm_hierarchies.research_note IS 'Recherche – Quellen und Vorgehen der Recherche (Mensch oder KI)';
+COMMENT ON COLUMN norm_hierarchies.researched_at IS 'Recherchiert am – Stand der Recherche';
+COMMENT ON COLUMN norm_hierarchies.content_import_id IS 'Importlauf – letzter Import, der den Datensatz geändert hat';
+COMMENT ON COLUMN norm_hierarchies.reviewed_by_id IS 'Geprüft von – Redaktion (ohne Constraint)';
+COMMENT ON COLUMN norm_hierarchies.reviewed_at IS 'Geprüft am – Redaktion';
+COMMENT ON COLUMN norm_hierarchies.published_at IS 'Veröffentlicht am – Freigabe';
+COMMENT ON COLUMN norm_hierarchies.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN norm_hierarchies.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN norm_hierarchies.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN norm_hierarchies.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN norm_hierarchies.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN norm_hierarchies.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN norm_hierarchies.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
+COMMENT ON TABLE hierarchy_nodes IS 'Knoten einer Hierarchie (ein Erlass oder ein kommunaler Platzhalter auf einer Ebene) – Redaktion bzw. Import; Kasten im Hierarchiebild';
 COMMENT ON COLUMN hierarchy_nodes.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN hierarchy_nodes.norm_hierarchy_id IS 'Hierarchie – Verweis';
-COMMENT ON COLUMN hierarchy_nodes.node_key IS 'Schlüssel – z. B. «vsg»';
-COMMENT ON COLUMN hierarchy_nodes.level_index IS 'Ebene – Index in den Ebenen';
-COMMENT ON COLUMN hierarchy_nodes.legal_act_id IS 'Erlass – leer bei kommunalen Platzhaltern';
-COMMENT ON COLUMN hierarchy_nodes.title IS 'Titel – Anzeige';
+COMMENT ON COLUMN hierarchy_nodes.node_key IS 'Schlüssel – z. B. «vsg», eindeutig in der Hierarchie';
+COMMENT ON COLUMN hierarchy_nodes.level_index IS 'Ebene';
+COMMENT ON COLUMN hierarchy_nodes.legal_act_id IS 'Erlass – leer bei kommunalen Platzhaltern und Beschlusslisten';
+COMMENT ON COLUMN hierarchy_nodes.citation IS 'Fundstelle – z. B. «LS 412.100», «SR 101», «kommunal»; ordnet den Erlass beim Import zu';
+COMMENT ON COLUMN hierarchy_nodes.title IS 'Titel – Anzeige im Kasten';
 COMMENT ON COLUMN hierarchy_nodes.act_kind IS 'Art – z. B. «Gesetz (Kantonsrat)»';
-COMMENT ON COLUMN hierarchy_nodes.note IS 'Hinweis – z. B. massgebende Artikel';
-COMMENT ON TABLE hierarchy_edges IS 'Verbindung zwischen zwei Knoten mit Beleg – von Hand oder als bestätigter Vorschlag aus den Verweisen; Linie im Hierarchiebild';
+COMMENT ON COLUMN hierarchy_nodes.note IS 'Hinweis – massgebende Paragrafen';
+COMMENT ON COLUMN hierarchy_nodes.external_url IS 'Adresse – Link bei Knoten ohne Erlass (z. B. Bildungsratsbeschlüsse)';
+COMMENT ON COLUMN hierarchy_nodes.match_pattern IS 'Suchmuster – regulärer Ausdruck für kommunale Beispiele';
+COMMENT ON COLUMN hierarchy_nodes.exclusion_pattern IS 'Ausschlussmuster – Treffer, die nicht passen';
+COMMENT ON COLUMN hierarchy_nodes.position IS 'Reihenfolge – innerhalb der Ebene';
+COMMENT ON TABLE hierarchy_node_links IS 'Beschluss oder Erlass in der Liste eines Knotens (z. B. Bildungsratsbeschlüsse) – Redaktion bzw. Import; «Beschlüsse und Erlasse» im Detail eines Knotens';
+COMMENT ON COLUMN hierarchy_node_links.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN hierarchy_node_links.hierarchy_node_id IS 'Knoten – Verweis';
+COMMENT ON COLUMN hierarchy_node_links.title IS 'Titel – z. B. «BRB 4/2017 – Lehrplan für die Volksschule»';
+COMMENT ON COLUMN hierarchy_node_links.url IS 'Adresse – Link zur Publikation';
+COMMENT ON COLUMN hierarchy_node_links.note IS 'Hinweis – Kurzbeschreibung';
+COMMENT ON COLUMN hierarchy_node_links.position IS 'Reihenfolge – Anzeige';
+COMMENT ON TABLE hierarchy_edges IS 'Verbindung zwischen zwei Knoten (untergeordnet → übergeordnet) – von Hand, Import oder bestätigter maschineller Vorschlag; Linie im Hierarchiebild';
 COMMENT ON COLUMN hierarchy_edges.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN hierarchy_edges.norm_hierarchy_id IS 'Hierarchie – Verweis';
 COMMENT ON COLUMN hierarchy_edges.from_node_id IS 'Von – untergeordneter Knoten';
 COMMENT ON COLUMN hierarchy_edges.to_node_id IS 'Nach – übergeordneter Knoten';
-COMMENT ON COLUMN hierarchy_edges.relation IS 'Beziehung – z. B. «Grundlage», «Vollzug», «verweist auf»';
-COMMENT ON COLUMN hierarchy_edges.evidence_citation IS 'Beleg (Fundstelle) – Erlass des Belegs';
-COMMENT ON COLUMN hierarchy_edges.evidence_location IS 'Beleg (Stelle) – z. B. «Art. 62»';
-COMMENT ON COLUMN hierarchy_edges.evidence_text IS 'Beleg (Text) – Textausschnitt';
-COMMENT ON COLUMN hierarchy_edges.reference_count IS 'Verweise – Anzahl gefundener Verweise';
+COMMENT ON COLUMN hierarchy_edges.relation IS 'Beziehung – z. B. «Grundlage», «Vollzug», «verweist auf», «subsidiär», «nicht direkt anwendbar»';
+COMMENT ON COLUMN hierarchy_edges.relation_type IS 'Linienart – Darstellung';
+COMMENT ON COLUMN hierarchy_edges.reference_count IS 'Verweise – Anzahl Verweise in den Fussnoten';
+COMMENT ON COLUMN hierarchy_edges.machine_relation IS 'Maschinell erkannt';
 COMMENT ON COLUMN hierarchy_edges.status IS 'Status – Herkunft und Prüfung';
+COMMENT ON COLUMN hierarchy_edges.position IS 'Reihenfolge – Anzeige im Detail';
 COMMENT ON COLUMN hierarchy_edges.verified_by_id IS 'Geprüft von – Redaktion (ohne Constraint)';
 COMMENT ON COLUMN hierarchy_edges.verified_at IS 'Geprüft am – Redaktion';
+COMMENT ON TABLE hierarchy_edge_evidences IS 'Belegstelle einer Verbindung (Paragraf bzw. Artikel eines Erlasses) – Redaktion bzw. Import; Text wird aus der geltenden Fassung gelesen («Belegstelle» im Detail)';
+COMMENT ON COLUMN hierarchy_edge_evidences.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN hierarchy_edge_evidences.hierarchy_edge_id IS 'Verbindung – Verweis';
+COMMENT ON COLUMN hierarchy_edge_evidences.legal_act_id IS 'Erlass – Erlass des Belegs';
+COMMENT ON COLUMN hierarchy_edge_evidences.location IS 'Stelle – z. B. «§ 41 a», «Art. 62», «Ingress» oder «suche:Art. 4 ¹ …»';
+COMMENT ON COLUMN hierarchy_edge_evidences.side IS 'Seite – Beleg im unteren, oberen oder einem anderen Erlass';
+COMMENT ON COLUMN hierarchy_edge_evidences.excerpt IS 'Auszug – aus der geltenden Fassung, bei neuer Fassung neu erzeugt';
+COMMENT ON COLUMN hierarchy_edge_evidences.position IS 'Reihenfolge – Anzeige';
 COMMENT ON TABLE mandatory_document_categories IS 'Kategorie des Pflichtkatalogs einer Schulgemeinde – Recherche Pflichtdokumente; Ansicht «Pflichtkatalog Schulgemeinde»';
 COMMENT ON COLUMN mandatory_document_categories.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN mandatory_document_categories.number IS 'Nummer – Reihenfolge';
@@ -871,9 +1083,24 @@ COMMENT ON COLUMN mandatory_documents.source IS 'Quelle – Rechtsgrundlage bzw.
 COMMENT ON COLUMN mandatory_documents.source_url IS 'Quelle (Adresse) – Link';
 COMMENT ON COLUMN mandatory_documents.match_pattern IS 'Suchmuster – regulärer Ausdruck für die Zuordnung';
 COMMENT ON COLUMN mandatory_documents.uncertain_pattern IS 'Suchmuster unsicher – Treffer nur als «unsicher»';
+COMMENT ON COLUMN mandatory_documents.exclusion_pattern IS 'Ausschlussmuster – Treffer, die nicht passen';
 COMMENT ON COLUMN mandatory_documents.remark IS 'Bemerkung – Freitext';
-COMMENT ON COLUMN mandatory_documents.review_status IS 'Prüfstatus – fachliche Abnahme';
+COMMENT ON COLUMN mandatory_documents.position IS 'Reihenfolge – innerhalb der Kategorie';
+COMMENT ON COLUMN mandatory_documents.content_status IS 'Redaktionsstatus – Entwurf erst nach Freigabe öffentlich';
+COMMENT ON COLUMN mandatory_documents.review_status IS 'Prüfstatus – fachliche Prüfung';
+COMMENT ON COLUMN mandatory_documents.research_note IS 'Recherche – Quellen und Vorgehen der Recherche (Mensch oder KI)';
+COMMENT ON COLUMN mandatory_documents.researched_at IS 'Recherchiert am – Stand der Recherche';
+COMMENT ON COLUMN mandatory_documents.content_import_id IS 'Importlauf – letzter Import, der den Datensatz geändert hat';
+COMMENT ON COLUMN mandatory_documents.reviewed_by_id IS 'Geprüft von – Redaktion (ohne Constraint)';
+COMMENT ON COLUMN mandatory_documents.reviewed_at IS 'Geprüft am – Redaktion';
+COMMENT ON COLUMN mandatory_documents.published_at IS 'Veröffentlicht am – Freigabe';
+COMMENT ON COLUMN mandatory_documents.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN mandatory_documents.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN mandatory_documents.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN mandatory_documents.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
 COMMENT ON COLUMN mandatory_documents.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN mandatory_documents.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN mandatory_documents.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
 COMMENT ON TABLE matrix_rows IS 'Zeile der Vergleichsmatrix (Rubrik › Unterordner › Dokumenttyp) – aus den erfassten Sammlungen und dem Pflichtkatalog; Ansicht «Struktur-Matrix»';
 COMMENT ON COLUMN matrix_rows.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN matrix_rows.row_key IS 'Schlüssel – z. B. «k6»';
@@ -896,19 +1123,40 @@ COMMENT ON COLUMN matrix_cells.assignment IS 'Zuordnung – Herkunft';
 COMMENT ON TABLE matrix_cell_acts IS 'Erlasse einer Matrixzelle – Zuordnung; Links in der Zelle';
 COMMENT ON COLUMN matrix_cell_acts.matrix_cell_id IS 'Zelle – Verweis';
 COMMENT ON COLUMN matrix_cell_acts.legal_act_id IS 'Erlass – Verweis';
-COMMENT ON TABLE parent_guide_topics IS 'Thema des Elternwegweisers (Fragen von Eltern mit Rechtsstellen und Dokumenten) – Redaktion EduKSX-Codex; Ansicht «Elternwegweiser»';
+COMMENT ON TABLE parent_guide_topics IS 'Thema des Elternwegweisers (Fragen von Eltern mit Rechtsstellen und Dokumenten) – Redaktion bzw. Import; Ansicht «Elternwegweiser»';
 COMMENT ON COLUMN parent_guide_topics.id IS 'ID – UUID v7, von der Anwendung vergeben';
-COMMENT ON COLUMN parent_guide_topics.topic_key IS 'Schlüssel – z. B. «eintritt»';
-COMMENT ON COLUMN parent_guide_topics.title IS 'Thema – z. B. «Schuleintritt & Schulweg»';
+COMMENT ON COLUMN parent_guide_topics.topic_key IS 'Schlüssel – z. B. «absenzen»';
+COMMENT ON COLUMN parent_guide_topics.title IS 'Thema – z. B. «Absenzen, Urlaub, Jokertage»';
 COMMENT ON COLUMN parent_guide_topics.questions IS 'Fragen – typische Fragen von Eltern';
-COMMENT ON COLUMN parent_guide_topics.topic_id IS 'Thema (Hierarchie) – Verweis';
+COMMENT ON COLUMN parent_guide_topics.match_pattern IS 'Suchmuster – Reglemente und Formulare der Gemeinde';
+COMMENT ON COLUMN parent_guide_topics.exclusion_pattern IS 'Ausschlussmuster – Treffer, die nicht passen';
 COMMENT ON COLUMN parent_guide_topics.position IS 'Reihenfolge – Anzeige';
-COMMENT ON TABLE parent_guide_provisions IS 'Rechtsstelle zu einem Thema des Elternwegweisers – Textfassung des Erlasses; Auszug im Elternwegweiser';
+COMMENT ON COLUMN parent_guide_topics.content_status IS 'Redaktionsstatus – Entwurf erst nach Freigabe öffentlich';
+COMMENT ON COLUMN parent_guide_topics.review_status IS 'Prüfstatus – fachliche Prüfung';
+COMMENT ON COLUMN parent_guide_topics.research_note IS 'Recherche – Quellen und Vorgehen der Recherche (Mensch oder KI)';
+COMMENT ON COLUMN parent_guide_topics.researched_at IS 'Recherchiert am – Stand der Recherche';
+COMMENT ON COLUMN parent_guide_topics.content_import_id IS 'Importlauf – letzter Import, der den Datensatz geändert hat';
+COMMENT ON COLUMN parent_guide_topics.reviewed_by_id IS 'Geprüft von – Redaktion (ohne Constraint)';
+COMMENT ON COLUMN parent_guide_topics.reviewed_at IS 'Geprüft am – Redaktion';
+COMMENT ON COLUMN parent_guide_topics.published_at IS 'Veröffentlicht am – Freigabe';
+COMMENT ON COLUMN parent_guide_topics.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN parent_guide_topics.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN parent_guide_topics.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN parent_guide_topics.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN parent_guide_topics.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN parent_guide_topics.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN parent_guide_topics.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
+COMMENT ON TABLE parent_guide_topic_hierarchies IS 'Normenhierarchie zu einem Thema des Elternwegweisers – Redaktion bzw. Import; Links «Normenhierarchie: …»';
+COMMENT ON COLUMN parent_guide_topic_hierarchies.parent_guide_topic_id IS 'Thema – Verweis';
+COMMENT ON COLUMN parent_guide_topic_hierarchies.norm_hierarchy_id IS 'Normenhierarchie – Verweis';
+COMMENT ON COLUMN parent_guide_topic_hierarchies.position IS 'Reihenfolge – Anzeige';
+COMMENT ON TABLE parent_guide_provisions IS 'Rechtsstelle zu einem Thema des Elternwegweisers – Redaktion bzw. Import (Erlass + Stelle); Auszug aus der geltenden Fassung im Elternwegweiser';
 COMMENT ON COLUMN parent_guide_provisions.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN parent_guide_provisions.parent_guide_topic_id IS 'Thema – Verweis';
-COMMENT ON COLUMN parent_guide_provisions.act_version_id IS 'Fassung – Verweis auf Erlass und Nachtrag';
-COMMENT ON COLUMN parent_guide_provisions.location IS 'Stelle – z. B. «§ 3»';
-COMMENT ON COLUMN parent_guide_provisions.excerpt IS 'Auszug – Text der Stelle';
+COMMENT ON COLUMN parent_guide_provisions.legal_act_id IS 'Erlass – Verweis';
+COMMENT ON COLUMN parent_guide_provisions.act_version_id IS 'Fassung – nur wenn eine bestimmte Fassung gemeint ist; leer = geltende Fassung';
+COMMENT ON COLUMN parent_guide_provisions.location IS 'Stelle – z. B. «§ 28»';
+COMMENT ON COLUMN parent_guide_provisions.excerpt IS 'Auszug – Text der Stelle, bei neuer Fassung neu erzeugt';
 COMMENT ON COLUMN parent_guide_provisions.position IS 'Reihenfolge – Anzeige';
 COMMENT ON TABLE parent_guide_documents IS 'Kommunales Dokument zu einem Thema des Elternwegweisers – Rechtssammlungen der Gemeinden; Beispiele im Elternwegweiser';
 COMMENT ON COLUMN parent_guide_documents.parent_guide_topic_id IS 'Thema – Verweis';

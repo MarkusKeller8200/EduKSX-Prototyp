@@ -183,4 +183,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Rechtsgrundlagen 78–79 (GPR, VPR); Elternfrage «Wer entscheidet an unserer Schule?» (#46).
 - EduKSX-Codex 0.24.0: Normenhierarchie – Themenwahl als Übersicht in Spalten nach Gruppen statt Reiterleiste; alle 24 Themen auf
   einen Blick, Kurzbezeichnungen, gewähltes Thema hervorgehoben (#52).
+- EduKSX-Codex 0.25.0: Redaktionelle Inhalte für die Datenbank – Datenmodell mit Redaktionsstatus und Importläufen, Pflege-API
+  (Upsert/Löschen über Schlüssel, Freigabe, Import JSON/Excel/CSV mit Probelauf, Export), `tools/inhalte.py` (Export der
+  heutigen Inhalte, Prüfung, Umwandlung, Ladetest), Anweisung für die KI-Recherche (#53).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.
