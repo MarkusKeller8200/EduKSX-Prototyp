@@ -150,4 +150,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Codex 0.19.0: Normenhierarchien «Eltern» (KRK, ZGB → VSG, VSV → Elternmitwirkung, Absenzen) und «Gesundheit»
   (EpG → GesG, VSG → VSV, VV EpiG, VSVZ → schulärztlicher Dienst), jetzt 11 Themen; Rechtsgrundlagen 66–69 (GesG, VSVZ,
   VV EpiG, EpG) mit Fassungen und Textfassungen (#43).
+- EduKSX-Codex 0.20.0: Normenhierarchie mit fünf weiteren Themen aus dem Volksschulgesetz – Schulorganisation & Qualität,
+  Schulpflicht/Schulort/Privatschulen, Tagesstrukturen & ergänzende Angebote, Beurteilung & Schullaufbahn, Sprache & Integration
+  (jetzt 16 Themen); Finanzen, Personal und Verfahren um VSG-Bestimmungen erweitert; Rechtsgrundlagen 70–77 (#44).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

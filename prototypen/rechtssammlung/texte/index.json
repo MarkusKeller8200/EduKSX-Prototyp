@@ -3581,6 +3581,152 @@
      "pdf_sha256": "9c58f5aca05ea62f5dd30dffd94099015bc5755c7e35469e38e0080a09ae8fa0"
     }
    ]
+  },
+  "sr-211.222.338": {
+   "ordnungsnummer": "SR 211.222.338",
+   "titel": "Pflegekinderverordnung (PAVO)",
+   "titel_amtlich": "Verordnung über die Aufnahme von Pflegekindern",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 2,
+   "fassungen": [
+    {
+     "nachtrag": "20170620",
+     "veroeffentlicht": "20.06.2017",
+     "in_kraft_bis": "23.01.2023",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1977/1931_1931_1931/20170620/de",
+     "absaetze": 100,
+     "fussnoten": 50,
+     "artikel": 45,
+     "html_sha256": "911c95962fb1552607ad8aeb6fa89d4e802be6155321df758c0eace9feab058b"
+    },
+    {
+     "nachtrag": "20230123",
+     "veroeffentlicht": "23.01.2023",
+     "in_kraft_bis": "",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1977/1931_1931_1931/20230123/de",
+     "absaetze": 104,
+     "fussnoten": 66,
+     "artikel": 45,
+     "html_sha256": "f3329a5577edbfe89aec5b57d75fdc3a59cd3d313c3c886c35a615697ca415aa",
+     "delta": {
+      "neu": 8,
+      "gestrichen": 2,
+      "geaendert": 13
+     }
+    }
+   ]
+  },
+  "410.6": {
+   "ordnungsnummer": "410.6",
+   "titel": "Musikschulgesetz (MuSG)",
+   "fassungen": [
+    {
+     "nachtrag": "119",
+     "veroeffentlicht": "01.01.2023",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-410_6-2019_11_11-2023_01_01-119.html",
+     "seiten": 3,
+     "absaetze": 56,
+     "fussnoten": 6,
+     "pdf_sha256": "c7d076ebfbbc1bfa2e49c3906342e400e57797c864f5ef347bd2dc797965ba72"
+    }
+   ]
+  },
+  "410.61": {
+   "ordnungsnummer": "410.61",
+   "titel": "Musikschulverordnung (MuSV)",
+   "fassungen": [
+    {
+     "nachtrag": "119",
+     "veroeffentlicht": "01.01.2023",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-410_61-2022_10_05-2023_01_01-119.html",
+     "seiten": 8,
+     "absaetze": 146,
+     "fussnoten": 5,
+     "pdf_sha256": "64c65c6da9b873abca9355c6d5e07822ee886d3031c6cb730e5b34daf1d30e9f"
+    }
+   ]
+  },
+  "852.1": {
+   "ordnungsnummer": "852.1",
+   "titel": "Kinder- und Jugendhilfegesetz (KJHG)",
+   "fassungen": [
+    {
+     "nachtrag": "110",
+     "veroeffentlicht": "01.08.2020",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-852_1-2011_03_14-2012_01_01-110.html",
+     "seiten": 15,
+     "absaetze": 256,
+     "fussnoten": 24,
+     "pdf_sha256": "584f23216693334448a5f0266d60da2b5e877a97310fe1a67c7581633710e3d5"
+    }
+   ]
+  },
+  "413.250.1": {
+   "ordnungsnummer": "413.250.1",
+   "titel": "Reglement für die Aufnahme in die Gymnasien mit Anschluss an die 6. Klasse der Primarschule",
+   "fassungen": [
+    {
+     "nachtrag": "117",
+     "veroeffentlicht": "01.08.2022",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_250_1-2010_01_13-2010_03_01-117.html",
+     "seiten": 8,
+     "absaetze": 129,
+     "fussnoten": 10,
+     "pdf_sha256": "6a051f46040a604de933db4c8a795911961e490a60e3a5fd0930efb6c7879150"
+    }
+   ]
+  },
+  "413.250.2": {
+   "ordnungsnummer": "413.250.2",
+   "titel": "Verordnung über die Aufnahme in die Maturitätsschulen im Anschluss an die Sekundarstufe und nach Abschluss der beruflichen Grundbildung (VAM)",
+   "fassungen": [
+    {
+     "nachtrag": "131",
+     "veroeffentlicht": "01.01.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_250_2-2019_04_03-2022_08_01-131.html",
+     "seiten": 15,
+     "absaetze": 275,
+     "fussnoten": 11,
+     "pdf_sha256": "dc5d5ff4e56ec5052d9f7e500277239fd9b39bfac8dd39471e334367e42bb412"
+    }
+   ]
+  },
+  "413.21": {
+   "ordnungsnummer": "413.21",
+   "titel": "Mittelschulgesetz (MSG)",
+   "fassungen": [
+    {
+     "nachtrag": "132",
+     "veroeffentlicht": "01.04.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_21-1999_06_13-1999_11_01-132.html",
+     "seiten": 14,
+     "absaetze": 224,
+     "fussnoten": 26,
+     "pdf_sha256": "6054b2c2b68cb4f366d5c7018d404a9339c5e568d4cbbdf5bec37e27bd3772b7"
+    }
+   ]
+  },
+  "414.16": {
+   "ordnungsnummer": "414.16",
+   "titel": "Gesetz über den Beitritt zum Regionalen Schulabkommen über die gegenseitige Aufnahme von Auszubildenden und Ausrichtung von Beiträgen (RSA 2009)",
+   "fassungen": [
+    {
+     "nachtrag": "091",
+     "veroeffentlicht": "01.01.2016",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-414_16-2009_12_07-2009_08_01-091.html",
+     "seiten": 9,
+     "absaetze": 99,
+     "fussnoten": 4,
+     "pdf_sha256": "f43b1e54eae099e10ded8c7a2f6bfe43e203a5eb4669e849cffa0cde282485c9"
+    }
+   ]
   }
  },
  "stand": "20.11.2026"

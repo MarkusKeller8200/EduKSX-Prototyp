@@ -36,6 +36,12 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – EduKSX-Codex 0.20.0
+
+- Auftrag: alle Themen aus der Durchsicht des Volksschulgesetzes umsetzen. Umgesetzt (#44 → `_3 Beta-Test`); Ordnungsnummern
+  über ZH-Lex geprüft (410.6, 410.61, 852.1, 413.21, 413.250.1, 413.250.2, 414.16), PAVO über Fedlex (ELI 1977/1931_1931_1931).
+  LS 852.23 (Bewilligung Kinderhorte) nicht abrufbar – Kinderhorte der Schule sind in VSG § 30 c und VSV §§ 32 g ff. geregelt.
+
 ### Sitzung 2026-11-20 – EduKSX-Codex 0.19.0
 
 - Auftrag: Übersicht Eltern und Thema Gesundheit. Umgesetzt (#43 → `_3 Beta-Test`); Ordnungsnummern in ZH-Lex geprüft

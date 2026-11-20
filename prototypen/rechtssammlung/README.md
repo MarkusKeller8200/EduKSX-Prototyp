@@ -1,6 +1,6 @@
 # Prototyp: Rechtssammlung
 
-**Status:** in-arbeit · **Version:** 0.19.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
+**Status:** in-arbeit · **Version:** 0.20.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
 
 ## Frage
 
@@ -31,12 +31,12 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 | `data/raw/zhlex-versionen.json` | Fassungen (Nachträge) von 29 kantonalen Erlassen aus ZH-Lex mit Publikations-, Inkraftsetzungs- und Aufhebungsdatum, abgerufen 20.11.2026 |
 | `data/raw/` | Rohdaten aus den Websites |
 | `data/pflichtkatalog.json` | Pflichtkatalog Schulgemeinde: 40 Dokumente in 5 Kategorien mit Einstufung P/B/O, Aufnahme in die Rechtssammlung, Quelle und Suchmuster (Recherche 20.11.2026, Original in `quellen/pflichtdokumente_schulgemeinde_zh.md`, zu prüfen) |
-| `data/rechtsgrundlagen.json` | Gesetzestexte & Verordnungen: 69 Rechtsgrundlagen für Schulen (62 aus der Liste, ergänzt um FAG, FAV, CRG, GesG, VSVZ, VV EpiG, EpG; Bund, Kanton, Bildungsrat, Gemeinde) mit Sachbereich, Artikel und Quelle; Fundstelle, Ebene und Direktlink ergänzt `tools/build.py` |
+| `data/rechtsgrundlagen.json` | Gesetzestexte & Verordnungen: 77 Rechtsgrundlagen für Schulen (62 aus der Liste, ergänzt um FAG, FAV, CRG, GesG, VSVZ, VV EpiG, EpG, MuSG, MuSV, KJHG, PAVO, MSG, Aufnahmereglemente, RSA 2009; Bund, Kanton, Bildungsrat, Gemeinde) mit Sachbereich, Artikel und Quelle; Fundstelle, Ebene und Direktlink ergänzt `tools/build.py` |
 | `quellen/` | Leitfaden systematische Rechtssammlung (Original von zh.ch und PDF für die Vorschau), Herkunft in `quellen/README.md` |
-| `texte/` | Textfassungen (Markdown) je ZH-Lex-Fassung und Unterschiede je Fassungspaar (JSON), erzeugt von `tools/texte.py` – 29 kantonale Erlasse (u. a. KV, VRG, VSG, VSV, VSM, LPVO, GG, VGG, CRG, IDG, IVSV, SVO, PBG) und 10 Bundeserlasse (BV, KRK, BehiG, ZGB, OR, URG, DSG, DSV, StGB, EpG) |
+| `texte/` | Textfassungen (Markdown) je ZH-Lex-Fassung und Unterschiede je Fassungspaar (JSON), erzeugt von `tools/texte.py` – 29 kantonale Erlasse (u. a. KV, VRG, VSG, VSV, VSM, LPVO, GG, VGG, CRG, IDG, IVSV, SVO, PBG) und 11 Bundeserlasse (BV, KRK, BehiG, ZGB, OR, URG, DSG, DSV, StGB, EpG, PAVO) |
 | `tools/fedlex.py` | Bundesrecht aus Fedlex: Fassungen über den SPARQL-Endpunkt, amtliche HTML-Fassung → Markdown (`texte/sr-<SR>/`), Fassungsliste `data/raw/fedlex-versionen.json` |
 | `tools/texte.py` | Vorab-Aufbereitung: ZH-Lex-PDF laden, in Markdown umwandeln, Unterschiede berechnen (`python3 tools/texte.py 412.100`) |
-| `tools/build.py` | Generator: Datenmodell, Normenhierarchien (`HIERARCHIEN`: 11 Themen nach Bezug zur Volksschule – Volksschule, Sonderpädagogik, Kindesschutz, Eltern, Gesundheit, Personalrecht, Unterricht & Medien, Datenschutz & ICT, Finanzen, Verfahren & Rechtsschutz, Beschaffung & Bau), Schulgemeinden (60) mit Einheitsgemeinde-Herleitung, Struktur-Matrix, Nachbauten |
+| `tools/build.py` | Generator: Datenmodell, Normenhierarchien (`HIERARCHIEN`: 16 Themen nach Bezug zur Volksschule in den Gruppen Schule, Kinder & Eltern, Gesundheit, Personal, Unterricht, Organisation & Ressourcen), Schulgemeinden (60) mit Einheitsgemeinde-Herleitung, Struktur-Matrix, Nachbauten |
 
 ## Erfasst (Stand 17.11.2026)
 

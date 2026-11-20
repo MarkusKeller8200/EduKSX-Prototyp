@@ -686,6 +686,86 @@
    "quelle": "Fedlex",
    "quelle_url": "https://www.fedlex.admin.ch/eli/cc/2015/297/de",
    "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Thema Gesundheit)"
+  },
+  {
+   "nr": 70,
+   "sachbereich": 1,
+   "erlass": "Musikschulgesetz (MuSG), LS 410.6",
+   "stelle": "§§ 1–3",
+   "relevanz": "Musikalische Bildung: Aufgaben der Gemeinden, Anerkennung der Musikschulen",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Themen aus dem Volksschulgesetz)"
+  },
+  {
+   "nr": 71,
+   "sachbereich": 1,
+   "erlass": "Musikschulverordnung (MuSV), LS 410.61",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Angebot, Anerkennung und Beiträge von Kanton und Gemeinden an die Musikschulen",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Themen aus dem Volksschulgesetz)"
+  },
+  {
+   "nr": 72,
+   "sachbereich": 6,
+   "erlass": "Kinder- und Jugendhilfegesetz (KJHG), LS 852.1",
+   "stelle": "§§ 18–18 b",
+   "relevanz": "Familienergänzende Betreuung im Vorschulbereich (Kindertagesstätten, Tagesfamilien)",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Themen aus dem Volksschulgesetz)"
+  },
+  {
+   "nr": 73,
+   "sachbereich": 6,
+   "erlass": "Pflegekinderverordnung (PAVO), SR 211.222.338",
+   "stelle": "Art. 13–15",
+   "relevanz": "Bewilligungspflicht für Einrichtungen, die Kinder tagsüber betreuen",
+   "quelle": "Fedlex",
+   "quelle_url": "https://www.fedlex.admin.ch/eli/cc/1977/1931_1931_1931/de",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Themen aus dem Volksschulgesetz)"
+  },
+  {
+   "nr": 74,
+   "sachbereich": 1,
+   "erlass": "Mittelschulgesetz (MSG), LS 413.21",
+   "stelle": "§ 14",
+   "relevanz": "Aufnahme in die Mittelschulen (Übertritt aus der Volksschule)",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Themen aus dem Volksschulgesetz)"
+  },
+  {
+   "nr": 75,
+   "sachbereich": 1,
+   "erlass": "Reglement für die Aufnahme in die Gymnasien mit Anschluss an die 6. Klasse der Primarschule, LS 413.250.1",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Übertritt Primarstufe – Langgymnasium",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Themen aus dem Volksschulgesetz)"
+  },
+  {
+   "nr": 76,
+   "sachbereich": 1,
+   "erlass": "Verordnung über die Aufnahme in die Maturitätsschulen im Anschluss an die Sekundarstufe, LS 413.250.2",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Übertritt Sekundarstufe – Mittelschulen, einheitliche Aufnahmeprüfung",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Themen aus dem Volksschulgesetz)"
+  },
+  {
+   "nr": 77,
+   "sachbereich": 1,
+   "erlass": "Gesetz über den Beitritt zum Regionalen Schulabkommen (RSA 2009), LS 414.16",
+   "stelle": "Gesamter Erlass",
+   "relevanz": "Schulbesuch in anderen Kantonen, Schulgeld zwischen Kantonen",
+   "quelle": "ZH-Lex",
+   "quelle_url": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html",
+   "ergaenzung": "Ergänzung EduKSX-Codex vom 20.11.2026 (Themen aus dem Volksschulgesetz)"
   }
  ]
 }

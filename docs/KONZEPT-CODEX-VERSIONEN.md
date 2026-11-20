@@ -1,6 +1,6 @@
 # Konzept: EduKSX-Codex – Versionen, Abgleich, Textfassung und Normenhierarchie (#32)
 
-Stand: 2026-11-20 (Codex 0.19.0) · Status: **IN ARBEIT**
+Stand: 2026-11-20 (Codex 0.20.0) · Status: **IN ARBEIT**
 
 Ein Konzept ist eine Entscheidungsgrundlage, keine Freigabe: umgesetzt wird erst, was als Issue freigegeben ist.
 
@@ -154,7 +154,7 @@ Reglemente).
 
 ## 4a. Normenhierarchie – Stand und nächste Schritte (Vorschlag 20.11.2026)
 
-Stand Codex 0.19.0: 11 Themen (Volksschule, Sonderpädagogik, Kindesschutz, Eltern, Gesundheit, Personalrecht, Unterricht & Medien, Datenschutz & ICT, Finanzen, Verfahren & Rechtsschutz, Beschaffung & Bau); früher 9 Themen (Personalrecht, Finanzen, Volksschule, Datenschutz & ICT, Sonderpädagogik, Beschaffung & Bau,
+Stand Codex 0.20.0: 16 Themen in sechs Gruppen (Schule, Kinder & Eltern, Gesundheit, Personal, Unterricht, Organisation & Ressourcen); früher 9 Themen (Personalrecht, Finanzen, Volksschule, Datenschutz & ICT, Sonderpädagogik, Beschaffung & Bau,
 Kindesschutz & Schweigepflicht, Verfahren & Rechtsschutz, Unterricht & Medien), Textfassungen für 29 kantonale und 9 Bundeserlasse,
 maschineller Abgleich der Verbindungen (Ingress, § 1, Fussnoten), Ansicht je Organisation, Querbezüge, Pflichtkatalog Schulgemeinde.
 
@@ -184,3 +184,4 @@ maschineller Abgleich der Verbindungen (Ingress, § 1, Fussnoten), Ansicht je Or
 | #41 | Normenhierarchie: Beispiele geschärft, Themen Verfahren und Unterricht, nächste Schritte | `_3 Beta-Test` |
 | #42 | Normenhierarchie: Personalrecht überarbeitet, Reihenfolge nach Volksschulbezug | `_3 Beta-Test` |
 | #43 | Normenhierarchien Eltern und Gesundheit | `_3 Beta-Test` |
+| #44 | Normenhierarchie: fünf Themen aus dem Volksschulgesetz, Erweiterungen | `_3 Beta-Test` |

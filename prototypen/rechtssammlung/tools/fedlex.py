@@ -34,6 +34,7 @@ ERLASSE = {
     "235.11": ("2022/568", "Datenschutzverordnung (DSV)", None),
     "311.0":  ("54/757_781_799", "Strafgesetzbuch (StGB)", 4),
     "818.101": ("2015/297", "Epidemiengesetz (EpG)", None),
+    "211.222.338": ("1977/1931_1931_1931", "Pflegekinderverordnung (PAVO)", None),
 }
 HEUTE = "20261120"   # Stichtag der Aufbereitung
 HOCH = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")

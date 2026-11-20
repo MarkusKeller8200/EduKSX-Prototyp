@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.19.0 – Generator.
+"""EduKSX-Codex Prototyp 0.20.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1252,7 +1252,7 @@ RG_ALIAS = [  # Titelanfang ohne Fundstelle → (Abkürzung, Fundstelle)
  (r"^Gemeindeordnung der jeweiligen Schulgemeinde", ("GO", "kommunal")),
  (r"^Kommunales Personalreglement", ("", "kommunal")),
 ]
-RG_GEPRUEFT = {"131.1", "131.11", "412.121.31", "172.71", "412.106", "412.106.1", "720.11", "720.1", "132.1", "132.11", "611", "810.1", "818.22", "818.11"}
+RG_GEPRUEFT = {"131.1", "131.11", "412.121.31", "172.71", "412.106", "412.106.1", "720.11", "720.1", "132.1", "132.11", "611", "810.1", "818.22", "818.11", "410.6", "410.61", "852.1", "413.21", "413.250.1", "413.250.2", "414.16"}
 ZHLEX = "http://www.zhlex.zh.ch/Erlass.html?Open&Ordnr={}"
 
 def rechtsgrundlagen():
@@ -1384,6 +1384,8 @@ def fedlex_versionen(fund):
     geltend = [v for v in out if not v.get("kuenftig")]
     return geltend[:1] + [v for v in out if v.get("kuenftig")] + geltend[1:]   # geltende Fassung zuerst
 
+HERAUSGEBER_FIX = {"413.250.1": "Regierungsrat"}   # «Reglement», aber vom Regierungsrat erlassen (Ingress)
+
 def rg_metadaten(e):
     """Felder nach Entscheid 20.11.2026: Quellenklasse, herausgebende Behörde, massgebende Publikationsstelle, Downloadort, Versionen."""
     fund = e["fundstelle"]
@@ -1407,6 +1409,7 @@ def rg_metadaten(e):
         teile = e["titel"].split(" und ") if " und " in e["titel"] and "/" in fund else [zv["titel_amtlich"] if zv else e["titel"]]
         her = " / ".join(dict.fromkeys(erlassend(t) for t in teile))
         if fund.startswith("LS 720.1 (Anhang)"): her = "Interkantonales Organ (Beitritt Kantonsrat)"
+        if nummern and nummern[0] in HERAUSGEBER_FIX: her = HERAUSGEBER_FIX[nummern[0]]
         akt = zv["versionen"][0] if zv else None
         e.update(klasse="A", herausgeber=her, publikationsstelle="ZH-Lex LS (Erstpublikation OS)",
                  downloadort=akt["url"] if akt else (e["direkt"][0]["url"] if e["direkt"] else None),
@@ -1502,8 +1505,8 @@ HIERARCHIEN = [
     "hinweis": "Kantonales Recht für Lehrpersonen und Schulleitungen der Volksschule (§ 1); die Gemeinde stellt an (§ 7)"},
    {"id": "pg", "ebene": 1, "titel": "Personalgesetz (PG)", "art": "Gesetz (Kantonsrat)", "ls": "177.10",
     "hinweis": "Gilt direkt für das Staatspersonal; für Lehrpersonen ergänzend (§ 2 LPG), für Gemeindepersonal sinngemäss, soweit die Gemeinde nichts regelt (§ 53 Abs. 2 GG)"},
-   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Schulleitung, Leitung Bildung", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
-    "hinweis": "§ 43 Leitung Bildung (kommunal angestellt), § 44 Schulleitung mit personeller Führung"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Schulleitung, Leitung Bildung, Lehrerschaft", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
+    "hinweis": "§ 43 Leitung Bildung (kommunal angestellt), § 44 Schulleitung mit personeller Führung, § 45 Schulkonferenz; §§ 58–60 Lehrpersonenkonferenz der Volksschule (Mitwirkung der Lehrerschaft)"},
    {"id": "gg", "ebene": 1, "titel": "Gemeindegesetz (GG) – Gemeindepersonal", "art": "Gesetz (Kantonsrat)", "ls": "131.1",
     "hinweis": "§ 53: Arbeitsverhältnis öffentlich-rechtlich; eigenes Recht der Gemeinde, sonst kantonales Personalrecht sinngemäss"},
    {"id": "lpvo", "ebene": 2, "titel": "Lehrpersonalverordnung (LPVO)", "art": "Verordnung (Regierungsrat)", "ls": "412.311",
@@ -1526,7 +1529,7 @@ HIERARCHIEN = [
    {"von": "lpvo", "nach": "vvo", "art": "verweist auf"},
    {"von": "anst", "nach": "lpg", "art": "Grundlage", "beleg": ("412.31", "§ 7.")},
    {"von": "anst", "nach": "lpvo", "art": "Grundlage", "beleg": ("412.311", "§ 3.")},
-   {"von": "anst", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 44.")},
+   {"von": "anst", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 44."), "beleg_unten": ("412.100", "§ 58.")},
    {"von": "gem", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 53.")},
    {"von": "gem", "nach": "pg", "art": "subsidiär (§ 53 Abs. 2 GG)"},
    {"von": "gem", "nach": "pvo", "art": "subsidiär (§ 53 Abs. 2 GG)"},
@@ -1537,7 +1540,10 @@ HIERARCHIEN = [
    {"id": "gg", "ebene": 0, "titel": "Gemeindegesetz (GG)", "art": "Gesetz (Kantonsrat)", "ls": "131.1", "hinweis": "4. Teil: Finanzhaushalt (§§ 84 ff.) – Haushaltsführung, Budget, Ausgaben, Rechnungslegung, Prüfung"},
    {"id": "fag", "ebene": 0, "titel": "Finanzausgleichsgesetz (FAG)", "art": "Gesetz (Kantonsrat)", "ls": "132.1", "hinweis": "Finanzausgleich zwischen politischen Gemeinden, Schulgemeinden und Kanton"},
    {"id": "crg", "ebene": 0, "titel": "Gesetz über Controlling und Rechnungslegung (CRG)", "art": "Gesetz (Kantonsrat)", "ls": "611", "hinweis": "Haushaltsrecht des Kantons – für Gemeinden nicht direkt anwendbar; Gemeinden: GG 4. Teil"},
+   {"id": "vsgfin", "ebene": 0, "titel": "Volksschulgesetz (VSG) – Finanzen", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
+    "hinweis": "§ 11 Unentgeltlichkeit und Elternbeiträge; §§ 61–67 Kostenanteil des Kantons, Kosten der Sonderschulung, Mitteleinsatz der Gemeinden, Drittmittel"},
    {"id": "vgg", "ebene": 1, "titel": "Gemeindeverordnung (VGG)", "art": "Verordnung (Regierungsrat)", "ls": "131.11", "hinweis": "2. Teil: Finanzhaushalt"},
+   {"id": "vfiso", "ebene": 1, "titel": "Verordnung über die Finanzierung der Sonderschulung (VFiSo)", "art": "Verordnung (Regierungsrat)", "ls": "412.106"},
    {"id": "fav", "ebene": 1, "titel": "Finanzausgleichsverordnung (FAV)", "art": "Verordnung (Regierungsrat)", "ls": "132.11"},
    {"id": "go", "ebene": 2, "titel": "Gemeindeordnung – Finanzbefugnisse", "fundstelle": "kommunal", "art": "Gemeindeordnung (Stimmberechtigte)",
     "hinweis": "Regelt Ausgaben- und Kreditkompetenzen von Gemeindeversammlung, Vorstand bzw. Schulpflege", "muster": r"gemeindeordnung|\(go\)", "ohne": r"sekundarschul.*politische|protokoll"},
@@ -1553,7 +1559,10 @@ HIERARCHIEN = [
    {"von": "fin", "nach": "go", "art": "gestützt auf"},
    {"von": "fin", "nach": "gg", "art": "Grundsätze", "beleg": ("131.1", "§ 84.")},
    {"von": "fin", "nach": "vgg", "art": "verweist auf", "beleg": ("131.11", "§ 8.")},
-   {"von": "geb", "nach": "gg", "art": "Verursacherprinzip", "beleg": ("131.1", "§ 84.")}]},
+   {"von": "geb", "nach": "gg", "art": "Verursacherprinzip", "beleg": ("131.1", "§ 84.")},
+   {"von": "vfiso", "nach": "vsgfin", "art": "Vollzug", "beleg": ("412.106", "Ingress"), "beleg_oben": ("412.100", "§ 64.")},
+   {"von": "fin", "nach": "vsgfin", "art": "Mitteleinsatz", "beleg": ("412.100", "§ 66."), "beleg_unten": ("412.100", "§ 61.")},
+   {"von": "geb", "nach": "vsgfin", "art": "Elternbeiträge", "beleg": ("412.100", "§ 11.")}]},
  {"id": "volksschule", "titel": "Volksschule",
   "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Bildungsrat", "Gemeinde / Schulgemeinde"],
   "knoten": [
@@ -1693,7 +1702,8 @@ HIERARCHIEN = [
    {"id": "vrg", "ebene": 2, "titel": "Verwaltungsrechtspflegegesetz (VRG)", "art": "Gesetz (Kantonsrat)", "ls": "175.2",
     "hinweis": "Akteneinsicht (§ 8), Begründung und Rechtsmittelbelehrung (§ 10), Rekurs (§§ 19 ff.)"},
    {"id": "gg", "ebene": 2, "titel": "Gemeindegesetz (GG) – Neubeurteilung", "art": "Gesetz (Kantonsrat)", "ls": "131.1", "hinweis": "§§ 170 f.: Neubeurteilung von Entscheiden unterstellter Organe"},
-   {"id": "vsg", "ebene": 2, "titel": "Volksschulgesetz (VSG) – Rechtsschutz", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 74 Begründung und Neubeurteilung, § 75 Rekursinstanzen"},
+   {"id": "vsg", "ebene": 2, "titel": "Volksschulgesetz (VSG) – Aufsicht und Rechtsschutz", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
+    "hinweis": "§ 73 Aufsicht und Ersatzvornahme, § 74 Begründung und Neubeurteilung, § 75 Rekursinstanzen, § 76 Strafbestimmungen (z. B. Verletzung der Schulpflicht)"},
    {"id": "go", "ebene": 3, "titel": "Gemeindeordnung – Zuständigkeiten und Delegation", "fundstelle": "kommunal", "art": "Gemeindeordnung (Stimmberechtigte)",
     "hinweis": "Legt fest, welche Organe entscheiden – Grundlage für Neubeurteilung und Rekurs", "muster": r"gemeindeordnung|\(go\)", "ohne": r"protokoll"},
    {"id": "gs", "ebene": 3, "titel": "Geschäftsordnung / Organisationsstatut – Delegation an Schulleitung und Verwaltung", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
@@ -1703,7 +1713,7 @@ HIERARCHIEN = [
    {"von": "kv", "nach": "bv", "art": "konkretisiert", "beleg": ("101", "suche:Art. 18 ¹"), "beleg_oben": ("sr-101", "Art. 29")},
    {"von": "vrg", "nach": "kv", "art": "Umsetzung", "beleg": ("101", "suche:Art. 77 ¹")},
    {"von": "gg", "nach": "vrg", "art": "verweist auf", "beleg": ("131.1", "§ 171.")},
-   {"von": "vsg", "nach": "vrg", "art": "verweist auf", "beleg": ("412.100", "§ 75.")},
+   {"von": "vsg", "nach": "vrg", "art": "verweist auf", "beleg": ("412.100", "§ 75."), "beleg_unten": ("412.100", "§ 73.")},
    {"von": "go", "nach": "kv", "art": "Grundlage", "beleg": ("101", "suche:Art. 89 ¹")},
    {"von": "go", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 170.")},
    {"von": "gs", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 74.")},
@@ -1780,12 +1790,128 @@ HIERARCHIEN = [
    {"von": "sad", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 20.")},
    {"von": "sad", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 17.")},
    {"von": "sad", "nach": "vsvz", "art": "Grundlage", "beleg": ("818.22", "§ 1.")},
-   {"von": "sad", "nach": "gesg", "art": "Grundlage", "beleg": ("810.1", "§ 49.")}]},
+   {"von": "sad", "nach": "gesg", "art": "Grundlage", "beleg": ("810.1", "§ 49.")}]}, {"id": "organisation", "titel": "Schulorganisation & Qualität",
+  "ebenen": ["Kanton – Verfassung", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "kv", "ebene": 0, "titel": "Verfassung des Kantons Zürich (KV)", "art": "Verfassung (Stimmberechtigte)", "ls": "101", "hinweis": "Art. 85 Gemeindeautonomie, Art. 89 Gemeindeordnung"},
+   {"id": "gg", "ebene": 1, "titel": "Gemeindegesetz (GG) – Schulpflege", "art": "Gesetz (Kantonsrat)", "ls": "131.1", "hinweis": "§§ 54 ff.: Schulpflege in politischen Gemeinden und Schulgemeinden"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Organisation und Qualität", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
+    "hinweis": "§§ 41–46 Schulträger, Organisationsstatut, Schulprogramm, Schulpflege, Leitung Bildung, Schulleitung, Schulkonferenz, Schulverwaltung; §§ 47–49 Qualitätssicherung"},
+   {"id": "vsv", "ebene": 2, "titel": "Volksschulverordnung (VSV) – Organisation und Qualität", "art": "Verordnung (Regierungsrat)", "ls": "412.101",
+    "hinweis": "§§ 41–46 Organisationsstatut, Schulprogramm, Schulpflege, Schulkonferenz; §§ 47–53 interne und externe Beurteilung (Fachstelle Schulbeurteilung)"},
+   {"id": "go", "ebene": 3, "titel": "Gemeindeordnung", "fundstelle": "kommunal", "art": "Gemeindeordnung (Stimmberechtigte)", "muster": r"gemeindeordnung|\(go\)", "ohne": r"protokoll"},
+   {"id": "os", "ebene": 3, "titel": "Organisationsstatut, Funktionendiagramm", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
+    "muster": r"organisationsstatut|funktionendiagramm|organisationsreglement.*schul|schulorganisation", "ohne": r"gemeinderat|werkkommission|beilagen"},
+   {"id": "sp", "ebene": 3, "titel": "Schulprogramm, Leitbild, Qualität", "fundstelle": "kommunal", "art": "Planungsinstrument (Schulkonferenz/Schulpflege)",
+    "hinweis": "Pflicht zur Dokumentation (§ 41 b VSG), nicht zwingend in der Rechtssammlung", "muster": r"schulprogramm|jahresplanung|leitbild|qualitaetskonzept|qualitaetsmanagement|schulentwicklung"},
+   {"id": "gs", "ebene": 3, "titel": "Geschäftsordnung Schulpflege, Schulkonferenz", "fundstelle": "kommunal", "art": "Behördenerlass",
+    "muster": r"geschaeftsordnung.*schul|geschaeftsreglement.*schul|schulpflege.*geschaefts|schulkonferenz|konvent"}],
+  "kanten": [
+   {"von": "gg", "nach": "kv", "art": "Grundlage", "beleg": ("101", "suche:Art. 85 ¹")},
+   {"von": "vsg", "nach": "gg", "art": "verweist auf", "beleg": ("412.100", "§ 42."), "beleg_oben": ("131.1", "§ 54.")},
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 41."), "beleg_unten": ("412.101", "§ 49.")},
+   {"von": "go", "nach": "kv", "art": "Grundlage", "beleg": ("101", "suche:Art. 89 ¹")},
+   {"von": "go", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 54.")},
+   {"von": "os", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 41 a.")},
+   {"von": "os", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 41.")},
+   {"von": "os", "nach": "go", "art": "im Rahmen der"},
+   {"von": "sp", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 41 b.")},
+   {"von": "sp", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 42."), "beleg_unten": ("412.101", "§ 48.")},
+   {"von": "gs", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 45.")},
+   {"von": "gs", "nach": "go", "art": "gestützt auf"}]},
+ {"id": "tagesstrukturen", "titel": "Tagesstrukturen & ergänzende Angebote",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "pavo", "ebene": 0, "titel": "Pflegekinderverordnung (PAVO)", "sr": "211.222.338", "art": "Verordnung (Bundesrat)", "url": "https://www.fedlex.admin.ch/eli/cc/1977/1931_1931_1931/de",
+    "hinweis": "Art. 13 ff.: Bewilligungspflicht für Einrichtungen, die Kinder tagsüber betreuen"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Tagesstrukturen, ergänzende Angebote", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
+    "hinweis": "§§ 15–18 heimatliche Sprache, musikalische Grundbildung, Aufgabenhilfe, Schulsport; §§ 30 a–30 e Tagesstrukturen, Tagesschulen, Kinderhorte, Betreuungsschlüssel"},
+   {"id": "kjhg", "ebene": 1, "titel": "Kinder- und Jugendhilfegesetz (KJHG)", "art": "Gesetz (Kantonsrat)", "ls": "852.1", "hinweis": "§§ 18–18 b familienergänzende Betreuung im Vorschulbereich"},
+   {"id": "musg", "ebene": 1, "titel": "Musikschulgesetz (MuSG)", "art": "Gesetz (Kantonsrat)", "ls": "410.6"},
+   {"id": "vsv", "ebene": 2, "titel": "Volksschulverordnung (VSV) – Tagesstrukturen, Horte", "art": "Verordnung (Regierungsrat)", "ls": "412.101",
+    "hinweis": "§§ 32 a–32 f Angebot, Betreuungsschlüssel, Tagesschulen; §§ 32 g–32 m bewilligungspflichtige Kinderhorte"},
+   {"id": "musv", "ebene": 2, "titel": "Musikschulverordnung (MuSV)", "art": "Verordnung (Regierungsrat)", "ls": "410.61"},
+   {"id": "ts", "ebene": 3, "titel": "Tagesstrukturen, Betreuung, Tarife", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
+    "muster": r"tagesstruktur|tagesschule|betreuung|\bhort|mittagstisch|schulergaenzend", "ohne": r"vorschul|familienergaenzend|alters|spitex|pflege|merkblatt|kesb"},
+   {"id": "ms", "ebene": 3, "titel": "Musikschule", "fundstelle": "kommunal", "art": "Gemeindeerlass oder Vereinbarung", "muster": r"musikschul|musikalisch"},
+   {"id": "kb", "ebene": 3, "titel": "Familienergänzende Kinderbetreuung (Vorschulbereich)", "fundstelle": "kommunal", "art": "Gemeindeerlass",
+    "hinweis": "Meist Sache der politischen Gemeinde", "muster": r"familienergaenzend|kinderbetreuung|\bkita|krippe|tagesfamil", "ohne": r"merkblatt"}],
+  "kanten": [
+   {"von": "vsg", "nach": "pavo", "art": "verweist auf", "beleg": ("412.100", "§ 30 c."), "beleg_oben": ("sr-211.222.338", "Art. 13")},
+   {"von": "kjhg", "nach": "pavo", "art": "verweist auf", "beleg": ("852.1", "§ 18 b.")},
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 32 a."), "beleg_unten": ("412.101", "§ 32 g.")},
+   {"von": "musv", "nach": "musg", "art": "Vollzug", "beleg": ("410.61", "§ 1.")},
+   {"von": "ts", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 30 a.")},
+   {"von": "ts", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 32 a."), "beleg_unten": ("412.101", "§ 32 b.")},
+   {"von": "ms", "nach": "musg", "art": "Grundlage", "beleg": ("410.6", "§ 2.")},
+   {"von": "ms", "nach": "musv", "art": "Beiträge", "beleg": ("410.61", "§ 19.")},
+   {"von": "kb", "nach": "kjhg", "art": "Grundlage", "beleg": ("852.1", "§ 18.")},
+   {"von": "kb", "nach": "pavo", "art": "Bewilligung", "beleg": ("sr-211.222.338", "Art. 13")}]},
+ {"id": "schulpflicht", "titel": "Schulpflicht, Schulort & Privatschulen",
+  "ebenen": ["Bund", "Interkantonal", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "bv", "ebene": 0, "titel": "Bundesverfassung (BV) – Grundschulunterricht", "sr": "101", "art": "Verfassung", "url": "https://www.fedlex.admin.ch/eli/cc/1999/404/de",
+    "hinweis": "Art. 19 ausreichender und unentgeltlicher Grundschulunterricht; Art. 62 obligatorisch, unter staatlicher Leitung oder Aufsicht"},
+   {"id": "rsa", "ebene": 1, "titel": "Regionales Schulabkommen (RSA 2009)", "art": "Beitrittsgesetz (Kantonsrat)", "ls": "414.16", "hinweis": "Schulbesuch in anderen Kantonen und Beiträge zwischen den Kantonen"},
+   {"id": "vsg", "ebene": 2, "titel": "Volksschulgesetz (VSG) – Schulpflicht, Schulort, Privatschulen", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
+    "hinweis": "§ 3 Schulpflicht; §§ 10–12 Schulort, Unentgeltlichkeit, Elternbeiträge, Schulgeld; §§ 68–72 Privatschulen und Privatunterricht; § 67 a interkantonale Verträge"},
+   {"id": "vsv", "ebene": 3, "titel": "Volksschulverordnung (VSV) – Schulort, Privatschulen", "art": "Verordnung (Regierungsrat)", "ls": "412.101",
+    "hinweis": "§§ 2–3 Schulpflicht, Rückstellung; §§ 7–11 Wohnort, Schulort, Schulweg, Zuteilung, Schulgeld; §§ 67–74 Privatschulen, Privatunterricht"},
+   {"id": "sg", "ebene": 4, "titel": "Schulweg, Zuteilung, Schulgeld, Elternbeiträge", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
+    "muster": r"schulgeld|schulweg|schulbus|zuteilung|einzugsgebiet|schulkreis|verpflegungsbeitrag|elternbeitr|schuelertransport", "ohne": r"beschluss|stellenbeschrieb|merkblatt"}],
+  "kanten": [
+   {"von": "vsg", "nach": "bv", "art": "Umsetzung", "beleg": ("412.100", "§ 3."), "beleg_oben": ("sr-101", "Art. 19")},
+   {"von": "rsa", "nach": "bv", "art": "Koordination (Art. 62 BV)", "beleg": ("414.16", "§ 1."), "beleg_oben": ("sr-101", "Art. 62")},
+   {"von": "vsg", "nach": "rsa", "art": "interkantonale Verträge", "beleg": ("412.100", "§ 67 a.")},
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 7."), "beleg_unten": ("412.101", "§ 67.")},
+   {"von": "sg", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 11.")},
+   {"von": "sg", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 8."), "beleg_unten": ("412.101", "§ 11.")}]},
+ {"id": "beurteilung", "titel": "Beurteilung & Schullaufbahn",
+  "ebenen": ["Kanton – Gesetze", "Kanton – Verordnungen", "Bildungsrat", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "vsg", "ebene": 0, "titel": "Volksschulgesetz (VSG) – Beurteilung, Promotion", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 31 Beurteilung, § 32 Promotion und Übertritte"},
+   {"id": "msg", "ebene": 0, "titel": "Mittelschulgesetz (MSG)", "art": "Gesetz (Kantonsrat)", "ls": "413.21", "hinweis": "§ 14: Aufnahme in die Mittelschulen"},
+   {"id": "vsv", "ebene": 1, "titel": "Volksschulverordnung (VSV) – Schullaufbahn", "art": "Verordnung (Regierungsrat)", "ls": "412.101", "hinweis": "§§ 33–40 Schullaufbahnentscheide, Promotion, Repetition, Übertritt, Wechsel in der Sekundarstufe"},
+   {"id": "aufn6", "ebene": 1, "titel": "Aufnahme Gymnasium nach der 6. Klasse", "art": "Reglement (Regierungsrat)", "ls": "413.250.1"},
+   {"id": "aufn", "ebene": 1, "titel": "Aufnahme in die Maturitätsschulen nach der Sekundarstufe", "art": "Verordnung (Regierungsrat)", "ls": "413.250.2"},
+   {"id": "zr", "ebene": 2, "titel": "Zeugnisreglement", "art": "Reglement (Bildungsrat)", "ls": "412.121.31",
+    "liste": [{"titel": "BRB 5/2025 – Anpassungen Beurteilung und Zeugnis", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2025-brb-05.html"}]},
+   {"id": "kom", "ebene": 3, "titel": "Beurteilung, Einstufung, Übertritt in der Schule", "fundstelle": "kommunal", "art": "Behördenerlass oder Richtlinie",
+    "hinweis": "Selten als Erlass – meist interne Richtlinien", "muster": r"zeugnis|promotion|uebertritt|einstufung|stufenwechsel|lernbericht|beurteilung", "ohne": r"mitarbeit|personal|schulbeurteilung|beurteilungsteam"}],
+  "kanten": [
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 33."), "beleg_unten": ("412.101", "§ 39.")},
+   {"von": "zr", "nach": "vsg", "art": "Grundlage", "beleg": ("412.121.31", "Ingress"), "beleg_oben": ("412.100", "§ 31.")},
+   {"von": "aufn6", "nach": "msg", "art": "Grundlage", "beleg": ("413.250.1", "Ingress"), "beleg_oben": ("413.21", "§ 14.")},
+   {"von": "aufn", "nach": "msg", "art": "Grundlage", "beleg": ("413.250.2", "Ingress")},
+   {"von": "aufn6", "nach": "vsg", "art": "Übertritt (§ 32 VSG)", "beleg": ("412.100", "§ 32.")},
+   {"von": "kom", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 34.")},
+   {"von": "kom", "nach": "zr", "art": "verweist auf"}]},
+ {"id": "sprache", "titel": "Sprache & Integration",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Bildungsrat", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "bv", "ebene": 0, "titel": "Bundesverfassung (BV) – Sprachen", "sr": "101", "art": "Verfassung", "url": "https://www.fedlex.admin.ch/eli/cc/1999/404/de", "hinweis": "Art. 70: Amtssprachen; die Kantone bestimmen ihre Amtssprachen"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Sprache, zusätzliche Angebote", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
+    "hinweis": "§ 15 Kurse in heimatlicher Sprache und Kultur, § 24 Unterrichtssprache, § 25 zusätzliche Angebote (QUIMS), § 34 sonderpädagogische Massnahmen inkl. DaZ"},
+   {"id": "vsv", "ebene": 2, "titel": "Volksschulverordnung (VSV) – HSK, QUIMS", "art": "Verordnung (Regierungsrat)", "ls": "412.101", "hinweis": "§§ 13–14 Kurse in heimatlicher Sprache und Kultur, § 20 QUIMS"},
+   {"id": "vsm", "ebene": 2, "titel": "Verordnung über die sonderpädagogischen Massnahmen (VSM) – DaZ", "art": "Verordnung (Regierungsrat)", "ls": "412.103",
+    "hinweis": "§§ 12 ff. Unterricht in Deutsch als Zweitsprache, § 16 a Aufnahmeklassen Asyl"},
+   {"id": "brb", "ebene": 3, "titel": "Lehrmittel DaZ (Bildungsrat)", "fundstelle": "Bildungsratsbeschlüsse", "art": "Beschluss (Bildungsrat)", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html",
+    "liste": [{"titel": "BRB 8/2026 – Anforderungen an ein Lehrmittel für Sprachförderung und DaZ", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html"}]},
+   {"id": "kom", "ebene": 4, "titel": "DaZ-, Integrations- und QUIMS-Konzepte", "fundstelle": "kommunal", "art": "Konzept oder Behördenerlass",
+    "muster": r"\bdaz\b|deutsch als zweit|integration|quims|\bhsk\b|heimatliche sprache|aufnahmeklass|interkulturell|sprachfoerder", "ohne": r"integrierte sonderschul|integrative foerderung"}],
+  "kanten": [
+   {"von": "vsg", "nach": "bv", "art": "Unterrichtssprache", "beleg": ("412.100", "§ 24."), "beleg_oben": ("sr-101", "Art. 70")},
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 13."), "beleg_unten": ("412.101", "§ 20.")},
+   {"von": "vsm", "nach": "vsg", "art": "Vollzug", "beleg": ("412.103", "§ 1.")},
+   {"von": "brb", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 22.")},
+   {"von": "kom", "nach": "vsm", "art": "Grundlage", "beleg": ("412.103", "§ 12.")},
+   {"von": "kom", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 20.")},
+   {"von": "kom", "nach": "brb", "art": "verweist auf"}]},
 ]
 # Reihenfolge nach Bezug zur Volksschule (Auftrag 20.11.2026): Schule → Kinder → Personal → Unterricht → Organisation und Ressourcen
-REIHENFOLGE = ["volksschule", "sonderpaedagogik", "kindesschutz", "eltern", "gesundheit", "personal", "unterricht", "datenschutz", "finanzen", "verfahren", "beschaffung"]
+REIHENFOLGE = ["volksschule", "organisation", "schulpflicht", "tagesstrukturen", "sonderpaedagogik", "kindesschutz", "eltern", "gesundheit", "personal", "unterricht", "beurteilung", "sprache", "datenschutz", "finanzen", "verfahren", "beschaffung"]
 HIERARCHIEN.sort(key=lambda h: REIHENFOLGE.index(h["id"]))
-GRUPPEN = {"volksschule": "Schule", "sonderpaedagogik": "Kinder & Eltern", "kindesschutz": "Kinder & Eltern", "eltern": "Kinder & Eltern", "gesundheit": "Gesundheit", "personal": "Personal", "unterricht": "Unterricht",
+GRUPPEN = {"volksschule": "Schule", "organisation": "Schule", "schulpflicht": "Schule", "tagesstrukturen": "Schule", "beurteilung": "Unterricht", "sprache": "Unterricht", "sonderpaedagogik": "Kinder & Eltern", "kindesschutz": "Kinder & Eltern", "eltern": "Kinder & Eltern", "gesundheit": "Gesundheit", "personal": "Personal", "unterricht": "Unterricht",
            "datenschutz": "Organisation & Ressourcen", "finanzen": "Organisation & Ressourcen", "verfahren": "Organisation & Ressourcen", "beschaffung": "Organisation & Ressourcen"}
 
 # ---------------------------------------------------------------- Maschinelle Verbindungen (Auftrag 20.11.2026, Punkt 4)
@@ -1984,7 +2110,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.19.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.20.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1992,7 +2118,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.19.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.20.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),
