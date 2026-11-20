@@ -82,6 +82,17 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 - Umgesetzt (#37 → `_3 Beta-Test`): Darstellung (Andockpunkte, Beschriftungen in eigener SVG-Ebene, Hervorhebung), Ansicht je
   Organisation, Querbezüge (`querbezuege()` in tools/build.py, Feld `themen`).
 
+### Sitzung 2026-11-20 (03:00–03:50) – Umsetzungsgrundlagen aller Module
+
+- Auftrag im Chat: für alle Module Datenbankstruktur, API sowie Anforderungskatalog/Pflichtenheft/Prüfpunkte.
+- Neu `docs/umsetzung/`: README (Konventionen DB/API, 17 gemeinsame Prüfpunkte), `core-referenz.sql` (Platzhalter
+  für Core), je Modul `datenbank.sql`, `openapi.yaml`, `PFLICHTENHEFT.md`. Abgeleitet aus den Daten und Ansichten der
+  Prototypen (Stand Staffing 0.1.x, Flow 0.5.x, Codex 0.20.x, Sign 0.1.x, Time 0.3.x).
+- Geprüft: alle SQL-Skripte in PostgreSQL 16 lauffähig (111 Tabellen/Ansichten), Tagesberechnung Time gegen Beispiel,
+  OpenAPI mit `openapi-spec-validator` gültig, `tools/test_umsetzung.py` (YAML-Teil nur mit PyYAML).
+- Alles ENTWURF/EMPFOHLEN. OFFEN u. a.: PostgreSQL oder Vorgabe von EduKSX-Core (MariaDB?), Python-Importdienste
+  Codex, Signaturanbieter, Pausenregel Time. Issue noch anzulegen (GitHub-CLI ohne Anmeldung).
+
 ### Sitzung 2026-11-20 (00:00–00:30) – Prototyp EduKSX-Sign
 
 - Neuer Prototyp `prototypen/signatur` (EduKSX-Sign – Signatur / Persönliche Ablage), Auftrag im Chat: Ablage je

@@ -8,6 +8,11 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Neu
 
+- **Umsetzungsgrundlagen für alle Module** (`docs/umsetzung/`): je Modul (EduKSX-Staffing, -Flow, -Codex, -Sign,
+  -Time) eine Datenbankstruktur (`datenbank.sql`, PostgreSQL 16, ein Schema je Modul, Core-Platzhalter in
+  `core-referenz.sql`), eine API-Beschreibung (`openapi.yaml`, OpenAPI 3.1) und ein Dokument mit
+  Anforderungskatalog, Pflichtenheft und Prüfpunkten für die produktive Umsetzung (`PFLICHTENHEFT.md`); gemeinsame
+  Konventionen und Prüfpunkte im README; Prüfung `tools/test_umsetzung.py`.
 - EduKSX-Flow 0.5.5 und EduKSX-Sign 0.1.4: Menüsektion «EduKSX-Prototypen › Alle Prototypen» entfernt – ersetzt durch
   die Zurück-Taste hinter dem Titel.
 - Alle Prototypen: «Zurück» als Taste nur mit Icon (Pfeil links, Beschriftung für Screenreader); Einstiegsseite:

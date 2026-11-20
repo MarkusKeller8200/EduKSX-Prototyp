@@ -1,6 +1,6 @@
 # EduKSX-Prototyp – Projektstand
 
-> Stand 2026-11-20 (00:30): Prototyp EduKSX-Sign (Signatur / Persönliche Ablage) angelegt. Zuvor 2026-11-17 (13:45): Prototyp EduKSX-Time (Stempeln, PWA) angelegt (#19). Zuvor 03:45: Prototyp EduKSX-Codex (Rechtssammlung) ergänzt (#6). Zuvor: Erster Prototyp EduKSX-Staffing (Einsatzplanung) mit Vorgaben Kanton Zürich und Einstiegsseite für GitHub Pages. GitHub-Einstellungen (Labels, Meilensteine, Rulesets) und das Einschalten von Pages stehen noch aus.
+> Stand 2026-11-20 (03:45): Umsetzungsgrundlagen für alle fünf Module (`docs/umsetzung/`: Datenbank, API, Pflichtenheft mit Prüfpunkten). Zuvor 00:30: Prototyp EduKSX-Sign (Signatur / Persönliche Ablage) angelegt. Zuvor 2026-11-17 (13:45): Prototyp EduKSX-Time (Stempeln, PWA) angelegt (#19). Zuvor 03:45: Prototyp EduKSX-Codex (Rechtssammlung) ergänzt (#6). Zuvor: Erster Prototyp EduKSX-Staffing (Einsatzplanung) mit Vorgaben Kanton Zürich und Einstiegsseite für GitHub Pages. GitHub-Einstellungen (Labels, Meilensteine, Rulesets) und das Einschalten von Pages stehen noch aus.
 
 ## Umgesetzt
 
@@ -12,6 +12,7 @@
 | Prototyp EduKSX-Codex (Rechtssammlung) | Evaluation Pilot 4 Organisationen, Demo-Seiten (#6), Menü (#7), 12 Organisationen, Schulgemeinden, Matrix, Widget, PDF-Vorschau (#8–#12), Leitfaden-Prüfung und Grundlagen (#14), Dübendorf und Fehraltorf (#15), Übersicht (#30), Gesetzestexte & Verordnungen (#31), Versionen/Quellenkatalog (#32), Textfassungen und Normenhierarchie (#33), Finanzrecht und Normenhierarchie Finanzen (#34), Normenhierarchien Volksschule und Datenschutz (#35), Sonderpädagogik, Beschaffung & Bau, Kindesschutz (#36), Darstellung und Querbezüge (#37), Bundesrecht aus Fedlex (#38), maschinelle Verbindungsvorschläge (#39), Pflichtkatalog und Matrix-Auswahl (#40), 9 Themen und nächste Schritte (#41), Personalrecht und Reihenfolge (#42), Eltern und Gesundheit (#43), fünf VSG-Themen (#44) – Prototyp 0.20.0 | 0.1.0 | `prototypen/rechtssammlung/docs/evaluation.md` |
 | Prototyp EduKSX-Time (Zeiterfassung / Stempeln) | Schritt 1: Mobil-App (PWA) Ein-/Ausstempeln (#19), animierte Uhr (#21), Soll-Markierung und gesetzliche Pause (#22, #23), Pausentaste (#24), Symbole Kommen/Gehen (#25), Farben je Zustand (#26) – Prototyp 0.3.4 | 0.1.0 | `prototypen/zeiterfassung/README.md` |
 | Prototyp EduKSX-Sign (Signatur / Persönliche Ablage) | Klickprototyp 0.1.0: Ablage, Abgleich Cloud-Ablage, PDF-/Word-/Excel-Bearbeitung, Signaturprozess, Versiegeln, Eingang aus den Modulen | 0.1.0 | `prototypen/signatur/README.md` |
+| Umsetzungsgrundlagen der Module (Staffing, Flow, Codex, Sign, Time) | Entwurf: Datenbankstruktur (PostgreSQL), OpenAPI 3.1, Anforderungskatalog/Pflichtenheft/Prüfpunkte; geprüft mit `tools/test_umsetzung.py` | – | `docs/umsetzung/README.md` |
 | Einstiegsseite GitHub Pages | fertig, Pages noch einzuschalten | 0.1.0 | `tools/seite_bauen.py` |
 
 ## Offen bzw. geplant

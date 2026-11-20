@@ -1,0 +1,3293 @@
+# EduKSX-Codex – API-Beschreibung (OpenAPI 3.1)
+# Stand 2026-11-20 · Status ENTWURF · Grundlage: Prototyp prototypen/rechtssammlung
+# Konventionen: docs/umsetzung/README.md · Pfade ohne Modulpräfix (Namensraum beim Zusammenführen)
+openapi: 3.1.0
+info:
+  title: EduKSX-Codex
+  version: 0.1.0
+  description: 'Systematische Rechtssammlung: Rechtssammlungen der Gemeinden und Schulgemeinden (Rubrik › Erlass › Fassung),
+    Bundes- und Kantonsrecht mit Fassungen und Textfassung, Rechtsgrundlagen für Schulen, Normenhierarchien, Pflichtkatalog,
+    Vergleichsmatrix und Leitfaden-Prüfung. Öffentliche Erlasse sind ohne Anmeldung lesbar (Scope `codex:lesen` ist für die
+    öffentliche Ansicht anonym gewährt).'
+  contact:
+    name: EduKSX
+    url: https://github.com/MarkusKeller8200/EduKSX-Prototyp
+  license:
+    name: siehe Repository
+    identifier: LicenseRef-EduKSX
+servers:
+- url: https://{mandant}.eduksx.ch/api
+  variables:
+    mandant:
+      default: demo
+  description: Beispiel – Namensraum je Modul setzt das Zusammenführen in EduKSX-Architektur.
+security:
+- ident:
+  - codex:lesen
+tags:
+- name: Verzeichnis
+  description: Bezirke, Gemeinden, Schulgemeinden
+- name: Sammlungen
+  description: Organisationen und Rubriken
+- name: Erlasse
+  description: Erlasse und Fassungen
+- name: Suche
+  description: Volltext- und Verweissuche
+- name: Rechtsgrundlagen
+  description: Rechtsgrundlagen für Schulen und Quellen
+- name: Hierarchien
+  description: Normenhierarchien
+- name: Pflichtkatalog
+  description: Pflichtdokumente und Vergleichsmatrix
+- name: Evaluation
+  description: Analysen und Leitfaden-Prüfung
+- name: Einbettung
+  description: Widget für Websites
+paths:
+  /v1/gemeinden:
+    get:
+      tags:
+      - Verzeichnis
+      operationId: gemeindeListe
+      summary: Gemeinden auflisten
+      security:
+      - ident:
+        - codex:lesen
+      parameters:
+      - $ref: '#/components/parameters/Seite'
+      - $ref: '#/components/parameters/Anzahl'
+      - name: bezirk
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: erfassung
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: suche
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Liste der Gemeinden.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GemeindeVoll'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+    post:
+      tags:
+      - Verzeichnis
+      operationId: gemeindeAnlegen
+      summary: Gemeinde anlegen
+      security:
+      - ident:
+        - codex:zentral
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Gemeinde'
+      responses:
+        '201':
+          description: Angelegt.
+          headers:
+            ETag: &id001
+              description: Version des Datensatzes.
+              schema:
+                type: string
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &id002
+                allOf:
+                - $ref: '#/components/schemas/Gemeinde'
+                - $ref: '#/components/schemas/Protokoll'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/gemeinden/{id}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Verzeichnis
+      operationId: gemeindeLesen
+      summary: Gemeinde lesen
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Gemeinde
+          headers: &id003
+            ETag: *id001
+          content:
+            application/json:
+              schema: *id002
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+    patch:
+      tags:
+      - Verzeichnis
+      operationId: gemeindeAendern
+      summary: Gemeinde ändern (JSON Merge Patch)
+      security:
+      - ident:
+        - codex:zentral
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Gemeinde'
+      responses:
+        '200':
+          description: Geändert.
+          headers: *id003
+          content:
+            application/json:
+              schema: *id002
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+  /v1/schulgemeinden:
+    get:
+      tags:
+      - Verzeichnis
+      operationId: schulgemeindeListe
+      summary: Schulgemeinden auflisten
+      security:
+      - ident:
+        - codex:lesen
+      parameters:
+      - $ref: '#/components/parameters/Seite'
+      - $ref: '#/components/parameters/Anzahl'
+      - name: bezirk
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: typ
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Liste der Schulgemeinden.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SchulgemeindeVoll'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+    post:
+      tags:
+      - Verzeichnis
+      operationId: schulgemeindeAnlegen
+      summary: Schulgemeinde anlegen
+      security:
+      - ident:
+        - codex:zentral
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Schulgemeinde'
+      responses:
+        '201':
+          description: Angelegt.
+          headers:
+            ETag: *id001
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &id004
+                allOf:
+                - $ref: '#/components/schemas/Schulgemeinde'
+                - $ref: '#/components/schemas/Protokoll'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/schulgemeinden/{id}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Verzeichnis
+      operationId: schulgemeindeLesen
+      summary: Schulgemeinde lesen
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Schulgemeinde
+          headers: *id003
+          content:
+            application/json:
+              schema: *id004
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+    patch:
+      tags:
+      - Verzeichnis
+      operationId: schulgemeindeAendern
+      summary: Schulgemeinde ändern (JSON Merge Patch)
+      security:
+      - ident:
+        - codex:zentral
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Schulgemeinde'
+      responses:
+        '200':
+          description: Geändert.
+          headers: *id003
+          content:
+            application/json:
+              schema: *id004
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+  /v1/organisationen:
+    get:
+      tags:
+      - Sammlungen
+      operationId: organisationListe
+      summary: Organisationen auflisten
+      security:
+      - ident:
+        - codex:lesen
+      parameters:
+      - $ref: '#/components/parameters/Seite'
+      - $ref: '#/components/parameters/Anzahl'
+      - name: ebene
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: bezirk
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: typ
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Liste der Organisationen.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrganisationVoll'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+    post:
+      tags:
+      - Sammlungen
+      operationId: organisationAnlegen
+      summary: Organisation anlegen
+      security:
+      - ident:
+        - codex:redaktion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organisation'
+      responses:
+        '201':
+          description: Angelegt.
+          headers:
+            ETag: *id001
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &id005
+                allOf:
+                - $ref: '#/components/schemas/Organisation'
+                - $ref: '#/components/schemas/Protokoll'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/organisationen/{id}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Sammlungen
+      operationId: organisationLesen
+      summary: Organisation lesen
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Organisation
+          headers: *id003
+          content:
+            application/json:
+              schema: *id005
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+    patch:
+      tags:
+      - Sammlungen
+      operationId: organisationAendern
+      summary: Organisation ändern (JSON Merge Patch)
+      security:
+      - ident:
+        - codex:redaktion
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Organisation'
+      responses:
+        '200':
+          description: Geändert.
+          headers: *id003
+          content:
+            application/json:
+              schema: *id005
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+    delete:
+      tags:
+      - Sammlungen
+      operationId: organisationEntfernen
+      summary: Organisation entfernen (archivieren)
+      security:
+      - ident:
+        - codex:redaktion
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: Entfernt bzw. archiviert.
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+  /v1/erlasse:
+    get:
+      tags:
+      - Erlasse
+      operationId: erlassListe
+      summary: Erlasse auflisten
+      security:
+      - ident:
+        - codex:lesen
+      parameters:
+      - $ref: '#/components/parameters/Seite'
+      - $ref: '#/components/parameters/Anzahl'
+      - name: organisation
+        in: query
+        required: false
+        description: Schlüssel
+        schema:
+          type: string
+      - name: rubrikId
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+          format: uuid
+      - name: art
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: thema
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: ebene
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: fundstelle
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: stichtag
+        in: query
+        required: false
+        description: nur an diesem Tag gültige
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Liste der Erlasse.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErlassVoll'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+    post:
+      tags:
+      - Erlasse
+      operationId: erlassAnlegen
+      summary: Erlass anlegen
+      security:
+      - ident:
+        - codex:redaktion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Erlass'
+      responses:
+        '201':
+          description: Angelegt.
+          headers:
+            ETag: *id001
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &id006
+                allOf:
+                - $ref: '#/components/schemas/Erlass'
+                - $ref: '#/components/schemas/Protokoll'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/erlasse/{id}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Erlasse
+      operationId: erlassLesen
+      summary: Erlass lesen
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Erlass
+          headers: *id003
+          content:
+            application/json:
+              schema: *id006
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+    patch:
+      tags:
+      - Erlasse
+      operationId: erlassAendern
+      summary: Erlass ändern (JSON Merge Patch)
+      security:
+      - ident:
+        - codex:redaktion
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Erlass'
+      responses:
+        '200':
+          description: Geändert.
+          headers: *id003
+          content:
+            application/json:
+              schema: *id006
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+    delete:
+      tags:
+      - Erlasse
+      operationId: erlassEntfernen
+      summary: Erlass entfernen (archivieren)
+      security:
+      - ident:
+        - codex:redaktion
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: Entfernt bzw. archiviert.
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+  /v1/rechtsgrundlagen:
+    get:
+      tags:
+      - Rechtsgrundlagen
+      operationId: rechtsgrundlageListe
+      summary: Rechtsgrundlagen auflisten
+      security:
+      - ident:
+        - codex:lesen
+      parameters:
+      - $ref: '#/components/parameters/Seite'
+      - $ref: '#/components/parameters/Anzahl'
+      - name: sachbereich
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: integer
+      - name: ebene
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: thema
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Liste der Rechtsgrundlagen.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RechtsgrundlageVoll'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+    post:
+      tags:
+      - Rechtsgrundlagen
+      operationId: rechtsgrundlageAnlegen
+      summary: Rechtsgrundlage anlegen
+      security:
+      - ident:
+        - codex:zentral
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rechtsgrundlage'
+      responses:
+        '201':
+          description: Angelegt.
+          headers:
+            ETag: *id001
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &id007
+                allOf:
+                - $ref: '#/components/schemas/Rechtsgrundlage'
+                - $ref: '#/components/schemas/Protokoll'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/rechtsgrundlagen/{id}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Rechtsgrundlagen
+      operationId: rechtsgrundlageLesen
+      summary: Rechtsgrundlage lesen
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Rechtsgrundlage
+          headers: *id003
+          content:
+            application/json:
+              schema: *id007
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+    patch:
+      tags:
+      - Rechtsgrundlagen
+      operationId: rechtsgrundlageAendern
+      summary: Rechtsgrundlage ändern (JSON Merge Patch)
+      security:
+      - ident:
+        - codex:zentral
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Rechtsgrundlage'
+      responses:
+        '200':
+          description: Geändert.
+          headers: *id003
+          content:
+            application/json:
+              schema: *id007
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+    delete:
+      tags:
+      - Rechtsgrundlagen
+      operationId: rechtsgrundlageEntfernen
+      summary: Rechtsgrundlage entfernen (archivieren)
+      security:
+      - ident:
+        - codex:zentral
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: Entfernt bzw. archiviert.
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+  /v1/quellen:
+    get:
+      tags:
+      - Rechtsgrundlagen
+      operationId: quelleListe
+      summary: Quellen auflisten
+      security:
+      - ident:
+        - codex:lesen
+      parameters:
+      - $ref: '#/components/parameters/Seite'
+      - $ref: '#/components/parameters/Anzahl'
+      - name: klasse
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: ebene
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Liste der Quellen.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/QuelleVoll'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+    post:
+      tags:
+      - Rechtsgrundlagen
+      operationId: quelleAnlegen
+      summary: Quelle anlegen
+      security:
+      - ident:
+        - codex:zentral
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Quelle'
+      responses:
+        '201':
+          description: Angelegt.
+          headers:
+            ETag: *id001
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &id008
+                allOf:
+                - $ref: '#/components/schemas/Quelle'
+                - $ref: '#/components/schemas/Protokoll'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/quellen/{id}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Rechtsgrundlagen
+      operationId: quelleLesen
+      summary: Quelle lesen
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Quelle
+          headers: *id003
+          content:
+            application/json:
+              schema: *id008
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+    patch:
+      tags:
+      - Rechtsgrundlagen
+      operationId: quelleAendern
+      summary: Quelle ändern (JSON Merge Patch)
+      security:
+      - ident:
+        - codex:zentral
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Quelle'
+      responses:
+        '200':
+          description: Geändert.
+          headers: *id003
+          content:
+            application/json:
+              schema: *id008
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+    delete:
+      tags:
+      - Rechtsgrundlagen
+      operationId: quelleEntfernen
+      summary: Quelle entfernen (archivieren)
+      security:
+      - ident:
+        - codex:zentral
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: Entfernt bzw. archiviert.
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+  /v1/hierarchien:
+    get:
+      tags:
+      - Hierarchien
+      operationId: hierarchieListe
+      summary: Normenhierarchien auflisten
+      security:
+      - ident:
+        - codex:lesen
+      parameters:
+      - $ref: '#/components/parameters/Seite'
+      - $ref: '#/components/parameters/Anzahl'
+      - name: gruppe
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Liste der Normenhierarchien.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/HierarchieVoll'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+    post:
+      tags:
+      - Hierarchien
+      operationId: hierarchieAnlegen
+      summary: Normenhierarchie anlegen
+      security:
+      - ident:
+        - codex:zentral
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Hierarchie'
+      responses:
+        '201':
+          description: Angelegt.
+          headers:
+            ETag: *id001
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &id009
+                allOf:
+                - $ref: '#/components/schemas/Hierarchie'
+                - $ref: '#/components/schemas/Protokoll'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/hierarchien/{id}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Hierarchien
+      operationId: hierarchieLesen
+      summary: Normenhierarchie lesen
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Normenhierarchie
+          headers: *id003
+          content:
+            application/json:
+              schema: *id009
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+    patch:
+      tags:
+      - Hierarchien
+      operationId: hierarchieAendern
+      summary: Normenhierarchie ändern (JSON Merge Patch)
+      security:
+      - ident:
+        - codex:zentral
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Hierarchie'
+      responses:
+        '200':
+          description: Geändert.
+          headers: *id003
+          content:
+            application/json:
+              schema: *id009
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+    delete:
+      tags:
+      - Hierarchien
+      operationId: hierarchieEntfernen
+      summary: Normenhierarchie entfernen (archivieren)
+      security:
+      - ident:
+        - codex:zentral
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: Entfernt bzw. archiviert.
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+  /v1/pflichtdokumente:
+    get:
+      tags:
+      - Pflichtkatalog
+      operationId: pflichtdokumentListe
+      summary: Pflichtdokumente auflisten
+      security:
+      - ident:
+        - codex:lesen
+      parameters:
+      - $ref: '#/components/parameters/Seite'
+      - $ref: '#/components/parameters/Anzahl'
+      - name: kategorie
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: integer
+      - name: stufe
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Liste der Pflichtdokumente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PflichtdokumentVoll'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+    post:
+      tags:
+      - Pflichtkatalog
+      operationId: pflichtdokumentAnlegen
+      summary: Pflichtdokument anlegen
+      security:
+      - ident:
+        - codex:zentral
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pflichtdokument'
+      responses:
+        '201':
+          description: Angelegt.
+          headers:
+            ETag: *id001
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &id010
+                allOf:
+                - $ref: '#/components/schemas/Pflichtdokument'
+                - $ref: '#/components/schemas/Protokoll'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/pflichtdokumente/{id}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Pflichtkatalog
+      operationId: pflichtdokumentLesen
+      summary: Pflichtdokument lesen
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Pflichtdokument
+          headers: *id003
+          content:
+            application/json:
+              schema: *id010
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+    patch:
+      tags:
+      - Pflichtkatalog
+      operationId: pflichtdokumentAendern
+      summary: Pflichtdokument ändern (JSON Merge Patch)
+      security:
+      - ident:
+        - codex:zentral
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Pflichtdokument'
+      responses:
+        '200':
+          description: Geändert.
+          headers: *id003
+          content:
+            application/json:
+              schema: *id010
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+    delete:
+      tags:
+      - Pflichtkatalog
+      operationId: pflichtdokumentEntfernen
+      summary: Pflichtdokument entfernen (archivieren)
+      security:
+      - ident:
+        - codex:zentral
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: Entfernt bzw. archiviert.
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+  /v1/uebersicht:
+    get:
+      tags:
+      - Verzeichnis
+      operationId: uebersichtLesen
+      summary: Kennzahlen, Fortschritt je Bezirk, Handlungsbedarf
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Uebersicht'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+  /v1/bezirke:
+    get:
+      tags:
+      - Verzeichnis
+      operationId: bezirkeListe
+      summary: Bezirke mit Erfassungsstand
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Liste.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Bezirk'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+  /v1/organisationen/{id}/rubriken:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Sammlungen
+      operationId: rubrikenBaum
+      summary: Rubrikenbaum mit Erlassen
+      security:
+      - ident:
+        - codex:lesen
+      parameters:
+      - name: stichtag
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Liste.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Rubrik'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+    post:
+      tags:
+      - Sammlungen
+      operationId: rubrikAnlegen
+      summary: Rubrik anlegen
+      security:
+      - ident:
+        - codex:redaktion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rubrik'
+      responses:
+        '201':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rubrik'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/rubriken/{id}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    patch:
+      tags:
+      - Sammlungen
+      operationId: rubrikAendern
+      summary: Rubrik ändern oder verschieben
+      security:
+      - ident:
+        - codex:redaktion
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rubrik'
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rubrik'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/erlasse/{id}/fassungen:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    post:
+      tags:
+      - Erlasse
+      operationId: fassungAnlegen
+      summary: Neue Fassung mit Datei hochladen (Text wird erzeugt)
+      security:
+      - ident:
+        - codex:redaktion
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                datei:
+                  type: string
+                  contentMediaType: application/octet-stream
+                bezeichnung:
+                  type: string
+                veroeffentlicht:
+                  type: string
+                  format: date
+                inKraftAb:
+                  type: string
+                  format: date
+                inKraftBis:
+                  type: string
+                  format: date
+              required:
+              - datei
+      responses:
+        '201':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Fassung'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/fassungen/{id}/text:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Erlasse
+      operationId: fassungText
+      summary: Textfassung (Markdown) mit Gliederung
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Text'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+  /v1/fassungen/{id}/datei:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Erlasse
+      operationId: fassungDatei
+      summary: Originaldatei der Fassung
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Datei.
+          content:
+            application/pdf:
+              schema:
+                type: string
+                contentMediaType: application/pdf
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+  /v1/erlasse/{id}/unterschiede:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Erlasse
+      operationId: fassungenVergleichen
+      summary: Zwei Fassungen vergleichen
+      security:
+      - ident:
+        - codex:lesen
+      parameters:
+      - name: alt
+        in: query
+        required: false
+        description: Bezeichnung oder ID
+        schema:
+          type: string
+      - name: neu
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unterschied'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+  /v1/suche:
+    get:
+      tags:
+      - Suche
+      operationId: suchen
+      summary: Volltextsuche über Titel und Texte
+      security:
+      - ident:
+        - codex:lesen
+      parameters:
+      - name: q
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: organisation
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: ebene
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: thema
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: stichtag
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Liste.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Treffer'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+  /v1/aufloesen:
+    get:
+      tags:
+      - Suche
+      operationId: fundstelleAufloesen
+      summary: Fundstelle auflösen («LS 412.100 § 12», «SR 101 Art. 19») → Erlass, Fassung, Stelle
+      security:
+      - ident:
+        - codex:lesen
+      parameters:
+      - name: fundstelle
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: stichtag
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Treffer'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+  /v1/sachbereiche:
+    get:
+      tags:
+      - Rechtsgrundlagen
+      operationId: sachbereicheListe
+      summary: Sachbereiche
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Liste.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Sachbereich'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+  /v1/hierarchien/{id}/kanten:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    post:
+      tags:
+      - Hierarchien
+      operationId: kanteAnlegen
+      summary: Verbindung anlegen
+      security:
+      - ident:
+        - codex:zentral
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Kante'
+      responses:
+        '201':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Kante'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/hierarchien/{id}/vorschlaege:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Hierarchien
+      operationId: vorschlaegeListe
+      summary: Maschinelle Verbindungsvorschläge aus Verweisen
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Liste.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Kante'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+  /v1/kanten/{id}/bestaetigen:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    post:
+      tags:
+      - Hierarchien
+      operationId: kanteBestaetigen
+      summary: Vorschlag bestätigen oder ablehnen
+      security:
+      - ident:
+        - codex:zentral
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Entscheid.
+              properties:
+                bestaetigt:
+                  type: boolean
+                begruendung:
+                  type:
+                  - string
+                  - 'null'
+              required:
+              - bestaetigt
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Kante'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/hierarchien/{id}/organisation/{org}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    - name: org
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Hierarchien
+      operationId: hierarchieJeOrganisation
+      summary: Hierarchie mit den kommunalen Erlassen einer Organisation
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Hierarchie'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+  /v1/matrix:
+    get:
+      tags:
+      - Pflichtkatalog
+      operationId: matrixLesen
+      summary: Vergleichsmatrix (Auswahl der Organisationen)
+      security:
+      - ident:
+        - codex:lesen
+      parameters:
+      - name: organisationen
+        in: query
+        required: false
+        description: Schlüssel, kommagetrennt
+        schema:
+          type: string
+      - name: nurPflicht
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Matrix'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+  /v1/matrix/{zeile}/{org}:
+    parameters:
+    - name: zeile
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: org
+      in: path
+      required: true
+      schema:
+        type: string
+    put:
+      tags:
+      - Pflichtkatalog
+      operationId: zelleSetzen
+      summary: Zelle von Hand zuordnen
+      security:
+      - ident:
+        - codex:evaluation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Zelle'
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatrixZeile'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/organisationen/{id}/analysen:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Evaluation
+      operationId: analysenListe
+      summary: Analysen einer Rechtssammlung
+      security:
+      - ident:
+        - codex:evaluation
+      responses:
+        '200':
+          description: Liste.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Analyse'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+  /v1/organisationen/{id}/analysieren:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    post:
+      tags:
+      - Evaluation
+      operationId: analyseStarten
+      summary: Rechtssammlung neu einlesen und analysieren (Leitfaden, Arten, Matrix)
+      security:
+      - ident:
+        - codex:evaluation
+      responses:
+        '202':
+          description: Analyse gestartet; Ergebnis über analysenListe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Analyse'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/einbettung/{org}:
+    parameters:
+    - name: org
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      tags:
+      - Einbettung
+      operationId: widgetDaten
+      summary: Daten für das Website-Widget (Rubrik › Unterordner › Dokument)
+      security:
+      - ident:
+        - codex:lesen
+      responses:
+        '200':
+          description: Liste.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Rubrik'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+components:
+  securitySchemes:
+    ident:
+      type: oauth2
+      description: Anmeldung über EduKSX-Ident (OpenID Connect).
+      flows:
+        authorizationCode:
+          authorizationUrl: https://ident.eduksx.ch/oauth2/authorize
+          tokenUrl: https://ident.eduksx.ch/oauth2/token
+          scopes:
+            codex:lesen: Rechtssammlungen lesen (öffentlich)
+            codex:redaktion: Eigene Rechtssammlung pflegen (Schulverwaltung/Gemeindeschreiber:in des Mandanten)
+            codex:zentral: 'Gemeinsamer Bestand: Bundes-/Kantonsrecht, Hierarchien, Pflichtkatalog, Gemeindeverzeichnis (Redaktion
+              EduKSX-Codex)'
+            codex:evaluation: 'Evaluation: Analysen, Leitfaden-Prüfung, Matrix'
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    Seite:
+      name: seite
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    Anzahl:
+      name: anzahl
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 50
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: ETag des gelesenen Stands (optimistisches Sperren).
+      schema:
+        type: string
+    Mandant:
+      name: EduKSX-Mandant
+      in: header
+      required: false
+      description: Nur für Personen mit mehreren Mandanten; sonst aus dem Token.
+      schema:
+        type: string
+        format: uuid
+  responses:
+    Ungueltig:
+      description: Eingabe ungültig oder Prüfregel verletzt.
+      content: &id011
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    NichtAngemeldet:
+      description: Kein oder ungültiges Token.
+      content: *id011
+    KeinRecht:
+      description: Rolle oder Scope reicht nicht.
+      content: *id011
+    NichtGefunden:
+      description: Nicht vorhanden oder nicht im Mandanten.
+      content: *id011
+    Konflikt:
+      description: Fachlicher Konflikt (z. B. Zustand erlaubt die Aktion nicht).
+      content: *id011
+    VersionVeraltet:
+      description: If-Match passt nicht zum aktuellen Stand.
+      content: *id011
+  schemas:
+    Problem:
+      type: object
+      description: Fehler nach RFC 9457 (application/problem+json).
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+        fehler:
+          type: array
+          description: Verletzte Prüfregeln bzw. ungültige Felder.
+          items:
+            type: object
+            properties:
+              feld:
+                type: string
+              regel:
+                type: string
+              text:
+                type: string
+      required:
+      - title
+      - status
+    Protokoll:
+      type: object
+      description: Protokollfelder jedes Datensatzes (nur lesbar).
+      properties:
+        erstelltAm:
+          type: string
+          format: date-time
+          readOnly: true
+        erstelltVon:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        geaendertAm:
+          type: string
+          format: date-time
+          readOnly: true
+        geaendertVon:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        version:
+          type: integer
+          readOnly: true
+    Gemeinde:
+      type: object
+      description: Politische Gemeinde.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        bfsNr:
+          type:
+          - integer
+          - 'null'
+        name:
+          type: string
+        bezirk:
+          type: string
+        typ:
+          type: string
+        einheitsgemeinde:
+          type:
+          - boolean
+          - 'null'
+        einheitSicher:
+          type: boolean
+        website:
+          type:
+          - string
+          - 'null'
+          format: uri
+        rechtssammlungUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+        erfassung:
+          type: string
+          enum:
+          - offen
+          - erfasst
+          - geprueft
+        schultraeger:
+          type: object
+          additionalProperties: true
+          description: '{primar, sek}'
+        organisation:
+          type:
+          - string
+          - 'null'
+          description: Schlüssel der erfassten Organisation
+          readOnly: true
+      required:
+      - name
+      - bezirk
+    Schulgemeinde:
+      type: object
+      description: Schulgemeinde.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        typ:
+          type: string
+          enum:
+          - Volksschulgemeinde
+          - Primarschulgemeinde
+          - Sekundarschulgemeinde
+          - Zweckverband
+        name:
+          type: string
+        kurz:
+          type:
+          - string
+          - 'null'
+        bezirk:
+          type: string
+        sitz:
+          type:
+          - string
+          - 'null'
+        mitglieder:
+          type: array
+          items:
+            type: string
+        mitgliederSicher:
+          type: boolean
+        organisation:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+      required:
+      - typ
+      - name
+      - bezirk
+    Bezirk:
+      type: object
+      description: Bezirk mit Erfassungsstand.
+      properties:
+        name:
+          type: string
+        gemeinden:
+          type: integer
+        erfasst:
+          type: integer
+        schulgemeinden:
+          type: integer
+    Organisation:
+      type: object
+      description: Herausgebende Stelle mit Rechtssammlung.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        schluessel:
+          type: string
+        ebene:
+          type: string
+          enum:
+          - Bund
+          - Interkantonal
+          - Kanton
+          - Bildungsrat
+          - Gemeinde
+        typ:
+          type: string
+        name:
+          type: string
+        kurz:
+          type:
+          - string
+          - 'null'
+        bezirk:
+          type:
+          - string
+          - 'null'
+        sitz:
+          type:
+          - string
+          - 'null'
+        website:
+          type:
+          - string
+          - 'null'
+          format: uri
+        rechtssammlungUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+        menuPfad:
+          type: array
+          items:
+            type: string
+        weitereEinstiege:
+          type: array
+          items:
+            type: string
+        struktur:
+          type:
+          - string
+          - 'null'
+        nummerierung:
+          type:
+          - string
+          - 'null'
+        einbettbar:
+          type: boolean
+        pdfVorschau:
+          type: boolean
+        darstellung:
+          type:
+          - object
+          - 'null'
+          additionalProperties: true
+        stand:
+          type:
+          - string
+          - 'null'
+          format: date
+        anzahlDokumente:
+          type: integer
+          readOnly: true
+        anzahlRubriken:
+          type: integer
+          readOnly: true
+        maxTiefe:
+          type: integer
+          readOnly: true
+        arten:
+          type: object
+          additionalProperties: true
+          description: Anzahl je Dokumentart
+          readOnly: true
+        befunde:
+          type: array
+          items:
+            type: string
+          readOnly: true
+      required:
+      - schluessel
+      - ebene
+      - typ
+      - name
+    Rubrik:
+      type: object
+      description: Rubrik/Sachgebiet mit Unterordnern und Erlassen.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        elternId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        nummer:
+          type:
+          - string
+          - 'null'
+        titel:
+          type: string
+        reihenfolge:
+          type: integer
+        kinder:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rubrik'
+          readOnly: true
+        erlasse:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErlassKurz'
+          readOnly: true
+      required:
+      - titel
+    ErlassKurz:
+      type: object
+      description: Erlass in Listen.
+      properties:
+        id:
+          type: string
+          format: uuid
+        schluessel:
+          type: string
+        titel:
+          type: string
+        abk:
+          type:
+          - string
+          - 'null'
+        fundstelle:
+          type:
+          - string
+          - 'null'
+        art:
+          type: string
+        aktuelleFassung:
+          type:
+          - string
+          - 'null'
+        inKraftAb:
+          type:
+          - string
+          - 'null'
+          format: date
+        dateiTyp:
+          type:
+          - string
+          - 'null'
+        dateiUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+    Erlass:
+      type: object
+      description: Erlass bzw. Dokument einer Rechtssammlung.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        organisationId:
+          type: string
+          format: uuid
+        rubrikId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        schluessel:
+          type: string
+        titel:
+          type: string
+        originalTitel:
+          type:
+          - string
+          - 'null'
+        abk:
+          type:
+          - string
+          - 'null'
+        fundstelle:
+          type:
+          - string
+          - 'null'
+        ordnungsnummer:
+          type:
+          - string
+          - 'null'
+        art:
+          type: string
+          enum:
+          - verfassung
+          - gesetz
+          - verordnung
+          - gemeindeerlass
+          - behoerdenerlass
+          - vertrag
+          - raumplan
+          - nicht_rechtsetzend
+          - nicht_sr
+          - unklar
+        quellenklasse:
+          type:
+          - string
+          - 'null'
+        herausgeber:
+          type:
+          - string
+          - 'null'
+        publikationsstelle:
+          type:
+          - string
+          - 'null'
+        verbindlichkeit:
+          type:
+          - string
+          - 'null'
+        themen:
+          type: array
+          items:
+            type: string
+        textfassung:
+          type: boolean
+          readOnly: true
+        geprueft:
+          type: boolean
+        fassungen:
+          type: array
+          items:
+            $ref: '#/components/schemas/Fassung'
+          readOnly: true
+        verweise:
+          type: array
+          items:
+            $ref: '#/components/schemas/Verweis'
+          readOnly: true
+        verwiesenVon:
+          type: array
+          items:
+            $ref: '#/components/schemas/Verweis'
+          readOnly: true
+      required:
+      - organisationId
+      - schluessel
+      - titel
+      - art
+    Fassung:
+      type: object
+      description: Fassung eines Erlasses.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        bezeichnung:
+          type: string
+        nachtrag:
+          type:
+          - string
+          - 'null'
+        veroeffentlicht:
+          type:
+          - string
+          - 'null'
+          format: date
+        inKraftAb:
+          type:
+          - string
+          - 'null'
+          format: date
+        inKraftBis:
+          type:
+          - string
+          - 'null'
+          format: date
+        datumHerkunft:
+          type:
+          - string
+          - 'null'
+        status:
+          type: string
+          enum:
+          - entwurf
+          - aktuell
+          - aufgehoben
+          - ersetzt
+        quelleUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+        dateiUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+        dateiTyp:
+          type:
+          - string
+          - 'null'
+        dateiGroesse:
+          type:
+          - integer
+          - 'null'
+        dateiSha256:
+          type:
+          - string
+          - 'null'
+        seiten:
+          type:
+          - integer
+          - 'null'
+        absaetze:
+          type:
+          - integer
+          - 'null'
+        fussnoten:
+          type:
+          - integer
+          - 'null'
+        erfasstAm:
+          type: string
+          format: date
+          readOnly: true
+      required:
+      - bezeichnung
+      - status
+    Text:
+      type: object
+      description: Textfassung einer Fassung.
+      properties:
+        fassungId:
+          type: string
+          format: uuid
+        format:
+          type: string
+          enum:
+          - markdown
+        text:
+          type: string
+        gliederung:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          description: '{stelle, titel, anker}'
+    Unterschied:
+      type: object
+      description: Unterschiede zwischen zwei Fassungen.
+      properties:
+        alt:
+          type: string
+        neu:
+          type: string
+        aenderungen:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          description: '{art, stelle, alt, neu}'
+    Verweis:
+      type: object
+      description: Verweis zwischen Erlassen.
+      properties:
+        von:
+          type: string
+        ziel:
+          type: string
+        zielErlassId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        stelle:
+          type:
+          - string
+          - 'null'
+        anzahl:
+          type: integer
+    Treffer:
+      type: object
+      description: Suchtreffer.
+      properties:
+        erlass:
+          $ref: '#/components/schemas/ErlassKurz'
+        organisation:
+          type: string
+        fassung:
+          type:
+          - string
+          - 'null'
+        stelle:
+          type:
+          - string
+          - 'null'
+        auszug:
+          type: string
+          description: mit Hervorhebung
+    Rechtsgrundlage:
+      type: object
+      description: Rechtsgrundlage für Schulen.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        nr:
+          type: integer
+        sachbereich:
+          type: integer
+        erlass:
+          $ref: '#/components/schemas/ErlassKurz'
+        ebene:
+          type: string
+          readOnly: true
+        stelle:
+          type:
+          - string
+          - 'null'
+        relevanz:
+          type:
+          - string
+          - 'null'
+        quelle:
+          type:
+          - string
+          - 'null'
+        quelleGenerisch:
+          type: boolean
+        geprueft:
+          type: boolean
+      required:
+      - nr
+      - sachbereich
+    Sachbereich:
+      type: object
+      description: Sachbereich.
+      properties:
+        nr:
+          type: integer
+        titel:
+          type: string
+    Quelle:
+      type: object
+      description: Publikationsquelle.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        klasse:
+          type: string
+        ebene:
+          type: string
+        name:
+          type: string
+        herausgeber:
+          type:
+          - string
+          - 'null'
+        inhalt:
+          type:
+          - string
+          - 'null'
+        url:
+          type:
+          - string
+          - 'null'
+          format: uri
+        prioritaet:
+          type: string
+          enum:
+          - hoch
+          - mittel
+          - tief
+        versionierung:
+          type:
+          - string
+          - 'null'
+        verbindlichkeit:
+          type:
+          - string
+          - 'null'
+        abruf:
+          type: string
+          enum:
+          - api
+          - sparql
+          - pdf
+          - html
+          - manuell
+        zuletztAbgerufen:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          readOnly: true
+      required:
+      - klasse
+      - ebene
+      - name
+    Hierarchie:
+      type: object
+      description: Normenhierarchie eines Themas.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        schluessel:
+          type: string
+        titel:
+          type: string
+        gruppe:
+          type:
+          - string
+          - 'null'
+        ebenen:
+          type: array
+          items:
+            type: string
+        hinweis:
+          type:
+          - string
+          - 'null'
+        knoten:
+          type: array
+          items:
+            $ref: '#/components/schemas/Knoten'
+        kanten:
+          type: array
+          items:
+            $ref: '#/components/schemas/Kante'
+        fehlendeErlasse:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          readOnly: true
+      required:
+      - schluessel
+      - titel
+      - ebenen
+    Knoten:
+      type: object
+      description: Knoten einer Hierarchie.
+      properties:
+        schluessel:
+          type: string
+        ebene:
+          type: integer
+        erlassId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        titel:
+          type: string
+        art:
+          type:
+          - string
+          - 'null'
+        hinweis:
+          type:
+          - string
+          - 'null'
+        fundstelle:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        versionen:
+          type: integer
+          readOnly: true
+      required:
+      - schluessel
+      - ebene
+      - titel
+    Kante:
+      type: object
+      description: Verbindung zwischen Knoten mit Beleg.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        von:
+          type: string
+        nach:
+          type: string
+        art:
+          type: string
+        belegFundstelle:
+          type:
+          - string
+          - 'null'
+        belegStelle:
+          type:
+          - string
+          - 'null'
+        belegText:
+          type:
+          - string
+          - 'null'
+        verweise:
+          type:
+          - integer
+          - 'null'
+        status:
+          type: string
+          enum:
+          - vorschlag
+          - nur_hand
+          - bestaetigt
+          - abgelehnt
+          - kommunal_oder_ohne_text
+      required:
+      - von
+      - nach
+      - art
+    Pflichtdokument:
+      type: object
+      description: Pflichtdokument einer Schulgemeinde.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        schluessel:
+          type: string
+        kategorie:
+          type: integer
+        kategorieTitel:
+          type: string
+          readOnly: true
+        dokument:
+          type: string
+        stufe:
+          type: string
+          enum:
+          - P
+          - B
+          - O
+        aufnahme:
+          type: string
+        quelle:
+          type:
+          - string
+          - 'null'
+        quelleUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+        muster:
+          type:
+          - string
+          - 'null'
+        musterUnsicher:
+          type:
+          - string
+          - 'null'
+        bemerkung:
+          type:
+          - string
+          - 'null'
+        status:
+          type: string
+          enum:
+          - zu_pruefen
+          - geprueft
+      required:
+      - schluessel
+      - kategorie
+      - dokument
+      - stufe
+      - aufnahme
+    Matrix:
+      type: object
+      description: Vergleichsmatrix.
+      properties:
+        organisationen:
+          type: array
+          items:
+            type: string
+        zeilen:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatrixZeile'
+    MatrixZeile:
+      type: object
+      description: Zeile mit Zellen je Organisation.
+      properties:
+        schluessel:
+          type: string
+        menu:
+          type: string
+        unter:
+          type:
+          - string
+          - 'null'
+        dokument:
+          type: string
+        sammel:
+          type: boolean
+        stufe:
+          type:
+          - string
+          - 'null'
+        pflicht:
+          type: boolean
+        aufnahme:
+          type:
+          - string
+          - 'null'
+        zellen:
+          type: object
+          additionalProperties: true
+          description: 'je Organisation: {status, erlasse[], hinweise[]}'
+    Zelle:
+      type: object
+      description: Zelle der Matrix setzen (Handzuordnung).
+      properties:
+        status:
+          type: string
+          enum:
+          - ja
+          - unsicher
+          - nein
+          - nicht_zutreffend
+        erlassIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        hinweise:
+          type: array
+          items:
+            type: string
+      required:
+      - status
+    Analyse:
+      type: object
+      description: Analyse einer Rechtssammlung.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        analyseVersion:
+          type: integer
+          readOnly: true
+        datum:
+          type: string
+          format: date
+          readOnly: true
+        art:
+          type: string
+        bemerkung:
+          type:
+          - string
+          - 'null'
+        anzahlDokumente:
+          type: integer
+          readOnly: true
+        anzahlRubriken:
+          type: integer
+          readOnly: true
+        befunde:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        leitfaden:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeitfadenErgebnis'
+          readOnly: true
+    LeitfadenErgebnis:
+      type: object
+      description: Ergebnis einer Leitfaden-Regel.
+      properties:
+        ziffer:
+          type: string
+        titel:
+          type: string
+        status:
+          type: string
+          enum:
+          - ja
+          - nein
+          - unsicher
+          - info
+        text:
+          type:
+          - string
+          - 'null'
+    Uebersicht:
+      type: object
+      description: Kennzahlen.
+      properties:
+        gemeinden:
+          type: integer
+        schulgemeinden:
+          type: integer
+        erfasst:
+          type: integer
+        dokumente:
+          type: integer
+        bezirke:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bezirk'
+        handlungsbedarf:
+          type: array
+          items:
+            type: string
+    ErlassAenderung:
+      type: object
+      description: 'Ereignis: neue Fassung eines Erlasses.'
+      properties:
+        erlassId:
+          type: string
+          format: uuid
+        schluessel:
+          type: string
+        fundstelle:
+          type:
+          - string
+          - 'null'
+        fassung:
+          $ref: '#/components/schemas/Fassung'
+    GemeindeVoll: *id002
+    SchulgemeindeVoll: *id004
+    OrganisationVoll: *id005
+    ErlassVoll: *id006
+    RechtsgrundlageVoll: *id007
+    QuelleVoll: *id008
+    HierarchieVoll: *id009
+    PflichtdokumentVoll: *id010
+webhooks:
+  fassungNeu:
+    post:
+      summary: Neue Fassung eines Erlasses (für Hilfe in Staffing, Quellen in Flow).
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErlassAenderung'
+      responses:
+        '204':
+          description: Empfangen.
