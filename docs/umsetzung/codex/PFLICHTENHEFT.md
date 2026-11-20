@@ -147,7 +147,7 @@ Die redaktionellen Inhalte liegen bereits im Importformat vor: `python3 tools/in
 | Rechtsstellen im Elternwegweiser | `ELTERNFRAGEN.stellen` | `parent_guide_provisions` | Position | elternstellen |
 | Verknüpfte Normenhierarchien | `ELTERNFRAGEN.themen` | `parent_guide_topic_hierarchies` | – | elternthemen.hierarchy_keys |
 | Pflichtkatalog mit Kategorien und Suchmustern | `pflichtkatalog.json` | `mandatory_document_categories`, `mandatory_documents` | `document_key` | pflichtdokumente |
-| Rechtsgrundlagen Schule | `rechtsgrundlagen.json` + `RG_ALIAS` | `legal_bases` (+ `legal_areas`) | `number` | rechtsgrundlagen |
+| Rechtsgrundlagen Volksschule | `rechtsgrundlagen.json` + `RG_ALIAS` | `legal_bases` (+ `legal_areas`) | `number` | rechtsgrundlagen |
 | Publikationsquellen, Quellenklassen | `QUELLENKLASSEN`, `quellenkatalog()` | `publication_sources`, `source_classes` | – | – (Ausbau) |
 | Erlasse und Fassungen | `texte/`, ZH-Lex, Fedlex | `legal_acts`, `act_versions` | `act_key` | – (eigene Importdienste) |
 

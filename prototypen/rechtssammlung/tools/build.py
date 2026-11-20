@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.25.0 – Generator.
+"""EduKSX-Codex Prototyp 0.26.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1238,7 +1238,7 @@ def _alle(n, pfad):
     for d in n.get("dokumente", []): yield d, pfad
     for k in n.get("kinder", []): yield from _alle(k, pfad + " › " + k["titel"])
 
-# ---------------------------------------------------------------- Gesetzestexte & Verordnungen (Rechtsgrundlagen Schule)
+# ---------------------------------------------------------------- Gesetzestexte & Verordnungen (Rechtsgrundlagen Volksschule)
 # Rohliste: data/rechtsgrundlagen.json (aus quellen/rechtsgrundlagen_schulen_zh.md). Hier werden Fundstelle, Ebene,
 # Abkürzung, Direktlink und Herkunft ergänzt. «Geprüft» = Ordnungsnummer am 20.11.2026 in ZH-Lex nachgesehen.
 RG_ALIAS = [  # Titelanfang ohne Fundstelle → (Abkürzung, Fundstelle)
@@ -2322,7 +2322,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.25.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.26.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2330,7 +2330,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.25.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.26.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

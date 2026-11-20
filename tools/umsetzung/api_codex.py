@@ -15,7 +15,7 @@ API = {
                     "Vergleichsmatrix, Elternwegweiser und Leitfaden-Prüfung. Lesen ist öffentlich; massgeblich bleibt die amtliche Publikation.",
     "tags": {
         "municipalities": "Gemeinden", "school-communities": "Schulgemeinden", "publishers": "Herausgeber und Rechtssammlungen",
-        "sections": "Rubriken", "legal-acts": "Erlasse und Fassungen", "search": "Suche und Fundstellen", "legal-bases": "Rechtsgrundlagen Schule",
+        "sections": "Rubriken", "legal-acts": "Erlasse und Fassungen", "search": "Suche und Fundstellen", "legal-bases": "Rechtsgrundlagen Volksschule",
         "publication-sources": "Publikationsquellen", "norm-hierarchies": "Normenhierarchien", "mandatory-documents": "Pflichtkatalog",
         "matrix": "Vergleichsmatrix", "parent-guide-topics": "Elternwegweiser",
         "content-imports": "Pflege und Import (API, CSV, Excel, KI-Recherche)", "content-exports": "Export der redaktionellen Inhalte", "collection-analyses": "Evaluation und Leitfaden-Prüfung", "embed": "Widget für Websites",
@@ -106,7 +106,7 @@ API = {
                                               "match_pattern": ("text?", "Suchmuster", "regulärer Ausdruck"), "uncertain_pattern": ("text?", "Suchmuster unsicher", "nur «unsicher»"),
                                               "exclusion_pattern": ("text?", "Ausschlussmuster", "Treffer, die nicht passen"), "remark": ("text?", "Bemerkung", "Freitext")},
                                    "pflicht": ["document_key", "category_number", "document", "obligation", "intake"]},
-        "LegalBasisEntry": {"title": "Rechtsgrundlage (Import)", "description": "Eintrag «Rechtsgrundlagen Schule» mit Fundstelle statt ID",
+        "LegalBasisEntry": {"title": "Rechtsgrundlage (Import)", "description": "Eintrag «Rechtsgrundlagen Volksschule» mit Fundstelle statt ID",
                             "felder": {"number": ("int", "Nummer", "Reihenfolge, Schlüssel"), "legal_area_number": ("int", "Sachbereich", "Nummer"), "citation": ("text", "Fundstelle", "z. B. «LS 410.6», «LS 412.100 / 412.101», «kommunal», «Bildungsratsbeschlüsse»"),
                                        "title": ("text", "Erlass", "Titel bzw. Dokument"), "location": ("text?", "Stelle", "z. B. «§§ 1–3»"), "relevance": ("text?", "Relevanz", "Bedeutung für die Schule"),
                                        "source_url": ("url?", "Quelle", "Link")}, "pflicht": ["number", "legal_area_number", "citation", "title"]},

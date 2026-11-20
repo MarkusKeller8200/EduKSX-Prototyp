@@ -47,7 +47,7 @@ BESCHREIBUNG = {
     "elternthemen": "Je Thema des Elternwegweisers eine Zeile; Fragen und Hierarchie-Schlüssel getrennt mit « | »",
     "elternstellen": "Rechtsstellen zu einem Elternthema (Erlass und Stelle)",
     "pflichtdokumente": "Pflichtkatalog Schulgemeinde; obligation P (Pflicht), B (bedingt), O (optional)",
-    "rechtsgrundlagen": "Verzeichnis «Rechtsgrundlagen Schule»; number ist der Schlüssel",
+    "rechtsgrundlagen": "Verzeichnis «Rechtsgrundlagen Volksschule»; number ist der Schlüssel",
     "loeschen": "Zu löschende Einträge: content_type (norm_hierarchies, parent_guide_topics, mandatory_documents, legal_bases) und Schlüssel",
 }
 LINIENART = [(r"nicht direkt", "not_applicable"), (r"Vollzug", "implementation"), (r"subsidi", "subsidiary"), (r"Grundlage|Umsetzung", "basis")]

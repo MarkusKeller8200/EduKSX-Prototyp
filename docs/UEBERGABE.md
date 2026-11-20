@@ -36,6 +36,12 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Codex 0.26.0 – Menü und Ebenen-Reihenfolge (#54)
+
+- Menü: Gruppe «Gesetzestexte & Verordnungen» zuerst: Publikationsquellen (vorher Herkunftsliste), Rechtsgrundlagen Volksschule (vorher Rechtsgrundlagen Schule; Seitentitel vorher «Gesetzestexte & Verordnungen»), Normenhierarchien (24 Themen, vorher Einzahl), Textfassungen & Änderungen, Elternwegweiser. Gruppe «Gemeinde-Sammlungen»: Versionen & Abgleich, Übersicht, Vergleich, Gemeinden, Schulgemeinden, Struktur-Matrix, Pflichtkatalog, Leitfaden Rechtssammlung (Gemeindeamt). Zähler bei Hierarchien und Textfassungen.
+- Reihenfolge der Ebenen zentral in `app.js` (`RANG`, `rang()`, `nachEbene()`): Bund, Interkantonal, Kanton, Bildungsrat, Volksschulamt, Gemeindeamt, Bezirk, Gemeinde. Angewendet auf Quellenkatalog (je Klasse), massgebende Publikationsquellen, Rechtsgrundlagen (je Sachbereich), Textfassungen (SR vor LS), Rechtsstellen im Elternwegweiser, Kennzahlen bei Versionen & Abgleich. Routen unverändert.
+- Umbenennung «Rechtsgrundlagen Volksschule» auch in Datenmodell, API und Pflichtenheft.
+
 ### Sitzung 2026-11-20 – Codex 0.25.0 – Inhalte in die Datenbank (#53)
 
 - Datenmodell (`docs/umsetzung/codex/datenbank.sql`): Redaktionsspalten (`content_status`, `review_status`, Recherche, Importlauf, Freigabe) auf Hierarchien, Elternthemen, Pflichtdokumenten, Rechtsgrundlagen; neue Tabellen `content_imports`, `content_import_items`, `hierarchy_node_links`, `hierarchy_edge_evidences`, `parent_guide_topic_hierarchies`; `legal_bases` mit Titel/Fundstelle, Erlass optional (BRB, kommunal). Zuordnung Anzeige → Tabelle: Pflichtenheft 3.7.

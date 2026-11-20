@@ -188,4 +188,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   heutigen Inhalte, Prüfung, Umwandlung, Ladetest), Anweisung für die KI-Recherche (#53).
 - Entwickler-Seiten: Abschnitt «Unterlagen und Pflege der Inhalte» mit Pflichtenheft, Anweisung KI-Recherche und Downloads
   der Inhalte (Excel, JSON, Vorlage, CSV); Menüeintrag «Entwickler (Datenmodell, API, Pflege)» (#53).
+- EduKSX-Codex 0.26.0: Menü neu gegliedert – zuerst «Gesetzestexte & Verordnungen» (Publikationsquellen, Rechtsgrundlagen
+  Volksschule, Normenhierarchien, Textfassungen, Elternwegweiser), dann «Gemeinde-Sammlungen» (Versionen & Abgleich, Übersicht,
+  Vergleich, …); Listen und Tabellen immer von Bund über Kanton, Bildungsrat, Volksschulamt, Gemeindeamt bis Gemeinde (#54).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

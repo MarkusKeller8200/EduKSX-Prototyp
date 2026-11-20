@@ -193,7 +193,7 @@ CREATE TABLE sections (
 
 -- Sachbereich des Rechtsgrundlagenverzeichnisses
 -- Geltungsbereich: global · Datenklasse: öffentlich
--- Herkunft/Verwendung: Verzeichnis «Rechtsgrundlagen Schule»
+-- Herkunft/Verwendung: Verzeichnis «Rechtsgrundlagen Volksschule»
 CREATE TABLE legal_areas (
     id                      uuid PRIMARY KEY,
     number                  integer NOT NULL UNIQUE,         -- Nummer | Reihenfolge
@@ -336,7 +336,7 @@ CREATE TABLE content_import_items (
 
 -- Rechtsgrundlage für Schulen (Erlass, Stelle und Relevanz je Sachbereich)
 -- Geltungsbereich: global · Datenklasse: öffentlich
--- Herkunft/Verwendung: Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Schule»
+-- Herkunft/Verwendung: Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Volksschule»
 CREATE TABLE legal_bases (
     id                      uuid PRIMARY KEY,
     number                  integer NOT NULL UNIQUE,         -- Nummer | Reihenfolge
@@ -853,7 +853,7 @@ COMMENT ON COLUMN sections.position IS 'Reihenfolge – Anzeige';
 COMMENT ON COLUMN sections.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
 COMMENT ON COLUMN sections.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
 COMMENT ON COLUMN sections.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
-COMMENT ON TABLE legal_areas IS 'Sachbereich des Rechtsgrundlagenverzeichnisses – Verzeichnis «Rechtsgrundlagen Schule»';
+COMMENT ON TABLE legal_areas IS 'Sachbereich des Rechtsgrundlagenverzeichnisses – Verzeichnis «Rechtsgrundlagen Volksschule»';
 COMMENT ON COLUMN legal_areas.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN legal_areas.number IS 'Nummer – Reihenfolge';
 COMMENT ON COLUMN legal_areas.title IS 'Sachbereich – z. B. «Schulrecht, Unterricht und Schulbetrieb»';
@@ -954,7 +954,7 @@ COMMENT ON COLUMN content_import_items.outcome IS 'Ergebnis – Prüfung';
 COMMENT ON COLUMN content_import_items.messages IS 'Meldungen – Prüfhinweise, z. B. unbekannte Fundstelle';
 COMMENT ON COLUMN content_import_items.changes IS 'Änderungen – Feld: alt → neu';
 COMMENT ON COLUMN content_import_items.position IS 'Reihenfolge – Zeile in der Lieferung';
-COMMENT ON TABLE legal_bases IS 'Rechtsgrundlage für Schulen (Erlass, Stelle und Relevanz je Sachbereich) – Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Schule»';
+COMMENT ON TABLE legal_bases IS 'Rechtsgrundlage für Schulen (Erlass, Stelle und Relevanz je Sachbereich) – Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Volksschule»';
 COMMENT ON COLUMN legal_bases.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN legal_bases.number IS 'Nummer – Reihenfolge';
 COMMENT ON COLUMN legal_bases.legal_area_id IS 'Sachbereich – Verweis';

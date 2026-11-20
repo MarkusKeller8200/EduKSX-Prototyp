@@ -57,8 +57,8 @@
     },
     {
       "name": "legal-bases",
-      "x-displayName": "Rechtsgrundlagen Schule",
-      "description": "Rechtsgrundlagen Schule"
+      "x-displayName": "Rechtsgrundlagen Volksschule",
+      "description": "Rechtsgrundlagen Volksschule"
     },
     {
       "name": "publication-sources",
@@ -1887,10 +1887,10 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Schule»",
+        "x-eduksx-purpose": "Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Volksschule»",
         "operationId": "listLegalBases",
         "summary": "Rechtsgrundlagen auflisten",
-        "description": "Liste der Rechtsgrundlagen (Cursor). Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Schule»",
+        "description": "Liste der Rechtsgrundlagen (Cursor). Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Volksschule»",
         "security": [
           {
             "eduksx_ident": [
@@ -1970,7 +1970,7 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Schule»",
+        "x-eduksx-purpose": "Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Volksschule»",
         "operationId": "createLegalBasis",
         "summary": "Rechtsgrundlage anlegen",
         "description": "Legt eine Rechtsgrundlage an.",
@@ -2071,7 +2071,7 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Schule»",
+        "x-eduksx-purpose": "Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Volksschule»",
         "operationId": "getLegalBasis",
         "summary": "Rechtsgrundlage lesen",
         "description": "Rechtsgrundlage mit allen Feldern der Positivliste.",
@@ -2129,7 +2129,7 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Schule»",
+        "x-eduksx-purpose": "Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Volksschule»",
         "operationId": "updateLegalBasis",
         "summary": "Rechtsgrundlage ändern",
         "description": "JSON Merge Patch; fehlendes Feld = unverändert.",
@@ -2218,7 +2218,7 @@
           "internal",
           "public"
         ],
-        "x-eduksx-purpose": "Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Schule»",
+        "x-eduksx-purpose": "Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Volksschule»",
         "operationId": "deleteLegalBasis",
         "summary": "Rechtsgrundlage löschen",
         "description": "In den Papierkorb (wiederherstellbar während der Frist).",
@@ -6268,9 +6268,9 @@
               "codex:legal-acts.read": "Erlasse und Fassungen – lesen",
               "codex:legal-acts.write": "Erlasse und Fassungen – schreiben",
               "codex:legal-acts.delete": "Erlasse und Fassungen – löschen",
-              "codex:legal-bases.read": "Rechtsgrundlagen Schule – lesen",
-              "codex:legal-bases.write": "Rechtsgrundlagen Schule – schreiben",
-              "codex:legal-bases.delete": "Rechtsgrundlagen Schule – löschen",
+              "codex:legal-bases.read": "Rechtsgrundlagen Volksschule – lesen",
+              "codex:legal-bases.write": "Rechtsgrundlagen Volksschule – schreiben",
+              "codex:legal-bases.delete": "Rechtsgrundlagen Volksschule – löschen",
               "codex:publication-sources.read": "Publikationsquellen – lesen",
               "codex:publication-sources.write": "Publikationsquellen – schreiben",
               "codex:publication-sources.delete": "Publikationsquellen – löschen",
@@ -6313,9 +6313,9 @@
               "codex:legal-acts.read": "Erlasse und Fassungen – lesen",
               "codex:legal-acts.write": "Erlasse und Fassungen – schreiben",
               "codex:legal-acts.delete": "Erlasse und Fassungen – löschen",
-              "codex:legal-bases.read": "Rechtsgrundlagen Schule – lesen",
-              "codex:legal-bases.write": "Rechtsgrundlagen Schule – schreiben",
-              "codex:legal-bases.delete": "Rechtsgrundlagen Schule – löschen",
+              "codex:legal-bases.read": "Rechtsgrundlagen Volksschule – lesen",
+              "codex:legal-bases.write": "Rechtsgrundlagen Volksschule – schreiben",
+              "codex:legal-bases.delete": "Rechtsgrundlagen Volksschule – löschen",
               "codex:publication-sources.read": "Publikationsquellen – lesen",
               "codex:publication-sources.write": "Publikationsquellen – schreiben",
               "codex:publication-sources.delete": "Publikationsquellen – löschen",
@@ -7514,7 +7514,7 @@
       "LegalBasis": {
         "type": "object",
         "title": "Rechtsgrundlage",
-        "description": "Rechtsgrundlage für Schulen (Erlass, Stelle und Relevanz je Sachbereich). Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Schule»",
+        "description": "Rechtsgrundlage für Schulen (Erlass, Stelle und Relevanz je Sachbereich). Rechtsgrundlagenverzeichnis; Ansicht «Rechtsgrundlagen Volksschule»",
         "properties": {
           "id": {
             "type": "string",
@@ -9929,7 +9929,7 @@
       "LegalBasisEntry": {
         "type": "object",
         "title": "Rechtsgrundlage (Import)",
-        "description": "Eintrag «Rechtsgrundlagen Schule» mit Fundstelle statt ID",
+        "description": "Eintrag «Rechtsgrundlagen Volksschule» mit Fundstelle statt ID",
         "properties": {
           "number": {
             "type": "integer",

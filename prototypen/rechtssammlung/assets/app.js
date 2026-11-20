@@ -117,21 +117,21 @@
     });
     return h("nav", { cls: "navi", "aria-label": "Rechtssammlungen nach Bezirk" },
       h("ul", null,
-        h("li", { cls: "gruppe", "aria-hidden": "true", text: "Überblick" }),
+        h("li", { cls: "gruppe", "aria-hidden": "true", text: "Gesetzestexte & Verordnungen" }),
+        h("li", null, eintrag(link("herkunft"), "Publikationsquellen", r.art === "herkunft", null, "Woher die Erlasse stammen – Bund, Kanton, Bildungsrat, Volksschulamt, Gemeindeamt, Gemeinde")),
+        h("li", null, eintrag(link("rechtsgrundlagen"), "Rechtsgrundlagen Volksschule", r.art === "rechtsgrundlagen", h("span", { cls: "anz", text: String(D.rechtsgrundlagen.eintraege.length) }))),
+        h("li", null, eintrag(link("hierarchie"), "Normenhierarchien", r.art === "hierarchie", h("span", { cls: "anz", text: String(D.hierarchien.length) }), "Je Thema vom Bundesrecht bis zum Erlass der Gemeinde")),
+        h("li", null, eintrag(link("texte"), "Textfassungen & Änderungen", r.art === "texte" || r.art === "text", h("span", { cls: "anz", text: String(Object.keys(D.texte.erlasse).length) }))),
+        h("li", null, eintrag(link("eltern"), "Elternwegweiser", r.art === "eltern", h("span", { cls: "anz", text: String(D.elternwegweiser.length) }))),
+        h("li", { cls: "gruppe", "aria-hidden": "true", text: "Gemeinde-Sammlungen" }),
+        h("li", null, eintrag(link("abgleich"), "Versionen & Abgleich", r.art === "abgleich")),
         h("li", null, eintrag("#/", "Übersicht", r.art === "")),
         h("li", null, eintrag(link("vergleich"), "Vergleich", r.art === "vergleich")),
         h("li", null, eintrag(link("gemeinden"), "Alle 160 Gemeinden", r.art === "gemeinden")),
         h("li", null, eintrag(link("schulgemeinden"), "Alle " + D.schulgemeinden.length + " Schulgemeinden", r.art === "schulgemeinden")),
         h("li", null, eintrag(link("matrix"), "Struktur-Matrix", r.art === "matrix")),
-        h("li", null, eintrag(link("eltern"), "Elternwegweiser", r.art === "eltern", h("span", { cls: "anz", text: String(D.elternwegweiser.length) }))),
         h("li", null, eintrag(link("pflicht"), "Pflichtkatalog Schulgemeinde", r.art === "pflicht", h("span", { cls: "anz", text: String(D.pflichtkatalog.kategorien.reduce(function (n, k) { return n + k.eintraege.length; }, 0)) }))),
-        h("li", null, eintrag(link("grundlagen"), "Grundlagen (Leitfaden, ZH-Lex)", r.art === "grundlagen")),
-        h("li", { cls: "gruppe", "aria-hidden": "true", text: "Gesetzestexte & Verordnungen" }),
-        h("li", null, eintrag(link("herkunft"), "Herkunftsliste (Publikationsquellen)", r.art === "herkunft")),
-        h("li", null, eintrag(link("rechtsgrundlagen"), "Rechtsgrundlagen Schule", r.art === "rechtsgrundlagen", h("span", { cls: "anz", text: String(D.rechtsgrundlagen.eintraege.length) }))),
-        h("li", null, eintrag(link("texte"), "Textfassungen & Änderungen", r.art === "texte" || r.art === "text")),
-        h("li", null, eintrag(link("hierarchie"), "Normenhierarchie", r.art === "hierarchie")),
-        h("li", null, eintrag(link("abgleich"), "Versionen & Abgleich", r.art === "abgleich")),
+        h("li", null, eintrag(link("grundlagen"), "Leitfaden Rechtssammlung (Gemeindeamt)", r.art === "grundlagen")),
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Entwicklung" }),
         h("li", null, eintrag("entwickler/", "Entwickler (Datenmodell, API, Pflege)", false, null, "Datenmodell, API, Pflichtenheft, KI-Recherche und Inhalte im Importformat – Entwurf für die Umsetzung")),
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Bezirke" })),
@@ -312,6 +312,11 @@
 
   // ------------------------------------------------------------------ Gesetzestexte & Verordnungen
   var EBENE_BADGE = { Bund: ["info", "CH"], Kanton: ["violett", "ZH"], Bildungsrat: ["neutral", "BR"], Gemeinde: ["warnung", "G"] };
+  // Ebenen immer von oben nach unten: Bund, (Interkantonal), Kanton, Bildungsrat, Volksschulamt, Gemeindeamt, Bezirk, Gemeinde
+  var RANG = [[/^(SR\b|Bund|Fedlex|Bundes)/, 0], [/^(Interkantonal|EDK)/, 1], [/^Bildungsrat|^BRB/, 3], [/^Volksschul|Volksschulamt/, 4], [/^Gemeindeamt/, 5],
+              [/^Bezirk/, 6], [/^(Gemeinde|Kommunal|kommunal|Schule|Rechtssammlung der|Amtliches Publikationsorgan)/, 7], [/^(LS\b|Kanton|ZH-Lex)/, 2]];
+  function rang() { for (var a = 0; a < arguments.length; a++) { var t = String(arguments[a] || ""); for (var i = 0; i < RANG.length; i++) if (RANG[i][0].test(t)) return RANG[i][1]; } return 2; }
+  function nachEbene(liste, wert) { return liste.map(function (x, i) { return [rang.apply(null, [].concat(wert(x))), i, x]; }).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; }).map(function (x) { return x[2]; }); }
   function ebeneBadge(e) { var b = EBENE_BADGE[e] || ["neutral", ""]; return badge(b[0], b[1], e); }
   function rechtsgrundlagenAnsicht() {
     var R = D.rechtsgrundlagen, E = R.eintraege;
@@ -346,7 +351,7 @@
       zaehler.textContent = treffer.length + " von " + E.length + " Einträgen";
       huelle.textContent = "";
       R.sachbereiche.forEach(function (s) {
-        var t = treffer.filter(function (e) { return e.sachbereich === s.nr; });
+        var t = nachEbene(treffer.filter(function (e) { return e.sachbereich === s.nr; }), function (e) { return e.ebene; });
         if (!t.length) return;
         huelle.appendChild(h("h2", { text: s.nr + ". " + s.titel + " (" + t.length + ")" }));
         huelle.appendChild(h("div", { cls: "tabelle-wrap" }, h("table", { cls: "rg" },
@@ -358,8 +363,8 @@
     [such, selSb, selEb].forEach(function (el) { el.addEventListener("input", zeigen); });
     zeigen();
     var n = function (eb) { return E.filter(function (e) { return e.ebene === eb; }).length; };
-    return [kopf("Gesetzestexte & Verordnungen", "Rechtsgrundlagen für öffentliche Schulen im Kanton Zürich – Schwerpunkt Volksschule, insbesondere Sekundarstufe. Stand der Recherche " + R.stand + ".",
-        [h("a", { cls: "btn", href: link("herkunft"), text: "Herkunftsliste" }), h("a", { cls: "btn", href: "https://github.com/MarkusKeller8200/EduKSX-Prototyp/blob/main/prototypen/rechtssammlung/quellen/rechtsgrundlagen_schulen_zh.md", target: "_blank", rel: "noopener", text: "Ausgangsliste ↗" })]),
+    return [kopf("Rechtsgrundlagen Volksschule", "Gesetze, Verordnungen und Beschlüsse für die Volksschule im Kanton Zürich, je Sachbereich von Bund über Kanton und Bildungsrat bis zur Gemeinde. Stand der Recherche " + R.stand + ".",
+        [h("a", { cls: "btn", href: link("herkunft"), text: "Publikationsquellen" }), h("a", { cls: "btn", href: "https://github.com/MarkusKeller8200/EduKSX-Prototyp/blob/main/prototypen/rechtssammlung/quellen/rechtsgrundlagen_schulen_zh.md", target: "_blank", rel: "noopener", text: "Ausgangsliste ↗" })]),
       h("div", { cls: "karten" },
         h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Einträge" }), h("div", { cls: "zahl", text: String(E.length) }), h("div", { cls: "small muted", text: "in " + R.sachbereiche.length + " Sachbereichen" })),
         h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Verschiedene Erlasse" }), h("div", { cls: "zahl", text: String(R.erlasse.length) }), h("div", { cls: "small muted", text: "mit LS- oder SR-Nummer" })),
@@ -386,15 +391,15 @@
       "Kommunal": "Systematische Rechtssammlung der Schulgemeinde bzw. der Gemeinde mit Schulaufgaben: Gemeindeordnung, Organisationsstatut, Geschäftsordnung, Personal- und Entschädigungsverordnung, Reglemente. Platzhalter «Schule XYZ» – wird durch die gewählte Schulgemeinde ersetzt."
     };
     var weitere = [
+      ["Rechtsgrundlagen für öffentliche Schulen im Kanton Zürich", "Ausgangsliste mit " + E.length + " Einträgen (Bund bis Gemeinde), Stand der Recherche " + R.stand + " – abgelegt in quellen/", link("rechtsgrundlagen")],
       ["Leitfaden systematische Rechtssammlung", "Gemeindeamt / VZGV, Juni 2018, Ergänzung Februar 2019 – abgelegt in quellen/", link("grundlagen")],
       ["Verzeichnis der Gemeinden des Kantons Zürich", "Gemeindeamt, Stand 1. Juli 2026 – Schulgemeinden und Gemeinden mit Schulaufgaben", null],
       ["Liste politische Gemeinden", "Gemeindeamt – Verwaltungs-E-Mail, daraus die Websites der 160 Gemeinden", null],
-      ["Websites der Gemeinden und Schulgemeinden", D.organisationen.length + " Rechtssammlungen, Stand " + D.stand + " – alle Dokumentlinks führen auf die Originale", link("vergleich")],
-      ["Rechtsgrundlagen für öffentliche Schulen im Kanton Zürich", "Ausgangsliste mit " + E.length + " Einträgen, Stand der Recherche " + R.stand + " – abgelegt in quellen/", link("rechtsgrundlagen")]
+      ["Websites der Gemeinden und Schulgemeinden", D.organisationen.length + " Rechtssammlungen, Stand " + D.stand + " – alle Dokumentlinks führen auf die Originale", link("vergleich")]
     ];
     var KAT = R.quellenkatalog;
     var katalog = R.quellenklassen.map(function (k) {
-      var q = KAT.filter(function (x) { return x.klasse === k.klasse; });
+      var q = nachEbene(KAT.filter(function (x) { return x.klasse === k.klasse; }), function (x) { return [x.name, x.ebene]; });
       return [h("h3", null, klasseBadge(k.klasse), " " + k.titel + " (" + q.length + ")", h("span", { cls: "small muted", text: " – Aufnahme: " + k.aufnahme })),
         h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
           h("thead", null, h("tr", null, ["Quelle", "Ebene", "Herausgeber", "Inhalt", "Verbindlichkeit", "Versionierung", "Priorität"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
@@ -403,14 +408,14 @@
               h("td", { text: x.ebene }), h("td", { text: x.herausgeber }), h("td", { text: x.inhalt }), h("td", { text: x.verbindlichkeit }), h("td", { text: x.versionierung }), h("td", { text: x.prioritaet }));
           }))))];
     });
-    return [kopf("Herkunftsliste", "Woher die Rechtsgrundlagen und Daten in EduKSX-Codex stammen. Massgebend ist immer die amtliche Publikation; herausgebende Behörde, massgebende Publikationsstelle und Downloadort werden getrennt geführt.",
+    return [kopf("Publikationsquellen", "Woher die Rechtsgrundlagen und Daten in EduKSX-Codex stammen. Massgebend ist immer die amtliche Publikation; herausgebende Behörde, massgebende Publikationsstelle und Downloadort werden getrennt geführt.",
         [h("a", { cls: "btn", href: link("abgleich"), text: "Versionen & Abgleich" })]),
       h("h2", { text: "Quellenkatalog nach Klassen A–F (" + KAT.length + " Quellen)" }),
       katalog,
       h("h2", { text: "Massgebende Publikationsquellen der Rechtsgrundlagen-Liste" }),
       h("div", { cls: "tabelle-wrap" }, h("table", null,
         h("thead", null, h("tr", null, ["Ebene", "Massgebende Quelle", "Was dort publiziert wird", "Einträge in der Liste"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
-        h("tbody", null, R.publikationsquellen.map(function (q) {
+        h("tbody", null, nachEbene(R.publikationsquellen, function (q) { return [q.ebene, q.name]; }).map(function (q) {
           var key = q.ebene === "Kommunal" ? "Kommunal" : /Fedlex/.test(q.name) ? "Fedlex" : /ZH-Lex/.test(q.name) ? "ZH-Lex" : /Gemeindeamt/.test(q.name) ? "Gemeindeamt" : /Volksschule/.test(q.name) ? "Volksschulamt" : "Bildungsrat";
           return h("tr", null, h("th", { scope: "row", text: q.ebene }), h("td", null, q.url ? extern(q.url, q.name + " ↗") : [h("span", { text: q.name }), h("div", { cls: "small" }, badge("warnung", "…", "Platzhalter"), " ", h("a", { href: link("schulgemeinden"), text: "erfasste Schulgemeinden →" }))]),
             h("td", { text: beschreibung[key] || "" }),
@@ -462,7 +467,7 @@
     });
   }
   function texteListe() {
-    var E = D.texte.erlasse, nrs = Object.keys(E).sort(function (a, b) { var A = E[a].fundstelle, B = E[b].fundstelle; return (A.slice(0, 2) === B.slice(0, 2) ? 0 : A < B ? -1 : 1) || A.localeCompare(B, "de", { numeric: true }); });
+    var E = D.texte.erlasse, nrs = Object.keys(E).sort(function (a, b) { var A = E[a].fundstelle, B = E[b].fundstelle; return rang(A) - rang(B) || A.localeCompare(B, "de", { numeric: true }); });
     return [kopf("Textfassungen & Änderungen", "Rechtstexte als Markdown (KI-lesbar), maschinell aus den amtlichen PDF erzeugt. Für vollständig aufbereitete Erlasse sind die Änderungen zwischen aufeinanderfolgenden Fassungen farbig markiert."),
       h("p", { cls: "meldung info" }, "Aufbereitung vorab mit ", h("code", { text: "tools/texte.py" }), " (ZH-Lex-PDF, pdfplumber und Regeln) und ", h("code", { text: "tools/fedlex.py" }), " (Bundesrecht, amtliche HTML-Fassung aus Fedlex); keine KI zur Laufzeit. Massgebend ist die amtliche Fassung. Grenzen: Tabellen (z. B. Lohnskalen im Anhang der LPVO) werden noch nicht als Tabelle erkannt."),
       h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
@@ -712,10 +717,10 @@
     var orgs = D.organisationen;
     return [kopf("Versionen & Abgleich", "Wie EduKSX-Codex neue Fassungen findet und übernimmt. Alte Versionen bleiben erhalten; bei jedem Dokument zeigt «⟲ n» die Anzahl Versionen, ein Klick öffnet die Historik."),
       h("div", { cls: "karten" },
-        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "ZH-Lex – kantonale Erlasse" }), h("div", { cls: "zahl", text: String(anzErl) }), h("div", { cls: "small muted", text: anzV + " Versionen (Nachträge), abgerufen " + R.zhlex_abgerufen })),
         h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Fedlex – Bundesrecht" }), h("div", { cls: "zahl", text: String(E.filter(function (e) { return e.ebene === "Bund"; }).length) }), h("div", { cls: "small muted", text: (function () { var b = E.filter(function (e) { return e.ebene === "Bund" && e.anzahl_versionen; }); return b.length ? b.reduce(function (n, e) { return n + e.anzahl_versionen; }, 0) + " Fassungen («Stand am») über den Fedlex-SPARQL-Endpunkt" : "Stand noch nicht abgefragt"; })() })),
-        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Rechtssammlungen der Gemeinden" }), h("div", { cls: "zahl", text: String(orgs.length) }), h("div", { cls: "small muted", text: "Analyse v1, erfasst " + orgs[0].analysiert_am })),
-        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Textfassungen (Markdown)" }), h("div", { cls: "zahl", text: String(Object.keys(D.texte.erlasse).length) }), h("div", { cls: "small muted" }, h("a", { href: link("texte"), text: "Erlasse aufbereitet →" })))),
+        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "ZH-Lex – kantonale Erlasse" }), h("div", { cls: "zahl", text: String(anzErl) }), h("div", { cls: "small muted", text: anzV + " Versionen (Nachträge), abgerufen " + R.zhlex_abgerufen })),
+        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Textfassungen (Markdown)" }), h("div", { cls: "zahl", text: String(Object.keys(D.texte.erlasse).length) }), h("div", { cls: "small muted" }, h("a", { href: link("texte"), text: "Erlasse aufbereitet →" }))),
+        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Rechtssammlungen der Gemeinden" }), h("div", { cls: "zahl", text: String(orgs.length) }), h("div", { cls: "small muted", text: "Analyse v1, erfasst " + orgs[0].analysiert_am }))),
       h("section", { cls: "karte" }, h("h2", { text: "Ablauf eines Abgleichs" }),
         h("ol", null,
           h("li", null, h("strong", { text: "Suchen: " }), "je Quelle ein Leser – ZH-Lex über die Suche nach Ordnungsnummer und die «Historie Nachtragsnr.», Fedlex über «Stand am», Gemeinde-Websites über die bekannte Struktur (Menüpfad, Ordner, Tabellen)."),
@@ -1089,7 +1094,7 @@
           h("h2", { text: f.titel }),
           h("ul", { cls: "fragen" }, f.fragen.map(function (q) { return h("li", { text: q }); })),
           h("h3", { text: "Was gilt? – Bund und Kanton" }),
-          h("div", null, f.stellen.map(function (st) {
+          h("div", null, nachEbene(f.stellen, function (st) { return st.fundstelle; }).map(function (st) {
             return h("details", { cls: "beleg-block" }, h("summary", null, h("strong", { text: st.fundstelle + " " + st.stelle.replace(/\.$/, "") }), " – " + st.titel),
               h("p", { cls: "beleg", text: st.text }), h("p", { cls: "small" }, h("a", { href: link("text", st.ls, st.nachtrag), text: "Im Erlass lesen →" })));
           })),
