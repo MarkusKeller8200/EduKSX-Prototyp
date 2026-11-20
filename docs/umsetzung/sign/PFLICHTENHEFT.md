@@ -1,7 +1,7 @@
 # EduKSX-Sign – Anforderungskatalog, Pflichtenheft und Prüfpunkte
 
 Stand: 2026-11-20 · Status: **ENTWURF** · Prototyp [`prototypen/signatur`](../../../prototypen/signatur) (0.1.x) ·
-Datenbank [`datenbank.sql`](datenbank.sql) · API [`openapi.yaml`](openapi.yaml)
+Datenbank [`datenbank.sql`](datenbank.sql) · API [`openapi.json`](openapi.json)
 
 Stufen wie in [`KONZEPT-VORLAGE.md`](../../KONZEPT-VORLAGE.md); ohne Vermerk gilt **EMPFOHLEN**.
 
@@ -60,29 +60,33 @@ und Archiv der Organisation, Bürosoftware (Word/Excel-Bearbeitung nur einfach).
   Office-Konverter – ZU PRÜFEN), **Rendering**, **Signaturanbieter** (Adapter) und **Abgleich** (über EduKSX-Connect).
 - Dokumentzustand: `bearbeitbar` → `in_signatur` → `signiert` (gesperrt) bzw. `versiegelt`; Bearbeiten nur als
   Kopie.
-- Modul-Schnittstelle `POST /v1/prozesse/modul` ist idempotent; Ergebnis per Webhook `prozessAbgeschlossen`.
+- Modul-Schnittstelle `POST /api/v1/org/signature-processes/module-requests` ist idempotent; Ergebnis per Webhook `sign.process.completed`.
 
 ### 3.2 Datenmodell
 
-[`datenbank.sql`](datenbank.sql), Schema `sign`: `ordner`, `dokument`, `dokument_version`, `element`, `prozess`,
-`prozess_person`, `prozess_feld`, `prozess_protokoll`, `signatur`, `siegel`, `einstellung`, `anfrage`,
-`sync_konfiguration`, `sync_eintrag`, `sync_protokoll`. Dateiinhalte nicht in der Datenbank.
+[`datenbank.sql`](datenbank.sql), Schema `sign`. Namen englisch, deutsche Beschreibungen je Tabelle, Spalte und Wert (DB-Standard 1.3, siehe [README](../README.md#1-datenbank--konventionen-beschlossen)). Tabellen: `folders`, `documents`,
+`document_versions`, `document_annotations`, `signature_processes`, `signature_process_participants`,
+`signature_process_fields`, `signature_process_events`, `signatures`, `seals`, `signing_preferences`,
+`signature_requests`, `sync_settings`, `sync_items`, `sync_events`. Ablage und Einstellungen sind **persönlich**
+(`user_id`); Dateiinhalte nicht in der Datenbank.
 
 ### 3.3 API
 
-[`openapi.yaml`](openapi.yaml): Ablage (`/v1/ordner`, `/v1/dokumente`, `…/hochladen`, `…/inhalt`, `…/versionen`,
-`…/kopieren`), Bearbeiten (`…/elemente`, `…/word`, `…/pdfa`), Prozesse (`/v1/prozesse`, `…/senden`,
-`…/platzhalter`, `…/erinnern`, `…/zurueckziehen`, `/v1/prozesse/modul`), Eingang (`/v1/eingang`, `…/unterschreiben`,
-`…/code`), Siegel (`/v1/siegel`, `/v1/pruefen`), Abgleich, Einstellungen. Webhook `prozessAbgeschlossen`.
+[`openapi.json`](openapi.json) (API-Standard 1.2): Ablage unter `/api/v1/me/…` (`/folders`, `/documents`,
+`…/upload`, `…/content`, `…/versions`, `…/copy`), Bearbeiten (`…/annotations`, `…/word-content`,
+`…/pdfa-conversion`), Prozesse unter `/api/v1/org/signature-processes` (`…/placeholders`, `…/sending`,
+`…/reminder`, `…/withdrawal`, `…/module-requests`), Eingang `/api/v1/me/signature-requests` (`…/signing`,
+`…/verification-code`), Siegel (`/api/v1/org/seals`, `…/verification`), Abgleich (`/api/v1/me/sync`),
+Einstellungen (`/api/v1/me/signing-preferences`). Webhook `sign.process.completed`.
 
 ### 3.4 Rollen und Berechtigungen
 
-| Scope | Mitarbeitende | Siegelberechtigte (z. B. Schulverwaltung) | Module (technisch) |
+| Recht (Scopes) | Mitarbeitende | Siegelberechtigte (z. B. Schulverwaltung) | Module (technisch) |
 |---|---|---|---|
-| `sign:lesen`, `sign:ablage` | eigene Ablage | eigene Ablage | – |
-| `sign:signieren` | ✓ | ✓ | – |
-| `sign:siegel` | – | ✓ | ✓ (wenn vom Mandanten erlaubt) |
-| `sign:modul` | – | – | ✓ |
+| Ablage – `sign:{folders,documents,annotations,sync,preferences}.read/.write` | eigene Ablage | eigene Ablage | – |
+| Signieren – `sign:signature-processes.write`, `sign:signature-requests.write` | ✓ | ✓ | – |
+| Siegeln – `sign:seals.admin` | – | ✓ | ✓ (wenn vom Mandanten erlaubt) |
+| Modulanfragen – `sign:signature-processes.write` (Client-Credentials) | – | – | ✓ |
 
 ### 3.5 Schnittstellen
 

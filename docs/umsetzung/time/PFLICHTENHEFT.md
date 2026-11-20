@@ -1,7 +1,7 @@
 # EduKSX-Time – Anforderungskatalog, Pflichtenheft und Prüfpunkte
 
 Stand: 2026-11-20 · Status: **ENTWURF** · Prototyp [`prototypen/zeiterfassung`](../../../prototypen/zeiterfassung)
-(0.3.x) · Datenbank [`datenbank.sql`](datenbank.sql) · API [`openapi.yaml`](openapi.yaml)
+(0.3.x) · Datenbank [`datenbank.sql`](datenbank.sql) · API [`openapi.json`](openapi.json)
 
 Stufen wie in [`KONZEPT-VORLAGE.md`](../../KONZEPT-VORLAGE.md); ohne Vermerk gilt **EMPFOHLEN**.
 
@@ -53,11 +53,11 @@ von Standort oder Gerät.
 
 ### 3.1 Architektur
 
-- Laravel-Modul (Repository EduKSX-Time) mit API gemäss [`openapi.yaml`](openapi.yaml); PWA mit Service Worker und
+- Laravel-Modul (Repository EduKSX-Time) mit API gemäss [`openapi.json`](openapi.json); PWA mit Service Worker und
   lokaler Warteschlange (IndexedDB statt localStorage) für Offline-Buchungen.
 - Berechnung (Ist, gesetzliche Pause, Saldo) als reine Funktion; Referenz ist `prototypen/zeiterfassung/assets/app.js`
-  (Konstanten `SOLL_100`, `ZWANG_AB_MIN`, `ZWANG_DAUER_MIN`) bzw. die Ansicht `time.v_tag`.
-- Regeln versioniert je Mandant (`gueltig_ab`), damit eine Änderung (z. B. Pausenstufen nach ArG) vergangene Monate
+  (Konstanten `SOLL_100`, `ZWANG_AB_MIN`, `ZWANG_DAUER_MIN`) bzw. die Ansicht `time.daily_totals`.
+- Regeln versioniert je Mandant (`valid_from`), damit eine Änderung (z. B. Pausenstufen nach ArG) vergangene Monate
   nicht verändert.
 
 ### 3.2 Zustände
@@ -70,26 +70,29 @@ aus ──Kommen──► ein ──Pause──► pause ──Pause beenden─�
 
 ### 3.3 Datenmodell
 
-[`datenbank.sql`](datenbank.sql), Schema `time`: `regel`, `arbeitsmodell`, `buchungsart`, `buchung` (ID vom Gerät,
-Storno statt Löschen); Ausbau `abwesenheitsart`, `abwesenheit`, `korrektur`, `ferienanspruch`, `monat`. Ansicht
-`v_tag` berechnet Anwesenheit, Pausen, gesetzliche Pause und Ist je Tag (Beispiel: 7:30–12:00, 12:10–17:00 → 560
-Min. anwesend, 10 Min. Pause, 20 Min. gesetzliche Pause, Ist 540 Min.).
+[`datenbank.sql`](datenbank.sql), Schema `time`. Namen englisch, deutsche Beschreibungen je Tabelle, Spalte und Wert (DB-Standard 1.3, siehe [README](../README.md#1-datenbank--konventionen-beschlossen)). Tabellen: `working_time_rules`,
+`work_schedules`, `booking_types`, `bookings` (ID vom Gerät, Storno statt Löschen); Ausbau `absence_types`,
+`absences`, `booking_corrections`, `vacation_entitlements`, `month_closings`. Ansicht `daily_totals` berechnet
+Anwesenheit, Pausen, gesetzliche Pause und Ist je Tag (Beispiel: 7:30–12:00, 12:10–17:00 → 560 Min. anwesend,
+10 Min. Pause, 20 Min. gesetzliche Pause, Ist 540 Min.; mit PostgreSQL 16 nachgerechnet).
 
 ### 3.4 API
 
-[`openapi.yaml`](openapi.yaml): `GET /v1/status`, `POST /v1/buchungen`, `POST /v1/buchungen/uebertragen`,
-`POST /v1/buchungen/{id}/rueckgaengig`, `POST /v1/buchungen/nachtragen`, `GET /v1/tage/{datum}`, `GET /v1/verlauf`;
-Ausbau Abwesenheiten, Korrekturen, Monate (`einreichen`, `visieren`), Team; Verwaltung Regeln, Buchungsarten,
-Arbeitsmodelle. Webhook `monatGeaendert`.
+[`openapi.json`](openapi.json) (API-Standard 1.2), eigene Zeiten unter `/api/v1/me/…`: `GET /status`,
+`POST /bookings`, `POST /bookings/batch`, `POST /bookings/{id}/cancellation`, `POST /bookings/clock-out-backdate`,
+`GET /days/{date}`, `GET /history`; Ausbau `/absences`, `/booking-corrections`, `/month-closings/{month}`
+(`…/submission`); Team und Verwaltung unter `/api/v1/org/…` (`/month-closings`, `…/approval`, Entscheide zu
+Korrekturen und Abwesenheiten, `/working-time-rules`, `/booking-types`, `/work-schedules`). Webhook
+`time.month_closing.changed`.
 
 ### 3.5 Rollen und Berechtigungen
 
-| Scope | Mitarbeitende | Schulleitung (vorgesetzt) | Schulverwaltung |
+| Recht (Scopes) | Mitarbeitende | Schulleitung (vorgesetzt) | Schulverwaltung |
 |---|---|---|---|
-| `time:lesen`, `time:stempeln` | eigene | eigene | eigene |
-| `time:antrag` | eigene | eigene | eigene |
-| `time:visum` | – | eigenes Team | – |
-| `time:admin` | – | – | ✓ |
+| Stempeln – `time:bookings.read/.write`, `time:days.read` | eigene | eigene | eigene |
+| Anträge – `time:{absences,booking-corrections,month-closings}.write` | eigene | eigene | eigene |
+| Visum – `time:{absences,booking-corrections,month-closings}.admin` | – | eigenes Team | – |
+| Verwaltung – `time:{working-time-rules,booking-types,work-schedules}.write` | – | – | ✓ |
 
 OFFEN: Wer ist «vorgesetzt» (aus Core-Organisation oder Funktionendiagramm in Flow)?
 

@@ -1,311 +1,762 @@
 -- EduKSX-Flow – Datenbankstruktur (Ablaufplanung / Termine und ToDo)
--- Stand 2026-11-20 · Status ENTWURF · Grundlage: Prototyp prototypen/ablaufplanung (0.5.x)
--- Voraussetzung: core-referenz.sql (core.mandant, core.person, core.schuljahr, core.ferien)
+-- Stand 2026-11-20 · Status ENTWURF · DB-Standard 1.3 · Grundlage: Prototyp prototypen/ablaufplanung
+-- Namen englisch, deutsche Beschreibungen je Tabelle, Spalte und Wert. Erzeugte Blöcke (>>> … <<<) nicht von Hand
+-- ändern: python3 tools/umsetzung_bauen.py
 --
--- Inhalt: Rollen und Funktionendiagramm, Vorgangsregister der Module, Ablaufvorlagen (versioniert) mit
--- Schritten, laufende Abläufe als Kopie der Vorlage, Aufgaben, Aufrufprotokoll, Hinweise sowie der
--- Jahreskalender mit Zeitregeln, Schuljahren/Ferien (Core) und Erledigt-Vermerken je Vorkommen.
--- Fristen, «bereit»-Status und Kalendervorkommen werden berechnet (Motor), nicht gespeichert – ausser dem
--- Zustand je Schritt eines laufenden Ablaufs.
+-- Rollen und Funktionendiagramm, Vorgangsregister der Module, Ablaufvorlagen (versioniert) mit Schritten, laufende
+-- Abläufe als Kopie der Vorlage, Aufrufprotokoll, Hinweise und Jahreskalender mit Zeitregeln. Fristen, «bereit» und
+-- Kalendervorkommen berechnet der Motor; gespeichert wird nur der Zustand je Schritt eines laufenden Ablaufs.
 
 CREATE SCHEMA IF NOT EXISTS flow;
+SET search_path TO flow;
+
+-- >>> standardtabellen
+-- Platzhalter für die Standardtabellen aus eduksx/core (Quelle: docs/umsetzung/standardtabellen.sql)
+
+-- Organisation (Schulgemeinde, Schule, Verwaltung); Stammdaten führt EduKSX-Ident
+-- Geltungsbereich: global · Datenklasse: intern
+-- Herkunft/Verwendung: aus EduKSX-Ident (Plattform-ID); Mandant aller Daten des Moduls
+CREATE TABLE organizations (
+    id                  uuid PRIMARY KEY,
+    platform_id         uuid UNIQUE,                                    -- Plattform-ID | ID der Organisation in EduKSX-Ident
+    parent_id           uuid REFERENCES organizations(id),              -- Übergeordnete Organisation | Schule gehört zur Schulgemeinde
+    organization_type   text NOT NULL CHECK (organization_type IN ('school_community','school','school_unit','administration','day_care','authority','external')),   -- Art | aus EduKSX-Ident | intern | school_community=Schulgemeinde; school=Schule; school_unit=Schuleinheit; administration=Verwaltung; day_care=Tagesstruktur; authority=Behörde; external=extern
+    name                text NOT NULL,                                  -- Name | aus EduKSX-Ident | öffentlich
+    short_name          text,                                           -- Kurzname | aus EduKSX-Ident | öffentlich
+    created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), lock_version integer NOT NULL DEFAULT 1
+);
+
+-- Personenreferenz: Person mit oder ohne Anmeldung (Mitarbeitende, Behördenmitglieder, Externe)
+-- Geltungsbereich: Organisation · Datenklasse: personenbezogen
+-- Herkunft/Verwendung: aus EduKSX-Ident bzw. EduKSX-Connect; das Modul hält nur, was es braucht
+CREATE TABLE users (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    platform_id         uuid UNIQUE,                                    -- Plattform-ID | ID der Person in EduKSX-Ident | intern
+    issuer              text,                                           -- Aussteller | Anmeldung über EduKSX-Ident (OIDC «iss») | intern
+    subject             text,                                           -- Subjekt | Anmeldung über EduKSX-Ident (OIDC «sub») | intern
+    display_name        text NOT NULL,                                  -- Name | Anzeige in allen Listen
+    short_name          text,                                           -- Kürzel | z. B. «LMu» in Stundenplan und Matrix
+    email               text,                                           -- E-Mail | Benachrichtigungen, Signaturanfragen
+    locale              text NOT NULL DEFAULT 'de' CHECK (locale IN ('de','fr','it','en')),   -- Sprache | Anzeige und Mitteilungen | intern | de=Deutsch; fr=Französisch; it=Italienisch; en=Englisch
+    is_external         boolean NOT NULL DEFAULT false,                 -- Extern | Person ohne Anstellung (z. B. Unterzeichnende) | intern
+    created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid,
+    UNIQUE (issuer, subject)
+);
+
+-- Schuljahr mit Semester- und Trimestergrenzen
+-- Geltungsbereich: Organisation · Datenklasse: öffentlich
+-- Herkunft/Verwendung: Plattform-Stammdaten, gepflegt in «Schuljahre»; steuert Fristen, Kalenderregeln und Pensen
+CREATE TABLE school_years (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    name                text NOT NULL,                                  -- Schuljahr | z. B. «2026/27»
+    starts_on           date NOT NULL,                                  -- Schuljahresbeginn | erster Schultag
+    ends_on             date NOT NULL,                                  -- Schuljahresende | letzter Schultag
+    changeover_on       date,                                           -- Schuljahreswechsel | Stichtag für Abläufe und Pensen
+    first_semester_ends_on date,                                        -- Semesterende (1. Semester) | Kalenderregeln
+    second_semester_starts_on date,                                     -- Semesterwechsel | Beginn 2. Semester
+    second_trimester_starts_on date,                                    -- Beginn 2. Trimester | nur der Vollständigkeit halber
+    third_trimester_starts_on date,                                     -- Beginn 3. Trimester | nur der Vollständigkeit halber
+    created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), lock_version integer NOT NULL DEFAULT 1,
+    UNIQUE (organization_id, name),
+    CHECK (ends_on > starts_on)
+);
+
+-- Ferien, Feiertage und schulfreie Tage eines Schuljahrs
+-- Geltungsbereich: Organisation · Datenklasse: öffentlich
+-- Herkunft/Verwendung: Ferienplan der Schulgemeinde; für Schultage, Kalender und Sollzeit
+CREATE TABLE school_holidays (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    school_year_id      uuid NOT NULL REFERENCES school_years(id) ON DELETE CASCADE,   -- Schuljahr | Verweis auf das Schuljahr
+    name                text NOT NULL,                                  -- Bezeichnung | z. B. «Herbstferien»
+    holiday_type        text NOT NULL DEFAULT 'holidays' CHECK (holiday_type IN ('holidays','public_holiday','bridge_day','training_day','day_off')),   -- Art | Ferienplan | öffentlich | holidays=Ferien; public_holiday=Feiertag; bridge_day=Brückentag; training_day=Weiterbildung; day_off=schulfrei
+    valid_from          date NOT NULL,                                  -- Von | erster freier Tag
+    valid_until         date NOT NULL,                                  -- Bis | letzter freier Tag
+    CHECK (valid_until >= valid_from)
+);
+
+-- Änderungshistorie aller Tabellen
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: geschrieben von der Service-Schicht in derselben Transaktion; Nachweis wer, wann, was
+CREATE TABLE data_changes (
+    id                  bigserial PRIMARY KEY,
+    event_id            uuid NOT NULL UNIQUE,
+    subject_type        text NOT NULL,                                  -- Tabelle | betroffene Tabelle
+    subject_id          uuid NOT NULL,                                  -- Datensatz | ID des Datensatzes (ohne Constraint)
+    organization_id     uuid,                                           -- Organisation | leer bei globalen Daten (ohne Constraint)
+    action              text NOT NULL CHECK (action IN ('created','updated','deleted','restored')),   -- Aktion | Art der Änderung | intern | created=angelegt; updated=geändert; deleted=gelöscht; restored=wiederhergestellt
+    changes             jsonb NOT NULL DEFAULT '{}'::jsonb,             -- Änderungen | Feld → alt/neu nach Datenklasse
+    actor_type          text NOT NULL CHECK (actor_type IN ('user','service_account','system')),   -- Auslöser (Art) | wer | intern | user=Person; service_account=Servicekonto; system=System
+    actor_id            uuid,                                           -- Auslöser | ID (ohne Constraint)
+    actor_label         text,                                           -- Auslöser (Text) | lesbar nach Pseudonymisierung | personenbezogen
+    source              text NOT NULL CHECK (source IN ('web','api','import','mcp','job','system','migration')),   -- Quelle | woher die Änderung kam | intern | web=Oberfläche; api=API; import=Import; mcp=MCP; job=Auftrag; system=System; migration=Migration
+    transaction_id      uuid NOT NULL,                                  -- Transaktion | gemeinsame Kennung einer Transaktion
+    request_id          text,                                           -- Anfrage | Anfrage-ID aus dem Protokoll
+    schema_version      text NOT NULL,                                  -- Schemastand | um alte Einträge richtig zu lesen
+    occurred_at         timestamptz NOT NULL DEFAULT now()              -- Zeitpunkt | wann (UTC)
+);
+-- <<< standardtabellen
 
 -- ------------------------------------------------------------------ Rollen, Funktionendiagramm, Quellen
 
--- Rollen der Abläufe (SPF, RV, SL, SV, HD, ICT, LP …) und des Jahreskalenders (LB, PICTS, TICTS, ISV …)
-CREATE TABLE flow.rolle (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    kurz            text NOT NULL,
-    name            text NOT NULL,
-    bereich         text NOT NULL DEFAULT 'ablauf' CHECK (bereich IN ('ablauf','kalender','beide')),
-    UNIQUE (mandant_id, kurz)
+-- Rolle in Abläufen oder im Jahreskalender (SV, SL, RV, ICT …)
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Funktionendiagramm der Schulgemeinde; Zuständigkeit der Schritte und Termine
+CREATE TABLE roles (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    code                text NOT NULL,                   -- Kürzel | z. B. «SV»
+    name                text NOT NULL,                   -- Rolle | z. B. «Schulverwaltung»
+    role_scope          text NOT NULL DEFAULT 'workflow' CHECK (role_scope IN ('workflow','calendar','both')),   -- Verwendung | Abläufe, Kalender oder beides | intern | workflow=Abläufe; calendar=Jahreskalender; both=beides
+    created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), lock_version integer NOT NULL DEFAULT 1,
+    UNIQUE (organization_id, code)
 );
 
--- Zuordnung Ablaufrolle → Kalenderrollen (KAL_ZUORDNUNG)
-CREATE TABLE flow.rolle_zuordnung (
-    mandant_id          uuid NOT NULL REFERENCES core.mandant(id),
-    rolle_id            uuid NOT NULL REFERENCES flow.rolle(id) ON DELETE CASCADE,
-    kalenderrolle_id    uuid NOT NULL REFERENCES flow.rolle(id) ON DELETE CASCADE,
-    PRIMARY KEY (rolle_id, kalenderrolle_id)
+-- Zuordnung Ablaufrolle → Kalenderrollen
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: «Meine Termine» zeigt die Kalenderrollen der eigenen Ablaufrolle
+CREATE TABLE role_calendar_roles (
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    role_id             uuid NOT NULL REFERENCES roles(id) ON DELETE CASCADE,            -- Ablaufrolle | Verweis
+    calendar_role_id    uuid NOT NULL REFERENCES roles(id) ON DELETE CASCADE,            -- Kalenderrolle | Verweis
+    PRIMARY KEY (role_id, calendar_role_id)
 );
 
--- Funktionendiagramm (Nummer, Aufgabe, Kompetenz je Rolle: V, E, A, M, I …)
-CREATE TABLE flow.funktion (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    nr              text NOT NULL,                       -- «5.2.2»
-    titel           text NOT NULL,
-    UNIQUE (mandant_id, nr)
+-- Aufgabe im Funktionendiagramm
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Funktionendiagramm der Schulgemeinde; Vorschlag der Zuständigkeit je Schritt
+CREATE TABLE responsibility_tasks (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    number              text NOT NULL,                   -- Nummer | z. B. «5.2.2»
+    title               text NOT NULL,                   -- Aufgabe | Text im Funktionendiagramm
+    created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), lock_version integer NOT NULL DEFAULT 1,
+    UNIQUE (organization_id, number)
 );
 
-CREATE TABLE flow.funktion_rolle (
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    funktion_id     uuid NOT NULL REFERENCES flow.funktion(id) ON DELETE CASCADE,
-    rolle_id        uuid NOT NULL REFERENCES flow.rolle(id),
-    kompetenz       text NOT NULL,                       -- V (verantwortlich), E (entscheidet), I (informiert) …
-    PRIMARY KEY (funktion_id, rolle_id)
+-- Kompetenz einer Rolle bei einer Aufgabe
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Funktionendiagramm; «V» wird verantwortlich, «I» informiert
+CREATE TABLE responsibility_task_roles (
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    responsibility_task_id uuid NOT NULL REFERENCES responsibility_tasks(id) ON DELETE CASCADE,   -- Aufgabe | Verweis
+    role_id             uuid NOT NULL REFERENCES roles(id),   -- Rolle | Verweis
+    competence          text NOT NULL,                   -- Kompetenz | V verantwortlich, E entscheidet, A ausführen, M mitwirken, I informiert
+    PRIMARY KEY (responsibility_task_id, role_id)
 );
 
--- Quellenverzeichnis (Gesetze, Merkblätter, Prozessliste …); bei jedem Schritt Pflicht
-CREATE TABLE flow.quelle (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    kurz            text NOT NULL,                       -- «LPVO», «VSA Vikariat», «Prozessliste»
-    titel           text NOT NULL,
-    url             text,
-    codex_ref       text,                                -- Verweis auf den Erlass in EduKSX-Codex
-    UNIQUE (mandant_id, kurz)
+-- Quelle eines Schritts (Gesetz, Merkblatt, Prozessliste)
+-- Geltungsbereich: Organisation · Datenklasse: öffentlich
+-- Herkunft/Verwendung: Quellenverzeichnis der Vorlagen; Pflicht bei jedem Schritt
+CREATE TABLE sources (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    code                text NOT NULL,                   -- Kürzel | z. B. «LPVO»
+    title               text NOT NULL,                   -- Titel | vollständiger Titel
+    url                 text,                            -- Adresse | Link zur Quelle
+    codex_reference     text,                            -- Erlass in EduKSX-Codex | Verweis auf Erlass und Fassung
+    created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), lock_version integer NOT NULL DEFAULT 1,
+    UNIQUE (organization_id, code)
 );
 
 -- ------------------------------------------------------------------ Vorgangsregister der Module
 
--- Modul, das Vorgänge anbietet (core, ident, staffing, time, sign …)
-CREATE TABLE flow.modul (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    schluessel      text NOT NULL,
-    name            text NOT NULL,
-    aufgabe         text,
-    endpunkt        text,                                -- Basis-URL der API des Moduls
-    erreichbar      boolean NOT NULL DEFAULT true,       -- letzter Gesundheitsstatus
-    geprueft_am     timestamptz,
-    UNIQUE (mandant_id, schluessel)
+-- Modul, das Vorgänge anbietet
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: jedes Modul meldet sich im Vorgangsregister an; «Vorgänge der Module»
+CREATE TABLE modules (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    module_key          text NOT NULL,                   -- Modulschlüssel | aus dem Modulregister, z. B. «ident»
+    name                text NOT NULL,                   -- Modul | Anzeigename
+    purpose             text,                            -- Aufgabe | Kurzbeschreibung
+    endpoint_url        text,                            -- Adresse | Basis-URL der API
+    is_reachable        boolean NOT NULL DEFAULT true,   -- Erreichbar | letzte Prüfung
+    checked_at          timestamptz,                     -- Geprüft am | letzte Prüfung
+    created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), lock_version integer NOT NULL DEFAULT 1,
+    UNIQUE (organization_id, module_key)
 );
 
--- Vorgang eines Moduls mit Parametern und Ergebnissen («ident.konto.anlegen» → benutzername)
-CREATE TABLE flow.vorgang (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    modul_id        uuid NOT NULL REFERENCES flow.modul(id) ON DELETE CASCADE,
-    schluessel      text NOT NULL,                       -- «core.dossier.eroeffnen»
-    titel           text NOT NULL,
-    parameter       text[] NOT NULL DEFAULT '{}',
-    ergebnis        text[] NOT NULL DEFAULT '{}',
-    art             text NOT NULL DEFAULT 'sofort' CHECK (art IN ('sofort','rueckmeldung')),
-    aktiv           boolean NOT NULL DEFAULT true,
-    UNIQUE (mandant_id, schluessel)
+-- Vorgang eines Moduls mit Parametern und Ergebnissen
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: gemeldet vom Modul; ein Schritt ruft genau einen Vorgang auf
+CREATE TABLE module_operations (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    module_id           uuid NOT NULL REFERENCES modules(id) ON DELETE CASCADE,   -- Modul | Verweis
+    operation_key       text NOT NULL,                   -- Vorgang | z. B. «ident.account.create»
+    title               text NOT NULL,                   -- Bezeichnung | z. B. «Konto anlegen»
+    parameters          text[] NOT NULL DEFAULT '{}',    -- Parameter | Namen der Eingaben
+    results             text[] NOT NULL DEFAULT '{}',    -- Ergebnisse | Namen der Rückgaben, z. B. «username»
+    response_type       text NOT NULL DEFAULT 'immediate' CHECK (response_type IN ('immediate','callback')),   -- Antwortart | sofort oder mit Rückmeldung | intern | immediate=sofort; callback=mit Rückmeldung
+    is_active           boolean NOT NULL DEFAULT true,   -- Aktiv | verwendbar in Vorlagen
+    UNIQUE (organization_id, operation_key)
 );
 
 -- ------------------------------------------------------------------ Ablaufvorlagen
 
--- Vorlage; jede Änderung nach der Freigabe erzeugt eine neue Version (laufende Abläufe behalten ihre Kopie)
-CREATE TABLE flow.vorlage (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    code            text NOT NULL,                       -- fachliche ID, z. B. «EIN-LP»
-    version         integer NOT NULL DEFAULT 1,
-    titel           text NOT NULL,
-    gruppe          text NOT NULL DEFAULT 'Weitere',     -- Personal (kantonal), Gemeindeversammlung, ICT …
-    status          text NOT NULL DEFAULT 'entwurf' CHECK (status IN ('entwurf','freigegeben','archiviert')),
-    stichtag_name   text NOT NULL,                       -- Bezeichnung des Stichtags («Eintrittsdatum»)
-    beschreibung    text,
-    freigegeben_am  timestamptz,
-    freigegeben_von uuid,
-    erstellt_am timestamptz NOT NULL DEFAULT now(), erstellt_von uuid,
-    geaendert_am timestamptz NOT NULL DEFAULT now(), geaendert_von uuid,
-    UNIQUE (mandant_id, code, version)
+-- Ablaufvorlage; Änderungen nach der Freigabe ergeben eine neue Version
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: «Ablaufvorlagen»; Schulverwaltung bereitet vor, Ressortvorstand gibt frei
+CREATE TABLE templates (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    code                text NOT NULL,                   -- Kürzel | z. B. «EIN-LP»
+    version_number      integer NOT NULL DEFAULT 1,      -- Version | laufende Abläufe behalten ihre Kopie
+    title               text NOT NULL,                   -- Titel | z. B. «Eintritt Lehrperson»
+    template_group      text NOT NULL DEFAULT 'Weitere', -- Gruppe | z. B. «Personal (kantonal)»
+    status              text NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','released','archived')),   -- Status | Freigabe der Vorlage | intern | draft=Entwurf; released=freigegeben; archived=archiviert
+    reference_date_label text NOT NULL,                  -- Stichtag (Bezeichnung) | z. B. «Eintrittsdatum»
+    description         text,                            -- Beschreibung | Zweck der Vorlage
+    released_at         timestamptz,                     -- Freigegeben am | Freigabe
+    released_by_id      uuid,                            -- Freigegeben von | Ressortvorstand (ohne Constraint)
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid,
+    UNIQUE (organization_id, code, version_number)
 );
 
--- Eingabefeld beim Start (person, funktion, pensum, stichtag …)
-CREATE TABLE flow.vorlage_feld (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    vorlage_id      uuid NOT NULL REFERENCES flow.vorlage(id) ON DELETE CASCADE,
-    reihenfolge     integer NOT NULL,
-    schluessel      text NOT NULL,
-    label           text NOT NULL,
-    typ             text NOT NULL CHECK (typ IN ('text','zahl','datum','auswahl','person')),
-    optionen        text[],                              -- bei «auswahl»
-    pflicht         boolean NOT NULL DEFAULT true,
-    UNIQUE (vorlage_id, schluessel)
+-- Eingabefeld beim Start eines Ablaufs
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Vorlage › Startfelder; Werte stehen den Schritten als Platzhalter zur Verfügung
+CREATE TABLE template_fields (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    template_id         uuid NOT NULL REFERENCES templates(id) ON DELETE CASCADE,   -- Vorlage | Verweis
+    position            integer NOT NULL,                -- Reihenfolge | Anzeige
+    field_key           text NOT NULL,                   -- Schlüssel | Platzhalter, z. B. «person»
+    label               text NOT NULL,                   -- Bezeichnung | Beschriftung im Startformular
+    field_type          text NOT NULL CHECK (field_type IN ('text','number','date','choice','person')),   -- Art | Eingabeart | intern | text=Text; number=Zahl; date=Datum; choice=Auswahl; person=Person
+    options             text[],                          -- Auswahlwerte | bei Auswahl
+    is_required         boolean NOT NULL DEFAULT true,   -- Pflicht | Start nur mit Wert
+    UNIQUE (template_id, field_key)
 );
 
 -- Schritt einer Vorlage
-CREATE TABLE flow.vorlage_schritt (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    vorlage_id      uuid NOT NULL REFERENCES flow.vorlage(id) ON DELETE CASCADE,
-    code            text NOT NULL,                       -- «o1»
-    reihenfolge     integer NOT NULL,
-    titel           text NOT NULL,
-    rolle_id        uuid NOT NULL REFERENCES flow.rolle(id),
-    tage            integer NOT NULL DEFAULT 0,          -- Frist relativ zum Stichtag (negativ = vorher)
-    vorgang_id      uuid REFERENCES flow.vorgang(id),    -- NULL = Aufgabe ohne Modulaufruf
-    parameter       jsonb NOT NULL DEFAULT '{}'::jsonb,  -- Werte mit Platzhaltern «{person}», «{o3.benutzername}»
-    automatisch     boolean NOT NULL DEFAULT false,      -- ohne Bestätigung ausführen
-    bedingung       jsonb,                               -- {"feld":"funktion","op":"in","wert":"…"}
-    funktion_id     uuid REFERENCES flow.funktion(id),   -- Nummer im Funktionendiagramm
-    quelle_id       uuid REFERENCES flow.quelle(id),
-    quelle_stelle   text,                                -- «§ 12 Abs. 2», Seite …
-    UNIQUE (vorlage_id, code),
-    CHECK (quelle_id IS NOT NULL OR quelle_stelle IS NOT NULL)   -- Quellenangabe bei jedem Schritt (BESCHLOSSEN)
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Vorlage › Schritte; Rolle, Frist ab Stichtag, Vorgang, Bedingung, Quelle
+CREATE TABLE template_steps (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    template_id         uuid NOT NULL REFERENCES templates(id) ON DELETE CASCADE,   -- Vorlage | Verweis
+    code                text NOT NULL,                   -- Kürzel | z. B. «o1»
+    position            integer NOT NULL,                -- Reihenfolge | Anzeige
+    title               text NOT NULL,                   -- Schritt | Bezeichnung
+    role_id             uuid NOT NULL REFERENCES roles(id),   -- Verantwortlich | Rolle
+    offset_days         integer NOT NULL DEFAULT 0,      -- Frist (Tage) | relativ zum Stichtag, negativ = vorher
+    module_operation_id uuid REFERENCES module_operations(id),   -- Vorgang | leer = Aufgabe ohne Modulaufruf
+    parameters          jsonb NOT NULL DEFAULT '{}'::jsonb,   -- Parameter | mit Platzhaltern «{person}», «{o3.username}»
+    is_automatic        boolean NOT NULL DEFAULT false,  -- Automatisch | ohne Bestätigung bei erreichter Frist
+    condition           jsonb,                           -- Bedingung | z. B. {"field":"function","op":"in","value":"…"}
+    responsibility_task_id uuid REFERENCES responsibility_tasks(id),   -- Funktionendiagramm | Nummer der Aufgabe
+    source_id           uuid REFERENCES sources(id),     -- Quelle | Pflicht (Quelle oder Stelle)
+    source_location     text,                            -- Stelle | z. B. «§ 12 Abs. 2»
+    UNIQUE (template_id, code),
+    CHECK (source_id IS NOT NULL OR source_location IS NOT NULL)
 );
 
--- Vorgänger eines Schritts («nach»)
-CREATE TABLE flow.vorlage_schritt_nach (
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    schritt_id      uuid NOT NULL REFERENCES flow.vorlage_schritt(id) ON DELETE CASCADE,
-    vorgaenger_id   uuid NOT NULL REFERENCES flow.vorlage_schritt(id) ON DELETE CASCADE,
-    PRIMARY KEY (schritt_id, vorgaenger_id),
-    CHECK (schritt_id <> vorgaenger_id)
+-- Vorgänger eines Schritts («erst nach»)
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Vorlage › Schritte; ein Schritt wird bereit, wenn die Vorgänger erledigt sind
+CREATE TABLE template_step_predecessors (
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    template_step_id    uuid NOT NULL REFERENCES template_steps(id) ON DELETE CASCADE,   -- Schritt | Verweis
+    predecessor_id      uuid NOT NULL REFERENCES template_steps(id) ON DELETE CASCADE,   -- Vorgänger | Verweis
+    PRIMARY KEY (template_step_id, predecessor_id),
+    CHECK (template_step_id <> predecessor_id)
 );
 
 -- Zu informierende Rollen eines Schritts
-CREATE TABLE flow.vorlage_schritt_informiert (
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    schritt_id      uuid NOT NULL REFERENCES flow.vorlage_schritt(id) ON DELETE CASCADE,
-    rolle_id        uuid NOT NULL REFERENCES flow.rolle(id),
-    PRIMARY KEY (schritt_id, rolle_id)
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Vorlage › Schritte; Hinweise bei Abschluss
+CREATE TABLE template_step_informed_roles (
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    template_step_id    uuid NOT NULL REFERENCES template_steps(id) ON DELETE CASCADE,   -- Schritt | Verweis
+    role_id             uuid NOT NULL REFERENCES roles(id),   -- Rolle | wird informiert
+    PRIMARY KEY (template_step_id, role_id)
 );
 
 -- ------------------------------------------------------------------ Laufende Abläufe
 
--- Ablauf = Kopie einer Vorlage in der Version beim Start
-CREATE TABLE flow.lauf (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    nummer          text NOT NULL,                       -- «L001»
-    vorlage_id      uuid NOT NULL REFERENCES flow.vorlage(id),
-    vorlage_version integer NOT NULL,
-    titel           text NOT NULL,
-    stichtag_name   text NOT NULL,
-    stichtag        date NOT NULL,
-    kontext         jsonb NOT NULL,                      -- Eingaben beim Start: {"person":"…","funktion":"…","pensum":80}
-    person_id       uuid REFERENCES core.person(id),     -- betroffene Person, falls vorhanden
-    status          text NOT NULL DEFAULT 'laeuft' CHECK (status IN ('laeuft','abgeschlossen','abgebrochen')),
-    gestartet_am    date NOT NULL DEFAULT current_date,
-    gestartet_von   uuid,
-    abgeschlossen_am date,
-    ausloeser       text,                                -- «manuell», «staffing.pensumFreigegeben», «kalender:k001»
-    UNIQUE (mandant_id, nummer)
-);
-CREATE INDEX ON flow.lauf (mandant_id, status);
-
--- Schritt eines laufenden Ablaufs (Kopie aus der Vorlage plus Zustand)
-CREATE TABLE flow.lauf_schritt (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    lauf_id         uuid NOT NULL REFERENCES flow.lauf(id) ON DELETE CASCADE,
-    code            text NOT NULL,
-    reihenfolge     integer NOT NULL,
-    titel           text NOT NULL,
-    rolle_kurz      text NOT NULL,
-    zustaendig_id   uuid REFERENCES core.person(id),     -- konkrete Person, wenn zugewiesen
-    tage            integer NOT NULL,
-    frist           date NOT NULL,                       -- Stichtag + tage (beim Start berechnet, änderbar)
-    vorgaenger      text[] NOT NULL DEFAULT '{}',        -- Codes der Vorgänger
-    informiert      text[] NOT NULL DEFAULT '{}',
-    vorgang         text,                                -- Schlüssel des Vorgangs
-    parameter_vorlage jsonb NOT NULL DEFAULT '{}'::jsonb,
-    parameter       jsonb,                               -- aufgelöste Parameter beim Aufruf
-    automatisch     boolean NOT NULL DEFAULT false,
-    bedingung       jsonb,
-    funktion_nr     text,
-    quelle          text NOT NULL,
-    status          text NOT NULL DEFAULT 'wartet' CHECK (status IN ('wartet','bereit','geplant','laeuft','erledigt','uebersprungen','fehler')),
-    ergebnis        jsonb,                               -- Rückgabe des Moduls, für Platzhalter späterer Schritte
-    erledigt_am     date,
-    erledigt_von    uuid,
-    bemerkung       text,
-    UNIQUE (lauf_id, code)
-);
-CREATE INDEX ON flow.lauf_schritt (mandant_id, status, frist);
-
--- Aufrufprotokoll: jeder Aufruf an ein Modul mit aufgelösten Parametern und Antwort
-CREATE TABLE flow.aufruf (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    nummer          text NOT NULL,                       -- «A0001»
-    zeit            timestamptz NOT NULL DEFAULT now(),
-    lauf_id         uuid NOT NULL REFERENCES flow.lauf(id),
-    lauf_schritt_id uuid NOT NULL REFERENCES flow.lauf_schritt(id),
-    vorgang         text NOT NULL,
-    parameter       jsonb NOT NULL,
-    status          text NOT NULL CHECK (status IN ('ok','fehler','ausstehend','wiederholt')),
-    antwort         jsonb,
-    dauer_ms        integer,
-    ausgeloest_von  uuid,                                -- NULL = automatisch
-    UNIQUE (mandant_id, nummer)
+-- Laufender Ablauf als Kopie einer Vorlage in der Version beim Start
+-- Geltungsbereich: Organisation · Datenklasse: personenbezogen
+-- Herkunft/Verwendung: gestartet in «Ablauf starten», aus dem Kalender oder durch ein Ereignis eines Moduls
+CREATE TABLE runs (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    number              text NOT NULL,                   -- Nummer | z. B. «L001» | intern
+    template_id         uuid NOT NULL REFERENCES templates(id),   -- Vorlage | Verweis | intern
+    template_version    integer NOT NULL,                -- Version der Vorlage | beim Start | intern
+    title               text NOT NULL,                   -- Titel | aus der Vorlage | intern
+    reference_date_label text NOT NULL,                  -- Stichtag (Bezeichnung) | aus der Vorlage | intern
+    reference_on        date NOT NULL,                   -- Stichtag | Fristen werden davon berechnet | intern
+    context             jsonb NOT NULL,                  -- Startwerte | Eingaben beim Start, z. B. Name und Funktion
+    user_id             uuid REFERENCES users(id) ON DELETE SET NULL,   -- Person | betroffene Person, falls vorhanden
+    status              text NOT NULL DEFAULT 'running' CHECK (status IN ('running','completed','cancelled')),   -- Status | Stand des Ablaufs | intern | running=läuft; completed=abgeschlossen; cancelled=abgebrochen
+    started_on          date NOT NULL DEFAULT current_date,   -- Gestartet am | Start | intern
+    started_by_id       uuid,                            -- Gestartet von | Person (ohne Constraint) | intern
+    completed_on        date,                            -- Abgeschlossen am | Ende | intern
+    trigger_source      text,                            -- Auslöser | «manuell», Ereignis eines Moduls oder Kalender | intern
+    lock_version        integer NOT NULL DEFAULT 1,
+    UNIQUE (organization_id, number)
 );
 
--- Hinweise an Rollen («Ablauf gestartet», «Aufruf fehlgeschlagen»)
-CREATE TABLE flow.hinweis (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    rolle_kurz      text NOT NULL,
-    datum           date NOT NULL DEFAULT current_date,
-    lauf_id         uuid REFERENCES flow.lauf(id) ON DELETE CASCADE,
-    text            text NOT NULL,
-    gelesen_von     uuid[] NOT NULL DEFAULT '{}'
+-- Schritt eines laufenden Ablaufs (Kopie aus der Vorlage mit Zustand)
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: «Laufende Abläufe» und «Meine Aufgaben»; Zustand setzt der Motor
+CREATE TABLE run_steps (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    run_id              uuid NOT NULL REFERENCES runs(id) ON DELETE CASCADE,   -- Ablauf | Verweis
+    code                text NOT NULL,                   -- Kürzel | aus der Vorlage
+    position            integer NOT NULL,                -- Reihenfolge | Anzeige
+    title               text NOT NULL,                   -- Schritt | aus der Vorlage
+    role_code           text NOT NULL,                   -- Verantwortlich | Rolle
+    assignee_id         uuid REFERENCES users(id) ON DELETE SET NULL,   -- Zuständige Person | wenn zugewiesen
+    offset_days         integer NOT NULL,                -- Frist (Tage) | relativ zum Stichtag
+    due_on              date NOT NULL,                   -- Frist | Stichtag plus Tage, änderbar
+    predecessors        text[] NOT NULL DEFAULT '{}',    -- Vorgänger | Kürzel
+    informed_roles      text[] NOT NULL DEFAULT '{}',    -- Informiert | Rollen
+    operation_key       text,                            -- Vorgang | Schlüssel im Register
+    parameter_template  jsonb NOT NULL DEFAULT '{}'::jsonb,   -- Parameter (Vorlage) | mit Platzhaltern
+    parameters          jsonb,                           -- Parameter (aufgelöst) | beim Aufruf | personenbezogen
+    is_automatic        boolean NOT NULL DEFAULT false,  -- Automatisch | ohne Bestätigung
+    condition           jsonb,                           -- Bedingung | aus der Vorlage
+    responsibility_number text,                          -- Funktionendiagramm | Nummer der Aufgabe
+    source_text         text NOT NULL,                   -- Quelle | aus der Vorlage
+    status              text NOT NULL DEFAULT 'waiting' CHECK (status IN ('waiting','ready','scheduled','running','done','skipped','failed')),   -- Status | Zustand des Schritts | intern | waiting=wartet; ready=bereit; scheduled=geplant; running=läuft; done=erledigt; skipped=übersprungen; failed=Fehler
+    result              jsonb,                           -- Ergebnis | Rückgabe des Moduls, Platzhalter für spätere Schritte | personenbezogen
+    done_on             date,                            -- Erledigt am | Abschluss
+    done_by_id          uuid,                            -- Erledigt von | Person (ohne Constraint)
+    remark              text,                            -- Bemerkung | z. B. Grund für Überspringen
+    lock_version        integer NOT NULL DEFAULT 1,
+    UNIQUE (run_id, code)
+);
+
+-- Aufruf eines Vorgangs mit aufgelösten Parametern und Antwort
+-- Geltungsbereich: Organisation · Datenklasse: personenbezogen
+-- Herkunft/Verwendung: geschrieben vom Motor; «Aufrufprotokoll», Nachweis für die Aktenführung
+CREATE TABLE operation_calls (
+    id                  bigserial PRIMARY KEY,
+    event_id            uuid NOT NULL UNIQUE,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    number              text NOT NULL,                   -- Nummer | z. B. «A0001» | intern
+    occurred_at         timestamptz NOT NULL DEFAULT now(),   -- Zeitpunkt | wann | intern
+    run_id              uuid NOT NULL REFERENCES runs(id),    -- Ablauf | Verweis | intern
+    run_step_id         uuid NOT NULL REFERENCES run_steps(id),   -- Schritt | Verweis | intern
+    operation_key       text NOT NULL,                   -- Vorgang | Schlüssel | intern
+    parameters          jsonb NOT NULL,                  -- Parameter | aufgelöst
+    status              text NOT NULL CHECK (status IN ('ok','failed','pending','retried')),   -- Status | Ergebnis des Aufrufs | intern | ok=erfolgreich; failed=Fehler; pending=ausstehend; retried=wiederholt
+    response            jsonb,                           -- Antwort | Rückgabe des Moduls
+    duration_ms         integer,                         -- Dauer (ms) | Laufzeit | intern
+    triggered_by_id     uuid,                            -- Ausgelöst von | leer = automatisch (ohne Constraint) | intern
+    UNIQUE (organization_id, number)
+);
+
+-- Hinweis an eine Rolle («Ablauf gestartet», «Aufruf fehlgeschlagen»)
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: geschrieben vom Motor; Übersicht und «Meine Aufgaben»
+CREATE TABLE notices (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    role_code           text NOT NULL,                   -- Rolle | Empfänger
+    notice_on           date NOT NULL DEFAULT current_date,   -- Datum | wann
+    run_id              uuid REFERENCES runs(id) ON DELETE CASCADE,   -- Ablauf | Bezug
+    text                text NOT NULL,                   -- Hinweis | Text
+    read_by_ids         uuid[] NOT NULL DEFAULT '{}'     -- Gelesen von | Personen, die ihn gelesen haben
 );
 
 -- ------------------------------------------------------------------ Jahreskalender
 
--- Themenbereich (budget, beschaffung, ma, sus, sjw, apps, wb, ds, qual, komm, digi, betrieb)
-CREATE TABLE flow.kalender_bereich (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    schluessel      text NOT NULL,
-    name            text NOT NULL,
-    farbe           text,
-    UNIQUE (mandant_id, schluessel)
+-- Themenbereich des Jahreskalenders
+-- Geltungsbereich: Organisation · Datenklasse: öffentlich
+-- Herkunft/Verwendung: Jahresplanung ICT-Prozesse; Zeilen der Zeitleiste
+CREATE TABLE calendar_areas (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    area_key            text NOT NULL,                   -- Schlüssel | z. B. «budget»
+    name                text NOT NULL,                   -- Bereich | z. B. «Budget und Finanzen»
+    color               text,                            -- Farbe | Anzeige in der Zeitleiste
+    UNIQUE (organization_id, area_key)
 );
 
--- Ereignis mit Zeitregel. Zeitregel als JSON, Aufbau je «regel»:
---   (ohne regel)    {"q":1} | {"kw":12} | {"am":"03-15"} | {"von":"09-01","bis":"09-15"}   jährlich
---   stichtag        {"regel":"stichtag","anker":"schuljahresende","versatz":-30,"einheit":"tage|wochen|monate"}
---   trimester|semester|quartal {"regel":"semester","bezug":"beginn|ende|ganz","versatz":5}
---   monatlich       {"regel":"monatlich","tag":1|"letzter"}
---   woechentlich    {"regel":"woechentlich","wochentag":1}
---   taeglich | wochentage | wochenende | arbeitstage | schultage   {"regel":"…"}
---   Ferienanker     {"regel":"stichtag","anker":"sommerferien",…}
-CREATE TABLE flow.kalender_ereignis (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    code            text NOT NULL,                       -- «k001»
-    titel           text NOT NULL,
-    bereich_id      uuid REFERENCES flow.kalender_bereich(id),
-    zeit            jsonb NOT NULL,
-    nur_jahr        integer,                             -- nur in diesem Jahr, sonst wiederkehrend
-    ferienregel     text CHECK (ferienregel IN ('vorher','nachher','auslassen')),   -- Einzeltermin auf Nicht-Schultag
-    quelle_id       uuid REFERENCES flow.quelle(id),
-    vorlage_code    text,                                -- verknüpfte Ablaufvorlage (Start aus dem Kalender)
-    notiz           text,
-    erstellt_am timestamptz NOT NULL DEFAULT now(), erstellt_von uuid,
-    geaendert_am timestamptz NOT NULL DEFAULT now(), geaendert_von uuid,
-    version integer NOT NULL DEFAULT 1,
-    UNIQUE (mandant_id, code)
+-- Termin oder ToDo im Jahreskalender mit Zeitregel
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: «Jahreskalender»; Zeitregel als JSON (jährlich, Schuljahresanker, Semester, monatlich, Arbeitstage …)
+CREATE TABLE calendar_events (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    code                text NOT NULL,                   -- Kürzel | z. B. «k001»
+    title               text NOT NULL,                   -- Termin | Bezeichnung
+    calendar_area_id    uuid REFERENCES calendar_areas(id),   -- Bereich | Zeile der Zeitleiste
+    time_rule           jsonb NOT NULL,                  -- Zeitregel | z. B. {"rule":"reference","anchor":"school_year_end","offset":-30,"unit":"days"}
+    only_year           integer,                         -- Nur im Jahr | leer = wiederkehrend
+    holiday_rule        text CHECK (holiday_rule IN ('before','after','skip')),   -- Ferienregel | Termin auf einem Nicht-Schultag | intern | before=letzter Schultag davor; after=erster Schultag danach; skip=auslassen
+    source_id           uuid REFERENCES sources(id),     -- Quelle | Herkunft des Termins
+    template_code       text,                            -- Ablaufvorlage | Start aus dem Kalender
+    note                text,                            -- Notiz | Freitext
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid,
+    UNIQUE (organization_id, code)
 );
 
--- Beteiligung je Kalenderrolle (E, M, V, E/V …)
-CREATE TABLE flow.kalender_ereignis_rolle (
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    ereignis_id     uuid NOT NULL REFERENCES flow.kalender_ereignis(id) ON DELETE CASCADE,
-    rolle_id        uuid NOT NULL REFERENCES flow.rolle(id),
-    beteiligung     text NOT NULL,
-    PRIMARY KEY (ereignis_id, rolle_id)
+-- Beteiligung einer Kalenderrolle an einem Termin
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Jahresplanung; Filter «Zuständigkeit»
+CREATE TABLE calendar_event_roles (
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    calendar_event_id   uuid NOT NULL REFERENCES calendar_events(id) ON DELETE CASCADE,   -- Termin | Verweis
+    role_id             uuid NOT NULL REFERENCES roles(id),   -- Rolle | Verweis
+    participation       text NOT NULL,                   -- Beteiligung | A ausführen, E entscheiden, V verantwortlich, M mitwirken
+    PRIMARY KEY (calendar_event_id, role_id)
 );
 
--- Teilaufgaben (Checkliste) eines Ereignisses
-CREATE TABLE flow.kalender_teil (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    ereignis_id     uuid NOT NULL REFERENCES flow.kalender_ereignis(id) ON DELETE CASCADE,
-    nr              integer NOT NULL,
-    titel           text NOT NULL,
-    UNIQUE (ereignis_id, nr)
+-- Teilaufgabe eines Termins
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Master-Checkliste; einzeln abhakbar
+CREATE TABLE calendar_event_tasks (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    calendar_event_id   uuid NOT NULL REFERENCES calendar_events(id) ON DELETE CASCADE,   -- Termin | Verweis
+    position            integer NOT NULL,                -- Reihenfolge | Anzeige
+    title               text NOT NULL,                   -- Teilaufgabe | Bezeichnung
+    UNIQUE (calendar_event_id, position)
 );
 
--- Erledigt-Vermerk je Vorkommen (Schlüssel = Ereignis + Datum des Vorkommens, optional Teilaufgabe)
-CREATE TABLE flow.kalender_erledigt (
-    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    mandant_id      uuid NOT NULL REFERENCES core.mandant(id),
-    ereignis_id     uuid NOT NULL REFERENCES flow.kalender_ereignis(id) ON DELETE CASCADE,
-    vorkommen       date NOT NULL,
-    teil_nr         integer,
-    erledigt_am     date NOT NULL DEFAULT current_date,
-    erledigt_von    uuid,
-    lauf_id         uuid REFERENCES flow.lauf(id),       -- falls aus dem Vorkommen ein Ablauf gestartet wurde
-    UNIQUE NULLS NOT DISTINCT (ereignis_id, vorkommen, teil_nr)
+-- Erledigt-Vermerk je Vorkommen eines Termins (optional je Teilaufgabe)
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: «erledigt» im Kalender bzw. Start eines Ablaufs aus dem Vorkommen
+CREATE TABLE calendar_completions (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    calendar_event_id   uuid NOT NULL REFERENCES calendar_events(id) ON DELETE CASCADE,   -- Termin | Verweis
+    occurrence_on       date NOT NULL,                   -- Vorkommen | Datum des Vorkommens
+    task_position       integer,                         -- Teilaufgabe | leer = ganzer Termin
+    completed_on        date NOT NULL DEFAULT current_date,   -- Erledigt am | Abschluss
+    completed_by_id     uuid,                            -- Erledigt von | Person (ohne Constraint)
+    run_id              uuid REFERENCES runs(id),        -- Ablauf | aus dem Vorkommen gestartet
+    UNIQUE NULLS NOT DISTINCT (calendar_event_id, occurrence_on, task_position)
 );
+
+-- Ausnahmetabelle (doppelt gespeichert, DB A2)
+-- runs/run_steps: Kopie der Vorlage beim Start – Grund: spätere Änderungen an der Vorlage verändern laufende Abläufe nicht; nie nachgeführt
+-- operation_calls.parameters: aufgelöste Parameter – Grund: Nachweis, was aufgerufen wurde; unveränderlich
+
+-- >>> indizes
+CREATE INDEX organizations_parent_id_index ON organizations (parent_id);
+CREATE INDEX users_organization_id_index ON users (organization_id);
+CREATE INDEX school_holidays_organization_id_index ON school_holidays (organization_id);
+CREATE INDEX school_holidays_school_year_id_index ON school_holidays (school_year_id);
+CREATE INDEX role_calendar_roles_organization_id_index ON role_calendar_roles (organization_id);
+CREATE INDEX responsibility_task_roles_organization_id_index ON responsibility_task_roles (organization_id);
+CREATE INDEX module_operations_module_id_index ON module_operations (module_id);
+CREATE INDEX template_fields_organization_id_index ON template_fields (organization_id);
+CREATE INDEX template_steps_organization_id_index ON template_steps (organization_id);
+CREATE INDEX template_steps_role_id_index ON template_steps (role_id);
+CREATE INDEX template_steps_module_operation_id_index ON template_steps (module_operation_id);
+CREATE INDEX template_steps_responsibility_task_id_index ON template_steps (responsibility_task_id);
+CREATE INDEX template_steps_source_id_index ON template_steps (source_id);
+CREATE INDEX template_step_predecessors_organization_id_index ON template_step_predecessors (organization_id);
+CREATE INDEX template_step_informed_roles_organization_id_index ON template_step_informed_roles (organization_id);
+CREATE INDEX runs_template_id_index ON runs (template_id);
+CREATE INDEX runs_user_id_index ON runs (user_id);
+CREATE INDEX run_steps_organization_id_index ON run_steps (organization_id);
+CREATE INDEX run_steps_assignee_id_index ON run_steps (assignee_id);
+CREATE INDEX operation_calls_run_id_index ON operation_calls (run_id);
+CREATE INDEX operation_calls_run_step_id_index ON operation_calls (run_step_id);
+CREATE INDEX notices_organization_id_index ON notices (organization_id);
+CREATE INDEX notices_run_id_index ON notices (run_id);
+CREATE INDEX calendar_events_calendar_area_id_index ON calendar_events (calendar_area_id);
+CREATE INDEX calendar_events_source_id_index ON calendar_events (source_id);
+CREATE INDEX calendar_event_roles_organization_id_index ON calendar_event_roles (organization_id);
+CREATE INDEX calendar_event_tasks_organization_id_index ON calendar_event_tasks (organization_id);
+CREATE INDEX calendar_completions_organization_id_index ON calendar_completions (organization_id);
+CREATE INDEX calendar_completions_run_id_index ON calendar_completions (run_id);
+-- <<< indizes
+
+-- >>> kommentare
+COMMENT ON TABLE organizations IS 'Organisation (Schulgemeinde, Schule, Verwaltung); Stammdaten führt EduKSX-Ident – aus EduKSX-Ident (Plattform-ID); Mandant aller Daten des Moduls';
+COMMENT ON COLUMN organizations.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN organizations.platform_id IS 'Plattform-ID – ID der Organisation in EduKSX-Ident';
+COMMENT ON COLUMN organizations.parent_id IS 'Übergeordnete Organisation – Schule gehört zur Schulgemeinde';
+COMMENT ON COLUMN organizations.organization_type IS 'Art – aus EduKSX-Ident';
+COMMENT ON COLUMN organizations.name IS 'Name – aus EduKSX-Ident';
+COMMENT ON COLUMN organizations.short_name IS 'Kurzname – aus EduKSX-Ident';
+COMMENT ON COLUMN organizations.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN organizations.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN organizations.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON TABLE users IS 'Personenreferenz: Person mit oder ohne Anmeldung (Mitarbeitende, Behördenmitglieder, Externe) – aus EduKSX-Ident bzw. EduKSX-Connect; das Modul hält nur, was es braucht';
+COMMENT ON COLUMN users.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN users.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN users.platform_id IS 'Plattform-ID – ID der Person in EduKSX-Ident';
+COMMENT ON COLUMN users.issuer IS 'Aussteller – Anmeldung über EduKSX-Ident (OIDC «iss»)';
+COMMENT ON COLUMN users.subject IS 'Subjekt – Anmeldung über EduKSX-Ident (OIDC «sub»)';
+COMMENT ON COLUMN users.display_name IS 'Name – Anzeige in allen Listen';
+COMMENT ON COLUMN users.short_name IS 'Kürzel – z. B. «LMu» in Stundenplan und Matrix';
+COMMENT ON COLUMN users.email IS 'E-Mail – Benachrichtigungen, Signaturanfragen';
+COMMENT ON COLUMN users.locale IS 'Sprache – Anzeige und Mitteilungen';
+COMMENT ON COLUMN users.is_external IS 'Extern – Person ohne Anstellung (z. B. Unterzeichnende)';
+COMMENT ON COLUMN users.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN users.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN users.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN users.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN users.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
+COMMENT ON TABLE school_years IS 'Schuljahr mit Semester- und Trimestergrenzen – Plattform-Stammdaten, gepflegt in «Schuljahre»; steuert Fristen, Kalenderregeln und Pensen';
+COMMENT ON COLUMN school_years.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN school_years.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN school_years.name IS 'Schuljahr – z. B. «2026/27»';
+COMMENT ON COLUMN school_years.starts_on IS 'Schuljahresbeginn – erster Schultag';
+COMMENT ON COLUMN school_years.ends_on IS 'Schuljahresende – letzter Schultag';
+COMMENT ON COLUMN school_years.changeover_on IS 'Schuljahreswechsel – Stichtag für Abläufe und Pensen';
+COMMENT ON COLUMN school_years.first_semester_ends_on IS 'Semesterende (1. Semester) – Kalenderregeln';
+COMMENT ON COLUMN school_years.second_semester_starts_on IS 'Semesterwechsel – Beginn 2. Semester';
+COMMENT ON COLUMN school_years.second_trimester_starts_on IS 'Beginn 2. Trimester – nur der Vollständigkeit halber';
+COMMENT ON COLUMN school_years.third_trimester_starts_on IS 'Beginn 3. Trimester – nur der Vollständigkeit halber';
+COMMENT ON COLUMN school_years.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN school_years.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN school_years.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON TABLE school_holidays IS 'Ferien, Feiertage und schulfreie Tage eines Schuljahrs – Ferienplan der Schulgemeinde; für Schultage, Kalender und Sollzeit';
+COMMENT ON COLUMN school_holidays.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN school_holidays.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN school_holidays.school_year_id IS 'Schuljahr – Verweis auf das Schuljahr';
+COMMENT ON COLUMN school_holidays.name IS 'Bezeichnung – z. B. «Herbstferien»';
+COMMENT ON COLUMN school_holidays.holiday_type IS 'Art – Ferienplan';
+COMMENT ON COLUMN school_holidays.valid_from IS 'Von – erster freier Tag';
+COMMENT ON COLUMN school_holidays.valid_until IS 'Bis – letzter freier Tag';
+COMMENT ON TABLE data_changes IS 'Änderungshistorie aller Tabellen – geschrieben von der Service-Schicht in derselben Transaktion; Nachweis wer, wann, was';
+COMMENT ON COLUMN data_changes.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN data_changes.event_id IS 'Ereignis-ID – eindeutig über Module und Exporte hinweg';
+COMMENT ON COLUMN data_changes.subject_type IS 'Tabelle – betroffene Tabelle';
+COMMENT ON COLUMN data_changes.subject_id IS 'Datensatz – ID des Datensatzes (ohne Constraint)';
+COMMENT ON COLUMN data_changes.organization_id IS 'Organisation – leer bei globalen Daten (ohne Constraint)';
+COMMENT ON COLUMN data_changes.action IS 'Aktion – Art der Änderung';
+COMMENT ON COLUMN data_changes.changes IS 'Änderungen – Feld → alt/neu nach Datenklasse';
+COMMENT ON COLUMN data_changes.actor_type IS 'Auslöser (Art) – wer';
+COMMENT ON COLUMN data_changes.actor_id IS 'Auslöser – ID (ohne Constraint)';
+COMMENT ON COLUMN data_changes.actor_label IS 'Auslöser (Text) – lesbar nach Pseudonymisierung';
+COMMENT ON COLUMN data_changes.source IS 'Quelle – woher die Änderung kam';
+COMMENT ON COLUMN data_changes.transaction_id IS 'Transaktion – gemeinsame Kennung einer Transaktion';
+COMMENT ON COLUMN data_changes.request_id IS 'Anfrage – Anfrage-ID aus dem Protokoll';
+COMMENT ON COLUMN data_changes.schema_version IS 'Schemastand – um alte Einträge richtig zu lesen';
+COMMENT ON COLUMN data_changes.occurred_at IS 'Zeitpunkt – wann (UTC)';
+COMMENT ON TABLE roles IS 'Rolle in Abläufen oder im Jahreskalender (SV, SL, RV, ICT …) – Funktionendiagramm der Schulgemeinde; Zuständigkeit der Schritte und Termine';
+COMMENT ON COLUMN roles.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN roles.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN roles.code IS 'Kürzel – z. B. «SV»';
+COMMENT ON COLUMN roles.name IS 'Rolle – z. B. «Schulverwaltung»';
+COMMENT ON COLUMN roles.role_scope IS 'Verwendung – Abläufe, Kalender oder beides';
+COMMENT ON COLUMN roles.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN roles.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN roles.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON TABLE role_calendar_roles IS 'Zuordnung Ablaufrolle → Kalenderrollen – «Meine Termine» zeigt die Kalenderrollen der eigenen Ablaufrolle';
+COMMENT ON COLUMN role_calendar_roles.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN role_calendar_roles.role_id IS 'Ablaufrolle – Verweis';
+COMMENT ON COLUMN role_calendar_roles.calendar_role_id IS 'Kalenderrolle – Verweis';
+COMMENT ON TABLE responsibility_tasks IS 'Aufgabe im Funktionendiagramm – Funktionendiagramm der Schulgemeinde; Vorschlag der Zuständigkeit je Schritt';
+COMMENT ON COLUMN responsibility_tasks.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN responsibility_tasks.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN responsibility_tasks.number IS 'Nummer – z. B. «5.2.2»';
+COMMENT ON COLUMN responsibility_tasks.title IS 'Aufgabe – Text im Funktionendiagramm';
+COMMENT ON COLUMN responsibility_tasks.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN responsibility_tasks.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN responsibility_tasks.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON TABLE responsibility_task_roles IS 'Kompetenz einer Rolle bei einer Aufgabe – Funktionendiagramm; «V» wird verantwortlich, «I» informiert';
+COMMENT ON COLUMN responsibility_task_roles.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN responsibility_task_roles.responsibility_task_id IS 'Aufgabe – Verweis';
+COMMENT ON COLUMN responsibility_task_roles.role_id IS 'Rolle – Verweis';
+COMMENT ON COLUMN responsibility_task_roles.competence IS 'Kompetenz – V verantwortlich, E entscheidet, A ausführen, M mitwirken, I informiert';
+COMMENT ON TABLE sources IS 'Quelle eines Schritts (Gesetz, Merkblatt, Prozessliste) – Quellenverzeichnis der Vorlagen; Pflicht bei jedem Schritt';
+COMMENT ON COLUMN sources.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN sources.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN sources.code IS 'Kürzel – z. B. «LPVO»';
+COMMENT ON COLUMN sources.title IS 'Titel – vollständiger Titel';
+COMMENT ON COLUMN sources.url IS 'Adresse – Link zur Quelle';
+COMMENT ON COLUMN sources.codex_reference IS 'Erlass in EduKSX-Codex – Verweis auf Erlass und Fassung';
+COMMENT ON COLUMN sources.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN sources.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN sources.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON TABLE modules IS 'Modul, das Vorgänge anbietet – jedes Modul meldet sich im Vorgangsregister an; «Vorgänge der Module»';
+COMMENT ON COLUMN modules.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN modules.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN modules.module_key IS 'Modulschlüssel – aus dem Modulregister, z. B. «ident»';
+COMMENT ON COLUMN modules.name IS 'Modul – Anzeigename';
+COMMENT ON COLUMN modules.purpose IS 'Aufgabe – Kurzbeschreibung';
+COMMENT ON COLUMN modules.endpoint_url IS 'Adresse – Basis-URL der API';
+COMMENT ON COLUMN modules.is_reachable IS 'Erreichbar – letzte Prüfung';
+COMMENT ON COLUMN modules.checked_at IS 'Geprüft am – letzte Prüfung';
+COMMENT ON COLUMN modules.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN modules.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN modules.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON TABLE module_operations IS 'Vorgang eines Moduls mit Parametern und Ergebnissen – gemeldet vom Modul; ein Schritt ruft genau einen Vorgang auf';
+COMMENT ON COLUMN module_operations.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN module_operations.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN module_operations.module_id IS 'Modul – Verweis';
+COMMENT ON COLUMN module_operations.operation_key IS 'Vorgang – z. B. «ident.account.create»';
+COMMENT ON COLUMN module_operations.title IS 'Bezeichnung – z. B. «Konto anlegen»';
+COMMENT ON COLUMN module_operations.parameters IS 'Parameter – Namen der Eingaben';
+COMMENT ON COLUMN module_operations.results IS 'Ergebnisse – Namen der Rückgaben, z. B. «username»';
+COMMENT ON COLUMN module_operations.response_type IS 'Antwortart – sofort oder mit Rückmeldung';
+COMMENT ON COLUMN module_operations.is_active IS 'Aktiv – verwendbar in Vorlagen';
+COMMENT ON TABLE templates IS 'Ablaufvorlage; Änderungen nach der Freigabe ergeben eine neue Version – «Ablaufvorlagen»; Schulverwaltung bereitet vor, Ressortvorstand gibt frei';
+COMMENT ON COLUMN templates.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN templates.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN templates.code IS 'Kürzel – z. B. «EIN-LP»';
+COMMENT ON COLUMN templates.version_number IS 'Version – laufende Abläufe behalten ihre Kopie';
+COMMENT ON COLUMN templates.title IS 'Titel – z. B. «Eintritt Lehrperson»';
+COMMENT ON COLUMN templates.template_group IS 'Gruppe – z. B. «Personal (kantonal)»';
+COMMENT ON COLUMN templates.status IS 'Status – Freigabe der Vorlage';
+COMMENT ON COLUMN templates.reference_date_label IS 'Stichtag (Bezeichnung) – z. B. «Eintrittsdatum»';
+COMMENT ON COLUMN templates.description IS 'Beschreibung – Zweck der Vorlage';
+COMMENT ON COLUMN templates.released_at IS 'Freigegeben am – Freigabe';
+COMMENT ON COLUMN templates.released_by_id IS 'Freigegeben von – Ressortvorstand (ohne Constraint)';
+COMMENT ON COLUMN templates.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN templates.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN templates.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN templates.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN templates.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN templates.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN templates.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
+COMMENT ON TABLE template_fields IS 'Eingabefeld beim Start eines Ablaufs – Vorlage › Startfelder; Werte stehen den Schritten als Platzhalter zur Verfügung';
+COMMENT ON COLUMN template_fields.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN template_fields.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN template_fields.template_id IS 'Vorlage – Verweis';
+COMMENT ON COLUMN template_fields.position IS 'Reihenfolge – Anzeige';
+COMMENT ON COLUMN template_fields.field_key IS 'Schlüssel – Platzhalter, z. B. «person»';
+COMMENT ON COLUMN template_fields.label IS 'Bezeichnung – Beschriftung im Startformular';
+COMMENT ON COLUMN template_fields.field_type IS 'Art – Eingabeart';
+COMMENT ON COLUMN template_fields.options IS 'Auswahlwerte – bei Auswahl';
+COMMENT ON COLUMN template_fields.is_required IS 'Pflicht – Start nur mit Wert';
+COMMENT ON TABLE template_steps IS 'Schritt einer Vorlage – Vorlage › Schritte; Rolle, Frist ab Stichtag, Vorgang, Bedingung, Quelle';
+COMMENT ON COLUMN template_steps.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN template_steps.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN template_steps.template_id IS 'Vorlage – Verweis';
+COMMENT ON COLUMN template_steps.code IS 'Kürzel – z. B. «o1»';
+COMMENT ON COLUMN template_steps.position IS 'Reihenfolge – Anzeige';
+COMMENT ON COLUMN template_steps.title IS 'Schritt – Bezeichnung';
+COMMENT ON COLUMN template_steps.role_id IS 'Verantwortlich – Rolle';
+COMMENT ON COLUMN template_steps.offset_days IS 'Frist (Tage)';
+COMMENT ON COLUMN template_steps.module_operation_id IS 'Vorgang';
+COMMENT ON COLUMN template_steps.parameters IS 'Parameter – mit Platzhaltern «{person}», «{o3.username}»';
+COMMENT ON COLUMN template_steps.is_automatic IS 'Automatisch – ohne Bestätigung bei erreichter Frist';
+COMMENT ON COLUMN template_steps.condition IS 'Bedingung – z. B. {"field":"function","op":"in","value":"…"}';
+COMMENT ON COLUMN template_steps.responsibility_task_id IS 'Funktionendiagramm – Nummer der Aufgabe';
+COMMENT ON COLUMN template_steps.source_id IS 'Quelle – Pflicht (Quelle oder Stelle)';
+COMMENT ON COLUMN template_steps.source_location IS 'Stelle – z. B. «§ 12 Abs. 2»';
+COMMENT ON TABLE template_step_predecessors IS 'Vorgänger eines Schritts («erst nach») – Vorlage › Schritte; ein Schritt wird bereit, wenn die Vorgänger erledigt sind';
+COMMENT ON COLUMN template_step_predecessors.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN template_step_predecessors.template_step_id IS 'Schritt – Verweis';
+COMMENT ON COLUMN template_step_predecessors.predecessor_id IS 'Vorgänger – Verweis';
+COMMENT ON TABLE template_step_informed_roles IS 'Zu informierende Rollen eines Schritts – Vorlage › Schritte; Hinweise bei Abschluss';
+COMMENT ON COLUMN template_step_informed_roles.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN template_step_informed_roles.template_step_id IS 'Schritt – Verweis';
+COMMENT ON COLUMN template_step_informed_roles.role_id IS 'Rolle – wird informiert';
+COMMENT ON TABLE runs IS 'Laufender Ablauf als Kopie einer Vorlage in der Version beim Start – gestartet in «Ablauf starten», aus dem Kalender oder durch ein Ereignis eines Moduls';
+COMMENT ON COLUMN runs.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN runs.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN runs.number IS 'Nummer – z. B. «L001»';
+COMMENT ON COLUMN runs.template_id IS 'Vorlage – Verweis';
+COMMENT ON COLUMN runs.template_version IS 'Version der Vorlage – beim Start';
+COMMENT ON COLUMN runs.title IS 'Titel – aus der Vorlage';
+COMMENT ON COLUMN runs.reference_date_label IS 'Stichtag (Bezeichnung) – aus der Vorlage';
+COMMENT ON COLUMN runs.reference_on IS 'Stichtag – Fristen werden davon berechnet';
+COMMENT ON COLUMN runs.context IS 'Startwerte – Eingaben beim Start, z. B. Name und Funktion';
+COMMENT ON COLUMN runs.user_id IS 'Person – betroffene Person, falls vorhanden';
+COMMENT ON COLUMN runs.status IS 'Status – Stand des Ablaufs';
+COMMENT ON COLUMN runs.started_on IS 'Gestartet am – Start';
+COMMENT ON COLUMN runs.started_by_id IS 'Gestartet von – Person (ohne Constraint)';
+COMMENT ON COLUMN runs.completed_on IS 'Abgeschlossen am – Ende';
+COMMENT ON COLUMN runs.trigger_source IS 'Auslöser – «manuell», Ereignis eines Moduls oder Kalender';
+COMMENT ON COLUMN runs.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON TABLE run_steps IS 'Schritt eines laufenden Ablaufs (Kopie aus der Vorlage mit Zustand) – «Laufende Abläufe» und «Meine Aufgaben»; Zustand setzt der Motor';
+COMMENT ON COLUMN run_steps.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN run_steps.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN run_steps.run_id IS 'Ablauf – Verweis';
+COMMENT ON COLUMN run_steps.code IS 'Kürzel – aus der Vorlage';
+COMMENT ON COLUMN run_steps.position IS 'Reihenfolge – Anzeige';
+COMMENT ON COLUMN run_steps.title IS 'Schritt – aus der Vorlage';
+COMMENT ON COLUMN run_steps.role_code IS 'Verantwortlich – Rolle';
+COMMENT ON COLUMN run_steps.assignee_id IS 'Zuständige Person – wenn zugewiesen';
+COMMENT ON COLUMN run_steps.offset_days IS 'Frist (Tage) – relativ zum Stichtag';
+COMMENT ON COLUMN run_steps.due_on IS 'Frist – Stichtag plus Tage, änderbar';
+COMMENT ON COLUMN run_steps.predecessors IS 'Vorgänger – Kürzel';
+COMMENT ON COLUMN run_steps.informed_roles IS 'Informiert – Rollen';
+COMMENT ON COLUMN run_steps.operation_key IS 'Vorgang – Schlüssel im Register';
+COMMENT ON COLUMN run_steps.parameter_template IS 'Parameter (Vorlage) – mit Platzhaltern';
+COMMENT ON COLUMN run_steps.parameters IS 'Parameter (aufgelöst) – beim Aufruf';
+COMMENT ON COLUMN run_steps.is_automatic IS 'Automatisch – ohne Bestätigung';
+COMMENT ON COLUMN run_steps.condition IS 'Bedingung – aus der Vorlage';
+COMMENT ON COLUMN run_steps.responsibility_number IS 'Funktionendiagramm – Nummer der Aufgabe';
+COMMENT ON COLUMN run_steps.source_text IS 'Quelle – aus der Vorlage';
+COMMENT ON COLUMN run_steps.status IS 'Status – Zustand des Schritts';
+COMMENT ON COLUMN run_steps.result IS 'Ergebnis – Rückgabe des Moduls, Platzhalter für spätere Schritte';
+COMMENT ON COLUMN run_steps.done_on IS 'Erledigt am – Abschluss';
+COMMENT ON COLUMN run_steps.done_by_id IS 'Erledigt von – Person (ohne Constraint)';
+COMMENT ON COLUMN run_steps.remark IS 'Bemerkung – z. B. Grund für Überspringen';
+COMMENT ON COLUMN run_steps.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON TABLE operation_calls IS 'Aufruf eines Vorgangs mit aufgelösten Parametern und Antwort – geschrieben vom Motor; «Aufrufprotokoll», Nachweis für die Aktenführung';
+COMMENT ON COLUMN operation_calls.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN operation_calls.event_id IS 'Ereignis-ID – eindeutig über Module und Exporte hinweg';
+COMMENT ON COLUMN operation_calls.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN operation_calls.number IS 'Nummer – z. B. «A0001»';
+COMMENT ON COLUMN operation_calls.occurred_at IS 'Zeitpunkt – wann';
+COMMENT ON COLUMN operation_calls.run_id IS 'Ablauf – Verweis';
+COMMENT ON COLUMN operation_calls.run_step_id IS 'Schritt – Verweis';
+COMMENT ON COLUMN operation_calls.operation_key IS 'Vorgang – Schlüssel';
+COMMENT ON COLUMN operation_calls.parameters IS 'Parameter – aufgelöst';
+COMMENT ON COLUMN operation_calls.status IS 'Status – Ergebnis des Aufrufs';
+COMMENT ON COLUMN operation_calls.response IS 'Antwort – Rückgabe des Moduls';
+COMMENT ON COLUMN operation_calls.duration_ms IS 'Dauer (ms) – Laufzeit';
+COMMENT ON COLUMN operation_calls.triggered_by_id IS 'Ausgelöst von';
+COMMENT ON TABLE notices IS 'Hinweis an eine Rolle («Ablauf gestartet», «Aufruf fehlgeschlagen») – geschrieben vom Motor; Übersicht und «Meine Aufgaben»';
+COMMENT ON COLUMN notices.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN notices.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN notices.role_code IS 'Rolle – Empfänger';
+COMMENT ON COLUMN notices.notice_on IS 'Datum – wann';
+COMMENT ON COLUMN notices.run_id IS 'Ablauf – Bezug';
+COMMENT ON COLUMN notices.text IS 'Hinweis – Text';
+COMMENT ON COLUMN notices.read_by_ids IS 'Gelesen von – Personen, die ihn gelesen haben';
+COMMENT ON TABLE calendar_areas IS 'Themenbereich des Jahreskalenders – Jahresplanung ICT-Prozesse; Zeilen der Zeitleiste';
+COMMENT ON COLUMN calendar_areas.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN calendar_areas.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN calendar_areas.area_key IS 'Schlüssel – z. B. «budget»';
+COMMENT ON COLUMN calendar_areas.name IS 'Bereich – z. B. «Budget und Finanzen»';
+COMMENT ON COLUMN calendar_areas.color IS 'Farbe – Anzeige in der Zeitleiste';
+COMMENT ON TABLE calendar_events IS 'Termin oder ToDo im Jahreskalender mit Zeitregel – «Jahreskalender»; Zeitregel als JSON (jährlich, Schuljahresanker, Semester, monatlich, Arbeitstage …)';
+COMMENT ON COLUMN calendar_events.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN calendar_events.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN calendar_events.code IS 'Kürzel – z. B. «k001»';
+COMMENT ON COLUMN calendar_events.title IS 'Termin – Bezeichnung';
+COMMENT ON COLUMN calendar_events.calendar_area_id IS 'Bereich – Zeile der Zeitleiste';
+COMMENT ON COLUMN calendar_events.time_rule IS 'Zeitregel – z. B. {"rule":"reference","anchor":"school_year_end","offset":-30,"unit":"days"}';
+COMMENT ON COLUMN calendar_events.only_year IS 'Nur im Jahr';
+COMMENT ON COLUMN calendar_events.holiday_rule IS 'Ferienregel – Termin auf einem Nicht-Schultag';
+COMMENT ON COLUMN calendar_events.source_id IS 'Quelle – Herkunft des Termins';
+COMMENT ON COLUMN calendar_events.template_code IS 'Ablaufvorlage – Start aus dem Kalender';
+COMMENT ON COLUMN calendar_events.note IS 'Notiz – Freitext';
+COMMENT ON COLUMN calendar_events.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN calendar_events.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN calendar_events.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN calendar_events.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN calendar_events.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN calendar_events.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN calendar_events.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
+COMMENT ON TABLE calendar_event_roles IS 'Beteiligung einer Kalenderrolle an einem Termin – Jahresplanung; Filter «Zuständigkeit»';
+COMMENT ON COLUMN calendar_event_roles.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN calendar_event_roles.calendar_event_id IS 'Termin – Verweis';
+COMMENT ON COLUMN calendar_event_roles.role_id IS 'Rolle – Verweis';
+COMMENT ON COLUMN calendar_event_roles.participation IS 'Beteiligung – A ausführen, E entscheiden, V verantwortlich, M mitwirken';
+COMMENT ON TABLE calendar_event_tasks IS 'Teilaufgabe eines Termins – Master-Checkliste; einzeln abhakbar';
+COMMENT ON COLUMN calendar_event_tasks.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN calendar_event_tasks.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN calendar_event_tasks.calendar_event_id IS 'Termin – Verweis';
+COMMENT ON COLUMN calendar_event_tasks.position IS 'Reihenfolge – Anzeige';
+COMMENT ON COLUMN calendar_event_tasks.title IS 'Teilaufgabe – Bezeichnung';
+COMMENT ON TABLE calendar_completions IS 'Erledigt-Vermerk je Vorkommen eines Termins (optional je Teilaufgabe) – «erledigt» im Kalender bzw. Start eines Ablaufs aus dem Vorkommen';
+COMMENT ON COLUMN calendar_completions.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN calendar_completions.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN calendar_completions.calendar_event_id IS 'Termin – Verweis';
+COMMENT ON COLUMN calendar_completions.occurrence_on IS 'Vorkommen – Datum des Vorkommens';
+COMMENT ON COLUMN calendar_completions.task_position IS 'Teilaufgabe';
+COMMENT ON COLUMN calendar_completions.completed_on IS 'Erledigt am – Abschluss';
+COMMENT ON COLUMN calendar_completions.completed_by_id IS 'Erledigt von – Person (ohne Constraint)';
+COMMENT ON COLUMN calendar_completions.run_id IS 'Ablauf – aus dem Vorkommen gestartet';
+-- <<< kommentare

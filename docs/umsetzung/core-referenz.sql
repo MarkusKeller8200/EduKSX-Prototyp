@@ -1,3 +1,4 @@
+-- ERSETZT (2026-11-20) durch standardtabellen.sql (DB-Standard 1.3, englische Namen). Nicht mehr verwendet; Löschen nach Rückfrage.
 -- EduKSX – Core-Referenz (PLATZHALTER)
 -- Stand 2026-11-20 · Status ENTWURF
 --

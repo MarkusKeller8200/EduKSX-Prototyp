@@ -9,7 +9,7 @@
   "use strict";
 
   const D = window.SIGN_DATEN;
-  const VERSION = "0.2.0";
+  const VERSION = "0.2.1";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // Einstiegsseite aller Prototypen
   const SPEICHER = "eduksx-sign-v1";
 

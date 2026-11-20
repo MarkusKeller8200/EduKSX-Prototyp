@@ -1,7 +1,7 @@
 # EduKSX-Staffing – Anforderungskatalog, Pflichtenheft und Prüfpunkte
 
 Stand: 2026-11-20 · Status: **ENTWURF** · Prototyp [`prototypen/einsatzplanung`](../../../prototypen/einsatzplanung)
-(0.1.x) · Datenbank [`datenbank.sql`](datenbank.sql) · API [`openapi.yaml`](openapi.yaml)
+(0.1.x) · Datenbank [`datenbank.sql`](datenbank.sql) · API [`openapi.json`](openapi.json)
 
 Stufen wie in [`KONZEPT-VORLAGE.md`](../../KONZEPT-VORLAGE.md); ohne Vermerk gilt **EMPFOHLEN**. Die fachlichen
 Einzelregeln (kantonale Werte, Formeln, Prüfregeln) stehen mit IDs `ST-…` in
@@ -70,7 +70,7 @@ Priorität: **MUSS** (für den ersten produktiven Einsatz), **SOLL** (erste Ausb
 
 ### 3.1 Architektur
 
-- Laravel-Modul nach EduKSX-Core (Repository EduKSX-Staffing), REST-API gemäss [`openapi.yaml`](openapi.yaml),
+- Laravel-Modul nach EduKSX-Core (Repository EduKSX-Staffing), REST-API gemäss [`openapi.json`](openapi.json),
   Oberfläche als eigenständige Web-App, die nur die API benutzt.
 - Berechnungskern (VZE, Pensum, Berufsauftrag, Ressourcen, Prüfregeln) als reine Funktionen in einer eigenen
   Klasse/Bibliothek mit Referenztests; die Formeln aus `prototypen/einsatzplanung/assets/app.js` werden 1:1
@@ -79,41 +79,42 @@ Priorität: **MUSS** (für den ersten produktiven Einsatz), **SOLL** (erste Ausb
 
 ### 3.2 Datenmodell
 
-[`datenbank.sql`](datenbank.sql), Schema `staffing`. Kernpunkte:
+[`datenbank.sql`](datenbank.sql), Schema `staffing`. Namen englisch, deutsche Beschreibungen je Tabelle, Spalte und Wert (DB-Standard 1.3, siehe [README](../README.md#1-datenbank--konventionen-beschlossen)). Kernpunkte:
 
 | Bereich | Tabellen | Hinweis |
 |---|---|---|
-| Grundlagen | `parameter`, `parameter_nettoarbeitszeit`, `stellengrundlage`, `koordination`, `fach`, `lektionentafel`, `lektionentafel_fach`, `termin` | Parameter je Schuljahr, nie überschreiben |
-| Personen | `planungsperson`, `person_fach` | Name, Kürzel, Geburtsdatum nur in `core.person` |
-| Unterricht | `klasse`, `klassenlehrperson`, `einsatz`, `zuteilung`, `ressource` | ein Einsatz = ein Gefäss der Planung |
-| Berufsauftrag | `gefaess`, `gefaess_teilnahme` | Stunden je Person berechnet |
-| Freigaben | `freigabe` (Stand als JSON eingefroren), `verlauf` | Vergleich Stand ↔ aktuell |
-| Umfrage, Stellvertretung | `umfrage`, `ausfall`, `ausfall_rapport`, `mutation` | |
-| Dossier | `gespraech`, `dossierkategorie`, `dossiervorlage`, `dossiereintrag` | strengere Rechte, Einsichtsprotokoll |
-| Tagesstrukturen | `betreuungsangebot` | |
-| Ansichten | `v_zuteilung_person`, `v_ressource_verbrauch`, `v_einsatz_offen` | Grundlage für Übersichten |
+| Grundlagen | `planning_parameters`, `planning_parameter_age_bands`, `staffing_plans`, `staffing_plan_coordinations`, `subjects`, `lesson_tables`, `lesson_table_subjects`, `deadlines` | Parameter je Schuljahr, nie überschreiben |
+| Personen | `staff_members`, `staff_member_subjects` | Verweis auf `users` (Personenreferenz); Geburtsdatum nur dort, wo das Altersband es braucht |
+| Unterricht | `classes`, `class_teachers`, `assignments`, `assignment_allocations`, `resources` | ein Einsatz = ein Gefäss der Planung |
+| Berufsauftrag | `job_duties`, `job_duty_participants` | Stunden je Person berechnet |
+| Freigaben | `releases` (Stand als JSON eingefroren), `planning_events` | Vergleich Stand ↔ aktuell |
+| Umfrage, Stellvertretung | `workload_surveys`, `absences`, `absence_reports`, `mid_year_changes` | |
+| Dossier | `staff_reviews`, `dossier_categories`, `dossier_templates`, `dossier_entries` | besonders schützenswert, Einsichtsprotokoll |
+| Tagesstrukturen | `care_offerings` | |
+| Ansichten | `staff_member_totals`, `resource_usages`, `assignment_open_amounts` | Grundlage für Übersichten |
 
 ### 3.3 API
 
-[`openapi.yaml`](openapi.yaml): Ressourcen je Tabelle (Liste, Anlegen, Lesen, Ändern, Archivieren) und
-Fachaktionen – `GET /v1/stellengrundlagen/{id}/stellenplan`, `GET /v1/personen/{id}/pensum`, `GET /v1/pensen`,
-`GET /v1/pruefungen`, `GET /v1/matrix`, `POST /v1/personen/{id}/freigeben`, `POST /v1/freigaben/sammel`,
-`POST /v1/freigaben/{id}/anstellen`, `GET /v1/freigaben/{id}/vergleich`, `POST /v1/umfragen/einladen`,
-`POST /v1/ausfaelle/{id}/rapport`, `POST /v1/export/vze-tool`. Ereignisse (Webhooks): `pensumFreigegeben`,
-`pensumGeaendert`.
+[`openapi.json`](openapi.json) (API-Standard 1.2): Ressourcen unter `/api/v1/org/…` (Liste, Anlegen, Lesen, Ändern,
+Löschen in den Papierkorb) und Fachaktionen – `GET …/staffing-plans/{id}/calculation`, `POST …/budget-lock`,
+`GET …/staff-members/{id}/workload`, `GET …/workloads`, `GET …/checks`, `GET …/matrix`,
+`POST …/staff-members/{id}/release`, `POST …/releases/bulk`, `POST …/releases/{id}/employment`,
+`GET …/releases/{id}/comparison`, `POST …/workload-surveys/invitations`, `POST …/absences/{id}/reports`,
+`POST …/exports/vze-tool`; für die Person selbst `GET /api/v1/me/workload-survey` und `…/submission`.
+Ereignisse (Webhooks): `staffing.release.created`, `staffing.release.employed`, `staffing.release.changed`.
 
 ### 3.4 Rollen und Berechtigungen
 
-| Recht (Scope) | Schulleitung | Schulverwaltung | Leitung TS | Mitarbeitende | Administration |
+| Recht (Scopes) | Schulleitung | Schulverwaltung | Leitung TS | Mitarbeitende | Administration |
 |---|---|---|---|---|---|
-| `staffing:lesen` | ✓ | ✓ | ✓ (TS) | nur eigene Daten | ✓ |
-| `staffing:planen` | ✓ | – | – | – | – |
-| `staffing:freigeben` | ✓ | – | – | – | – |
-| `staffing:anstellen` | – | ✓ | – | – | – |
-| `staffing:parameter` | – | ✓ | – | – | ✓ |
-| `staffing:dossier` | ✓ (eigene Schule) | ✓ (Anstellung) | – | eigene, freigegebene | – |
-| `staffing:umfrage` | – | – | – | eigene | – |
-| `staffing:betreuung` | – | – | ✓ | – | – |
+| Lesen – `staffing:*.read` | ✓ | ✓ | ✓ (TS) | nur eigene Daten | ✓ |
+| Planen – `staffing:{classes,assignments,job-duties,resources,staff-members,…}.write` | ✓ | – | – | – | – |
+| Freigeben – `staffing:releases.write` | ✓ | – | – | – | – |
+| Anstellen – `staffing:releases.admin` | – | ✓ | – | – | – |
+| Parameter – `staffing:planning-parameters.write`, `staffing:staffing-plans.write` | – | ✓ | – | – | ✓ |
+| Dossier – `staffing:{staff-reviews,dossier-entries}.read/.write` | ✓ (eigene Schule) | ✓ (Anstellung) | – | eigene, freigegebene | – |
+| Umfrage – `staffing:workload-surveys.write` (eigene über `/api/v1/me/…`) | – | – | – | eigene | – |
+| Tagesstrukturen – `staffing:care-offerings.write` | – | – | ✓ | – | – |
 
 OFFEN: Teilrechte (Stufenleitung), Rechte je Schule innerhalb eines Mandanten.
 

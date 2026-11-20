@@ -1,7 +1,7 @@
 # EduKSX-Codex – Anforderungskatalog, Pflichtenheft und Prüfpunkte
 
 Stand: 2026-11-20 · Status: **ENTWURF** · Prototyp [`prototypen/rechtssammlung`](../../../prototypen/rechtssammlung)
-(0.20.x) · Datenbank [`datenbank.sql`](datenbank.sql) · API [`openapi.yaml`](openapi.yaml)
+(0.20.x) · Datenbank [`datenbank.sql`](datenbank.sql) · API [`openapi.json`](openapi.json)
 
 Stufen wie in [`KONZEPT-VORLAGE.md`](../../KONZEPT-VORLAGE.md); ohne Vermerk gilt **EMPFOHLEN**.
 
@@ -61,32 +61,36 @@ Geschäftsverwaltung/Beschlüsse, allgemeine Dokumentablage.
 - Die Python-Werkzeuge des Prototyps (`tools/build.py`, `tools/texte.py`, `tools/fedlex.py`, `recht_aufbereiten.py`)
   sind die fachliche Referenz für Import und Textaufbereitung; produktiv als eigener Dienst oder in PHP neu umgesetzt
   (OFFEN).
-- Widget als statisches JavaScript mit der Lese-API (`/v1/einbettung/{org}`).
+- Widget als statisches JavaScript mit der Lese-API (`/api/v1/embed/{publisher_key}`).
 
 ### 3.2 Datenmodell
 
-[`datenbank.sql`](datenbank.sql), Schema `codex`. `mandant_id NULL` = gemeinsamer Bestand (Bund, Kanton,
-Verzeichnis, Hierarchien, Pflichtkatalog), sonst Eigentum der Gemeinde/Schulgemeinde. Kern: `organisation` ›
-`rubrik` › `erlass` › `fassung` (+ `fassung_unterschied`, `verweis`); `rechtsgrundlage`, `sachbereich`, `thema`,
-`quelle`, `quellenklasse`; `hierarchie`, `hierarchie_knoten`, `hierarchie_kante`; `pflichtkategorie`,
-`pflichtdokument`, `matrix_zeile`, `matrix_zelle`; `analyse`, `leitfaden_regel`, `leitfaden_pruefung`. Ansichten
-`v_fassung_aktuell`, `v_fortschritt_bezirk`.
+[`datenbank.sql`](datenbank.sql), Schema `codex`. Namen englisch, deutsche Beschreibungen je Tabelle, Spalte und Wert (DB-Standard 1.3, siehe [README](../README.md#1-datenbank--konventionen-beschlossen)). Rechtsbestand, Verzeichnis, Hierarchien und
+Pflichtkatalog sind **global** (ohne `organization_id`, nur Redaktion); eine Sammlung gehört über
+`publishers.owner_platform_id` einer Gemeinde/Schulgemeinde. Kern: `publishers` › `sections` › `legal_acts` ›
+`act_versions` (+ `act_version_differences`, `act_references`); `municipalities`, `school_communities`,
+`legal_bases`, `legal_areas`, `topics`, `publication_sources`, `source_classes`; `norm_hierarchies`,
+`hierarchy_nodes`, `hierarchy_edges`; `mandatory_document_categories`, `mandatory_documents`, `matrix_rows`,
+`matrix_cells`; `parent_guide_topics` (+ `_provisions`, `_documents`); `collection_analyses`, `guideline_rules`,
+`guideline_checks`. Ansichten `current_act_versions`, `district_progress`.
 
 ### 3.3 API
 
-[`openapi.yaml`](openapi.yaml): Verzeichnis (`/v1/gemeinden`, `/v1/schulgemeinden`, `/v1/bezirke`, `/v1/uebersicht`),
-Sammlungen (`/v1/organisationen`, `…/rubriken`), Erlasse und Fassungen (`/v1/erlasse`, `…/fassungen`,
-`/v1/fassungen/{id}/text|datei`, `…/unterschiede`), Suche (`/v1/suche`, `/v1/aufloesen`), Rechtsgrundlagen,
-Hierarchien mit Vorschlägen und Bestätigung, Pflichtkatalog und Matrix, Evaluation, Widget. Webhook `fassungNeu`.
+[`openapi.json`](openapi.json) (API-Standard 1.2), globale Daten unter `/api/v1/…`: Verzeichnis
+(`/municipalities`, `/school-communities`, `/overview`), Sammlungen (`/publishers`, `…/section-tree`, `/sections`),
+Erlasse und Fassungen (`/legal-acts`, `…/versions`, `/act-versions/{id}/text|file`, `…/differences`), Suche
+(`/search`, `/citations/resolution`), Rechtsgrundlagen, Hierarchien mit Vorschlägen und Entscheid
+(`/hierarchy-edges/{id}/decision`), Pflichtkatalog und Matrix, Evaluation (`…/analysis`), Widget (`/embed/…`).
+Webhook `codex.act_version.created`.
 
 ### 3.4 Rollen und Berechtigungen
 
-| Scope | Öffentlichkeit | Mitarbeitende | Redaktion Mandant | Redaktion EduKSX-Codex |
+| Recht (Scopes) | Öffentlichkeit | Mitarbeitende | Redaktion Mandant | Redaktion EduKSX-Codex |
 |---|---|---|---|---|
-| `codex:lesen` | ✓ (anonym) | ✓ | ✓ | ✓ |
-| `codex:redaktion` | – | – | eigene Sammlung | ✓ |
-| `codex:zentral` | – | – | – | ✓ |
-| `codex:evaluation` | – | – | eigene Organisation | ✓ |
+| Lesen – `codex:*.read` | ✓ (anonym) | ✓ | ✓ | ✓ |
+| Redaktion – `codex:{publishers,sections,legal-acts,legal-bases}.write` | – | – | eigene Sammlung | ✓ |
+| Zentrale Redaktion – `codex:{municipalities,school-communities,publication-sources,mandatory-documents,matrix,parent-guide-topics}.write`, `codex:norm-hierarchies.admin` | – | – | – | ✓ |
+| Evaluation – `codex:collection-analyses.admin` | – | – | eigene Organisation | ✓ |
 
 ### 3.5 Schnittstellen
 

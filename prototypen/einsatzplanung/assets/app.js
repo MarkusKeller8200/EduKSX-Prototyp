@@ -416,7 +416,7 @@
         <nav class="navi" aria-label="Hauptnavigation"><ul>${navi}</ul></nav>
         <main id="inhalt" tabindex="-1">${inhalt}</main>
       </div>
-      <footer class="fuss"><span>${wordmark("Staffing")} · Prototyp 0.2.0 · in Entwicklung · <a href="../">Alle Prototypen</a> · Begriffe: <a href="https://glossary.eduksx.ch">EduKSX-Glossary</a> (CC BY 4.0)</span><span>Developed by ${WM_DEV}</span></footer>
+      <footer class="fuss"><span>${wordmark("Staffing")} · Prototyp 0.2.1 · in Entwicklung · <a href="../">Alle Prototypen</a> · Begriffe: <a href="https://glossary.eduksx.ch">EduKSX-Glossary</a> (CC BY 4.0)</span><span>Developed by ${WM_DEV}</span></footer>
       <div class="sr-only" aria-live="polite" id="ansage"></div>`;
   }
 

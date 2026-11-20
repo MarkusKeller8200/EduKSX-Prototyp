@@ -1,7 +1,7 @@
 # EduKSX-Flow – Anforderungskatalog, Pflichtenheft und Prüfpunkte
 
 Stand: 2026-11-20 · Status: **ENTWURF** · Prototyp [`prototypen/ablaufplanung`](../../../prototypen/ablaufplanung)
-(0.5.x) · Datenbank [`datenbank.sql`](datenbank.sql) · API [`openapi.yaml`](openapi.yaml)
+(0.5.x) · Datenbank [`datenbank.sql`](datenbank.sql) · API [`openapi.json`](openapi.json)
 
 Stufen wie in [`KONZEPT-VORLAGE.md`](../../KONZEPT-VORLAGE.md); ohne Vermerk gilt **EMPFOHLEN**.
 
@@ -65,7 +65,7 @@ Core/Mitteilung), Rechtsauskunft (Quellen verweisen auf EduKSX-Codex).
   **Motor** (Queue-Worker + Scheduler; Zustandsautomat je Schritt), **Kalender** (Vorkommen-Berechnung als reine
   Funktion, Ergebnis zwischengespeichert je Jahr).
 - Aufrufe an Module über deren API gemäss Vorgangsregister (`vorgangAufrufen`); Antwortart «rueckmeldung» → Schritt
-  `laeuft`, Abschluss über `POST /v1/aufrufe/rueckmeldung`.
+  `laeuft`, Abschluss über `POST /api/v1/org/operation-calls/callback`.
 - Kalenderlogik aus `prototypen/ablaufplanung/assets/kalender.js` als Referenz übernehmen (gleiche Testfälle).
 
 ### 3.2 Zustandsautomat eines Schritts
@@ -82,34 +82,37 @@ Schritte erledigt oder übersprungen sind.
 
 ### 3.3 Datenmodell
 
-[`datenbank.sql`](datenbank.sql), Schema `flow`: `rolle`, `rolle_zuordnung`, `funktion`, `funktion_rolle`, `quelle`,
-`modul`, `vorgang`, `vorlage` (+ `_feld`, `_schritt`, `_schritt_nach`, `_schritt_informiert`), `lauf`,
-`lauf_schritt` (Kopie + Zustand), `aufruf`, `hinweis`, `kalender_bereich`, `kalender_ereignis` (Zeitregel als
-JSON), `kalender_ereignis_rolle`, `kalender_teil`, `kalender_erledigt`. Schuljahre und Ferien in `core`.
+[`datenbank.sql`](datenbank.sql), Schema `flow`. Namen englisch, deutsche Beschreibungen je Tabelle, Spalte und Wert (DB-Standard 1.3, siehe [README](../README.md#1-datenbank--konventionen-beschlossen)). Tabellen: `roles`, `role_calendar_roles`,
+`responsibility_tasks`, `responsibility_task_roles`, `sources`, `modules`, `module_operations`, `templates`
+(+ `template_fields`, `template_steps`, `template_step_predecessors`, `template_step_informed_roles`), `runs`,
+`run_steps` (Kopie + Zustand), `operation_calls`, `notices`, `calendar_areas`, `calendar_events` (Zeitregel als
+JSON), `calendar_event_roles`, `calendar_event_tasks`, `calendar_completions`. Schuljahre und Ferien in den
+Standardtabellen `school_years`, `school_holidays`.
 
 ### 3.4 API
 
-[`openapi.yaml`](openapi.yaml): `GET /v1/aufgaben`, `GET /v1/uebersicht`, Vorlagen (CRUD, `freigeben`, `kopieren`,
-`graph`), `POST /v1/laeufe/vorschau`, `POST /v1/laeufe`, Schrittaktionen (`erledigen`, `ueberspringen`,
-`wiederholen`, `PATCH`), `GET /v1/aufrufe`, `POST /v1/aufrufe/rueckmeldung`, Register (`/v1/module`), Kalender
-(`/v1/kalender/ereignisse`, `/v1/kalender/vorkommen`, `…/erledigt`, `…/starten`, `export.ics`). Webhooks:
-`vorgangAufrufen` (an Module), `laufAbgeschlossen`.
+[`openapi.json`](openapi.json) (API-Standard 1.2): `GET /api/v1/me/tasks`, `GET /api/v1/org/overview`, Vorlagen
+(CRUD, `…/release`, `…/copy`, `…/diagram`), `POST /api/v1/org/runs/preview`, `POST /api/v1/org/runs`,
+Schrittaktionen (`…/steps/{code}/completion`, `…/skip`, `…/retry`, `PATCH`), `GET /api/v1/org/operation-calls`,
+`POST …/operation-calls/callback`, Register (`/api/v1/org/modules`, `…/check`), Kalender
+(`/api/v1/org/calendar-events`, `/api/v1/org/calendar-occurrences`, `…/completion`, `…/run`, `…/export`).
+Webhooks: `flow.operation.invoked` (an Module), `flow.run.completed`.
 
 ### 3.5 Rollen und Berechtigungen
 
-| Scope | Schulverwaltung | Schulleitung | Ressortvorstand | Mitarbeitende | Module (technisch) |
+| Recht (Scopes) | Schulverwaltung | Schulleitung | Ressortvorstand | Mitarbeitende | Module (technisch) |
 |---|---|---|---|---|---|
-| `flow:lesen` | ✓ | ✓ | ✓ | eigene Aufgaben | – |
-| `flow:bearbeiten` | ✓ | ✓ | ✓ | eigene Aufgaben | – |
-| `flow:vorlagen` | bearbeiten (V) | bearbeiten | freigeben (E) | – | – |
-| `flow:register` | – | – | – | – | ✓ (Client-Credentials) |
-| `flow:admin` | ✓ | – | – | – | – |
+| Lesen – `flow:*.read` | ✓ | ✓ | ✓ | eigene Aufgaben | – |
+| Bearbeiten – `flow:runs.write`, `flow:notices.write` | ✓ | ✓ | ✓ | eigene Aufgaben | – |
+| Vorlagen – `flow:templates.write`, freigeben `flow:templates.admin` | bearbeiten (V) | bearbeiten | freigeben (E) | – | – |
+| Register – `flow:modules.write`, `flow:operation-calls.write` | – | – | – | – | ✓ (Client-Credentials) |
+| Verwaltung – `flow:{roles,responsibility-tasks,sources,calendar-events}.write`, `flow:modules.admin` | ✓ | – | – | – | – |
 
 ### 3.6 Schnittstellen
 
 | Partner | Richtung | Inhalt |
 |---|---|---|
-| alle Module | ↔ | Vorgangsregister melden (`/v1/module`), Aufrufe empfangen, Rückmeldungen senden |
+| alle Module | ↔ | Vorgangsregister melden (`/api/v1/org/modules`), Aufrufe empfangen, Rückmeldungen senden |
 | EduKSX-Staffing | ← | `pensumFreigegeben` startet Ein-/Austrittsabläufe; Fristen als Kalenderereignisse |
 | EduKSX-Ident / Connect | → | Konten, Zugänge, Sperren (Vorgänge `ident.*`, `connect.*`) |
 | EduKSX-Sign | ↔ | Signaturanfrage als Vorgang mit Rückmeldung |

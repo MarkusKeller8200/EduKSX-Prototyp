@@ -36,6 +36,16 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Umsetzungsgrundlagen nach DB-/API-Standard (#51)
+
+- Architektur (PR #66, gemerged): DB-Standard 1.3 (A8, DB-E13), API-Standard 1.2 (A8, API-E37) – englische Namen,
+  deutsche Beschreibungen verbindlich; Modulschlüssel `flow` registriert.
+- `docs/umsetzung/*/datenbank.sql` englisch mit strukturierten Kommentaren; `standardtabellen.sql` wird in jedes
+  Skript kopiert. Erzeugen/prüfen: `python3 tools/umsetzung_bauen.py [--pruefen]` (Definitionen der API in
+  `tools/umsetzung/api_<modul>.py`, Parser in `tools/umsetzung/modell.py`), danach `python3 tools/entwickler_bauen.py`.
+- Geprüft: PostgreSQL 16 (127 Tabellen, 6 Ansichten, 1561 Kommentare; `time.daily_totals` rechnet 540 Min. Ist),
+  openapi-spec-validator, Tests grün. `core-referenz.sql` ist ersetzt, aber noch da – Löschen nach Rückfrage.
+
 ### Sitzung 2026-11-20 – EduKSX-Codex 0.23.0
 
 - Auftrag: Organisation ergänzen (Behörden, Gemeindeversammlung, Organisationsstruktur). Umgesetzt (#46 → `_3 Beta-Test`);

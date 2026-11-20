@@ -1,1773 +1,4114 @@
-# EduKSX-Time – API-Beschreibung (OpenAPI 3.1)
-# Stand 2026-11-20 · Status ENTWURF · Grundlage: Prototyp prototypen/zeiterfassung
-# Konventionen: docs/umsetzung/README.md · Pfade ohne Modulpräfix (Namensraum beim Zusammenführen)
-openapi: 3.1.0
-info:
-  title: EduKSX-Time
-  version: 0.1.0
-  description: 'Zeiterfassung: Stempeln (Kommen, Pause, Gehen) mit Buchungsart, Soll aus dem Pensum, Ist/Saldo mit gesetzlicher
-    Pause, Rückgängig, Nachtragen und Offline-Übertragung (idempotent über die Buchungs-ID). Ausbau: Abwesenheiten, Korrekturen,
-    Monatsabschluss mit Visum.'
-  contact:
-    name: EduKSX
-    url: https://github.com/MarkusKeller8200/EduKSX-Prototyp
-  license:
-    name: siehe Repository
-    identifier: LicenseRef-EduKSX
-servers:
-- url: https://{mandant}.eduksx.ch/api
-  variables:
-    mandant:
-      default: demo
-  description: Beispiel – Namensraum je Modul setzt das Zusammenführen in EduKSX-Architektur.
-security:
-- ident:
-  - time:lesen
-tags:
-- name: Stempeln
-  description: Status und Buchungen
-- name: Verlauf
-  description: Tage, Wochen, Monate
-- name: Abwesenheiten
-  description: Ferien, Krankheit … (Ausbau)
-- name: Korrekturen
-  description: Korrekturanträge (Ausbau)
-- name: Monat
-  description: Monatsabschluss und Visum (Ausbau)
-- name: Verwaltung
-  description: Regeln, Arten, Arbeitsmodelle
-paths:
-  /v1/abwesenheiten:
-    get:
-      tags:
-      - Abwesenheiten
-      operationId: abwesenheitListe
-      summary: Abwesenheiten auflisten
-      security:
-      - ident:
-        - time:lesen
-      parameters:
-      - $ref: '#/components/parameters/Seite'
-      - $ref: '#/components/parameters/Anzahl'
-      - name: personId
-        in: query
-        required: false
-        description: nur mit time:visum für andere
-        schema:
-          type: string
-          format: uuid
-      - name: von
-        in: query
-        required: false
-        description: ''
-        schema:
-          type: string
-          format: date
-      - name: bis
-        in: query
-        required: false
-        description: ''
-        schema:
-          type: string
-          format: date
-      - name: status
-        in: query
-        required: false
-        description: ''
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Liste der Abwesenheiten.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  daten:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/AbwesenheitVoll'
-                  seite:
-                    type: integer
-                  anzahl:
-                    type: integer
-                  total:
-                    type: integer
-                required:
-                - daten
-                - seite
-                - anzahl
-                - total
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-    post:
-      tags:
-      - Abwesenheiten
-      operationId: abwesenheitAnlegen
-      summary: Abwesenheit anlegen
-      security:
-      - ident:
-        - time:antrag
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Abwesenheit'
-      responses:
-        '201':
-          description: Angelegt.
-          headers:
-            ETag: &id001
-              description: Version des Datensatzes.
-              schema:
-                type: string
-            Location:
-              schema:
-                type: string
-          content:
-            application/json:
-              schema: &id002
-                allOf:
-                - $ref: '#/components/schemas/Abwesenheit'
-                - $ref: '#/components/schemas/Protokoll'
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-  /v1/abwesenheiten/{id}:
-    parameters:
-    - $ref: '#/components/parameters/Id'
-    get:
-      tags:
-      - Abwesenheiten
-      operationId: abwesenheitLesen
-      summary: Abwesenheit lesen
-      security:
-      - ident:
-        - time:lesen
-      responses:
-        '200':
-          description: Abwesenheit
-          headers: &id003
-            ETag: *id001
-          content:
-            application/json:
-              schema: *id002
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-    patch:
-      tags:
-      - Abwesenheiten
-      operationId: abwesenheitAendern
-      summary: Abwesenheit ändern (JSON Merge Patch)
-      security:
-      - ident:
-        - time:antrag
-      parameters:
-      - $ref: '#/components/parameters/IfMatch'
-      requestBody:
-        required: true
-        content:
-          application/merge-patch+json:
-            schema:
-              $ref: '#/components/schemas/Abwesenheit'
-      responses:
-        '200':
-          description: Geändert.
-          headers: *id003
-          content:
-            application/json:
-              schema: *id002
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-        '412':
-          $ref: '#/components/responses/VersionVeraltet'
-    delete:
-      tags:
-      - Abwesenheiten
-      operationId: abwesenheitEntfernen
-      summary: Abwesenheit entfernen (archivieren)
-      security:
-      - ident:
-        - time:antrag
-      parameters:
-      - $ref: '#/components/parameters/IfMatch'
-      responses:
-        '204':
-          description: Entfernt bzw. archiviert.
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-        '412':
-          $ref: '#/components/responses/VersionVeraltet'
-  /v1/korrekturen:
-    get:
-      tags:
-      - Korrekturen
-      operationId: korrekturListe
-      summary: Korrekturanträge auflisten
-      security:
-      - ident:
-        - time:lesen
-      parameters:
-      - $ref: '#/components/parameters/Seite'
-      - $ref: '#/components/parameters/Anzahl'
-      - name: personId
-        in: query
-        required: false
-        description: ''
-        schema:
-          type: string
-          format: uuid
-      - name: status
-        in: query
-        required: false
-        description: ''
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Liste der Korrekturanträge.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  daten:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/KorrekturVoll'
-                  seite:
-                    type: integer
-                  anzahl:
-                    type: integer
-                  total:
-                    type: integer
-                required:
-                - daten
-                - seite
-                - anzahl
-                - total
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-    post:
-      tags:
-      - Korrekturen
-      operationId: korrekturAnlegen
-      summary: Korrekturantrag anlegen
-      security:
-      - ident:
-        - time:antrag
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Korrektur'
-      responses:
-        '201':
-          description: Angelegt.
-          headers:
-            ETag: *id001
-            Location:
-              schema:
-                type: string
-          content:
-            application/json:
-              schema: &id004
-                allOf:
-                - $ref: '#/components/schemas/Korrektur'
-                - $ref: '#/components/schemas/Protokoll'
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-  /v1/korrekturen/{id}:
-    parameters:
-    - $ref: '#/components/parameters/Id'
-    get:
-      tags:
-      - Korrekturen
-      operationId: korrekturLesen
-      summary: Korrekturantrag lesen
-      security:
-      - ident:
-        - time:lesen
-      responses:
-        '200':
-          description: Korrekturantrag
-          headers: *id003
-          content:
-            application/json:
-              schema: *id004
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-  /v1/regeln:
-    get:
-      tags:
-      - Verwaltung
-      operationId: regelListe
-      summary: Regeln auflisten
-      security:
-      - ident:
-        - time:lesen
-      parameters:
-      - $ref: '#/components/parameters/Seite'
-      - $ref: '#/components/parameters/Anzahl'
-      responses:
-        '200':
-          description: Liste der Regeln.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  daten:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/RegelVoll'
-                  seite:
-                    type: integer
-                  anzahl:
-                    type: integer
-                  total:
-                    type: integer
-                required:
-                - daten
-                - seite
-                - anzahl
-                - total
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-    post:
-      tags:
-      - Verwaltung
-      operationId: regelAnlegen
-      summary: Regel anlegen
-      security:
-      - ident:
-        - time:admin
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Regel'
-      responses:
-        '201':
-          description: Angelegt.
-          headers:
-            ETag: *id001
-            Location:
-              schema:
-                type: string
-          content:
-            application/json:
-              schema: &id005
-                $ref: '#/components/schemas/Regel'
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-  /v1/regeln/{id}:
-    parameters:
-    - $ref: '#/components/parameters/Id'
-    get:
-      tags:
-      - Verwaltung
-      operationId: regelLesen
-      summary: Regel lesen
-      security:
-      - ident:
-        - time:lesen
-      responses:
-        '200':
-          description: Regel
-          headers: *id003
-          content:
-            application/json:
-              schema: *id005
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-  /v1/buchungsarten:
-    get:
-      tags:
-      - Verwaltung
-      operationId: buchungsartListe
-      summary: Buchungsarten auflisten
-      security:
-      - ident:
-        - time:lesen
-      parameters:
-      - $ref: '#/components/parameters/Seite'
-      - $ref: '#/components/parameters/Anzahl'
-      responses:
-        '200':
-          description: Liste der Buchungsarten.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  daten:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/BuchungsartVoll'
-                  seite:
-                    type: integer
-                  anzahl:
-                    type: integer
-                  total:
-                    type: integer
-                required:
-                - daten
-                - seite
-                - anzahl
-                - total
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-    post:
-      tags:
-      - Verwaltung
-      operationId: buchungsartAnlegen
-      summary: Buchungsart anlegen
-      security:
-      - ident:
-        - time:admin
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Buchungsart'
-      responses:
-        '201':
-          description: Angelegt.
-          headers:
-            ETag: *id001
-            Location:
-              schema:
-                type: string
-          content:
-            application/json:
-              schema: &id006
-                $ref: '#/components/schemas/Buchungsart'
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-  /v1/buchungsarten/{id}:
-    parameters:
-    - $ref: '#/components/parameters/Id'
-    get:
-      tags:
-      - Verwaltung
-      operationId: buchungsartLesen
-      summary: Buchungsart lesen
-      security:
-      - ident:
-        - time:lesen
-      responses:
-        '200':
-          description: Buchungsart
-          headers: *id003
-          content:
-            application/json:
-              schema: *id006
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-    patch:
-      tags:
-      - Verwaltung
-      operationId: buchungsartAendern
-      summary: Buchungsart ändern (JSON Merge Patch)
-      security:
-      - ident:
-        - time:admin
-      parameters:
-      - $ref: '#/components/parameters/IfMatch'
-      requestBody:
-        required: true
-        content:
-          application/merge-patch+json:
-            schema:
-              $ref: '#/components/schemas/Buchungsart'
-      responses:
-        '200':
-          description: Geändert.
-          headers: *id003
-          content:
-            application/json:
-              schema: *id006
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-        '412':
-          $ref: '#/components/responses/VersionVeraltet'
-  /v1/arbeitsmodelle:
-    get:
-      tags:
-      - Verwaltung
-      operationId: arbeitsmodellListe
-      summary: Arbeitsmodelle auflisten
-      security:
-      - ident:
-        - time:admin
-      parameters:
-      - $ref: '#/components/parameters/Seite'
-      - $ref: '#/components/parameters/Anzahl'
-      - name: personId
-        in: query
-        required: false
-        description: ''
-        schema:
-          type: string
-          format: uuid
-      responses:
-        '200':
-          description: Liste der Arbeitsmodelle.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  daten:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/ArbeitsmodellVoll'
-                  seite:
-                    type: integer
-                  anzahl:
-                    type: integer
-                  total:
-                    type: integer
-                required:
-                - daten
-                - seite
-                - anzahl
-                - total
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-    post:
-      tags:
-      - Verwaltung
-      operationId: arbeitsmodellAnlegen
-      summary: Arbeitsmodell anlegen
-      security:
-      - ident:
-        - time:admin
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Arbeitsmodell'
-      responses:
-        '201':
-          description: Angelegt.
-          headers:
-            ETag: *id001
-            Location:
-              schema:
-                type: string
-          content:
-            application/json:
-              schema: &id007
-                allOf:
-                - $ref: '#/components/schemas/Arbeitsmodell'
-                - $ref: '#/components/schemas/Protokoll'
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-  /v1/arbeitsmodelle/{id}:
-    parameters:
-    - $ref: '#/components/parameters/Id'
-    get:
-      tags:
-      - Verwaltung
-      operationId: arbeitsmodellLesen
-      summary: Arbeitsmodell lesen
-      security:
-      - ident:
-        - time:admin
-      responses:
-        '200':
-          description: Arbeitsmodell
-          headers: *id003
-          content:
-            application/json:
-              schema: *id007
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-    patch:
-      tags:
-      - Verwaltung
-      operationId: arbeitsmodellAendern
-      summary: Arbeitsmodell ändern (JSON Merge Patch)
-      security:
-      - ident:
-        - time:admin
-      parameters:
-      - $ref: '#/components/parameters/IfMatch'
-      requestBody:
-        required: true
-        content:
-          application/merge-patch+json:
-            schema:
-              $ref: '#/components/schemas/Arbeitsmodell'
-      responses:
-        '200':
-          description: Geändert.
-          headers: *id003
-          content:
-            application/json:
-              schema: *id007
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-        '412':
-          $ref: '#/components/responses/VersionVeraltet'
-  /v1/status:
-    get:
-      tags:
-      - Stempeln
-      operationId: statusLesen
-      summary: Aktueller Zustand, heute Ist/Soll/Saldo
-      security:
-      - ident:
-        - time:lesen
-      responses:
-        '200':
-          description: Ergebnis.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-  /v1/buchungen:
-    post:
-      tags:
-      - Stempeln
-      operationId: stempeln
-      summary: Buchung erfassen (Kommen, Pause, Pause beenden, Gehen)
-      security:
-      - ident:
-        - time:stempeln
-      description: Prüft die Reihenfolge (z. B. kein Gehen ohne Kommen) und die Zeit (nicht in der Zukunft, offline höchstens
-        max. Nachtragstage zurück). Gleiche ID → 200 mit unverändertem Status.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Buchung'
-      responses:
-        '201':
-          description: Ergebnis.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-  /v1/buchungen/uebertragen:
-    post:
-      tags:
-      - Stempeln
-      operationId: uebertragen
-      summary: Offline erfasste Buchungen übertragen (Stapel, idempotent)
-      security:
-      - ident:
-        - time:stempeln
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Uebertragung'
-      responses:
-        '200':
-          description: Ergebnis.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UebertragungErgebnis'
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-  /v1/buchungen/{id}/rueckgaengig:
-    parameters:
-    - $ref: '#/components/parameters/Id'
-    post:
-      tags:
-      - Stempeln
-      operationId: rueckgaengig
-      summary: Letzte Buchung innerhalb der Frist rückgängig machen
-      security:
-      - ident:
-        - time:stempeln
-      responses:
-        '200':
-          description: Ergebnis.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-  /v1/buchungen/nachtragen:
-    post:
-      tags:
-      - Stempeln
-      operationId: gehenNachtragen
-      summary: Vergessenes Gehen nachtragen (gekennzeichnet)
-      security:
-      - ident:
-        - time:stempeln
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Nachtrag'
-      responses:
-        '201':
-          description: Ergebnis.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-  /v1/tage/{datum}:
-    parameters:
-    - name: datum
-      in: path
-      required: true
-      schema:
-        type: string
-    get:
-      tags:
-      - Verlauf
-      operationId: tagLesen
-      summary: Tageswerte und Buchungen
-      security:
-      - ident:
-        - time:lesen
-      parameters:
-      - name: personId
-        in: query
-        required: false
-        description: nur mit time:visum
-        schema:
-          type: string
-          format: uuid
-      responses:
-        '200':
-          description: Ergebnis.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Tag'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-  /v1/verlauf:
-    get:
-      tags:
-      - Verlauf
-      operationId: verlaufLesen
-      summary: Woche bzw. letzte 14 Tage (Zeiten, Ist, Saldo)
-      security:
-      - ident:
-        - time:lesen
-      parameters:
-      - name: von
-        in: query
-        required: false
-        description: ''
-        schema:
-          type: string
-          format: date
-      - name: bis
-        in: query
-        required: false
-        description: ''
-        schema:
-          type: string
-          format: date
-      - name: personId
-        in: query
-        required: false
-        description: nur mit time:visum
-        schema:
-          type: string
-          format: uuid
-      responses:
-        '200':
-          description: Ergebnis.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Verlauf'
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-  /v1/korrekturen/{id}/entscheiden:
-    parameters:
-    - $ref: '#/components/parameters/Id'
-    post:
-      tags:
-      - Korrekturen
-      operationId: korrekturEntscheiden
-      summary: Korrektur bestätigen oder ablehnen
-      security:
-      - ident:
-        - time:visum
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Entscheid'
-      responses:
-        '200':
-          description: Ergebnis.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Korrektur'
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-  /v1/abwesenheiten/{id}/entscheiden:
-    parameters:
-    - $ref: '#/components/parameters/Id'
-    post:
-      tags:
-      - Abwesenheiten
-      operationId: abwesenheitEntscheiden
-      summary: Abwesenheit bewilligen oder ablehnen
-      security:
-      - ident:
-        - time:visum
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Entscheid'
-      responses:
-        '200':
-          description: Ergebnis.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Abwesenheit'
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-  /v1/monate/{monat}:
-    parameters:
-    - name: monat
-      in: path
-      required: true
-      schema:
-        type: string
-    get:
-      tags:
-      - Monat
-      operationId: monatLesen
-      summary: Monatsübersicht mit Saldo und Ferien
-      security:
-      - ident:
-        - time:lesen
-      parameters:
-      - name: personId
-        in: query
-        required: false
-        description: ''
-        schema:
-          type: string
-          format: uuid
-      responses:
-        '200':
-          description: Ergebnis.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Monat'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-  /v1/monate/{monat}/einreichen:
-    parameters:
-    - name: monat
-      in: path
-      required: true
-      schema:
-        type: string
-    post:
-      tags:
-      - Monat
-      operationId: monatEinreichen
-      summary: Monat einreichen (Werte werden eingefroren)
-      security:
-      - ident:
-        - time:antrag
-      responses:
-        '200':
-          description: Ergebnis.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Monat'
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-  /v1/monate/{monat}/visieren:
-    parameters:
-    - name: monat
-      in: path
-      required: true
-      schema:
-        type: string
-    post:
-      tags:
-      - Monat
-      operationId: monatVisieren
-      summary: Monat visieren oder zurückweisen (optional mit EduKSX-Sign)
-      security:
-      - ident:
-        - time:visum
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              description: Visum.
-              properties:
-                personId:
-                  type: string
-                  format: uuid
-                bestaetigt:
-                  type: boolean
-                bemerkung:
-                  type:
-                  - string
-                  - 'null'
-                mitSignatur:
-                  type: boolean
-              required:
-              - personId
-              - bestaetigt
-      responses:
-        '200':
-          description: Ergebnis.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Monat'
-        '400':
-          $ref: '#/components/responses/Ungueltig'
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-        '404':
-          $ref: '#/components/responses/NichtGefunden'
-        '409':
-          $ref: '#/components/responses/Konflikt'
-  /v1/team:
-    get:
-      tags:
-      - Monat
-      operationId: teamUebersicht
-      summary: 'Team: Status, offene Anträge, Monate zum Visieren'
-      security:
-      - ident:
-        - time:visum
-      parameters:
-      - name: monat
-        in: query
-        required: false
-        description: ''
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Liste.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  daten:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Monat'
-                  seite:
-                    type: integer
-                  anzahl:
-                    type: integer
-                  total:
-                    type: integer
-                required:
-                - daten
-                - seite
-                - anzahl
-                - total
-        '401':
-          $ref: '#/components/responses/NichtAngemeldet'
-        '403':
-          $ref: '#/components/responses/KeinRecht'
-components:
-  securitySchemes:
-    ident:
-      type: oauth2
-      description: Anmeldung über EduKSX-Ident (OpenID Connect).
-      flows:
-        authorizationCode:
-          authorizationUrl: https://ident.eduksx.ch/oauth2/authorize
-          tokenUrl: https://ident.eduksx.ch/oauth2/token
-          scopes:
-            time:lesen: Eigene Zeiten lesen
-            time:stempeln: Eigene Buchungen erfassen, rückgängig machen, nachtragen
-            time:antrag: Abwesenheiten und Korrekturen beantragen, Monat einreichen
-            time:visum: Zeiten des Teams lesen, Anträge entscheiden, Monat visieren (Schulleitung)
-            time:admin: Regeln, Buchungs- und Abwesenheitsarten, Arbeitsmodelle (Schulverwaltung)
-  parameters:
-    Id:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
-    Seite:
-      name: seite
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-    Anzahl:
-      name: anzahl
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 200
-        default: 50
-    IfMatch:
-      name: If-Match
-      in: header
-      required: true
-      description: ETag des gelesenen Stands (optimistisches Sperren).
-      schema:
-        type: string
-    Mandant:
-      name: EduKSX-Mandant
-      in: header
-      required: false
-      description: Nur für Personen mit mehreren Mandanten; sonst aus dem Token.
-      schema:
-        type: string
-        format: uuid
-  responses:
-    Ungueltig:
-      description: Eingabe ungültig oder Prüfregel verletzt.
-      content: &id008
-        application/problem+json:
-          schema:
-            $ref: '#/components/schemas/Problem'
-    NichtAngemeldet:
-      description: Kein oder ungültiges Token.
-      content: *id008
-    KeinRecht:
-      description: Rolle oder Scope reicht nicht.
-      content: *id008
-    NichtGefunden:
-      description: Nicht vorhanden oder nicht im Mandanten.
-      content: *id008
-    Konflikt:
-      description: Fachlicher Konflikt (z. B. Zustand erlaubt die Aktion nicht).
-      content: *id008
-    VersionVeraltet:
-      description: If-Match passt nicht zum aktuellen Stand.
-      content: *id008
-  schemas:
-    Problem:
-      type: object
-      description: Fehler nach RFC 9457 (application/problem+json).
-      properties:
-        type:
-          type: string
-          format: uri
-        title:
-          type: string
-        status:
-          type: integer
-        detail:
-          type: string
-        instance:
-          type: string
-        fehler:
-          type: array
-          description: Verletzte Prüfregeln bzw. ungültige Felder.
-          items:
-            type: object
-            properties:
-              feld:
-                type: string
-              regel:
-                type: string
-              text:
-                type: string
-      required:
-      - title
-      - status
-    Protokoll:
-      type: object
-      description: Protokollfelder jedes Datensatzes (nur lesbar).
-      properties:
-        erstelltAm:
-          type: string
-          format: date-time
-          readOnly: true
-        erstelltVon:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        geaendertAm:
-          type: string
-          format: date-time
-          readOnly: true
-        geaendertVon:
-          type:
-          - string
-          - 'null'
-          readOnly: true
-        version:
-          type: integer
-          readOnly: true
-    Status:
-      type: object
-      description: Aktueller Zustand für die Startseite.
-      properties:
-        zustand:
-          type: string
-          enum:
-          - aus
-          - ein
-          - pause
-          - vergessen
-          description: vergessen = offene Buchung von einem früheren Tag
-        seit:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        art:
-          type:
-          - string
-          - 'null'
-        person:
-          $ref: '#/components/schemas/PersonKurz'
-          description: Name, Funktion, Pensum
-        heute:
-          $ref: '#/components/schemas/Tag'
-        rueckgaengigBis:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: letzte Buchung bis dahin rückgängig
-        sollErreichtUm:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: voraussichtlich, inkl. gesetzlicher Pause
-    PersonKurz:
-      type: object
-      description: Person.
-      properties:
-        name:
-          type: string
-        funktion:
-          type:
-          - string
-          - 'null'
-        pensum:
-          type: number
-    Buchung:
-      type: object
-      description: Stempelbuchung.
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: vom Gerät erzeugt; erneutes Senden derselben ID ist wirkungslos (idempotent)
-        typ:
-          type: string
-          enum:
-          - kommen
-          - pause_beginn
-          - pause_ende
-          - gehen
-        zeit:
-          type: string
-          format: date-time
-        art:
-          type: string
-        nachgetragen:
-          type: boolean
-        offlineErfasst:
-          type: boolean
-        erfasstAm:
-          type: string
-          format: date-time
-        empfangenAm:
-          type: string
-          format: date-time
-          readOnly: true
-        storniertAm:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          readOnly: true
-        bemerkung:
-          type:
-          - string
-          - 'null'
-      required:
-      - id
-      - typ
-      - zeit
-      - art
-      - erfasstAm
-    Tag:
-      type: object
-      description: Tageswerte (berechnet).
-      properties:
-        tag:
-          type: string
-          format: date
-        sollMin:
-          type: integer
-        istMin:
-          type: integer
-        saldoMin:
-          type: integer
-        pauseMin:
-          type: integer
-        gesetzlichePauseMin:
-          type: integer
-        offen:
-          type: boolean
-        buchungen:
-          type: array
-          items:
-            $ref: '#/components/schemas/Buchung'
-        abwesenheit:
-          type:
-          - string
-          - 'null'
-    Verlauf:
-      type: object
-      description: Zeitraum mit Tageswerten.
-      properties:
-        von:
-          type: string
-          format: date
-        bis:
-          type: string
-          format: date
-        tage:
-          type: array
-          items:
-            $ref: '#/components/schemas/Tag'
-        sollMin:
-          type: integer
-        istMin:
-          type: integer
-        saldoMin:
-          type: integer
-    Uebertragung:
-      type: object
-      description: Mehrere offline erfasste Buchungen auf einmal übertragen.
-      properties:
-        buchungen:
-          type: array
-          items:
-            $ref: '#/components/schemas/Buchung'
-      required:
-      - buchungen
-    UebertragungErgebnis:
-      type: object
-      description: Ergebnis der Übertragung.
-      properties:
-        angenommen:
-          type: array
-          items:
-            type: string
-            format: uuid
-        bereitsVorhanden:
-          type: array
-          items:
-            type: string
-            format: uuid
-        abgelehnt:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-          description: '{id, grund}'
-    Nachtrag:
-      type: object
-      description: Vergessenes Gehen nachtragen.
-      properties:
-        id:
-          type: string
-          format: uuid
-        zeit:
-          type: string
-          format: date-time
-        bemerkung:
-          type:
-          - string
-          - 'null'
-      required:
-      - id
-      - zeit
-    Abwesenheit:
-      type: object
-      description: Abwesenheit (Ausbau).
-      properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
-        personId:
-          type: string
-          format: uuid
-          readOnly: true
-        art:
-          type: string
-        von:
-          type: string
-          format: date
-        bis:
-          type: string
-          format: date
-        halbtag:
-          type:
-          - string
-          - 'null'
-          enum:
-          - vormittag
-          - nachmittag
-        status:
-          type: string
-          enum:
-          - beantragt
-          - bewilligt
-          - abgelehnt
-          - erfasst
-          readOnly: true
-        bemerkung:
-          type:
-          - string
-          - 'null'
-          description: keine Diagnosen
-      required:
-      - art
-      - von
-      - bis
-    Korrektur:
-      type: object
-      description: Korrekturantrag (Ausbau).
-      properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
-        personId:
-          type: string
-          format: uuid
-          readOnly: true
-        tag:
-          type: string
-          format: date
-        buchungId:
-          type:
-          - string
-          - 'null'
-          format: uuid
-        neuTyp:
-          type:
-          - string
-          - 'null'
-          enum:
-          - kommen
-          - pause_beginn
-          - pause_ende
-          - gehen
-        neuZeit:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        loeschen:
-          type: boolean
-        begruendung:
-          type: string
-        status:
-          type: string
-          enum:
-          - beantragt
-          - bestaetigt
-          - abgelehnt
-          readOnly: true
-      required:
-      - tag
-      - begruendung
-    Entscheid:
-      type: object
-      description: Entscheid über einen Antrag.
-      properties:
-        bestaetigt:
-          type: boolean
-        bemerkung:
-          type:
-          - string
-          - 'null'
-      required:
-      - bestaetigt
-    Monat:
-      type: object
-      description: Monatsabschluss (Ausbau).
-      properties:
-        monat:
-          type: string
-          description: JJJJ-MM
-        personId:
-          type: string
-          format: uuid
-        sollMin:
-          type: integer
-        istMin:
-          type: integer
-        abwesendMin:
-          type: integer
-        saldoMonatMin:
-          type: integer
-        saldoVortragMin:
-          type: integer
-        saldoTotalMin:
-          type: integer
-        ferienBezogenTage:
-          type: number
-        ferienRestTage:
-          type:
-          - number
-          - 'null'
-        status:
-          type: string
-          enum:
-          - offen
-          - eingereicht
-          - visiert
-          - zurueckgewiesen
-        eingereichtAm:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        visiertAm:
-          type:
-          - string
-          - 'null'
-          format: date-time
-        visiertVon:
-          type:
-          - string
-          - 'null'
-        signProzess:
-          type:
-          - string
-          - 'null'
-    Regel:
-      type: object
-      description: Arbeitszeitregel.
-      properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
-        gueltigAb:
-          type: string
-          format: date
-        soll100Min:
-          type: integer
-        pauseAbMin:
-          type: integer
-        pauseDauerMin:
-          type: integer
-        pauseStufen:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-        rueckgaengigSek:
-          type: integer
-        maxNachtragTage:
-          type: integer
-        homeofficeErlaubt:
-          type: boolean
-      required:
-      - gueltigAb
-      - soll100Min
-    Buchungsart:
-      type: object
-      description: Buchungsart.
-      properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
-        schluessel:
-          type: string
-        name:
-          type: string
-        zeichen:
-          type:
-          - string
-          - 'null'
-        zaehltAlsArbeitszeit:
-          type: boolean
-        aktiv:
-          type: boolean
-      required:
-      - schluessel
-      - name
-    Arbeitsmodell:
-      type: object
-      description: Arbeitsmodell einer Person.
-      properties:
-        id:
-          type: string
-          format: uuid
-          readOnly: true
-        personId:
-          type: string
-          format: uuid
-        gueltigAb:
-          type: string
-          format: date
-        gueltigBis:
-          type:
-          - string
-          - 'null'
-          format: date
-        pensum:
-          type: number
-        funktion:
-          type:
-          - string
-          - 'null'
-        arbeitstage:
-          type: array
-          items:
-            type: integer
-        sollJeTagMin:
-          type:
-          - integer
-          - 'null'
-        quelle:
-          type: string
-          enum:
-          - manuell
-          - staffing
-      required:
-      - personId
-      - gueltigAb
-      - pensum
-    MonatEreignis:
-      type: object
-      description: 'Ereignis: Monat eingereicht oder visiert.'
-      properties:
-        personId:
-          type: string
-          format: uuid
-        monat:
-          type: string
-        status:
-          type: string
-        saldoTotalMin:
-          type: integer
-    AbwesenheitVoll: *id002
-    KorrekturVoll: *id004
-    RegelVoll: *id005
-    BuchungsartVoll: *id006
-    ArbeitsmodellVoll: *id007
-webhooks:
-  monatGeaendert:
-    post:
-      summary: Monat eingereicht oder visiert (für Lohn/Personal über EduKSX-Connect, Flow).
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/MonatEreignis'
-      responses:
-        '204':
-          description: Empfangen.
+# EduKSX-Time – OpenAPI 3.1 (JSON-Schreibweise, gültiges YAML)
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "EduKSX-Time",
+    "version": "0.1.0",
+    "description": "Zeiterfassung: Stempeln (Kommen, Pause, Gehen) mit Buchungsart, Soll aus dem Pensum, Ist und Saldo mit gesetzlicher Pause, Rückgängig, Nachtragen und Offline-Übertragung (idempotent über die Buchungs-ID). Ausbau: Abwesenheiten, Korrekturen, Monatsabschluss mit Visum.",
+    "x-eduksx-module": "time",
+    "x-eduksx-api-standard": "1.2",
+    "license": {
+      "name": "Entwurf – Lizenz des Modul-Repositorys",
+      "identifier": "LicenseRef-EduKSX-Entwurf"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{instanz}.eduksx.ch",
+      "description": "eigener Host je Modul bzw. Instanz",
+      "variables": {
+        "instanz": {
+          "default": "time",
+          "description": "Host des Moduls"
+        }
+      }
+    }
+  ],
+  "tags": [
+    {
+      "name": "bookings",
+      "x-displayName": "Stempeln",
+      "description": "Stempeln"
+    },
+    {
+      "name": "days",
+      "x-displayName": "Tage und Verlauf",
+      "description": "Tage und Verlauf"
+    },
+    {
+      "name": "absences",
+      "x-displayName": "Abwesenheiten",
+      "description": "Abwesenheiten"
+    },
+    {
+      "name": "booking-corrections",
+      "x-displayName": "Korrekturen",
+      "description": "Korrekturen"
+    },
+    {
+      "name": "month-closings",
+      "x-displayName": "Monatsabschluss und Visum",
+      "description": "Monatsabschluss und Visum"
+    },
+    {
+      "name": "working-time-rules",
+      "x-displayName": "Arbeitszeitregeln",
+      "description": "Arbeitszeitregeln"
+    },
+    {
+      "name": "booking-types",
+      "x-displayName": "Buchungsarten",
+      "description": "Buchungsarten"
+    },
+    {
+      "name": "work-schedules",
+      "x-displayName": "Arbeitsmodelle",
+      "description": "Arbeitsmodelle"
+    }
+  ],
+  "paths": {
+    "/api/v1/me/absences": {
+      "get": {
+        "tags": [
+          "absences"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "sensitive"
+        ],
+        "x-eduksx-purpose": "Antrag der Person, bewilligt von der Schulleitung; Soll und Ferienguthaben",
+        "operationId": "listMyAbsences",
+        "summary": "Abwesenheiten auflisten",
+        "description": "Liste der Abwesenheiten (Cursor). Antrag der Person, bewilligt von der Schulleitung; Soll und Ferienguthaben",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:absences.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "absences.read",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Bewilligung",
+            "schema": {
+              "type": "string",
+              "x-extensible-enum": [
+                "requested",
+                "approved",
+                "rejected",
+                "recorded"
+              ],
+              "x-eduksx-labels": {
+                "requested": "beantragt",
+                "approved": "bewilligt",
+                "rejected": "abgelehnt",
+                "recorded": "erfasst"
+              },
+              "title": "Status"
+            },
+            "example": "requested"
+          },
+          {
+            "name": "valid_from",
+            "in": "query",
+            "required": false,
+            "description": "erster Tag",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Von"
+            },
+            "example": "2027-08-23"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Abwesenheiten",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Absence"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "absences"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "sensitive"
+        ],
+        "x-eduksx-purpose": "Antrag der Person, bewilligt von der Schulleitung; Soll und Ferienguthaben",
+        "operationId": "createMyAbsence",
+        "summary": "Abwesenheit anlegen",
+        "description": "Legt eine Abwesenheit an.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:absences.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "absences.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Absence"
+              },
+              "example": {
+                "absence_type_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "valid_from": "2027-08-23",
+                "valid_until": "2027-08-23",
+                "half_day": "morning",
+                "remark": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Absence"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/me/absences/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "absences"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "sensitive"
+        ],
+        "x-eduksx-purpose": "Antrag der Person, bewilligt von der Schulleitung; Soll und Ferienguthaben",
+        "operationId": "getMyAbsence",
+        "summary": "Abwesenheit lesen",
+        "description": "Abwesenheit mit allen Feldern der Positivliste.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:absences.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "absences.read",
+        "responses": {
+          "200": {
+            "description": "Abwesenheit",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Absence"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "absences"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "sensitive"
+        ],
+        "x-eduksx-purpose": "Antrag der Person, bewilligt von der Schulleitung; Soll und Ferienguthaben",
+        "operationId": "updateMyAbsence",
+        "summary": "Abwesenheit ändern",
+        "description": "JSON Merge Patch; fehlendes Feld = unverändert.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:absences.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "absences.write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Absence"
+              },
+              "example": {
+                "absence_type_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "valid_from": "2027-08-23"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Absence"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "absences"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "sensitive"
+        ],
+        "x-eduksx-purpose": "Antrag der Person, bewilligt von der Schulleitung; Soll und Ferienguthaben",
+        "operationId": "deleteMyAbsence",
+        "summary": "Abwesenheit löschen",
+        "description": "In den Papierkorb (wiederherstellbar während der Frist).",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:absences.delete"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "absences.delete",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Gelöscht"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      }
+    },
+    "/api/v1/me/booking-corrections": {
+      "get": {
+        "tags": [
+          "booking-corrections"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "personal"
+        ],
+        "x-eduksx-purpose": "Antrag der Person mit Begründung, Bestätigung durch die vorgesetzte Person",
+        "operationId": "listMyBookingCorrections",
+        "summary": "Korrekturanträge auflisten",
+        "description": "Liste der Korrekturanträge (Cursor). Antrag der Person mit Begründung, Bestätigung durch die vorgesetzte Person",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:booking-corrections.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "booking-corrections.read",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Entscheid",
+            "schema": {
+              "type": "string",
+              "x-extensible-enum": [
+                "requested",
+                "confirmed",
+                "rejected"
+              ],
+              "x-eduksx-labels": {
+                "requested": "beantragt",
+                "confirmed": "bestätigt",
+                "rejected": "abgelehnt"
+              },
+              "title": "Status"
+            },
+            "example": "requested"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Korrekturanträge",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BookingCorrection"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "booking-corrections"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "personal"
+        ],
+        "x-eduksx-purpose": "Antrag der Person mit Begründung, Bestätigung durch die vorgesetzte Person",
+        "operationId": "createMyBookingCorrection",
+        "summary": "Korrekturantrag anlegen",
+        "description": "Legt einen Korrekturantrag an.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:booking-corrections.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "booking-corrections.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingCorrection"
+              },
+              "example": {
+                "work_on": "2027-08-23",
+                "booking_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "new_booking_kind": "clock_in",
+                "new_booked_at": "2027-08-23T07:30:00Z",
+                "is_deletion": false,
+                "reason": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BookingCorrection"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/me/booking-corrections/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "booking-corrections"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "personal"
+        ],
+        "x-eduksx-purpose": "Antrag der Person mit Begründung, Bestätigung durch die vorgesetzte Person",
+        "operationId": "getMyBookingCorrection",
+        "summary": "Korrekturantrag lesen",
+        "description": "Korrekturantrag mit allen Feldern der Positivliste.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:booking-corrections.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "booking-corrections.read",
+        "responses": {
+          "200": {
+            "description": "Korrekturantrag",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BookingCorrection"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/org/working-time-rules": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "get": {
+        "tags": [
+          "working-time-rules"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Personalrecht der Gemeinde (zu prüfen); Sollzeit, gesetzliche Pause, Rückgängig, Nachtragen",
+        "operationId": "listWorkingTimeRules",
+        "summary": "Arbeitszeitregeln auflisten",
+        "description": "Liste der Arbeitszeitregeln (Cursor). Personalrecht der Gemeinde (zu prüfen); Sollzeit, gesetzliche Pause, Rückgängig, Nachtragen",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:working-time-rules.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "working-time-rules.read",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arbeitszeitregeln",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/WorkingTimeRule"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "working-time-rules"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Personalrecht der Gemeinde (zu prüfen); Sollzeit, gesetzliche Pause, Rückgängig, Nachtragen",
+        "operationId": "createWorkingTimeRule",
+        "summary": "Arbeitszeitregel anlegen",
+        "description": "Legt eine Arbeitszeitregel an.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:working-time-rules.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "working-time-rules.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkingTimeRule"
+              },
+              "example": {
+                "valid_from": "2027-08-23",
+                "daily_target_minutes": 1,
+                "break_after_minutes": 1,
+                "break_minutes": 1,
+                "break_steps": {},
+                "undo_seconds": 1,
+                "max_backdate_days": 1,
+                "is_home_office_allowed": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/WorkingTimeRule"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/working-time-rules/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "get": {
+        "tags": [
+          "working-time-rules"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Personalrecht der Gemeinde (zu prüfen); Sollzeit, gesetzliche Pause, Rückgängig, Nachtragen",
+        "operationId": "getWorkingTimeRule",
+        "summary": "Arbeitszeitregel lesen",
+        "description": "Arbeitszeitregel mit allen Feldern der Positivliste.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:working-time-rules.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "working-time-rules.read",
+        "responses": {
+          "200": {
+            "description": "Arbeitszeitregel",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/WorkingTimeRule"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/org/booking-types": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "get": {
+        "tags": [
+          "booking-types"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Auswahl vor dem Kommen",
+        "operationId": "listBookingTypes",
+        "summary": "Buchungsarten auflisten",
+        "description": "Liste der Buchungsarten (Cursor). Auswahl vor dem Kommen",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:booking-types.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "booking-types.read",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Buchungsarten",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BookingType"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "booking-types"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Auswahl vor dem Kommen",
+        "operationId": "createBookingType",
+        "summary": "Buchungsart anlegen",
+        "description": "Legt eine Buchungsart an.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:booking-types.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "booking-types.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingType"
+              },
+              "example": {
+                "type_key": "Beispiel",
+                "name": "Beispiel",
+                "symbol": "Beispiel",
+                "counts_as_working_time": false,
+                "is_active": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BookingType"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/booking-types/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "get": {
+        "tags": [
+          "booking-types"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Auswahl vor dem Kommen",
+        "operationId": "getBookingType",
+        "summary": "Buchungsart lesen",
+        "description": "Buchungsart mit allen Feldern der Positivliste.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:booking-types.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "booking-types.read",
+        "responses": {
+          "200": {
+            "description": "Buchungsart",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BookingType"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "booking-types"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Auswahl vor dem Kommen",
+        "operationId": "updateBookingType",
+        "summary": "Buchungsart ändern",
+        "description": "JSON Merge Patch; fehlendes Feld = unverändert.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:booking-types.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "booking-types.write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingType"
+              },
+              "example": {
+                "type_key": "Beispiel",
+                "name": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BookingType"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      }
+    },
+    "/api/v1/org/work-schedules": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "get": {
+        "tags": [
+          "work-schedules"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "personal"
+        ],
+        "x-eduksx-purpose": "aus dem freigegebenen Pensum in EduKSX-Staffing oder von Hand («Mehr» › Pensum); Soll je Tag",
+        "operationId": "listWorkSchedules",
+        "summary": "Arbeitsmodelle auflisten",
+        "description": "Liste der Arbeitsmodelle (Cursor). aus dem freigegebenen Pensum in EduKSX-Staffing oder von Hand («Mehr» › Pensum); Soll je Tag",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:work-schedules.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "work-schedules.read",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "description": "Mitarbeiterin bzw. Mitarbeiter",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Person"
+            },
+            "example": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arbeitsmodelle",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/WorkSchedule"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "work-schedules"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "personal"
+        ],
+        "x-eduksx-purpose": "aus dem freigegebenen Pensum in EduKSX-Staffing oder von Hand («Mehr» › Pensum); Soll je Tag",
+        "operationId": "createWorkSchedule",
+        "summary": "Arbeitsmodell anlegen",
+        "description": "Legt ein Arbeitsmodell an.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:work-schedules.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "work-schedules.write",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkSchedule"
+              },
+              "example": {
+                "user_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "valid_from": "2027-08-23",
+                "valid_until": "2027-08-23",
+                "workload_percent": "1.5",
+                "job_title": "Beispiel",
+                "workdays": [
+                  1
+                ],
+                "daily_target_minutes": 1,
+                "source": "manual",
+                "staffing_release_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/WorkSchedule"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/work-schedules/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "get": {
+        "tags": [
+          "work-schedules"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "personal"
+        ],
+        "x-eduksx-purpose": "aus dem freigegebenen Pensum in EduKSX-Staffing oder von Hand («Mehr» › Pensum); Soll je Tag",
+        "operationId": "getWorkSchedule",
+        "summary": "Arbeitsmodell lesen",
+        "description": "Arbeitsmodell mit allen Feldern der Positivliste.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:work-schedules.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "work-schedules.read",
+        "responses": {
+          "200": {
+            "description": "Arbeitsmodell",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/WorkSchedule"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "work-schedules"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "personal"
+        ],
+        "x-eduksx-purpose": "aus dem freigegebenen Pensum in EduKSX-Staffing oder von Hand («Mehr» › Pensum); Soll je Tag",
+        "operationId": "updateWorkSchedule",
+        "summary": "Arbeitsmodell ändern",
+        "description": "JSON Merge Patch; fehlendes Feld = unverändert.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:work-schedules.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "work-schedules.write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkSchedule"
+              },
+              "example": {
+                "user_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "valid_from": "2027-08-23"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/WorkSchedule"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      }
+    },
+    "/api/v1/me/status": {
+      "get": {
+        "tags": [
+          "bookings"
+        ],
+        "operationId": "getMyStatus",
+        "summary": "Aktueller Zustand, heute Ist, Soll und Saldo",
+        "description": "Aktueller Zustand, heute Ist, Soll und Saldo.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:bookings.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "bookings.read",
+        "x-eduksx-data-classes": [
+          "personal"
+        ],
+        "x-eduksx-purpose": "Aktueller Zustand, heute Ist, Soll und Saldo",
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Status"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/api/v1/me/bookings": {
+      "post": {
+        "tags": [
+          "bookings"
+        ],
+        "operationId": "createMyBooking",
+        "summary": "Stempeln (Kommen, Pause, Pause beenden, Gehen)",
+        "description": "Prüft Reihenfolge und Zeit; gleiche ID → keine zweite Buchung.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:bookings.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "bookings.write",
+        "x-eduksx-data-classes": [
+          "personal"
+        ],
+        "x-eduksx-purpose": "Stempeln (Kommen, Pause, Pause beenden, Gehen)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Booking"
+              },
+              "example": {
+                "id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "booking_kind": "clock_in",
+                "booked_at": "2027-08-23T07:30:00Z",
+                "booking_type_key": "Beispiel",
+                "is_offline": false,
+                "recorded_at": "2027-08-23T07:30:00Z",
+                "remark": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Status"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/me/bookings/batch": {
+      "post": {
+        "tags": [
+          "bookings"
+        ],
+        "operationId": "transferMyBookings",
+        "summary": "Offline erfasste Buchungen übertragen",
+        "description": "Offline erfasste Buchungen übertragen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:bookings.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "bookings.write",
+        "x-eduksx-data-classes": [
+          "personal"
+        ],
+        "x-eduksx-purpose": "Offline erfasste Buchungen übertragen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingBatch"
+              },
+              "example": {
+                "bookings": [
+                  "Beispiel"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BookingBatchResult"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/me/bookings/{id}/cancellation": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "post": {
+        "tags": [
+          "bookings"
+        ],
+        "operationId": "undoMyBooking",
+        "summary": "Letzte Buchung innerhalb der Frist rückgängig machen",
+        "description": "Letzte Buchung innerhalb der Frist rückgängig machen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:bookings.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "bookings.write",
+        "x-eduksx-data-classes": [
+          "personal"
+        ],
+        "x-eduksx-purpose": "Letzte Buchung innerhalb der Frist rückgängig machen",
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Status"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/me/bookings/clock-out-backdate": {
+      "post": {
+        "tags": [
+          "bookings"
+        ],
+        "operationId": "backdateMyClockOut",
+        "summary": "Vergessenes Gehen nachtragen",
+        "description": "Vergessenes Gehen nachtragen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:bookings.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "bookings.write",
+        "x-eduksx-data-classes": [
+          "personal"
+        ],
+        "x-eduksx-purpose": "Vergessenes Gehen nachtragen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClockOutBackdate"
+              },
+              "example": {
+                "id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "booked_at": "2027-08-23T07:30:00Z",
+                "remark": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Status"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/me/days/{date}": {
+      "parameters": [
+        {
+          "name": "date",
+          "in": "path",
+          "required": true,
+          "description": "Datum (ISO 8601)",
+          "schema": {
+            "type": "string",
+            "title": "Arbeitstag"
+          },
+          "example": "2027-08-23"
+        }
+      ],
+      "get": {
+        "tags": [
+          "days"
+        ],
+        "operationId": "getMyDay",
+        "summary": "Tageswerte und Buchungen",
+        "description": "Tageswerte und Buchungen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:days.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "days.read",
+        "x-eduksx-data-classes": [
+          "personal"
+        ],
+        "x-eduksx-purpose": "Tageswerte und Buchungen",
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Day"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/me/history": {
+      "get": {
+        "tags": [
+          "days"
+        ],
+        "operationId": "getMyHistory",
+        "summary": "Woche bzw. letzte 14 Tage",
+        "description": "Woche bzw. letzte 14 Tage.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:days.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "days.read",
+        "x-eduksx-data-classes": [
+          "personal"
+        ],
+        "x-eduksx-purpose": "Woche bzw. letzte 14 Tage",
+        "parameters": [
+          {
+            "name": "valid_from",
+            "in": "query",
+            "required": false,
+            "description": "Beginn",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Von"
+            },
+            "example": "2027-08-23"
+          },
+          {
+            "name": "valid_until",
+            "in": "query",
+            "required": false,
+            "description": "Ende",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Bis"
+            },
+            "example": "2027-08-23"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/History"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/me/month-closings/{month}": {
+      "parameters": [
+        {
+          "name": "month",
+          "in": "path",
+          "required": true,
+          "description": "JJJJ-MM",
+          "schema": {
+            "type": "string",
+            "title": "Monat"
+          },
+          "example": "2027-11"
+        }
+      ],
+      "get": {
+        "tags": [
+          "month-closings"
+        ],
+        "operationId": "getMyMonth",
+        "summary": "Monatsübersicht mit Saldo und Ferien",
+        "description": "Monatsübersicht mit Saldo und Ferien.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:month-closings.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "month-closings.read",
+        "x-eduksx-data-classes": [
+          "personal"
+        ],
+        "x-eduksx-purpose": "Monatsübersicht mit Saldo und Ferien",
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MonthClosing"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/me/month-closings/{month}/submission": {
+      "parameters": [
+        {
+          "name": "month",
+          "in": "path",
+          "required": true,
+          "description": "JJJJ-MM",
+          "schema": {
+            "type": "string",
+            "title": "Monat"
+          },
+          "example": "2027-11"
+        }
+      ],
+      "post": {
+        "tags": [
+          "month-closings"
+        ],
+        "operationId": "submitMyMonth",
+        "summary": "Monat einreichen",
+        "description": "Werte werden eingefroren.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:month-closings.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "month-closings.write",
+        "x-eduksx-data-classes": [
+          "personal"
+        ],
+        "x-eduksx-purpose": "Monat einreichen",
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MonthClosing"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/month-closings": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "get": {
+        "tags": [
+          "month-closings"
+        ],
+        "operationId": "listTeamMonths",
+        "summary": "Monate des Teams zum Visieren",
+        "description": "Monate des Teams zum Visieren.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:month-closings.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "month-closings.read",
+        "x-eduksx-data-classes": [
+          "personal"
+        ],
+        "x-eduksx-purpose": "Monate des Teams zum Visieren",
+        "parameters": [
+          {
+            "name": "month",
+            "in": "query",
+            "required": false,
+            "description": "JJJJ-MM",
+            "schema": {
+              "type": "string",
+              "title": "Monat"
+            },
+            "example": "Beispiel"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "z. B. submitted",
+            "schema": {
+              "type": "string",
+              "title": "Status"
+            },
+            "example": "Beispiel"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MonthClosing"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/month-closings/{month}/approval": {
+      "parameters": [
+        {
+          "name": "month",
+          "in": "path",
+          "required": true,
+          "description": "JJJJ-MM",
+          "schema": {
+            "type": "string",
+            "title": "Monat"
+          },
+          "example": "2027-11"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "post": {
+        "tags": [
+          "month-closings"
+        ],
+        "operationId": "approveMonth",
+        "summary": "Monat visieren oder zurückweisen",
+        "description": "Monat visieren oder zurückweisen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:month-closings.admin"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "month-closings.admin",
+        "x-eduksx-data-classes": [
+          "personal"
+        ],
+        "x-eduksx-purpose": "Monat visieren oder zurückweisen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MonthApproval"
+              },
+              "example": {
+                "user_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "is_approved": false,
+                "remark": "Beispiel",
+                "with_signature": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MonthClosing"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/booking-corrections/{id}/decision": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "post": {
+        "tags": [
+          "booking-corrections"
+        ],
+        "operationId": "decideBookingCorrection",
+        "summary": "Korrektur bestätigen oder ablehnen",
+        "description": "Korrektur bestätigen oder ablehnen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:booking-corrections.admin"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "booking-corrections.admin",
+        "x-eduksx-data-classes": [
+          "personal"
+        ],
+        "x-eduksx-purpose": "Korrektur bestätigen oder ablehnen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Decision"
+              },
+              "example": {
+                "is_approved": false,
+                "remark": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BookingCorrection"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/absences/{id}/decision": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "post": {
+        "tags": [
+          "absences"
+        ],
+        "operationId": "decideAbsence",
+        "summary": "Abwesenheit bewilligen oder ablehnen",
+        "description": "Abwesenheit bewilligen oder ablehnen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "time:absences.admin"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "absences.admin",
+        "x-eduksx-data-classes": [
+          "sensitive"
+        ],
+        "x-eduksx-purpose": "Abwesenheit bewilligen oder ablehnen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Decision"
+              },
+              "example": {
+                "is_approved": false,
+                "remark": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Absence"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "eduksx_ident": {
+        "type": "oauth2",
+        "description": "Anmeldung über EduKSX-Ident (OpenID Connect)",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://ident.eduksx.ch/oauth2/authorize",
+            "tokenUrl": "https://ident.eduksx.ch/oauth2/token",
+            "scopes": {
+              "time:absences.read": "Abwesenheiten – lesen",
+              "time:absences.write": "Abwesenheiten – schreiben",
+              "time:absences.delete": "Abwesenheiten – löschen",
+              "time:booking-corrections.read": "Korrekturen – lesen",
+              "time:booking-corrections.write": "Korrekturen – schreiben",
+              "time:working-time-rules.read": "Arbeitszeitregeln – lesen",
+              "time:working-time-rules.write": "Arbeitszeitregeln – schreiben",
+              "time:booking-types.read": "Buchungsarten – lesen",
+              "time:booking-types.write": "Buchungsarten – schreiben",
+              "time:work-schedules.read": "Arbeitsmodelle – lesen",
+              "time:work-schedules.write": "Arbeitsmodelle – schreiben",
+              "time:bookings.read": "Stempeln – lesen",
+              "time:bookings.write": "Stempeln – schreiben",
+              "time:days.read": "Tage und Verlauf – lesen",
+              "time:month-closings.read": "Monatsabschluss und Visum – lesen",
+              "time:month-closings.write": "Monatsabschluss und Visum – schreiben",
+              "time:month-closings.admin": "Monatsabschluss und Visum – verwalten",
+              "time:booking-corrections.admin": "Korrekturen – verwalten",
+              "time:absences.admin": "Abwesenheiten – verwalten"
+            }
+          },
+          "clientCredentials": {
+            "tokenUrl": "https://ident.eduksx.ch/oauth2/token",
+            "scopes": {
+              "time:absences.read": "Abwesenheiten – lesen",
+              "time:absences.write": "Abwesenheiten – schreiben",
+              "time:absences.delete": "Abwesenheiten – löschen",
+              "time:booking-corrections.read": "Korrekturen – lesen",
+              "time:booking-corrections.write": "Korrekturen – schreiben",
+              "time:working-time-rules.read": "Arbeitszeitregeln – lesen",
+              "time:working-time-rules.write": "Arbeitszeitregeln – schreiben",
+              "time:booking-types.read": "Buchungsarten – lesen",
+              "time:booking-types.write": "Buchungsarten – schreiben",
+              "time:work-schedules.read": "Arbeitsmodelle – lesen",
+              "time:work-schedules.write": "Arbeitsmodelle – schreiben",
+              "time:bookings.read": "Stempeln – lesen",
+              "time:bookings.write": "Stempeln – schreiben",
+              "time:days.read": "Tage und Verlauf – lesen",
+              "time:month-closings.read": "Monatsabschluss und Visum – lesen",
+              "time:month-closings.write": "Monatsabschluss und Visum – schreiben",
+              "time:month-closings.admin": "Monatsabschluss und Visum – verwalten",
+              "time:booking-corrections.admin": "Korrekturen – verwalten",
+              "time:absences.admin": "Abwesenheiten – verwalten"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "Id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "UUID v7 des Objekts",
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "title": "ID"
+        },
+        "example": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+      },
+      "Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "description": "aus meta.next_cursor der vorherigen Antwort",
+        "schema": {
+          "type": "string",
+          "title": "Cursor"
+        },
+        "example": "eyJpZCI6IjAxOTMifQ"
+      },
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "description": "Einträge je Abruf, Vorgabe 50, höchstens 200",
+        "schema": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50,
+          "title": "Anzahl"
+        },
+        "example": 50
+      },
+      "Sort": {
+        "name": "sort",
+        "in": "query",
+        "description": "Feldnamen, Minus = absteigend",
+        "schema": {
+          "type": "string",
+          "title": "Sortierung"
+        },
+        "example": "-updated_at"
+      },
+      "IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": true,
+        "description": "ETag des gelesenen Stands",
+        "schema": {
+          "type": "string",
+          "title": "ETag"
+        },
+        "example": "\"01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e.3\""
+      },
+      "Organization": {
+        "name": "EduKSX-Organization",
+        "in": "header",
+        "required": false,
+        "description": "gewählte Organisation, nur bei mehreren Mitgliedschaften",
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "title": "Organisation"
+        },
+        "example": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Anfrage nicht lesbar.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "Unauthenticated": {
+        "description": "Nicht angemeldet oder Token ungültig.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Kein Recht bzw. Scope.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Gibt es nicht oder darf nicht gesehen werden.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Konflikt mit dem Zustand (z. B. lock_version veraltet).",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "PreconditionFailed": {
+        "description": "If-Match passt nicht.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "ValidationFailed": {
+        "description": "Inhaltlich ungültig (Validierung, unbekannte Felder).",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "PreconditionRequired": {
+        "description": "If-Match fehlt.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Problem": {
+        "type": "object",
+        "title": "Fehler",
+        "description": "Fehler nach RFC 9457 (application/problem+json); title und detail in der gewählten Sprache.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri",
+            "title": "Typ",
+            "description": "https://docs.eduksx.ch/problems/<code>"
+          },
+          "title": {
+            "type": "string",
+            "title": "Titel",
+            "description": "kurze Beschreibung für Menschen"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Status",
+            "description": "HTTP-Statuscode"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Einzelheiten",
+            "description": "Erklärung für Menschen"
+          },
+          "code": {
+            "type": "string",
+            "title": "Fehlerschlüssel",
+            "description": "stabiler englischer Schlüssel, Teil des Vertrags"
+          },
+          "instance": {
+            "type": "string",
+            "title": "Pfad",
+            "description": "betroffene Ressource"
+          },
+          "request_id": {
+            "type": "string",
+            "title": "Anfrage-ID",
+            "description": "für den Support"
+          },
+          "errors": {
+            "type": "object",
+            "title": "Fehler je Feld",
+            "description": "Feldname → Meldungen",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code"
+        ]
+      },
+      "ListMeta": {
+        "type": "object",
+        "title": "Listenangaben",
+        "description": "Cursor für die nächste Seite",
+        "properties": {
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Nächster Cursor",
+            "description": "undurchsichtig; leer am Ende"
+          },
+          "has_more": {
+            "type": "boolean",
+            "title": "Weitere vorhanden",
+            "description": "true, wenn es weitere Einträge gibt"
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Anzahl",
+            "description": "Einträge je Abruf"
+          }
+        },
+        "required": [
+          "has_more"
+        ]
+      },
+      "Links": {
+        "type": "object",
+        "title": "Verweise",
+        "description": "Navigation in Listen",
+        "properties": {
+          "self": {
+            "type": "string",
+            "title": "Diese Seite",
+            "description": "Adresse dieser Seite"
+          },
+          "next": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Nächste Seite",
+            "description": "Adresse der nächsten Seite"
+          }
+        }
+      },
+      "Absence": {
+        "type": "object",
+        "title": "Abwesenheit",
+        "description": "Abwesenheit einer Person. Antrag der Person, bewilligt von der Schulleitung; Soll und Ferienguthaben",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "ID",
+            "description": "UUID v7, von der Anwendung vergeben",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Person",
+            "description": "abwesende Person",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "absence_type_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Art",
+            "description": "Kategorie, keine Diagnose",
+            "x-eduksx-data-class": "sensitive"
+          },
+          "valid_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Von",
+            "description": "erster Tag",
+            "x-eduksx-data-class": "sensitive"
+          },
+          "valid_until": {
+            "type": "string",
+            "format": "date",
+            "title": "Bis",
+            "description": "letzter Tag",
+            "x-eduksx-data-class": "sensitive"
+          },
+          "half_day": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "morning",
+              "afternoon"
+            ],
+            "x-eduksx-labels": {
+              "morning": "Vormittag",
+              "afternoon": "Nachmittag"
+            },
+            "title": "Halbtag",
+            "description": "nur Vor- oder Nachmittag",
+            "x-eduksx-data-class": "sensitive"
+          },
+          "half_day_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Halbtag (Text)",
+            "description": "deutsches Label zu «half_day» in der gewählten Sprache"
+          },
+          "status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "requested",
+              "approved",
+              "rejected",
+              "recorded"
+            ],
+            "x-eduksx-labels": {
+              "requested": "beantragt",
+              "approved": "bewilligt",
+              "rejected": "abgelehnt",
+              "recorded": "erfasst"
+            },
+            "title": "Status",
+            "description": "Bewilligung",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "status_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Status (Text)",
+            "description": "deutsches Label zu «status» in der gewählten Sprache"
+          },
+          "remark": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "ohne Diagnosen",
+            "x-eduksx-data-class": "sensitive"
+          },
+          "approved_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Bewilligt von",
+            "description": "Schulleitung (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erstellt am",
+            "description": "Zeitpunkt der Erfassung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erstellt von",
+            "description": "Person, die den Datensatz angelegt hat (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Geändert am",
+            "description": "Zeitpunkt der letzten Änderung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geändert von",
+            "description": "Person der letzten Änderung (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "lock_version": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Version",
+            "description": "optimistisches Sperren; ETag und If-Match",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          }
+        },
+        "required": [
+          "absence_type_id",
+          "valid_from",
+          "valid_until"
+        ]
+      },
+      "BookingCorrection": {
+        "type": "object",
+        "title": "Korrekturantrag",
+        "description": "Korrekturantrag zu einer Buchung. Antrag der Person mit Begründung, Bestätigung durch die vorgesetzte Person",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "ID",
+            "description": "UUID v7, von der Anwendung vergeben",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Person",
+            "description": "antragstellende Person",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "work_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Arbeitstag",
+            "description": "betroffener Tag",
+            "x-eduksx-data-class": "personal"
+          },
+          "booking_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Buchung",
+            "description": "Antrag der Person mit Begründung, Bestätigung durch die vorgesetzte Person",
+            "x-eduksx-data-class": "internal"
+          },
+          "new_booking_kind": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "clock_in",
+              "break_start",
+              "break_end",
+              "clock_out"
+            ],
+            "x-eduksx-labels": {
+              "clock_in": "Kommen",
+              "break_start": "Pause",
+              "break_end": "Pause beendet",
+              "clock_out": "Gehen"
+            },
+            "title": "Neue Buchung",
+            "description": "Art",
+            "x-eduksx-data-class": "personal"
+          },
+          "new_booking_kind_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Neue Buchung (Text)",
+            "description": "deutsches Label zu «new_booking_kind» in der gewählten Sprache"
+          },
+          "new_booked_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Neuer Zeitpunkt",
+            "description": "korrigierte Zeit",
+            "x-eduksx-data-class": "personal"
+          },
+          "is_deletion": {
+            "type": "boolean",
+            "title": "Löschen",
+            "description": "Buchung entfernen",
+            "x-eduksx-data-class": "personal"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Begründung",
+            "description": "Pflicht",
+            "x-eduksx-data-class": "personal"
+          },
+          "status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "requested",
+              "confirmed",
+              "rejected"
+            ],
+            "x-eduksx-labels": {
+              "requested": "beantragt",
+              "confirmed": "bestätigt",
+              "rejected": "abgelehnt"
+            },
+            "title": "Status",
+            "description": "Entscheid",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "status_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Status (Text)",
+            "description": "deutsches Label zu «status» in der gewählten Sprache"
+          },
+          "decided_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Entschieden von",
+            "description": "vorgesetzte Person (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "decided_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Entschieden am",
+            "description": "Zeitpunkt",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erstellt am",
+            "description": "Zeitpunkt der Erfassung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "lock_version": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Version",
+            "description": "optimistisches Sperren; ETag und If-Match",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          }
+        },
+        "required": [
+          "work_on",
+          "reason"
+        ]
+      },
+      "WorkingTimeRule": {
+        "type": "object",
+        "title": "Arbeitszeitregel",
+        "description": "Arbeitszeitregel der Organisation (gültig ab). Personalrecht der Gemeinde (zu prüfen); Sollzeit, gesetzliche Pause, Rückgängig, Nachtragen",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "ID",
+            "description": "UUID v7, von der Anwendung vergeben",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "valid_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Gültig ab",
+            "description": "Regel gilt für Tage ab diesem Datum",
+            "x-eduksx-data-class": "internal"
+          },
+          "daily_target_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Sollzeit je Arbeitstag (100 %)",
+            "description": "8:24 bei der 42-Stunden-Woche",
+            "x-eduksx-data-class": "internal"
+          },
+          "break_after_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Gesetzliche Pause ab",
+            "description": "nach 5 Stunden Arbeit",
+            "x-eduksx-data-class": "internal"
+          },
+          "break_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Gesetzliche Pause",
+            "description": "Dauer, zählt nicht als Arbeitszeit",
+            "x-eduksx-data-class": "internal"
+          },
+          "break_steps": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true,
+            "title": "Pausenstufen",
+            "description": "Alternative nach Arbeitsgesetz, z. B. ab 5,5 h 15 Min.",
+            "x-eduksx-data-class": "internal"
+          },
+          "undo_seconds": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Rückgängig (Sekunden)",
+            "description": "letzte Buchung zurücknehmen",
+            "x-eduksx-data-class": "internal"
+          },
+          "max_backdate_days": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Nachtragen höchstens (Tage)",
+            "description": "offline und vergessenes Gehen",
+            "x-eduksx-data-class": "internal"
+          },
+          "is_home_office_allowed": {
+            "type": "boolean",
+            "title": "Homeoffice erlaubt",
+            "description": "Buchungsart anbieten",
+            "x-eduksx-data-class": "internal"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erstellt am",
+            "description": "Zeitpunkt der Erfassung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erstellt von",
+            "description": "Person, die den Datensatz angelegt hat (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Geändert am",
+            "description": "Zeitpunkt der letzten Änderung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geändert von",
+            "description": "Person der letzten Änderung (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "lock_version": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Version",
+            "description": "optimistisches Sperren; ETag und If-Match",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          }
+        },
+        "required": [
+          "valid_from"
+        ]
+      },
+      "BookingType": {
+        "type": "object",
+        "title": "Buchungsart",
+        "description": "Buchungsart (Arbeitszeit, Homeoffice). Auswahl vor dem Kommen",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "ID",
+            "description": "UUID v7, von der Anwendung vergeben",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "type_key": {
+            "type": "string",
+            "title": "Schlüssel",
+            "description": "z. B. «home_office»",
+            "x-eduksx-data-class": "internal"
+          },
+          "name": {
+            "type": "string",
+            "title": "Buchungsart",
+            "description": "Anzeige",
+            "x-eduksx-data-class": "internal"
+          },
+          "symbol": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Zeichen",
+            "description": "Anzeige in der Tagesliste",
+            "x-eduksx-data-class": "internal"
+          },
+          "counts_as_working_time": {
+            "type": "boolean",
+            "title": "Zählt als Arbeitszeit",
+            "description": "Ist",
+            "x-eduksx-data-class": "internal"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Aktiv",
+            "description": "in der Auswahl",
+            "x-eduksx-data-class": "internal"
+          }
+        },
+        "required": [
+          "type_key",
+          "name"
+        ]
+      },
+      "WorkSchedule": {
+        "type": "object",
+        "title": "Arbeitsmodell",
+        "description": "Arbeitsmodell einer Person (Pensum, Arbeitstage). aus dem freigegebenen Pensum in EduKSX-Staffing oder von Hand («Mehr» › Pensum); Soll je Tag",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "ID",
+            "description": "UUID v7, von der Anwendung vergeben",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Person",
+            "description": "Mitarbeiterin bzw. Mitarbeiter",
+            "x-eduksx-data-class": "internal"
+          },
+          "valid_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Gültig ab",
+            "description": "Beginn",
+            "x-eduksx-data-class": "personal"
+          },
+          "valid_until": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "title": "Gültig bis",
+            "description": "aus dem freigegebenen Pensum in EduKSX-Staffing oder von Hand («Mehr» › Pensum); Soll je Tag",
+            "x-eduksx-data-class": "personal"
+          },
+          "workload_percent": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d+(\\.\\d{1,4})?$",
+            "title": "Pensum",
+            "description": "in Prozent",
+            "x-eduksx-data-class": "personal"
+          },
+          "job_title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Funktion",
+            "description": "Anzeige im Kopf",
+            "x-eduksx-data-class": "personal"
+          },
+          "workdays": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "title": "Arbeitstage",
+            "description": "aus dem freigegebenen Pensum in EduKSX-Staffing oder von Hand («Mehr» › Pensum); Soll je Tag",
+            "x-eduksx-data-class": "personal"
+          },
+          "daily_target_minutes": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "title": "Sollzeit je Tag",
+            "description": "abweichend; leer = Regel × Pensum",
+            "x-eduksx-data-class": "personal"
+          },
+          "source": {
+            "type": "string",
+            "x-extensible-enum": [
+              "manual",
+              "staffing"
+            ],
+            "x-eduksx-labels": {
+              "manual": "von Hand",
+              "staffing": "aus EduKSX-Staffing"
+            },
+            "title": "Herkunft",
+            "description": "woher das Pensum stammt",
+            "x-eduksx-data-class": "internal"
+          },
+          "source_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Herkunft (Text)",
+            "description": "deutsches Label zu «source» in der gewählten Sprache"
+          },
+          "staffing_release_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Freigabe in Staffing",
+            "description": "Verweis (ohne Constraint)",
+            "x-eduksx-data-class": "internal"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erstellt am",
+            "description": "Zeitpunkt der Erfassung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erstellt von",
+            "description": "Person, die den Datensatz angelegt hat (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Geändert am",
+            "description": "Zeitpunkt der letzten Änderung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geändert von",
+            "description": "Person der letzten Änderung (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "lock_version": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Version",
+            "description": "optimistisches Sperren; ETag und If-Match",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          }
+        },
+        "required": [
+          "user_id",
+          "valid_from",
+          "workload_percent"
+        ]
+      },
+      "Status": {
+        "type": "object",
+        "title": "Status",
+        "description": "aktueller Zustand für die Startseite",
+        "properties": {
+          "state": {
+            "type": "string",
+            "x-extensible-enum": [
+              "out",
+              "in",
+              "on_break",
+              "forgotten"
+            ],
+            "x-eduksx-labels": {
+              "out": "ausgestempelt",
+              "in": "eingestempelt",
+              "on_break": "Pause",
+              "forgotten": "Gehen vergessen"
+            },
+            "title": "Zustand",
+            "description": "aus der letzten Buchung"
+          },
+          "since": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Seit",
+            "description": "letzte Buchung"
+          },
+          "booking_type_key": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Buchungsart",
+            "description": "aktuell"
+          },
+          "person": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PersonSummary"
+              }
+            ],
+            "title": "Person",
+            "description": "Name, Funktion, Pensum"
+          },
+          "today": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Day"
+              }
+            ],
+            "title": "Heute",
+            "description": "Tageswerte"
+          },
+          "undo_until": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Rückgängig bis",
+            "description": "letzte Buchung zurücknehmen"
+          },
+          "target_reached_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Soll erreicht um",
+            "description": "voraussichtlich, inkl. gesetzlicher Pause"
+          }
+        }
+      },
+      "PersonSummary": {
+        "type": "object",
+        "title": "Person",
+        "description": "Kopf der App",
+        "properties": {
+          "display_name": {
+            "type": "string",
+            "title": "Name",
+            "description": "aus der Personenreferenz"
+          },
+          "job_title": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Funktion",
+            "description": "Arbeitsmodell"
+          },
+          "workload_percent": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d+(\\.\\d{1,4})?$",
+            "title": "Pensum",
+            "description": "in Prozent"
+          }
+        }
+      },
+      "Booking": {
+        "type": "object",
+        "title": "Buchung",
+        "description": "Stempelbuchung; die ID erzeugt das Gerät, erneutes Senden ist wirkungslos",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "ID",
+            "description": "vom Gerät erzeugt (UUID)"
+          },
+          "booking_kind": {
+            "type": "string",
+            "x-extensible-enum": [
+              "clock_in",
+              "break_start",
+              "break_end",
+              "clock_out"
+            ],
+            "x-eduksx-labels": {
+              "clock_in": "Kommen",
+              "break_start": "Pause",
+              "break_end": "Pause beendet",
+              "clock_out": "Gehen"
+            },
+            "title": "Buchung",
+            "description": "Stempeltaste"
+          },
+          "booked_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Zeitpunkt",
+            "description": "Zeit der Buchung"
+          },
+          "booking_type_key": {
+            "type": "string",
+            "title": "Buchungsart",
+            "description": "z. B. «home_office»"
+          },
+          "is_backdated": {
+            "type": "boolean",
+            "title": "Nachgetragen",
+            "description": "vergessenes Gehen",
+            "readOnly": true
+          },
+          "is_offline": {
+            "type": "boolean",
+            "title": "Offline erfasst",
+            "description": "ohne Verbindung"
+          },
+          "recorded_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erfasst am (Gerät)",
+            "description": "Zeit auf dem Gerät"
+          },
+          "received_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Übertragen am",
+            "description": "Eingang auf dem Server",
+            "readOnly": true
+          },
+          "cancelled_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Storniert am",
+            "description": "rückgängig gemacht",
+            "readOnly": true
+          },
+          "remark": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "Freitext"
+          }
+        },
+        "required": [
+          "id",
+          "booking_kind",
+          "booked_at",
+          "booking_type_key",
+          "recorded_at"
+        ]
+      },
+      "Day": {
+        "type": "object",
+        "title": "Tag",
+        "description": "Tageswerte (berechnet)",
+        "properties": {
+          "work_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Arbeitstag",
+            "description": "Datum"
+          },
+          "target_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Soll (Minuten)",
+            "description": "aus dem Arbeitsmodell"
+          },
+          "actual_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Ist (Minuten)",
+            "description": "ohne gesetzliche Pause"
+          },
+          "balance_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Saldo (Minuten)",
+            "description": "Ist minus Soll"
+          },
+          "break_taken_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Pausen (Minuten)",
+            "description": "gestempelt"
+          },
+          "legal_break_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Gesetzliche Pause (Minuten)",
+            "description": "nicht gestempelter Rest"
+          },
+          "is_open": {
+            "type": "boolean",
+            "title": "Offen",
+            "description": "ohne Gehen"
+          },
+          "bookings": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Booking"
+                }
+              ]
+            },
+            "title": "Buchungen",
+            "description": "Tagesliste"
+          },
+          "absence_label": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Abwesenheit",
+            "description": "falls vorhanden"
+          }
+        }
+      },
+      "History": {
+        "type": "object",
+        "title": "Verlauf",
+        "description": "Zeitraum mit Tageswerten",
+        "properties": {
+          "valid_from": {
+            "type": "string",
+            "format": "date",
+            "title": "Von",
+            "description": "Beginn"
+          },
+          "valid_until": {
+            "type": "string",
+            "format": "date",
+            "title": "Bis",
+            "description": "Ende"
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Day"
+                }
+              ]
+            },
+            "title": "Tage",
+            "description": "je Arbeitstag"
+          },
+          "target_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Soll (Minuten)",
+            "description": "Summe"
+          },
+          "actual_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Ist (Minuten)",
+            "description": "Summe"
+          },
+          "balance_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Saldo (Minuten)",
+            "description": "Summe"
+          }
+        }
+      },
+      "BookingBatch": {
+        "type": "object",
+        "title": "Übertragung",
+        "description": "offline erfasste Buchungen auf einmal",
+        "properties": {
+          "bookings": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Booking"
+                }
+              ]
+            },
+            "title": "Buchungen",
+            "description": "in zeitlicher Reihenfolge"
+          }
+        },
+        "required": [
+          "bookings"
+        ]
+      },
+      "BookingBatchResult": {
+        "type": "object",
+        "title": "Ergebnis der Übertragung",
+        "description": "angenommen, schon vorhanden oder abgelehnt",
+        "properties": {
+          "accepted_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "title": "Angenommen",
+            "description": "neu gespeichert"
+          },
+          "existing_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "title": "Schon vorhanden",
+            "description": "gleiche ID"
+          },
+          "rejected": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "title": "Abgelehnt",
+            "description": "ID und Grund"
+          }
+        }
+      },
+      "ClockOutBackdate": {
+        "type": "object",
+        "title": "Gehen nachtragen",
+        "description": "vergessenes Gehen nachtragen (gekennzeichnet)",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "ID",
+            "description": "vom Gerät erzeugt"
+          },
+          "booked_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Zeitpunkt",
+            "description": "wann gegangen"
+          },
+          "remark": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "Freitext"
+          }
+        },
+        "required": [
+          "id",
+          "booked_at"
+        ]
+      },
+      "Decision": {
+        "type": "object",
+        "title": "Entscheid",
+        "description": "Antrag bestätigen oder ablehnen",
+        "properties": {
+          "is_approved": {
+            "type": "boolean",
+            "title": "Bestätigt",
+            "description": "ja oder nein"
+          },
+          "remark": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "Freitext"
+          }
+        },
+        "required": [
+          "is_approved"
+        ]
+      },
+      "MonthClosing": {
+        "type": "object",
+        "title": "Monat",
+        "description": "Monatsübersicht und Abschluss",
+        "properties": {
+          "month": {
+            "type": "string",
+            "title": "Monat",
+            "description": "JJJJ-MM"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Person",
+            "description": "Verweis"
+          },
+          "target_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Soll (Minuten)",
+            "description": "Monat"
+          },
+          "actual_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Ist (Minuten)",
+            "description": "Monat"
+          },
+          "absence_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Abwesenheit (Minuten)",
+            "description": "angerechnet"
+          },
+          "balance_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Saldo Monat (Minuten)",
+            "description": "Ist minus Soll"
+          },
+          "carried_balance_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Saldovortrag (Minuten)",
+            "description": "Vormonat"
+          },
+          "total_balance_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Saldo total (Minuten)",
+            "description": "Vortrag plus Monat"
+          },
+          "vacation_taken_days": {
+            "type": "string",
+            "format": "decimal",
+            "pattern": "^-?\\d+(\\.\\d{1,4})?$",
+            "title": "Ferien bezogen (Tage)",
+            "description": "Monat"
+          },
+          "vacation_remaining_days": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "decimal",
+            "pattern": "^-?\\d+(\\.\\d{1,4})?$",
+            "title": "Ferien Rest (Tage)",
+            "description": "nach dem Monat"
+          },
+          "status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "open",
+              "submitted",
+              "approved",
+              "returned"
+            ],
+            "x-eduksx-labels": {
+              "open": "offen",
+              "submitted": "eingereicht",
+              "approved": "visiert",
+              "returned": "zurückgewiesen"
+            },
+            "title": "Status",
+            "description": "Abschluss"
+          },
+          "submitted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Eingereicht am",
+            "description": "Zeitpunkt"
+          },
+          "approved_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Visiert am",
+            "description": "Zeitpunkt"
+          }
+        }
+      },
+      "MonthApproval": {
+        "type": "object",
+        "title": "Visum",
+        "description": "Monat visieren oder zurückweisen",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Person",
+            "description": "Mitarbeiterin bzw. Mitarbeiter"
+          },
+          "is_approved": {
+            "type": "boolean",
+            "title": "Visiert",
+            "description": "ja oder nein"
+          },
+          "remark": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "Freitext"
+          },
+          "with_signature": {
+            "type": "boolean",
+            "title": "Mit Signatur",
+            "description": "über EduKSX-Sign"
+          }
+        },
+        "required": [
+          "user_id",
+          "is_approved"
+        ]
+      },
+      "MonthEvent": {
+        "type": "object",
+        "title": "Ereignis Monat",
+        "description": "Monat eingereicht oder visiert",
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Person",
+            "description": "Verweis"
+          },
+          "month": {
+            "type": "string",
+            "title": "Monat",
+            "description": "JJJJ-MM"
+          },
+          "status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "submitted",
+              "approved",
+              "returned"
+            ],
+            "x-eduksx-labels": {
+              "submitted": "eingereicht",
+              "approved": "visiert",
+              "returned": "zurückgewiesen"
+            },
+            "title": "Status",
+            "description": "Abschluss"
+          },
+          "total_balance_minutes": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Saldo total (Minuten)",
+            "description": "nach dem Monat"
+          }
+        }
+      }
+    }
+  },
+  "webhooks": {
+    "time.month_closing.changed": {
+      "post": {
+        "summary": "Monat eingereicht oder visiert (für Lohn und Personal über EduKSX-Connect, EduKSX-Flow)",
+        "description": "Ereignis «time.month_closing.changed» an Abonnenten (B7).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MonthEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Empfangen"
+          }
+        }
+      }
+    }
+  }
+}

@@ -8,6 +8,13 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Neu
 
+- **Umsetzungsgrundlagen nach DB-Standard 1.3 / API-Standard 1.2** von EduKSX-Architektur (#51): Datenbank und API
+  aller Module mit englischen Namen und deutschen Beschreibungen je Tabelle, Spalte und Wert (Geltungsbereich,
+  Datenklasse, Herkunft/Verwendung, Labels; auch als `COMMENT ON`), `organization_id` als Mandant, Standardtabellen
+  aus `docs/umsetzung/standardtabellen.sql` (ersetzt `core-referenz.sql`), API unter `/api/v1/org|me/…` mit
+  `openapi.json`. Erzeugt und geprüft mit `tools/umsetzung_bauen.py`; der Entwicklerbereich zeigt zu jeder Spalte
+  Begriff, Herkunft, Datenklasse und Werte – EduKSX-Staffing 0.2.1, EduKSX-Flow 0.6.1, EduKSX-Codex 0.23.1,
+  EduKSX-Sign 0.2.1, EduKSX-Time 0.4.1.
 - **Menüpunkt «Entwickler» in allen Prototypen** (wie die Entwicklerseite von EduKSX-Glossary): Datenmodell mit
   eigenem Beziehungsdiagramm, Tabellen und Spalten, SQL-Download; API-Dokumentation mit Scalar, Swagger UI (Senden
   aus), OpenAPI JSON/YAML – unter `prototypen/<name>/entwickler/`, erzeugt mit `tools/entwickler_bauen.py` aus

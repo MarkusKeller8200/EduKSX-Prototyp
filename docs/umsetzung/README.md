@@ -7,64 +7,69 @@ Für jeden Prototyp liegt hier, was die produktive Umsetzung im jeweiligen Modul
 
 | Modul | Prototyp | Datenbank | API | Anforderungen · Pflichtenheft · Prüfpunkte |
 |---|---|---|---|---|
-| EduKSX-Staffing | [`einsatzplanung`](../../prototypen/einsatzplanung) | [`staffing/datenbank.sql`](staffing/datenbank.sql) | [`staffing/openapi.yaml`](staffing/openapi.yaml) | [`staffing/PFLICHTENHEFT.md`](staffing/PFLICHTENHEFT.md) |
-| EduKSX-Flow | [`ablaufplanung`](../../prototypen/ablaufplanung) | [`flow/datenbank.sql`](flow/datenbank.sql) | [`flow/openapi.yaml`](flow/openapi.yaml) | [`flow/PFLICHTENHEFT.md`](flow/PFLICHTENHEFT.md) |
-| EduKSX-Codex | [`rechtssammlung`](../../prototypen/rechtssammlung) | [`codex/datenbank.sql`](codex/datenbank.sql) | [`codex/openapi.yaml`](codex/openapi.yaml) | [`codex/PFLICHTENHEFT.md`](codex/PFLICHTENHEFT.md) |
-| EduKSX-Sign | [`signatur`](../../prototypen/signatur) | [`sign/datenbank.sql`](sign/datenbank.sql) | [`sign/openapi.yaml`](sign/openapi.yaml) | [`sign/PFLICHTENHEFT.md`](sign/PFLICHTENHEFT.md) |
-| EduKSX-Time | [`zeiterfassung`](../../prototypen/zeiterfassung) | [`time/datenbank.sql`](time/datenbank.sql) | [`time/openapi.yaml`](time/openapi.yaml) | [`time/PFLICHTENHEFT.md`](time/PFLICHTENHEFT.md) |
+| EduKSX-Staffing | [`einsatzplanung`](../../prototypen/einsatzplanung) | [`staffing/datenbank.sql`](staffing/datenbank.sql) | [`staffing/openapi.json`](staffing/openapi.json) | [`staffing/PFLICHTENHEFT.md`](staffing/PFLICHTENHEFT.md) |
+| EduKSX-Flow | [`ablaufplanung`](../../prototypen/ablaufplanung) | [`flow/datenbank.sql`](flow/datenbank.sql) | [`flow/openapi.json`](flow/openapi.json) | [`flow/PFLICHTENHEFT.md`](flow/PFLICHTENHEFT.md) |
+| EduKSX-Codex | [`rechtssammlung`](../../prototypen/rechtssammlung) | [`codex/datenbank.sql`](codex/datenbank.sql) | [`codex/openapi.json`](codex/openapi.json) | [`codex/PFLICHTENHEFT.md`](codex/PFLICHTENHEFT.md) |
+| EduKSX-Sign | [`signatur`](../../prototypen/signatur) | [`sign/datenbank.sql`](sign/datenbank.sql) | [`sign/openapi.json`](sign/openapi.json) | [`sign/PFLICHTENHEFT.md`](sign/PFLICHTENHEFT.md) |
+| EduKSX-Time | [`zeiterfassung`](../../prototypen/zeiterfassung) | [`time/datenbank.sql`](time/datenbank.sql) | [`time/openapi.json`](time/openapi.json) | [`time/PFLICHTENHEFT.md`](time/PFLICHTENHEFT.md) |
 
 Grundlage ist jeweils, **was der Prototyp anzeigt und bearbeitet** (Testdaten in `assets/daten.js`, Zustand im
 Browser-Speicher). Jedes angezeigte Feld hat eine Spalte; berechnete Werte (Ist-Pensum, Saldo, Fristen …) werden
-**nicht** gespeichert, sondern über Ansichten (`v_…`) oder in der API berechnet – ausser sie müssen zu einem
+**nicht** gespeichert, sondern über Ansichten oder in der API berechnet – ausser sie müssen zu einem
 Zeitpunkt eingefroren werden (Freigaben, Abschlüsse, Protokolle).
 
 Die Prototypen bleiben unabhängig (AGENTS.md): Diese Dateien sind Vorlagen für die Modul-Repositorys, kein
 gemeinsamer Code. Übernommene Teile werden dort als Laravel-Migrationen und Controller neu umgesetzt.
 
 **Direkt lesbar in jedem Prototyp:** Menüpunkt «Entwickler» (wie die Entwicklerseite von EduKSX-Glossary) mit
-Datenmodell (Beziehungsdiagramm, Tabellen mit Spalten, Typ, Pflicht, Vorgabe, Schlüssel, Verweis, Beschreibung;
-SQL-Script zum Herunterladen), API-Dokumentation (Scalar), Swagger und OpenAPI als JSON/YAML – unter
+Datenmodell (Beziehungsdiagramm, Tabellen mit Spalte, deutschem Begriff, Herkunft/Verwendung, Datenklasse, Typ,
+Pflicht, Vorgabe, Schlüssel, Verweis und Werten; SQL-Script zum Herunterladen), API-Dokumentation (Scalar), Swagger und OpenAPI als JSON/YAML – unter
 `prototypen/<name>/entwickler/`. Erzeugt aus diesem Ordner mit `python3 tools/entwickler_bauen.py`; nach jeder
 Änderung hier neu erzeugen (der Test meldet veraltete Dateien). Scalar und Swagger UI liegen in jedem Prototyp als
 eigene Kopie (`entwickler/lib/`, Liste in `docs/third-party.json`), laden nichts aus dem Netz und senden keine
 Anfragen.
 
-## 1. Datenbank – Konventionen (EMPFOHLEN)
+## 1. Datenbank – Konventionen (BESCHLOSSEN)
 
-| Thema | Vorschlag |
+Verbindlich ist der **DB-Standard 1.3** von EduKSX-Architektur (`docs/KONZEPT-DB-GUIDELINE.md`); hier nur, wie die
+Skripte ihn umsetzen.
+
+| Thema | Umsetzung |
 |---|---|
-| System | PostgreSQL 16 (Laravel-tauglich); die Skripte laufen ohne Erweiterungen (`gen_random_uuid()` ist eingebaut). OFFEN: ob EduKSX-Core MariaDB vorgibt – dann JSONB → JSON, Schemas → Tabellenpräfix. |
-| Schemas | ein Schema je Modul (`staffing`, `flow`, `codex`, `sign`, `time`); gemeinsame Stammdaten im Schema `core` (gehört EduKSX-Core). |
-| Namen | Deutsch, `snake_case`, Tabellen im Singular (`staffing.klasse`), Fremdschlüssel `<tabelle>_id`. |
-| Schlüssel | `id uuid` (technisch, nie angezeigt); fachliche Kürzel (Klasse «1A», Fach «D», Vorlage «EIN-LP») als `kurz`/`code` mit Eindeutigkeit je Mandant. |
-| Mandant | jede fachliche Tabelle hat `mandant_id` (→ `core.mandant`); Zugriff per Row-Level-Security nach Mandant (ZU PRÜFEN mit Laravel-Anbindung). Ausnahme EduKSX-Codex: `mandant_id NULL` = gemeinsamer Bestand (Bundes-/Kantonsrecht, Verzeichnis). |
-| Protokollfelder | `erstellt_am`, `erstellt_von`, `geaendert_am`, `geaendert_von`, `version` (optimistisches Sperren, wird bei jeder Änderung erhöht – passt zu `ETag`/`If-Match` der API). |
-| Aufzählungen | als `text` mit `CHECK (… IN (…))` statt PostgreSQL-ENUM – leichter erweiterbar und 1:1 als Laravel-Migration abbildbar. |
-| Zeit | Datum `date`, Zeitpunkte `timestamptz` (UTC gespeichert, Anzeige Europe/Zurich), Dauern in Minuten (`integer`) oder Stunden (`numeric(7,2)`) – je Modul vermerkt. |
-| Beträge/Pensen | `numeric` mit fester Genauigkeit (WL `numeric(6,2)`, Prozent `numeric(5,2)`, VZE `numeric(8,4)`), nie `float`. |
-| Flexible Inhalte | nur wo der Prototyp frei strukturierte Daten zeigt (Parameter eines Vorgangs, Dokumentinhalt): `jsonb` mit beschriebenem Aufbau. |
-| Löschen | fachlich nicht hart löschen: `archiviert_am` bzw. Status; Personendaten nach Aufbewahrungsfrist löschen/anonymisieren (Prüfpunkte je Modul). |
-| Personendaten | nur Verweise auf `core.person`; Namen, Geburtsdatum, Kontakt liegen **einmal** in Core. OFFEN (vorgemerkt 2026-11): optionale Verschlüsselung der Personendaten mit lokalem Schlüssel – betrifft nur `core.person`. |
+| System | PostgreSQL 16; die Skripte laufen ohne Erweiterungen. |
+| Schema | ein Schema je Modulschlüssel (`staffing`, `flow`, `codex`, `sign`, `time`); jedes Skript setzt `search_path` und ist für sich lauffähig. |
+| Namen | **englisch**, `snake_case`, Tabellen im Plural (`classes`, `staff_members`), Fremdschlüssel `<ziel>_id`, Zeitpunkte `_at`, Daten `_on`, Zeiträume `valid_from`/`valid_until`, Wahrheitswerte `is_…`, Aufzählungen `status`/`<x>_type`. |
+| Deutsche Beschreibung (A8) | je Tabelle Kurzbeschreibung, **Geltungsbereich** (global / Organisation / persönlich), **Datenklasse** (öffentlich, intern, personenbezogen, besonders schützenswert, geheim) und Herkunft/Verwendung; je Spalte deutscher Begriff, Herkunft/Verwendung, abweichende Datenklasse und die deutschen Labels jedes Werts. Steht als strukturierter Kommentar im Skript und wird als `COMMENT ON` in die Datenbank geschrieben. |
+| Schlüssel | `id uuid` (UUID v7, von der Anwendung vergeben); fachliche Kürzel als eigene Spalte mit Eindeutigkeit je Organisation. Index auf jedem Fremdschlüssel. |
+| Mandant | `organization_id` (→ `organizations`) in jeder Tabelle mit Geltungsbereich Organisation oder persönlich; globale Tabellen (Rechtsbestand in EduKSX-Codex) ohne. Persönliche Daten zusätzlich mit `user_id`. |
+| Standardspalten | `created_at`, `created_by_id`, `updated_at`, `updated_by_id`, `lock_version` (optimistisches Sperren ↔ `ETag`/`If-Match`), bei fachlichen Haupttabellen `deleted_at`/`deleted_by_id` (Papierkorb). |
+| Standardtabellen | [`standardtabellen.sql`](standardtabellen.sql) – `organizations`, `users` (Personenreferenz), `school_years`, `school_holidays`, `data_changes` – wird in jedes Modulskript kopiert (Platzhalter für EduKSX-Core, massgeblich ist dessen Modell). |
+| Aufzählungen | `text` mit `CHECK (… IN (…))`, Werte englisch, Labels deutsch. |
+| Zeit, Zahlen | `date`, `timestamptz` (UTC, Anzeige Europe/Zurich), Dauern in Minuten (`integer`); Pensen und Beträge `numeric`, nie Gleitkommazahlen. |
+| Doppelt gespeichert | nur in der Ausnahmetabelle am Ende jedes Skripts begründet (eingefrorene Stände). |
 
-[`core-referenz.sql`](core-referenz.sql) legt die von allen Modulen benutzten Core-Tabellen als **Platzhalter** an,
-damit jedes Modulskript für sich lauffähig und prüfbar ist. Massgeblich ist das Datenmodell von EduKSX-Core.
+**Erzeugen:** Indizes und `COMMENT ON` sowie die Standardtabellen sind in den Blöcken `-- >>> …` / `-- <<< …` erzeugt –
+nicht von Hand ändern, sondern `python3 tools/umsetzung_bauen.py` ausführen. Das Werkzeug meldet fehlende
+Beschreibungen, Labels oder Mandantenspalten als Mängel.
 
-## 2. API – Konventionen (EMPFOHLEN)
+## 2. API – Konventionen (BESCHLOSSEN)
 
-| Thema | Vorschlag |
+Verbindlich ist der **API-Standard 1.2** von EduKSX-Architektur (`docs/KONZEPT-API-GUIDELINE.md`).
+[`openapi.json`](staffing/openapi.json) entsteht mit `tools/umsetzung_bauen.py` aus dem Datenmodell
+(`tools/umsetzung/api_<modul>.py` beschreibt Ressourcen und Aktionen); `openapi.yaml` ist derselbe Inhalt.
+
+| Thema | Umsetzung |
 |---|---|
-| Beschreibung | OpenAPI 3.1, je Modul eine Datei; Pfade **ohne** Modulpräfix (`/v1/…`). Namensräume (`/<modul>/v1`, Schemas/Tags/operationId mit Modulschlüssel) setzt erst das Zusammenführen in EduKSX-Architektur (vorgemerkt 2026-11-19). |
-| Anmeldung | OpenID Connect über EduKSX-Ident, Bearer-Token (JWT); Berechtigungen als Scopes `<modul>:<recht>` (z. B. `staffing:freigeben`) plus Rolle im Mandanten. |
-| Mandant | aus dem Token; Kopfzeile `EduKSX-Mandant` nur für Personen mit mehreren Mandanten. |
-| Namen in JSON | Deutsch, `camelCase` (`schuelerzahl`, `bgSoll`), Datum ISO 8601. |
-| Listen | `?seite=1&anzahl=50` (max. 200), Antwort `{ daten: [...], seite, anzahl, total }`; Filter als Query-Parameter. |
-| Ändern | `PUT` ganz, `PATCH` (JSON Merge Patch) teilweise; `ETag` in jeder Antwort, `If-Match` beim Ändern Pflicht (412 bei Konflikt). |
-| Fehler | `application/problem+json` (RFC 9457) mit `type`, `title`, `status`, `detail`, bei Prüfregeln `fehler: [{feld, regel, text}]`. |
-| Aktionen | fachliche Schritte als eigene Pfade mit Verb (`POST /v1/freigaben/{id}/freigeben`), nicht als Statusfeld zum Setzen. |
-| Ereignisse | Änderungen, die andere Module brauchen, als Ereignis (Webhook/Nachricht) – Liste je Modul im Pflichtenheft; EduKSX-Flow ruft Vorgänge über das Vorgangsregister auf. |
-
-Gemeinsame Bausteine (Fehler, Seitenangaben, Kopfzeilen) stehen in jeder Datei unter `components`, bis das
-Zusammenführen sie einmal in Core-Bausteine auslagert.
+| Pfade | `/api/v1/…`, Ressourcen englisch, `kebab-case`, Plural; Organisationsdaten unter `/api/v1/org/…`, eigene Daten unter `/api/v1/me/…`, globale unter `/api/v1/…`. |
+| Felder | `snake_case` = Spaltenname; Aufzählungen englisch mit `<feld>_label` (deutsch) und `x-eduksx-labels`; Beträge als Zeichenkette (`format: decimal`). |
+| Deutsch (A8) | `title` und `description` jeder Operation, jedes Schemas, Felds und Parameters deutsch; Tags mit deutschem Anzeigenamen. |
+| Hülle | `{ data, meta, links }`; Listen mit `cursor`/`limit` (max. 200) und `sort`. |
+| Ändern | `PATCH` (JSON Merge Patch); `ETag` in jeder Antwort, `If-Match` Pflicht (412 bei Konflikt). |
+| Fehler | `application/problem+json` mit `code` und `errors: [{field, code, detail}]`. |
+| Anmeldung | OIDC über EduKSX-Ident; Scopes `<modul>:<ressource>.<read|write|delete|admin>`; Kopfzeile `EduKSX-Organization` nur bei mehreren Organisationen. |
+| Kennzeichen | `info.x-eduksx-module`, `x-eduksx-api-standard`, je Operation `x-eduksx-ability`, `x-eduksx-data-classes`, `x-eduksx-purpose`. |
+| Aktionen | fachliche Schritte als Unterressource im Nomen (`POST …/releases/{id}/approval`), nicht als Statusfeld. |
+| Ereignisse | als `webhooks` in der Datei (`<modul>.<objekt>.<vorgang>`), Liste je Modul im Pflichtenheft. |
 
 ## 3. Aufbau der Pflichtenhefte
 
@@ -105,12 +110,13 @@ Vor dem ersten produktiven Einsatz eines Moduls abzuhaken – zusätzlich zu den
 
 ## 5. Prüfen
 
-`python3 tools/test_umsetzung.py` prüft, dass jede OpenAPI-Datei gültiges YAML ist, alle `$ref` auflösen und jede
-Operation eine `operationId` hat, und dass jede Datenbankdatei die Konventionen einhält (eigenes Schema,
-`mandant_id` in jeder Tabelle, keine Gleitkommazahlen). Getestet am 2026-11-20 mit PostgreSQL 16: alle Skripte
-zusammen legen 111 Tabellen und Ansichten an; die OpenAPI-Dateien sind mit `openapi-spec-validator` gültig. Mit einer PostgreSQL-Instanz
-lassen sich die Skripte zusätzlich ausführen:
+`python3 -m unittest discover -s tools` prüft, dass die erzeugten Teile aktuell sind, das Werkzeug keine Mängel
+meldet (Beschreibungen, Labels, Geltungsbereich, Datenklasse, Mandantenspalte, Plural), die OpenAPI-Dateien dem
+API-Standard folgen (Pfade, `operationId`, `$ref`) und keine Gleitkommazahlen vorkommen. Getestet am 2026-11-20 mit
+PostgreSQL 16: alle fünf Skripte nebeneinander in einer leeren Datenbank legen 127 Tabellen und 6 Ansichten mit
+1561 deutschen Kommentaren an; die OpenAPI-Dateien sind mit `openapi-spec-validator` gültig.
 
 ```sh
-psql -v ON_ERROR_STOP=1 -f docs/umsetzung/core-referenz.sql -f docs/umsetzung/staffing/datenbank.sql
+python3 tools/umsetzung_bauen.py
+psql -v ON_ERROR_STOP=1 -f docs/umsetzung/staffing/datenbank.sql
 ```

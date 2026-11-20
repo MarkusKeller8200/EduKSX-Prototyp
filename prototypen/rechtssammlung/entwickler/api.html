@@ -21,8 +21,12 @@
     .diagramm { display: block; font: 12px var(--font-sans); }
     .diagramm .box rect { fill: var(--card); stroke: var(--input); }
     .diagramm .box .kopfzeile { fill: var(--accent); stroke: var(--input); }
-    .diagramm .box.core rect { fill: var(--muted); stroke-dasharray: 4 3; }
-    .diagramm .box.core .kopfzeile { fill: var(--muted); }
+    .diagramm .box.standard rect { fill: var(--muted); stroke-dasharray: 4 3; }
+    .diagramm .box.standard .kopfzeile { fill: var(--muted); }
+    .diagramm .de { font-size: 11px; fill: var(--muted-foreground); }
+    .tabelle .kopf-de { margin: 0 0 .4rem; }
+    .tabelle .werte { font-size: .8rem; }
+    .klasse { white-space: nowrap; }
     .diagramm text { fill: var(--foreground); }
     .diagramm .name { font-weight: 700; }
     .diagramm a:hover rect, .diagramm a:focus rect { stroke: var(--ring); stroke-width: 2; }

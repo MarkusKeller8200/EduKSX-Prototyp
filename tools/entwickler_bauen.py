@@ -3,17 +3,17 @@
 
     python3 tools/entwickler_bauen.py [--lib PFAD_NODE_MODULES] [--pruefen]
 
-Quelle sind die Umsetzungsgrundlagen in docs/umsetzung/<modul>/ (datenbank.sql, openapi.yaml). Je Prototyp entsteht
+Quelle sind die Umsetzungsgrundlagen in docs/umsetzung/<modul>/ (datenbank.sql, openapi.json/.yaml – erzeugt mit
+tools/umsetzung_bauen.py). Namen englisch, deutsche Beschreibungen nach DB-Standard A8 / API-Standard A8. Je Prototyp entsteht
 prototypen/<name>/entwickler/ mit:
 
     index.html        Datenmodell (Beziehungsdiagramm, Tabellen mit Spalten, Ansichten) und Links zur API
     api.html          interaktive API-Dokumentation (Scalar, selbst ausgeliefert, ohne Schriften aus dem Netz)
     swagger.html      Swagger UI (Anfragen senden ist ausgeschaltet – es gibt noch keinen Server)
-    openapi.json/.yaml, datenmodell.sql (inkl. Core-Platzhalter, direkt ausführbar)
+    openapi.json/.yaml, datenmodell.sql (inkl. Standardtabellen und COMMENT ON, direkt ausführbar)
     lib/              Scalar (MIT) und Swagger UI (Apache-2.0), je Prototyp eigene Kopie (Prototypen bleiben unabhängig)
 
-Das Diagramm zeichnet dieses Skript selbst (SVG, keine Fremdkomponente). openapi.json braucht PyYAML; ohne PyYAML
-bleibt die vorhandene openapi.json stehen. --lib zeigt auf node_modules mit @scalar/api-reference und
+Das Diagramm zeichnet dieses Skript selbst (SVG, keine Fremdkomponente). Nur Standardbibliothek. --lib zeigt auf node_modules mit @scalar/api-reference und
 swagger-ui-dist (nur beim Aktualisieren der Bibliotheken nötig). --pruefen meldet veraltete Dateien (Exit 1).
 """
 from __future__ import annotations
@@ -24,7 +24,6 @@ import json
 import re
 import shutil
 import sys
-from dataclasses import dataclass, field
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -71,121 +70,22 @@ LIB = {
 E = html.escape
 
 
-# ---------------------------------------------------------------------------------------------------- SQL lesen
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from umsetzung import modell  # noqa: E402
+from umsetzung.modell import Tabelle  # noqa: E402
 
-@dataclass
-class Spalte:
-    name: str
-    typ: str
-    pflicht: bool = False
-    vorgabe: str | None = None
-    schluessel: str | None = None      # PK, UK
-    verweis: str | None = None         # schema.tabelle.spalte
-    text: str = ""
-
-
-@dataclass
-class Tabelle:
-    schema: str
-    name: str
-    text: str = ""
-    spalten: list[Spalte] = field(default_factory=list)
-    regeln: list[str] = field(default_factory=list)   # UNIQUE/CHECK auf Tabellenebene
-    ansicht: bool = False
-
-    @property
-    def voll(self) -> str:
-        return f"{self.schema}.{self.name}"
-
-
-def _teilen(rumpf: str) -> list[tuple[str, str]]:
-    """Teilt den Rumpf eines CREATE TABLE an Kommas der obersten Ebene; liefert (Definition, Kommentar)."""
-    teile, tiefe, aktuell, kommentar, zitat = [], 0, "", "", False
-    for zeile in rumpf.splitlines():
-        code, _, notiz = zeile.partition("--")
-        notiz = notiz.strip()
-        for z in code:
-            if z == "'":
-                zitat = not zitat
-            elif not zitat and z in "({":
-                tiefe += 1
-            elif not zitat and z in ")}":
-                tiefe -= 1
-            if z == "," and tiefe == 0 and not zitat:
-                teile.append((aktuell.strip(), kommentar))
-                aktuell, kommentar = "", ""
-                continue
-            aktuell += z
-        aktuell += " "
-        if notiz:
-            # Kommentar gehört zur Definition, die auf dieser Zeile endet bzw. steht
-            if teile and not aktuell.strip():
-                d, k = teile[-1]
-                teile[-1] = (d, (k + " " + notiz).strip())
-            else:
-                kommentar = (kommentar + " " + notiz).strip()
-    if aktuell.strip():
-        teile.append((aktuell.strip(), kommentar))
-    return [(re.sub(r"\s+", " ", d), k) for d, k in teile if d]
-
-
-def _kommentar_davor(text: str, pos: int) -> str:
-    zeilen = text[:pos].rstrip("\n").splitlines()
-    gesammelt = []
-    for z in reversed(zeilen):
-        if z.startswith("--") and not z.startswith("-- ---"):
-            gesammelt.append(z[2:].strip())
-        else:
-            break
-    return " ".join(reversed(gesammelt))
-
-
-def tabellen_lesen(sql: str) -> list[Tabelle]:
-    out: list[Tabelle] = []
-    for m in re.finditer(r"CREATE TABLE (?:IF NOT EXISTS )?(\w+)\.(\w+) \((.*?)\n\);", sql, re.S):
-        t = Tabelle(m.group(1), m.group(2), _kommentar_davor(sql, m.start()))
-        pk_tabelle: list[str] = []
-        for d, k in _teilen(m.group(3)):
-            kopf = d.split(" ", 1)[0].upper()
-            if kopf in ("UNIQUE", "CHECK", "PRIMARY", "CONSTRAINT", "FOREIGN"):
-                if kopf == "PRIMARY":
-                    pk_tabelle = [x.strip() for x in re.search(r"\((.*?)\)", d).group(1).split(",")]
-                t.regeln.append(d)
-                continue
-            name, rest = d.split(" ", 1)
-            typ = re.match(r"([a-z]+(?:\s+precision)?(?:\([\d, ]+\))?(?:\[\])?)", rest).group(1)
-            s = Spalte(name, typ, text=k)
-            s.pflicht = "NOT NULL" in rest or "PRIMARY KEY" in rest
-            if "PRIMARY KEY" in rest:
-                s.schluessel = "PK"
-            elif re.search(r"\bUNIQUE\b", rest):
-                s.schluessel = "UK"
-            if (v := re.search(r"DEFAULT (.+?)(?: NOT NULL| REFERENCES| CHECK| UNIQUE| PRIMARY|$)", rest)):
-                s.vorgabe = v.group(1).strip()
-            if (w := re.search(r"CHECK \(\w+ IN \((.*?)\)\)", rest)):
-                werte = ", ".join(x.strip().strip("'") for x in w.group(1).split(","))
-                s.text = (s.text + " · " if s.text else "") + f"Werte: {werte}"
-            if (r := re.search(r"REFERENCES (\w+)\.(\w+)\((\w+)\)", rest)):
-                s.verweis = f"{r.group(1)}.{r.group(2)}.{r.group(3)}"
-            t.spalten.append(s)
-        for s in t.spalten:
-            if s.name in pk_tabelle:
-                s.schluessel = "PK"
-                s.pflicht = True
-        out.append(t)
-    for m in re.finditer(r"CREATE VIEW (\w+)\.(\w+) AS", sql):
-        out.append(Tabelle(m.group(1), m.group(2), _kommentar_davor(sql, m.start()), ansicht=True))
-    return out
+GELTUNG_TEXT = {"global": "global – für alle gleich, nur Redaktion", "Organisation": "Organisation – je Mandant (organization_id)",
+                "persönlich": "persönlich – nur die Person selbst (user_id)"}
 
 
 # ---------------------------------------------------------------------------------------------------- Diagramm
 
-def diagramm(tabellen: list[Tabelle], core: list[Tabelle]) -> str:
-    """Beziehungsdiagramm als SVG: Spalten nach Abhängigkeitstiefe, Core-Tabellen links (grau)."""
-    eigene = {t.voll: t for t in tabellen if not t.ansicht}
-    verwendet_core = {s.verweis.rsplit(".", 1)[0] for t in eigene.values() for s in t.spalten
-                      if s.verweis and s.verweis.startswith("core.") and s.name != "mandant_id"}
-    knoten = {**{t.voll: t for t in core if t.voll in verwendet_core}, **eigene}
+def diagramm(tabellen: list[Tabelle]) -> str:
+    """Beziehungsdiagramm als SVG: Spalten nach Abhängigkeitstiefe, Standardtabellen links (gestrichelt)."""
+    alle = {t.name: t for t in tabellen if not t.ansicht}
+    ziel_von = lambda s: s.verweis.split(".")[1] if s.verweis else None
+    verwendet = {ziel_von(s) for t in alle.values() if not t.standardtabelle for s in t.spalten if s.verweis and s.name != "organization_id"}
+    knoten = {n: t for n, t in alle.items() if not t.standardtabelle or n in verwendet}
 
     tiefe: dict[str, int] = {}
 
@@ -193,26 +93,25 @@ def diagramm(tabellen: list[Tabelle], core: list[Tabelle]) -> str:
         if n in tiefe:
             return tiefe[n]
         t = knoten[n]
-        if t.schema == "core":
+        if t.standardtabelle:
             tiefe[n] = 0
             return 0
-        ziele = {s.verweis.rsplit(".", 1)[0] for s in t.spalten if s.verweis}
-        ziele = [z for z in ziele if z in knoten and z != n and z not in weg]
+        ziele = [z for z in {ziel_von(s) for s in t.spalten if s.verweis and s.name != "organization_id"} if z in knoten and z != n and z not in weg]
         tiefe[n] = 1 + max((stufe(z, weg + (n,)) for z in ziele), default=0)
         return tiefe[n]
 
     for n in knoten:
         stufe(n)
 
-    B, ZEILE, KOPF, LUECKE_X, LUECKE_Y = 210, 15, 22, 70, 18
+    B, ZEILE, KOPF, LUECKE_X, LUECKE_Y = 230, 15, 36, 70, 18
     spalten: dict[int, list[str]] = {}
     for n in sorted(knoten, key=lambda x: (tiefe[x], x)):
         spalten.setdefault(tiefe[n], []).append(n)
 
-    def zeilen(t: Tabelle) -> list[Spalte]:
-        if t.schema == "core":
+    def zeilen(t: Tabelle) -> list:
+        if t.standardtabelle:
             return [s for s in t.spalten if s.schluessel == "PK"]
-        return [s for s in t.spalten if s.schluessel == "PK" or (s.verweis and s.name != "mandant_id")]
+        return [s for s in t.spalten if s.schluessel == "PK" or (s.verweis and s.name != "organization_id")]
 
     pos: dict[str, tuple[float, float, float]] = {}
     hoehe_max = 0.0
@@ -227,43 +126,42 @@ def diagramm(tabellen: list[Tabelle], core: list[Tabelle]) -> str:
 
     kanten = []
     for n, t in knoten.items():
-        if t.schema == "core":
+        if t.standardtabelle:
             continue
         x, y, _ = pos[n]
         for j, s in enumerate(zeilen(t)):
-            if not s.verweis:
-                continue
-            ziel = s.verweis.rsplit(".", 1)[0]
-            if ziel not in pos:
+            ziel = ziel_von(s)
+            if not ziel or ziel not in pos:
                 continue
             zx, zy, zh = pos[ziel]
             y1 = y + KOPF + ZEILE * j + ZEILE / 2 + 2
-            y2 = zy + KOPF / 2
-            if ziel == n:      # Selbstbezug (Baum)
+            y2 = zy + 12
+            if ziel == n:
                 kanten.append(f'<path class="kante" d="M{x + B} {y1} c 22 0 22 {-(y1 - y2)} 0 {-(y1 - y2)}"/>')
                 continue
             x1, x2 = x, zx + B
-            if x2 > x1:        # Ziel rechts davon (Zyklus) – rechts herum
-                x1 = x + B
-                x2 = zx
+            if x2 > x1:
+                x1, x2 = x + B, zx
             m = (x1 + x2) / 2
             kanten.append(f'<path class="kante" d="M{x1} {y1} C{m} {y1} {m} {y2} {x2} {y2}"/>')
 
     boxen = []
     for n, (x, y, h) in pos.items():
         t = knoten[n]
-        klasse = "box core" if t.schema == "core" else "box"
+        kurz = t.text if len(t.text) <= 34 else t.text[:33] + "…"
         inhalt = [f'<rect x="{x}" y="{y}" width="{B}" height="{h}" rx="6"/>',
                   f'<rect class="kopfzeile" x="{x}" y="{y}" width="{B}" height="{KOPF}" rx="6"/>',
-                  f'<text class="name" x="{x + 8}" y="{y + 15}">{E(t.name)}</text>']
+                  f'<text class="name" x="{x + 8}" y="{y + 15}">{E(t.name)}</text>',
+                  f'<text class="de" x="{x + 8}" y="{y + 29}">{E(kurz)}</text>']
         for j, s in enumerate(zeilen(t)):
             zeichen = "🔑 " if s.schluessel == "PK" else "→ "
             inhalt.append(f'<text x="{x + 8}" y="{y + KOPF + ZEILE * j + 12}">{zeichen}{E(s.name)}</text>')
-        ziel = f"#t-{t.schema}-{t.name}" if t.schema != "core" else "#core"
-        boxen.append(f'<a href="{ziel}" class="{klasse}"><title>{E(t.voll)}</title>{"".join(inhalt)}</a>')
+        klasse = "box standard" if t.standardtabelle else "box"
+        boxen.append(f'<a href="#t-{t.name}" class="{klasse}"><title>{E(t.voll)} – {E(t.text)}</title>{"".join(inhalt)}</a>')
 
+    eigene = sum(1 for t in knoten.values() if not t.standardtabelle)
     return (f'<svg class="diagramm" viewBox="0 0 {breite:.0f} {hoehe_max:.0f}" width="{breite:.0f}" height="{hoehe_max:.0f}" '
-            f'role="img" aria-label="Beziehungsdiagramm: {len(eigene)} Tabellen; die Tabellenliste unten enthält dieselben Angaben">'
+            f'role="img" aria-label="Beziehungsdiagramm: {eigene} Tabellen; die Tabellenliste unten enthält dieselben Angaben">'
             f'{"".join(kanten)}{"".join(boxen)}</svg>')
 
 
@@ -308,8 +206,12 @@ STIL = """  <style>
     .diagramm { display: block; font: 12px var(--font-sans); }
     .diagramm .box rect { fill: var(--card); stroke: var(--input); }
     .diagramm .box .kopfzeile { fill: var(--accent); stroke: var(--input); }
-    .diagramm .box.core rect { fill: var(--muted); stroke-dasharray: 4 3; }
-    .diagramm .box.core .kopfzeile { fill: var(--muted); }
+    .diagramm .box.standard rect { fill: var(--muted); stroke-dasharray: 4 3; }
+    .diagramm .box.standard .kopfzeile { fill: var(--muted); }
+    .diagramm .de { font-size: 11px; fill: var(--muted-foreground); }
+    .tabelle .kopf-de { margin: 0 0 .4rem; }
+    .tabelle .werte { font-size: .8rem; }
+    .klasse { white-space: nowrap; }
     .diagramm text { fill: var(--foreground); }
     .diagramm .name { font-weight: 700; }
     .diagramm a:hover rect, .diagramm a:focus rect { stroke: var(--ring); stroke-width: 2; }
@@ -327,8 +229,9 @@ STIL = """  <style>
 """
 
 
-def seite_index(produkt: str, modul: str, tabellen: list[Tabelle], core: list[Tabelle], api: dict | None) -> str:
-    eigene = [t for t in tabellen if not t.ansicht]
+def seite_index(produkt: str, modul: str, tabellen: list[Tabelle], api: dict | None) -> str:
+    eigene = [t for t in tabellen if not t.ansicht and not t.standardtabelle]
+    standard = [t for t in tabellen if t.standardtabelle]
     ansichten = [t for t in tabellen if t.ansicht]
 
     def tab(t: Tabelle) -> str:
@@ -336,24 +239,24 @@ def seite_index(produkt: str, modul: str, tabellen: list[Tabelle], core: list[Ta
         for s in t.spalten:
             verweis = ""
             if s.verweis:
-                ziel_schema, ziel_tab, ziel_sp = s.verweis.split(".")
-                anker = "#core" if ziel_schema == "core" else f"#t-{ziel_schema}-{ziel_tab}"
-                verweis = f'<a href="{anker}"><code>{E(ziel_schema)}.{E(ziel_tab)}</code></a>'
-            zeilen.append(f"<tr><td class=\"code\">{E(s.name)}</td><td class=\"code\">{E(s.typ)}</td><td>{'ja' if s.pflicht else ''}</td>"
-                          f"<td class=\"code\">{E(s.vorgabe or '')}</td><td>{E(s.schluessel or '')}</td><td>{verweis}</td><td>{E(s.text)}</td></tr>")
+                ziel = s.verweis.split(".")[1]
+                verweis = f'<a href="#t-{ziel}"><code>{E(ziel)}</code></a>'
+            werte = "<br>".join(f"<code>{E(w)}</code> = {E(s.labels.get(w, ''))}" for w in s.werte)
+            schluessel = s.schluessel or ""
+            zeilen.append(f"<tr><td class=\"code\">{E(s.name)}</td><td>{E(s.begriff)}</td><td>{E(s.herkunft)}{f'<div class=\"werte\">{werte}</div>' if werte else ''}</td>"
+                          f"<td class=\"klasse\">{E(s.datenklasse)}</td><td class=\"code\">{E(s.typ)}</td><td>{'ja' if s.pflicht else ''}</td>"
+                          f"<td class=\"code\">{E(s.vorgabe or '')}</td><td>{E(schluessel)}</td><td>{verweis}</td></tr>")
         regeln = "".join(f"<li><code>{E(r)}</code></li>" for r in t.regeln)
-        return (f'<section class="tabelle" id="t-{t.schema}-{t.name}"><h3>{E(t.voll)}</h3>'
-                f'{f"<p class=\"muted small\">{E(t.text)}</p>" if t.text else ""}'
-                f'<div class="tabelle-wrap"><table><thead><tr><th>Spalte</th><th>Typ</th><th>Pflicht</th><th>Vorgabe</th>'
-                f'<th>Schlüssel</th><th>Verweis</th><th>Beschreibung</th></tr></thead><tbody>{"".join(zeilen)}</tbody></table></div>'
+        geltung = GELTUNG_TEXT.get(t.geltung, t.geltung)
+        return (f'<section class="tabelle" id="t-{t.name}"><h3>{E(t.name)} <span class="muted small" style="font-family:var(--font-sans);font-weight:400">– {E(t.text)}</span></h3>'
+                f'<p class="kopf-de small"><span class="badge neutral">Geltungsbereich: {E(geltung)}</span> {E(t.herkunft)}</p>'
+                f'<div class="tabelle-wrap"><table><thead><tr><th>Spalte</th><th>Deutsch</th><th>Herkunft / Verwendung</th><th>Datenklasse</th><th>Typ</th>'
+                f'<th>Pflicht</th><th>Vorgabe</th><th>Schlüssel</th><th>Verweis</th></tr></thead><tbody>{"".join(zeilen)}</tbody></table></div>'
                 f'{f"<ul class=\"regeln muted\">{regeln}</ul>" if regeln else ""}</section>')
 
     pfade = sum(len([m for m in v if m != "parameters"]) for v in api["paths"].values()) if api else 0
     schemas = len(api["components"]["schemas"]) if api else 0
-    inhalt = "".join(f'<li><a href="#t-{t.schema}-{t.name}">{E(t.name)}</a></li>' for t in eigene)
-    core_verwendet = any(s.verweis and s.verweis.startswith("core.") and s.name != "mandant_id" for t in eigene for s in t.spalten)
-    core_satz = ("; Personen, Organisationen und Schuljahre liegen in EduKSX-Core (im Diagramm grau)" if core_verwendet
-                 else " (→ <code>core.mandant</code>); sonst keine Verweise auf EduKSX-Core")
+    inhalt = "".join(f'<li><a href="#t-{t.name}">{E(t.name)}</a> <span class="muted">{E(t.text)}</span></li>' for t in eigene)
     return f"""<!DOCTYPE html>
 <html lang="de-CH">
 <head>
@@ -369,33 +272,34 @@ def seite_index(produkt: str, modul: str, tabellen: list[Tabelle], core: list[Ta
 {kopf(produkt, "Datenmodell", "index.html")}  <main class="entwickler" id="inhalt">
     <h1>Entwickler</h1>
     <p>Datenmodell und Schnittstelle von {wortmarke(produkt)} für die Umsetzung – abgeleitet aus dem, was der Prototyp anzeigt
-      und bearbeitet. Berechnete Werte werden nicht gespeichert, sondern über Ansichten oder die API berechnet.</p>
+      und bearbeitet. Namen sind englisch, jede Tabelle, Spalte und jeder Wert hat eine deutsche Beschreibung (DB-Standard 1.3,
+      API-Standard 1.2 der EduKSX-Plattform). Berechnete Werte werden nicht gespeichert, sondern über Ansichten oder die API berechnet.</p>
 
     <h2>API</h2>
     <div class="api-karten">
-      <section class="karte"><h3>API-Dokumentation</h3><p class="small">Interaktive Beschreibung aller Endpunkte, Felder und Beispiele (Scalar).</p><a class="btn primaer" href="api.html">Dokumentation öffnen</a></section>
+      <section class="karte"><h3>API-Dokumentation</h3><p class="small">Interaktive Beschreibung aller Endpunkte, Felder und Beispiele (Scalar); Felder mit deutschem Begriff.</p><a class="btn primaer" href="api.html">Dokumentation öffnen</a></section>
       <section class="karte"><h3>Swagger</h3><p class="small">Dieselbe Beschreibung in Swagger UI. Anfragen senden ist ausgeschaltet, solange es keinen Server gibt.</p><a class="btn" href="swagger.html">Swagger öffnen</a></section>
-      <section class="karte"><h3>OpenAPI 3.1</h3><p class="small">{pfade} Operationen, {schemas} Schemas. Maschinenlesbar zum Import, z. B. in Postman.</p><a class="btn" href="openapi.json">JSON</a> <a class="btn" href="openapi.yaml" download>YAML</a></section>
+      <section class="karte"><h3>OpenAPI 3.1</h3><p class="small">{pfade} Operationen, {schemas} Schemas, Modul <code>{E(modul)}</code>. Maschinenlesbar zum Import in API-Werkzeuge.</p><a class="btn" href="openapi.json">JSON</a> <a class="btn" href="openapi.yaml" download>YAML</a></section>
     </div>
 
     <h2>Datenmodell</h2>
-    <p>PostgreSQL 16, Schema <code>{E(modul)}</code>, {len(eigene)} Tabellen und {len(ansichten)} Ansichten. Jede Tabelle hat
-      <code>mandant_id</code>{core_satz}.
+    <p>PostgreSQL 16, Schema <code>{E(modul)}</code>, {len(eigene)} Tabellen und {len(ansichten)} Ansichten, dazu {len(standard)} Standardtabellen
+      aus <code>eduksx/core</code> (gestrichelt). Deutsche Beschreibungen stehen auch als <code>COMMENT ON</code> in der Datenbank.
       <a class="btn klein" href="datenmodell.sql" download>SQL-Script herunterladen</a></p>
-    <div class="diagramm-wrap">{diagramm(tabellen, core)}</div>
-    <p class="small muted">🔑 Primärschlüssel, → Verweis auf eine andere Tabelle. <code>mandant_id</code> (→ <code>core.mandant</code>, in jeder Tabelle) ist der Übersicht halber weggelassen. Ein Klick auf eine Tabelle führt zu ihren Spalten.</p>
+    <div class="diagramm-wrap">{diagramm(tabellen)}</div>
+    <p class="small muted">🔑 Primärschlüssel, → Verweis auf eine andere Tabelle. <code>organization_id</code> (→ <code>organizations</code>, Mandant) ist der Übersicht halber weggelassen. Ein Klick auf eine Tabelle führt zu ihren Spalten.</p>
 
     <h3>Tabellen</h3>
     <ul class="inhalt-liste">{inhalt}</ul>
     {"".join(tab(t) for t in eigene)}
 
-    {"<h2>Ansichten</h2><ul>" + "".join(f"<li><code>{E(t.voll)}</code> – {E(t.text)}</li>" for t in ansichten) + "</ul>" if ansichten else ""}
+    {"<h2>Ansichten (berechnet)</h2><ul>" + "".join(f"<li><code>{E(t.name)}</code> – {E(t.text)} {E(t.herkunft)}</li>" for t in ansichten) + "</ul>" if ansichten else ""}
 
-    <h2 id="core">Core-Platzhalter</h2>
-    <p class="small muted">Diese Tabellen gehören EduKSX-Core; sie sind im SQL-Script nur enthalten, damit es für sich lauffähig ist.</p>
-    {"".join(tab(t) for t in core)}
+    <h2 id="standard">Standardtabellen (eduksx/core)</h2>
+    <p class="small muted">Platzhalter: EduKSX-Core liefert diese Tabellen; jedes Modul legt sie im eigenen Schema an. Personenreferenz und Organisationen folgen mit EduKSX-Ident.</p>
+    {"".join(tab(t) for t in standard)}
   </main>
-  <footer class="fuss"><span>{wortmarke(produkt)} · Entwickler · Stand der Umsetzungsgrundlagen</span><span><a href="../">Zurück zum Prototyp</a></span></footer>
+  <footer class="fuss"><span>{wortmarke(produkt)} · Entwickler · Umsetzungsgrundlagen (Entwurf)</span><span><a href="../">Zurück zum Prototyp</a></span></footer>
 </body>
 </html>
 """
@@ -473,29 +377,21 @@ def seite_swagger(produkt: str) -> str:
 
 def dateien(modul: str) -> dict[str, str | bytes]:
     _, produkt = MODULE[modul]
-    core_sql = (UMSETZUNG / "core-referenz.sql").read_text(encoding="utf-8")
     sql = (UMSETZUNG / modul / "datenbank.sql").read_text(encoding="utf-8")
-    yaml_text = (UMSETZUNG / modul / "openapi.yaml").read_text(encoding="utf-8")
-    try:
-        import yaml  # nur zum Umwandeln nach JSON
-        api = yaml.safe_load(yaml_text)
-        api_json: str | None = json.dumps(api, ensure_ascii=False, indent=2) + "\n"
-    except ImportError:
-        vorhanden = ROOT / "prototypen" / MODULE[modul][0] / "entwickler" / "openapi.json"
-        api = json.loads(vorhanden.read_text(encoding="utf-8")) if vorhanden.is_file() else None
-        api_json = None
-    out: dict[str, str | bytes] = {
-        "index.html": seite_index(produkt, modul, tabellen_lesen(sql), tabellen_lesen(core_sql), api),
+    a, b = sql.find("-- >>> standardtabellen"), sql.find("-- <<< standardtabellen")
+    tabellen = modell.lesen(sql, a, b)
+    api_json = (UMSETZUNG / modul / "openapi.json").read_text(encoding="utf-8")
+    api = json.loads(api_json)
+    return {
+        "index.html": seite_index(produkt, modul, tabellen, api),
         "api.html": seite_api(produkt),
         "swagger.html": seite_swagger(produkt),
-        "openapi.yaml": yaml_text,
+        "openapi.json": api_json,
+        "openapi.yaml": (UMSETZUNG / modul / "openapi.yaml").read_text(encoding="utf-8"),
         "lib/scalar/LICENSE": SCALAR_LIZENZ,
-        "datenmodell.sql": f"-- {produkt} – Datenmodell (Entwurf), direkt ausführbar: zuerst Core-Platzhalter, dann das Modul\n"
-                           f"-- Quelle: docs/umsetzung/core-referenz.sql und docs/umsetzung/{modul}/datenbank.sql\n\n{core_sql}\n{sql}",
+        "datenmodell.sql": f"-- {produkt} – Datenmodell (Entwurf), direkt ausführbar (inkl. Standardtabellen)\n"
+                           f"-- Quelle: docs/umsetzung/{modul}/datenbank.sql\n\n{sql}",
     }
-    if api_json is not None:
-        out["openapi.json"] = api_json
-    return out
 
 
 def bauen(lib: Path | None, pruefen: bool) -> list[str]:
