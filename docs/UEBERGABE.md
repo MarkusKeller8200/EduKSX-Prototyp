@@ -103,6 +103,9 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 - Stolperstein: Ein Element mit `id="api-reference"` lässt Scalar zusätzlich mit Standardwerten laden (Schriften
   von fonts.scalar.com) – darum `#api-doku`; zusätzlich CSP `font-src 'self'`. Geprüft: keine externen Abrufe.
 - Grösse: ca. 6,7 MB je Prototyp (Scalar 4,6 MB). CodeQL überspringt minifizierte Dateien – beobachten.
+- Issues nachgeholt: #47 (Titel/Zurück-Taste), #48 (Umsetzungsgrundlagen), #49 (Entwickler), #50 (Sign), alle `_3 Beta-Test`.
+  **Hinweis:** `gh auth status` meldet ein ungültiges Token und GraphQL ist gesperrt – Issues trotzdem über die REST-API
+  anlegen: `gh api repos/MarkusKeller8200/EduKSX-Prototyp/issues -f title=… -f body=… -f "labels[]=…"`.
 
 ### Sitzung 2026-11-20 (03:00–03:50) – Umsetzungsgrundlagen aller Module
 
@@ -122,7 +125,7 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
   Signaturprozess mit PDF/A, Ergebnis `_sign` im Ursprungsordner, Versiegeln. Vorbild Signaturdienst (Name nicht im Prototyp).
 - Getestet im Browser (Chrome, hell/dunkel, schmal): Hochladen, Formular, Werkzeuge, Prozess mit Platzhaltern,
   Unterschrift mit Code, Abschluss mit Siegel, Word-Umwandlung, Versiegeln Excel, Eingang, Abgleich/Konflikt.
-- Issue konnte nicht angelegt werden (GitHub-CLI ohne Anmeldung) – nachholen, Status `_3 Beta-Test`.
+- Issue nachgeholt: #50 (`_3 Beta-Test`).
 - ZU PRÜFEN: Suffix `_seal`; Ablage erhaltener Unterschriften in «Unterzeichnet erhalten». OFFEN: Anbindung Cloud-Ablage, Anbieter.
 
 ### Sitzung 2026-11-17 (13:20–13:45) – Prototyp EduKSX-Time
