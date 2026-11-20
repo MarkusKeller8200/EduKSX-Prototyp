@@ -1,6 +1,6 @@
 # Prototyp: Rechtssammlung
 
-**Status:** in-arbeit · **Version:** 0.21.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
+**Status:** in-arbeit · **Version:** 0.22.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
 
 ## Frage
 
@@ -81,6 +81,11 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 ## Ergebnis
 
 Noch offen. Erste Erkenntnisse in `docs/evaluation.md` (Befunde je Organisation, nächste Schritte).
+
+## Entwickler
+
+Menüpunkt «Entwickler» bzw. `entwickler/`: Datenmodell (Diagramm, Tabellen, SQL), API-Dokumentation (Scalar),
+Swagger und OpenAPI – erzeugt mit `python3 tools/entwickler_bauen.py` aus `docs/umsetzung/codex/` (nicht von Hand ändern).
 
 ## Hinweise
 

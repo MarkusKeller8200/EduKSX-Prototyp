@@ -9,7 +9,7 @@
   "use strict";
 
   const D = window.SIGN_DATEN;
-  const VERSION = "0.1.4";
+  const VERSION = "0.2.0";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // Einstiegsseite aller Prototypen
   const SPEICHER = "eduksx-sign-v1";
 
@@ -266,7 +266,7 @@
       const aktiv = seite === n[0] || ({ dok: "ablage", prozess: "prozesse", eingangDok: "eingang" }[seite] === n[0]);
       const zahl = n[0] === "eingang" && zu ? ` <span class="zaehler" aria-label="${zu} offen">${zu}</span>` : "";
       return `<li><a href="#/${n[0]}" ${aktiv ? 'aria-current="page"' : ""}>${ICONS[n[0]]}<span>${esc(n[1])}</span>${zahl}</a></li>`;
-    }).join("");
+    }).join("") + `<li class="gruppe" aria-hidden="true">Entwicklung</li><li><a href="entwickler/" title="Datenmodell und API – Entwurf für die Umsetzung">${ico('<path d="m8 8-4 4 4 4"/><path d="m16 8 4 4-4 4"/><path d="m14 4-4 16"/>')}<span>Entwickler</span></a></li>`;
     const dunkel = document.documentElement.classList.contains("dark");
     return `
       <header class="kopf">

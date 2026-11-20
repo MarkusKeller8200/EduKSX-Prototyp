@@ -4,7 +4,7 @@
  * (GitHub Pages hängt ?v=<Prüfsumme> an CSS/JS), und Stempeln geht auch offline.
  * Bei Änderungen an der Dateiliste VERSION erhöhen.
  */
-const VERSION = "eduksx-time-0.3.6";
+const VERSION = "eduksx-time-0.4.0";
 const DATEIEN = [
   "./",
   "index.html",
@@ -32,7 +32,9 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", (e) => {
   const anfrage = e.request;
-  if (anfrage.method !== "GET" || new URL(anfrage.url).origin !== self.location.origin) return;
+  const url = new URL(anfrage.url);
+  if (anfrage.method !== "GET" || url.origin !== self.location.origin) return;
+  if (url.pathname.includes("/entwickler/")) return; // Entwicklerbereich nicht zwischenspeichern (gross, nicht offline nötig)
   e.respondWith(
     fetch(anfrage)
       .then((antwort) => {

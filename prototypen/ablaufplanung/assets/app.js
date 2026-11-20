@@ -7,7 +7,7 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v5";
-  const VERSION = "0.5.5";
+  const VERSION = "0.6.0";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
@@ -440,7 +440,7 @@
       const aktiv = seite === n[0] || ({ lauf: "laeufe", vorlage: "vorlagen" }[seite] === n[0]);
       const zahl = n[0] === "aufgaben" && aufgaben ? ` <span class="zaehler" aria-label="${aufgaben} offen">${aufgaben}</span>` : "";
       return `<li><a href="#/${n[0]}" ${aktiv ? 'aria-current="page"' : ""}>${ICONS[n[0]]}<span>${esc(n[1])}</span>${zahl}</a></li>`;
-    }).join("");
+    }).join("") + `<li class="gruppe" aria-hidden="true">Entwicklung</li><li><a href="entwickler/" title="Datenmodell und API – Entwurf für die Umsetzung">${ico('<path d="m8 8-4 4 4 4"/><path d="m16 8 4 4-4 4"/><path d="m14 4-4 16"/>')}<span>Entwickler</span></a></li>`;
     const rollen = Object.entries(ROLLEN).filter(([k]) => !["LP", "GV", "VSA", "MA", "ELT"].includes(k)).map(([k, v]) => `<option value="${k}" ${k === S.rolle ? "selected" : ""}>${esc(v)}</option>`).join("");
     const dunkel = document.documentElement.classList.contains("dark");
     return `

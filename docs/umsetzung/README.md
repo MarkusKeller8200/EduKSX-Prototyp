@@ -21,6 +21,14 @@ Zeitpunkt eingefroren werden (Freigaben, Abschlüsse, Protokolle).
 Die Prototypen bleiben unabhängig (AGENTS.md): Diese Dateien sind Vorlagen für die Modul-Repositorys, kein
 gemeinsamer Code. Übernommene Teile werden dort als Laravel-Migrationen und Controller neu umgesetzt.
 
+**Direkt lesbar in jedem Prototyp:** Menüpunkt «Entwickler» (wie die Entwicklerseite von EduKSX-Glossary) mit
+Datenmodell (Beziehungsdiagramm, Tabellen mit Spalten, Typ, Pflicht, Vorgabe, Schlüssel, Verweis, Beschreibung;
+SQL-Script zum Herunterladen), API-Dokumentation (Scalar), Swagger und OpenAPI als JSON/YAML – unter
+`prototypen/<name>/entwickler/`. Erzeugt aus diesem Ordner mit `python3 tools/entwickler_bauen.py`; nach jeder
+Änderung hier neu erzeugen (der Test meldet veraltete Dateien). Scalar und Swagger UI liegen in jedem Prototyp als
+eigene Kopie (`entwickler/lib/`, Liste in `docs/third-party.json`), laden nichts aus dem Netz und senden keine
+Anfragen.
+
 ## 1. Datenbank – Konventionen (EMPFOHLEN)
 
 | Thema | Vorschlag |

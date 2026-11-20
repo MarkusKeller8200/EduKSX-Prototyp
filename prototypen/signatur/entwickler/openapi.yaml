@@ -1,0 +1,2304 @@
+# EduKSX-Sign – API-Beschreibung (OpenAPI 3.1)
+# Stand 2026-11-20 · Status ENTWURF · Grundlage: Prototyp prototypen/signatur
+# Konventionen: docs/umsetzung/README.md · Pfade ohne Modulpräfix (Namensraum beim Zusammenführen)
+openapi: 3.1.0
+info:
+  title: EduKSX-Sign
+  version: 0.1.0
+  description: 'Signatur und persönliche Ablage: Ordner und Dokumente je Person, Anmerkungen und Formulare, Word inline, Umwandlung
+    in PDF/A, Signaturprozesse (SES/FES/QES, ZertES/eIDAS) mit Ergebnis `_sign` im Ursprungsordner, Versiegeln mit dem Organisationssiegel
+    (`_seal`), Eingang für Signaturanfragen aus anderen Modulen und Abgleich mit der Cloud-Ablage. Die Schnittstelle für Module
+    (`/v1/prozesse`, `/v1/siegel`, `/v1/pruefen`) entspricht dem Entwurf im Prototyp (dort mit Präfix `/sign`).'
+  contact:
+    name: EduKSX
+    url: https://github.com/MarkusKeller8200/EduKSX-Prototyp
+  license:
+    name: siehe Repository
+    identifier: LicenseRef-EduKSX
+servers:
+- url: https://{mandant}.eduksx.ch/api
+  variables:
+    mandant:
+      default: demo
+  description: Beispiel – Namensraum je Modul setzt das Zusammenführen in EduKSX-Architektur.
+security:
+- ident:
+  - sign:lesen
+tags:
+- name: Ablage
+  description: Ordner und Dokumente
+- name: Bearbeiten
+  description: Anmerkungen, Formulare, Word
+- name: Prozesse
+  description: Signaturprozesse
+- name: Eingang
+  description: Zu unterschreiben
+- name: Siegel
+  description: Versiegeln und prüfen
+- name: Abgleich
+  description: Cloud-Ablage
+- name: Einstellungen
+  description: Persönliche Einstellungen
+paths:
+  /v1/ordner:
+    get:
+      tags:
+      - Ablage
+      operationId: ordnerListe
+      summary: Ordner auflisten
+      security:
+      - ident:
+        - sign:lesen
+      parameters:
+      - $ref: '#/components/parameters/Seite'
+      - $ref: '#/components/parameters/Anzahl'
+      - name: elternId
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Liste der Ordner.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrdnerVoll'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+    post:
+      tags:
+      - Ablage
+      operationId: ordnerAnlegen
+      summary: Ordner anlegen
+      security:
+      - ident:
+        - sign:ablage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Ordner'
+      responses:
+        '201':
+          description: Angelegt.
+          headers:
+            ETag: &id001
+              description: Version des Datensatzes.
+              schema:
+                type: string
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &id002
+                allOf:
+                - $ref: '#/components/schemas/Ordner'
+                - $ref: '#/components/schemas/Protokoll'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/ordner/{id}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Ablage
+      operationId: ordnerLesen
+      summary: Ordner lesen
+      security:
+      - ident:
+        - sign:lesen
+      responses:
+        '200':
+          description: Ordner
+          headers: &id003
+            ETag: *id001
+          content:
+            application/json:
+              schema: *id002
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+    patch:
+      tags:
+      - Ablage
+      operationId: ordnerAendern
+      summary: Ordner ändern (JSON Merge Patch)
+      security:
+      - ident:
+        - sign:ablage
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Ordner'
+      responses:
+        '200':
+          description: Geändert.
+          headers: *id003
+          content:
+            application/json:
+              schema: *id002
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+    delete:
+      tags:
+      - Ablage
+      operationId: ordnerEntfernen
+      summary: Ordner löschen (nur leer oder mit Bestätigung)
+      security:
+      - ident:
+        - sign:ablage
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: Entfernt bzw. archiviert.
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+  /v1/dokumente:
+    get:
+      tags:
+      - Ablage
+      operationId: dokumentListe
+      summary: Dokumente auflisten
+      security:
+      - ident:
+        - sign:lesen
+      parameters:
+      - $ref: '#/components/parameters/Seite'
+      - $ref: '#/components/parameters/Anzahl'
+      - name: ordnerId
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+          format: uuid
+      - name: typ
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      - name: suche
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Liste der Dokumente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DokumentVoll'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+  /v1/dokumente/{id}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Ablage
+      operationId: dokumentLesen
+      summary: Dokument lesen
+      security:
+      - ident:
+        - sign:lesen
+      responses:
+        '200':
+          description: Dokument
+          headers: *id003
+          content:
+            application/json:
+              schema: &id004
+                allOf:
+                - $ref: '#/components/schemas/Dokument'
+                - $ref: '#/components/schemas/Protokoll'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+    patch:
+      tags:
+      - Ablage
+      operationId: dokumentAendern
+      summary: Dokument ändern (JSON Merge Patch)
+      security:
+      - ident:
+        - sign:ablage
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Dokument'
+      responses:
+        '200':
+          description: Geändert.
+          headers: *id003
+          content:
+            application/json:
+              schema: *id004
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+    delete:
+      tags:
+      - Ablage
+      operationId: dokumentEntfernen
+      summary: Dokument entfernen (archivieren)
+      security:
+      - ident:
+        - sign:ablage
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: Entfernt bzw. archiviert.
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+  /v1/prozesse:
+    get:
+      tags:
+      - Prozesse
+      operationId: prozessListe
+      summary: Signaturprozesse auflisten
+      security:
+      - ident:
+        - sign:lesen
+      parameters:
+      - $ref: '#/components/parameters/Seite'
+      - $ref: '#/components/parameters/Anzahl'
+      - name: status
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Liste der Signaturprozesse.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProzessVoll'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+    post:
+      tags:
+      - Prozesse
+      operationId: prozessAnlegen
+      summary: Signaturprozess anlegen
+      security:
+      - ident:
+        - sign:signieren
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Prozess'
+      responses:
+        '201':
+          description: Angelegt.
+          headers:
+            ETag: *id001
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema: &id005
+                allOf:
+                - $ref: '#/components/schemas/Prozess'
+                - $ref: '#/components/schemas/Protokoll'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/prozesse/{id}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Prozesse
+      operationId: prozessLesen
+      summary: Signaturprozess lesen
+      security:
+      - ident:
+        - sign:lesen
+      responses:
+        '200':
+          description: Signaturprozess
+          headers: *id003
+          content:
+            application/json:
+              schema: *id005
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+    patch:
+      tags:
+      - Prozesse
+      operationId: prozessAendern
+      summary: Signaturprozess ändern (JSON Merge Patch)
+      security:
+      - ident:
+        - sign:signieren
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/Prozess'
+      responses:
+        '200':
+          description: Geändert.
+          headers: *id003
+          content:
+            application/json:
+              schema: *id005
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+    delete:
+      tags:
+      - Prozesse
+      operationId: prozessEntfernen
+      summary: Entwurf verwerfen
+      security:
+      - ident:
+        - sign:signieren
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '204':
+          description: Entfernt bzw. archiviert.
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+        '412':
+          $ref: '#/components/responses/VersionVeraltet'
+  /v1/dokumente/hochladen:
+    post:
+      tags:
+      - Ablage
+      operationId: dokumentHochladen
+      summary: Datei hochladen (auch per Drag & Drop)
+      security:
+      - ident:
+        - sign:ablage
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                datei:
+                  type: string
+                  contentMediaType: application/octet-stream
+                ordnerId:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+              required:
+              - datei
+      responses:
+        '201':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dokument'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/dokumente/{id}/inhalt:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Ablage
+      operationId: dokumentInhalt
+      summary: Aktuellen Inhalt herunterladen
+      security:
+      - ident:
+        - sign:lesen
+      parameters:
+      - name: version
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Datei.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                contentMediaType: application/octet-stream
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+    put:
+      tags:
+      - Bearbeiten
+      operationId: dokumentErsetzen
+      summary: Neuen Inhalt speichern (neue Version)
+      security:
+      - ident:
+        - sign:ablage
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                datei:
+                  type: string
+                  contentMediaType: application/octet-stream
+              required:
+              - datei
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dokument'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/dokumente/{id}/versionen:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Ablage
+      operationId: versionenListe
+      summary: Versionen eines Dokuments
+      security:
+      - ident:
+        - sign:lesen
+      responses:
+        '200':
+          description: Liste.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Version'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+  /v1/dokumente/{id}/kopieren:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    post:
+      tags:
+      - Ablage
+      operationId: dokumentKopieren
+      summary: Bearbeitbare Kopie (z. B. eines signierten Dokuments ohne Signaturen)
+      security:
+      - ident:
+        - sign:ablage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Ziel.
+              properties:
+                ordnerId:
+                  type:
+                  - string
+                  - 'null'
+                  format: uuid
+                name:
+                  type:
+                  - string
+                  - 'null'
+      responses:
+        '201':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dokument'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/dokumente/{id}/elemente:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Bearbeiten
+      operationId: elementeListe
+      summary: Anmerkungen und Formularwerte
+      security:
+      - ident:
+        - sign:lesen
+      responses:
+        '200':
+          description: Liste.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Element'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+    put:
+      tags:
+      - Bearbeiten
+      operationId: elementeSpeichern
+      summary: Anmerkungen und Formularwerte speichern
+      security:
+      - ident:
+        - sign:ablage
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Elemente.
+              properties:
+                elemente:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Element'
+              required:
+              - elemente
+      responses:
+        '200':
+          description: Liste.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Element'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/dokumente/{id}/word:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Bearbeiten
+      operationId: wordLesen
+      summary: Word-Inhalt zum Bearbeiten
+      security:
+      - ident:
+        - sign:lesen
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WordInhalt'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+    put:
+      tags:
+      - Bearbeiten
+      operationId: wordSpeichern
+      summary: Word-Inhalt speichern (neue Version)
+      security:
+      - ident:
+        - sign:ablage
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WordInhalt'
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dokument'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/dokumente/{id}/pdfa:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    post:
+      tags:
+      - Bearbeiten
+      operationId: inPdfaUmwandeln
+      summary: In PDF/A-2b umwandeln (Word, Excel, Bild, PDF)
+      security:
+      - ident:
+        - sign:ablage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Optionen.
+              properties:
+                ablegen:
+                  type: boolean
+                elementeEinbrennen:
+                  type: boolean
+      responses:
+        '201':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dokument'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/prozesse/{id}/senden:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    post:
+      tags:
+      - Prozesse
+      operationId: prozessSenden
+      summary: Prozess senden (prüft Felder je Unterzeichnende:r)
+      security:
+      - ident:
+        - sign:signieren
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prozess'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/prozesse/{id}/platzhalter:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    post:
+      tags:
+      - Prozesse
+      operationId: platzhalterErkennen
+      summary: 'Platzhalter #sign#n# erkennen und Felder setzen'
+      security:
+      - ident:
+        - sign:signieren
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prozess'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/prozesse/{id}/erinnern:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    post:
+      tags:
+      - Prozesse
+      operationId: prozessErinnern
+      summary: Offene Beteiligte erinnern
+      security:
+      - ident:
+        - sign:signieren
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prozess'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/prozesse/{id}/zurueckziehen:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    post:
+      tags:
+      - Prozesse
+      operationId: prozessZurueckziehen
+      summary: Laufenden Prozess zurückziehen
+      security:
+      - ident:
+        - sign:signieren
+      parameters:
+      - $ref: '#/components/parameters/IfMatch'
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prozess'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/prozesse/modul:
+    post:
+      tags:
+      - Prozesse
+      operationId: prozessAusModul
+      summary: Signaturanfrage aus einem Modul (Dokument + Unterzeichnende)
+      security:
+      - ident:
+        - sign:modul
+      description: Idempotent über `idempotenz`. Ergebnis per Rückruf `prozessAbgeschlossen` an `rueckrufUrl`; Kopie für die
+        Unterzeichnenden im Ordner «Unterzeichnet erhalten» (ZU PRÜFEN).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProzessModul'
+      responses:
+        '201':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prozess'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/eingang:
+    get:
+      tags:
+      - Eingang
+      operationId: eingangListe
+      summary: Zu unterschreiben (Anfragen an mich)
+      security:
+      - ident:
+        - sign:lesen
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Liste.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Anfrage'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+  /v1/eingang/{id}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    get:
+      tags:
+      - Eingang
+      operationId: anfrageLesen
+      summary: Anfrage mit Dokument und Feldern
+      security:
+      - ident:
+        - sign:lesen
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Anfrage'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+  /v1/eingang/{id}/unterschreiben:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    post:
+      tags:
+      - Eingang
+      operationId: anfrageUnterschreiben
+      summary: Unterschreiben oder ablehnen (FES mit Code aufs Mobiltelefon)
+      security:
+      - ident:
+        - sign:signieren
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unterschreiben'
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Anfrage'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/eingang/{id}/code:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    post:
+      tags:
+      - Eingang
+      operationId: codeAnfordern
+      summary: Bestätigungscode senden (FES)
+      security:
+      - ident:
+        - sign:signieren
+      responses:
+        '204':
+          description: Ausgeführt.
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/siegel:
+    post:
+      tags:
+      - Siegel
+      operationId: versiegeln
+      summary: Dokument mit dem Organisationssiegel versehen (Ergebnis _seal)
+      security:
+      - ident:
+        - sign:siegel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiegelAuftrag'
+      responses:
+        '201':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dokument'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/pruefen:
+    post:
+      tags:
+      - Siegel
+      operationId: pdfPruefen
+      summary: Signaturen und Siegel eines PDF prüfen
+      security:
+      - ident:
+        - sign:ablage
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                datei:
+                  type: string
+                  contentMediaType: application/octet-stream
+              required:
+              - datei
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pruefbericht'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/abgleich:
+    get:
+      tags:
+      - Abgleich
+      operationId: abgleichLesen
+      summary: Einstellungen und Stand des Abgleichs
+      security:
+      - ident:
+        - sign:lesen
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncKonfiguration'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+    put:
+      tags:
+      - Abgleich
+      operationId: abgleichEinstellen
+      summary: Abgleich einstellen
+      security:
+      - ident:
+        - sign:ablage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncKonfiguration'
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncKonfiguration'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/abgleich/jetzt:
+    post:
+      tags:
+      - Abgleich
+      operationId: abgleichStarten
+      summary: Jetzt abgleichen
+      security:
+      - ident:
+        - sign:ablage
+      responses:
+        '202':
+          description: Liste.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  daten:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SyncStand'
+                  seite:
+                    type: integer
+                  anzahl:
+                    type: integer
+                  total:
+                    type: integer
+                required:
+                - daten
+                - seite
+                - anzahl
+                - total
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/abgleich/konflikte/{id}:
+    parameters:
+    - $ref: '#/components/parameters/Id'
+    post:
+      tags:
+      - Abgleich
+      operationId: konfliktLoesen
+      summary: Konflikt lösen
+      security:
+      - ident:
+        - sign:ablage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Lösung.
+              properties:
+                behalten:
+                  type: string
+                  enum:
+                  - lokal
+                  - cloud
+                  - beide
+              required:
+              - behalten
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dokument'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+  /v1/einstellungen:
+    get:
+      tags:
+      - Einstellungen
+      operationId: einstellungLesen
+      summary: Standard-Signaturstufe und Rechtsraum
+      security:
+      - ident:
+        - sign:lesen
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Einstellung'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+    put:
+      tags:
+      - Einstellungen
+      operationId: einstellungSpeichern
+      summary: Standardwerte speichern
+      security:
+      - ident:
+        - sign:ablage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Einstellung'
+      responses:
+        '200':
+          description: Ergebnis.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Einstellung'
+        '400':
+          $ref: '#/components/responses/Ungueltig'
+        '401':
+          $ref: '#/components/responses/NichtAngemeldet'
+        '403':
+          $ref: '#/components/responses/KeinRecht'
+        '404':
+          $ref: '#/components/responses/NichtGefunden'
+        '409':
+          $ref: '#/components/responses/Konflikt'
+components:
+  securitySchemes:
+    ident:
+      type: oauth2
+      description: Anmeldung über EduKSX-Ident (OpenID Connect).
+      flows:
+        authorizationCode:
+          authorizationUrl: https://ident.eduksx.ch/oauth2/authorize
+          tokenUrl: https://ident.eduksx.ch/oauth2/token
+          scopes:
+            sign:lesen: Eigene Ablage und Eingang lesen
+            sign:ablage: Eigene Ablage bearbeiten (Ordner, Dokumente, Anmerkungen, Abgleich)
+            sign:signieren: Signaturprozesse starten und unterschreiben
+            sign:siegel: Mit dem Organisationssiegel versiegeln (berechtigte Funktion)
+            sign:modul: Signaturanfragen aus anderen Modulen stellen (Client-Credentials)
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    Seite:
+      name: seite
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    Anzahl:
+      name: anzahl
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 50
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      description: ETag des gelesenen Stands (optimistisches Sperren).
+      schema:
+        type: string
+    Mandant:
+      name: EduKSX-Mandant
+      in: header
+      required: false
+      description: Nur für Personen mit mehreren Mandanten; sonst aus dem Token.
+      schema:
+        type: string
+        format: uuid
+  responses:
+    Ungueltig:
+      description: Eingabe ungültig oder Prüfregel verletzt.
+      content: &id006
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    NichtAngemeldet:
+      description: Kein oder ungültiges Token.
+      content: *id006
+    KeinRecht:
+      description: Rolle oder Scope reicht nicht.
+      content: *id006
+    NichtGefunden:
+      description: Nicht vorhanden oder nicht im Mandanten.
+      content: *id006
+    Konflikt:
+      description: Fachlicher Konflikt (z. B. Zustand erlaubt die Aktion nicht).
+      content: *id006
+    VersionVeraltet:
+      description: If-Match passt nicht zum aktuellen Stand.
+      content: *id006
+  schemas:
+    Problem:
+      type: object
+      description: Fehler nach RFC 9457 (application/problem+json).
+      properties:
+        type:
+          type: string
+          format: uri
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+        fehler:
+          type: array
+          description: Verletzte Prüfregeln bzw. ungültige Felder.
+          items:
+            type: object
+            properties:
+              feld:
+                type: string
+              regel:
+                type: string
+              text:
+                type: string
+      required:
+      - title
+      - status
+    Protokoll:
+      type: object
+      description: Protokollfelder jedes Datensatzes (nur lesbar).
+      properties:
+        erstelltAm:
+          type: string
+          format: date-time
+          readOnly: true
+        erstelltVon:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        geaendertAm:
+          type: string
+          format: date-time
+          readOnly: true
+        geaendertVon:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        version:
+          type: integer
+          readOnly: true
+    Ordner:
+      type: object
+      description: Ordner der persönlichen Ablage.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        elternId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        name:
+          type: string
+        system:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        pfad:
+          type: string
+          description: «Meine Ablage / …»
+          readOnly: true
+        anzahl:
+          type: integer
+          readOnly: true
+      required:
+      - name
+    Dokument:
+      type: object
+      description: Dokument in der Ablage.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        ordnerId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        name:
+          type: string
+        typ:
+          type: string
+          enum:
+          - pdf
+          - docx
+          - xlsx
+          - bild
+          - text
+          - andere
+          readOnly: true
+        mime:
+          type: string
+          readOnly: true
+        groesse:
+          type: integer
+          readOnly: true
+        status:
+          type:
+          - string
+          - 'null'
+          enum:
+          - in_signatur
+          - signiert
+          - versiegelt
+          readOnly: true
+        gesperrt:
+          type: boolean
+          readOnly: true
+        abgeleitetVonId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          readOnly: true
+        ableitung:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        syncStatus:
+          type: string
+          enum:
+          - ok
+          - ausstehend
+          - konflikt
+          - ausgeschlossen
+          readOnly: true
+        aktuelleVersion:
+          type: integer
+          readOnly: true
+        geaendertInhaltAm:
+          type: string
+          format: date-time
+          readOnly: true
+        signaturen:
+          type: array
+          items:
+            $ref: '#/components/schemas/Signatur'
+          readOnly: true
+        siegel:
+          oneOf:
+          - $ref: '#/components/schemas/Siegel'
+          - type: 'null'
+          readOnly: true
+      required:
+      - name
+    Version:
+      type: object
+      description: Version des Inhalts.
+      properties:
+        nr:
+          type: integer
+        sha256:
+          type: string
+        groesse:
+          type: integer
+        seiten:
+          type:
+          - integer
+          - 'null'
+        pdfa:
+          type:
+          - string
+          - 'null'
+        herkunft:
+          type: string
+        erstelltAm:
+          type: string
+          format: date-time
+    Element:
+      type: object
+      description: Anmerkung oder Formularwert.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        art:
+          type: string
+          enum:
+          - text
+          - kommentar
+          - datum
+          - feld
+          - formular
+          - siegel
+          - haken
+        seite:
+          type: integer
+        x:
+          type: number
+        y:
+          type: number
+        b:
+          type:
+          - number
+          - 'null'
+        h:
+          type:
+          - number
+          - 'null'
+        inhalt:
+          type:
+          - string
+          - 'null'
+        formularfeld:
+          type:
+          - string
+          - 'null'
+        eingebrannt:
+          type: boolean
+          readOnly: true
+      required:
+      - art
+      - seite
+      - x
+      - y
+    WordInhalt:
+      type: object
+      description: Bearbeitbarer Inhalt eines Word-Dokuments.
+      properties:
+        absaetze:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          description: '{stil: h1|h2|p, html}'
+      required:
+      - absaetze
+    Prozess:
+      type: object
+      description: Signaturprozess.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        nummer:
+          type: string
+          readOnly: true
+        dokumentId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        quelleName:
+          type: string
+          readOnly: true
+        titel:
+          type: string
+        status:
+          type: string
+          enum:
+          - entwurf
+          - laufend
+          - abgeschlossen
+          - abgelehnt
+          - zurueckgezogen
+          - abgelaufen
+          readOnly: true
+        schritt:
+          type: integer
+        umgewandelt:
+          type: boolean
+          readOnly: true
+        pdfaAblegen:
+          type: boolean
+        platzhalterUebernommen:
+          type: boolean
+          readOnly: true
+        reihenfolge:
+          type: string
+          enum:
+          - nacheinander
+          - gleichzeitig
+        stufe:
+          type: string
+          enum:
+          - ses
+          - aes
+          - qes
+        rechtsraum:
+          type: string
+          enum:
+          - zertes
+          - eidas
+        nachricht:
+          type:
+          - string
+          - 'null'
+        frist:
+          type:
+          - string
+          - 'null'
+          format: date
+        erinnerungTage:
+          type:
+          - integer
+          - 'null'
+        versiegeln:
+          type: boolean
+        personen:
+          type: array
+          items:
+            $ref: '#/components/schemas/Beteiligte'
+        felder:
+          type: array
+          items:
+            $ref: '#/components/schemas/Feld'
+        ergebnisId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          readOnly: true
+        herkunftModul:
+          type:
+          - string
+          - 'null'
+          readOnly: true
+        protokoll:
+          type: array
+          items:
+            $ref: '#/components/schemas/Protokolleintrag'
+          readOnly: true
+        erstelltAm:
+          type: string
+          format: date-time
+          readOnly: true
+        gesendetAm:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          readOnly: true
+        abgeschlossenAm:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          readOnly: true
+      required:
+      - titel
+    Beteiligte:
+      type: object
+      description: Person im Prozess.
+      properties:
+        personId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        name:
+          type: string
+        mail:
+          type: string
+          format: email
+        mobil:
+          type:
+          - string
+          - 'null'
+        rolle:
+          type: string
+          enum:
+          - unterschreiben
+          - genehmigen
+          - kopie
+        reihenfolge:
+          type: integer
+        status:
+          type: string
+          enum:
+          - offen
+          - benachrichtigt
+          - signiert
+          - genehmigt
+          - abgelehnt
+          readOnly: true
+        zeit:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          readOnly: true
+      required:
+      - name
+      - mail
+      - rolle
+    Feld:
+      type: object
+      description: Unterschriftsfeld.
+      properties:
+        person:
+          type: integer
+          description: Index in personen
+        seite:
+          type: integer
+        x:
+          type: number
+        y:
+          type: number
+        b:
+          type: number
+        h:
+          type: number
+        platzhalter:
+          type:
+          - string
+          - 'null'
+      required:
+      - person
+      - seite
+      - x
+      - y
+    Protokolleintrag:
+      type: object
+      description: Eintrag im Signaturprotokoll.
+      properties:
+        zeit:
+          type: string
+          format: date-time
+        text:
+          type: string
+    ProzessModul:
+      type: object
+      description: 'Signaturanfrage eines Moduls: Dokument + Unterzeichnende in einem Aufruf.'
+      properties:
+        titel:
+          type: string
+        dateiBase64:
+          type: string
+          description: PDF/A, Word oder Excel
+        dateiname:
+          type: string
+        stufe:
+          type: string
+          enum:
+          - ses
+          - aes
+          - qes
+        rechtsraum:
+          type: string
+          enum:
+          - zertes
+          - eidas
+        personen:
+          type: array
+          items:
+            $ref: '#/components/schemas/Beteiligte'
+        felder:
+          type: array
+          items:
+            $ref: '#/components/schemas/Feld'
+        platzhalterVerwenden:
+          type: boolean
+        nachricht:
+          type:
+          - string
+          - 'null'
+        frist:
+          type:
+          - string
+          - 'null'
+          format: date
+        versiegeln:
+          type: boolean
+        ablegenBei:
+          type:
+          - string
+          - 'null'
+          format: uuid
+          description: Person, in deren Ablage das Ergebnis landet
+        rueckrufUrl:
+          type: string
+          format: uri
+        idempotenz:
+          type: string
+      required:
+      - titel
+      - dateiBase64
+      - dateiname
+      - stufe
+      - personen
+      - rueckrufUrl
+      - idempotenz
+    Unterschreiben:
+      type: object
+      description: Unterschrift leisten.
+      properties:
+        code:
+          type:
+          - string
+          - 'null'
+          description: Bestätigungscode (FES)
+        ablehnen:
+          type: boolean
+        begruendung:
+          type:
+          - string
+          - 'null'
+    Anfrage:
+      type: object
+      description: Signaturanfrage im Eingang.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        quelleModul:
+          type: string
+        von:
+          type: string
+        titel:
+          type: string
+        datei:
+          type: string
+        erhalten:
+          type: string
+          format: date-time
+        frist:
+          type:
+          - string
+          - 'null'
+          format: date
+        stufe:
+          type: string
+          enum:
+          - ses
+          - aes
+          - qes
+        rechtsraum:
+          type: string
+          enum:
+          - zertes
+          - eidas
+        status:
+          type: string
+          enum:
+          - offen
+          - signiert
+          - abgelehnt
+          - abgelaufen
+        nachricht:
+          type:
+          - string
+          - 'null'
+        prozessId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        unterschriebenVon:
+          type: array
+          items:
+            $ref: '#/components/schemas/Signatur'
+    Signatur:
+      type: object
+      description: Nachweis einer Signatur.
+      properties:
+        name:
+          type: string
+        funktion:
+          type:
+          - string
+          - 'null'
+        stufe:
+          type: string
+          enum:
+          - ses
+          - aes
+          - qes
+        rechtsraum:
+          type: string
+          enum:
+          - zertes
+          - eidas
+        zeit:
+          type: string
+          format: date-time
+        zertifikatAussteller:
+          type:
+          - string
+          - 'null'
+        gueltig:
+          type:
+          - boolean
+          - 'null'
+    Siegel:
+      type: object
+      description: Organisationssiegel.
+      properties:
+        organisation:
+          type: string
+        stufe:
+          type: string
+          enum:
+          - aes
+          - qes
+        rechtsraum:
+          type: string
+          enum:
+          - zertes
+          - eidas
+        sichtbar:
+          type: boolean
+        zeit:
+          type: string
+          format: date-time
+    SiegelAuftrag:
+      type: object
+      description: Dokument versiegeln.
+      properties:
+        dokumentId:
+          type:
+          - string
+          - 'null'
+          format: uuid
+        dateiBase64:
+          type:
+          - string
+          - 'null'
+          description: für Module ohne Ablage
+        stufe:
+          type: string
+          enum:
+          - aes
+          - qes
+        rechtsraum:
+          type: string
+          enum:
+          - zertes
+          - eidas
+        sichtbar:
+          type: boolean
+      required:
+      - stufe
+      - rechtsraum
+    Pruefbericht:
+      type: object
+      description: Ergebnis der Prüfung eines PDF.
+      properties:
+        gueltig:
+          type: boolean
+        pdfa:
+          type:
+          - string
+          - 'null'
+        signaturen:
+          type: array
+          items:
+            $ref: '#/components/schemas/Signatur'
+        siegel:
+          type: array
+          items:
+            $ref: '#/components/schemas/Siegel'
+        hinweise:
+          type: array
+          items:
+            type: string
+    SyncKonfiguration:
+      type: object
+      description: Abgleich mit der Cloud-Ablage.
+      properties:
+        aktiv:
+          type: boolean
+        ziel:
+          type: string
+        richtung:
+          type: string
+          enum:
+          - beide
+          - hochladen
+          - herunterladen
+        intervallMin:
+          type: integer
+        konflikt:
+          type: string
+          enum:
+          - beide
+          - lokal
+          - cloud
+          - neuere
+        letzte:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          readOnly: true
+        offen:
+          type: integer
+          readOnly: true
+        konflikte:
+          type: integer
+          readOnly: true
+      required:
+      - aktiv
+      - ziel
+    SyncStand:
+      type: object
+      description: Ordnerabgleich.
+      properties:
+        ordner:
+          type: string
+        hier:
+          type: integer
+        cloud:
+          type: integer
+        stand:
+          type: string
+    Einstellung:
+      type: object
+      description: Persönliche Standardwerte.
+      properties:
+        stufe:
+          type: string
+          enum:
+          - ses
+          - aes
+          - qes
+        rechtsraum:
+          type: string
+          enum:
+          - zertes
+          - eidas
+    ProzessEreignis:
+      type: object
+      description: Rückruf an das anfragende Modul.
+      properties:
+        prozessId:
+          type: string
+          format: uuid
+        idempotenz:
+          type: string
+        status:
+          type: string
+        ergebnisUrl:
+          type:
+          - string
+          - 'null'
+          format: uri
+        signaturen:
+          type: array
+          items:
+            $ref: '#/components/schemas/Signatur'
+    OrdnerVoll: *id002
+    DokumentVoll: *id004
+    ProzessVoll: *id005
+webhooks:
+  prozessAbgeschlossen:
+    post:
+      summary: 'Rückruf an das anfragende Modul: Prozess abgeschlossen, abgelehnt oder abgelaufen.'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProzessEreignis'
+      responses:
+        '204':
+          description: Empfangen.

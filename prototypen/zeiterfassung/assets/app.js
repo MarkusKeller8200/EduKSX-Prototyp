@@ -523,7 +523,7 @@
       </section>
       <section class="abschnitt mehr"><h2>Prototyp</h2>
         <div class="knoepfe" style="justify-content:flex-start"><button class="btn gefahr" data-aktion="zuruecksetzen">Demo-Daten zurücksetzen</button>
-        <a class="btn" href="../">Alle Prototypen</a></div>
+        <a class="btn" href="../">Alle Prototypen</a> <a class="btn" href="entwickler/">Entwickler (Datenmodell, API)</a></div>
       </section>`;
   }
 

@@ -39,6 +39,11 @@ und dunkel. Änderungen bleiben im Browser gespeichert; «↺ Testdaten» setzt 
 
 Noch offen – Rückmeldungen bitte als Issue.
 
+## Entwickler
+
+Menüpunkt «Entwickler» bzw. `entwickler/`: Datenmodell (Diagramm, Tabellen, SQL), API-Dokumentation (Scalar),
+Swagger und OpenAPI – erzeugt mit `python3 tools/entwickler_bauen.py` aus `docs/umsetzung/staffing/` (nicht von Hand ändern).
+
 ## Hinweise
 
 - Personen, Schule und Schülerzahlen sind erfunden; die kantonalen Werte sind ohne Gewähr (ZU PRÜFEN).

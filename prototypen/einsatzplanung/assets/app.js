@@ -392,7 +392,7 @@
       if (!erlaubt(n[0])) return "";
       const aktiv = seite === n[0] || ({ person: "personen", einsatz: "unterricht", klasse: "klassen" }[seite] === n[0]);
       return `<li><a href="#/${n[0]}" ${aktiv ? 'aria-current="page"' : ""}>${ICONS[n[0]]}<span>${esc(n[1])}</span></a></li>`;
-    }).join("");
+    }).join("") + `<li class="gruppe" aria-hidden="true">Entwicklung</li><li><a href="entwickler/" title="Datenmodell und API – Entwurf für die Umsetzung">${ico('<path d="m8 8-4 4 4 4"/><path d="m16 8 4 4-4 4"/><path d="m14 4-4 16"/>')}<span>Entwickler</span></a></li>`;
     const schulen = S.schulen.map((s) => `<option value="${s.id}" ${s.id === S.schule ? "selected" : ""}>${esc(s.name)}</option>`).join("");
     const jahre = S.schuljahre.map((j) => `<option ${j === S.schuljahr ? "selected" : ""}>${esc(j)}</option>`).join("");
     const rollen = Object.entries(ROLLEN).map(([k, v]) => `<option value="${k}" ${k === S.rolle ? "selected" : ""}>${esc(v)}</option>`).join("");
@@ -416,7 +416,7 @@
         <nav class="navi" aria-label="Hauptnavigation"><ul>${navi}</ul></nav>
         <main id="inhalt" tabindex="-1">${inhalt}</main>
       </div>
-      <footer class="fuss"><span>${wordmark("Staffing")} · Prototyp 0.1.2 · in Entwicklung · <a href="../">Alle Prototypen</a> · Begriffe: <a href="https://glossary.eduksx.ch">EduKSX-Glossary</a> (CC BY 4.0)</span><span>Developed by ${WM_DEV}</span></footer>
+      <footer class="fuss"><span>${wordmark("Staffing")} · Prototyp 0.2.0 · in Entwicklung · <a href="../">Alle Prototypen</a> · Begriffe: <a href="https://glossary.eduksx.ch">EduKSX-Glossary</a> (CC BY 4.0)</span><span>Developed by ${WM_DEV}</span></footer>
       <div class="sr-only" aria-live="polite" id="ansage"></div>`;
   }
 

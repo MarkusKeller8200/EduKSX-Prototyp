@@ -3,7 +3,7 @@
   "produkt": "EduKSX-Flow",
   "icon": "flow",
   "beschreibung": "Abläufe einer Schulgemeinde als Schritte planen (45 Vorlagen: Gemeindeversammlung, Schulbehörde, RPK, Finanzen, Lernende, Personal, Infrastruktur, ICT) – mit Quellenangabe je Schritt, Fristen ab Stichtag und Zuständigkeit nach Funktionendiagramm; jeder Schritt ruft einen Vorgang aus einem anderen EduKSX-Modul auf. Jahreskalender mit Zeitregeln, Ferien und Verknüpfung zu Abläufen.",
-  "version": "0.5.5",
+  "version": "0.6.0",
   "status": "in-arbeit",
   "technik": "html",
   "modul": "EduKSX-Flow",

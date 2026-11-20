@@ -1,0 +1,2969 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "EduKSX-Time",
+    "version": "0.1.0",
+    "description": "Zeiterfassung: Stempeln (Kommen, Pause, Gehen) mit Buchungsart, Soll aus dem Pensum, Ist/Saldo mit gesetzlicher Pause, Rückgängig, Nachtragen und Offline-Übertragung (idempotent über die Buchungs-ID). Ausbau: Abwesenheiten, Korrekturen, Monatsabschluss mit Visum.",
+    "contact": {
+      "name": "EduKSX",
+      "url": "https://github.com/MarkusKeller8200/EduKSX-Prototyp"
+    },
+    "license": {
+      "name": "siehe Repository",
+      "identifier": "LicenseRef-EduKSX"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{mandant}.eduksx.ch/api",
+      "variables": {
+        "mandant": {
+          "default": "demo"
+        }
+      },
+      "description": "Beispiel – Namensraum je Modul setzt das Zusammenführen in EduKSX-Architektur."
+    }
+  ],
+  "security": [
+    {
+      "ident": [
+        "time:lesen"
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "Stempeln",
+      "description": "Status und Buchungen"
+    },
+    {
+      "name": "Verlauf",
+      "description": "Tage, Wochen, Monate"
+    },
+    {
+      "name": "Abwesenheiten",
+      "description": "Ferien, Krankheit … (Ausbau)"
+    },
+    {
+      "name": "Korrekturen",
+      "description": "Korrekturanträge (Ausbau)"
+    },
+    {
+      "name": "Monat",
+      "description": "Monatsabschluss und Visum (Ausbau)"
+    },
+    {
+      "name": "Verwaltung",
+      "description": "Regeln, Arten, Arbeitsmodelle"
+    }
+  ],
+  "paths": {
+    "/v1/abwesenheiten": {
+      "get": {
+        "tags": [
+          "Abwesenheiten"
+        ],
+        "operationId": "abwesenheitListe",
+        "summary": "Abwesenheiten auflisten",
+        "security": [
+          {
+            "ident": [
+              "time:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Seite"
+          },
+          {
+            "$ref": "#/components/parameters/Anzahl"
+          },
+          {
+            "name": "personId",
+            "in": "query",
+            "required": false,
+            "description": "nur mit time:visum für andere",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "von",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "bis",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Abwesenheiten.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/AbwesenheitVoll"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Abwesenheiten"
+        ],
+        "operationId": "abwesenheitAnlegen",
+        "summary": "Abwesenheit anlegen",
+        "security": [
+          {
+            "ident": [
+              "time:antrag"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Abwesenheit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Abwesenheit"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Protokoll"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/abwesenheiten/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Abwesenheiten"
+        ],
+        "operationId": "abwesenheitLesen",
+        "summary": "Abwesenheit lesen",
+        "security": [
+          {
+            "ident": [
+              "time:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Abwesenheit",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Abwesenheit"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Protokoll"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Abwesenheiten"
+        ],
+        "operationId": "abwesenheitAendern",
+        "summary": "Abwesenheit ändern (JSON Merge Patch)",
+        "security": [
+          {
+            "ident": [
+              "time:antrag"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Abwesenheit"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Abwesenheit"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Protokoll"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Abwesenheiten"
+        ],
+        "operationId": "abwesenheitEntfernen",
+        "summary": "Abwesenheit entfernen (archivieren)",
+        "security": [
+          {
+            "ident": [
+              "time:antrag"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Entfernt bzw. archiviert."
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      }
+    },
+    "/v1/korrekturen": {
+      "get": {
+        "tags": [
+          "Korrekturen"
+        ],
+        "operationId": "korrekturListe",
+        "summary": "Korrekturanträge auflisten",
+        "security": [
+          {
+            "ident": [
+              "time:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Seite"
+          },
+          {
+            "$ref": "#/components/parameters/Anzahl"
+          },
+          {
+            "name": "personId",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Korrekturanträge.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/KorrekturVoll"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Korrekturen"
+        ],
+        "operationId": "korrekturAnlegen",
+        "summary": "Korrekturantrag anlegen",
+        "security": [
+          {
+            "ident": [
+              "time:antrag"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Korrektur"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Korrektur"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Protokoll"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/korrekturen/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Korrekturen"
+        ],
+        "operationId": "korrekturLesen",
+        "summary": "Korrekturantrag lesen",
+        "security": [
+          {
+            "ident": [
+              "time:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Korrekturantrag",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Korrektur"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Protokoll"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      }
+    },
+    "/v1/regeln": {
+      "get": {
+        "tags": [
+          "Verwaltung"
+        ],
+        "operationId": "regelListe",
+        "summary": "Regeln auflisten",
+        "security": [
+          {
+            "ident": [
+              "time:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Seite"
+          },
+          {
+            "$ref": "#/components/parameters/Anzahl"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Regeln.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/RegelVoll"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Verwaltung"
+        ],
+        "operationId": "regelAnlegen",
+        "summary": "Regel anlegen",
+        "security": [
+          {
+            "ident": [
+              "time:admin"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Regel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Regel"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/regeln/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Verwaltung"
+        ],
+        "operationId": "regelLesen",
+        "summary": "Regel lesen",
+        "security": [
+          {
+            "ident": [
+              "time:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Regel",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Regel"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      }
+    },
+    "/v1/buchungsarten": {
+      "get": {
+        "tags": [
+          "Verwaltung"
+        ],
+        "operationId": "buchungsartListe",
+        "summary": "Buchungsarten auflisten",
+        "security": [
+          {
+            "ident": [
+              "time:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Seite"
+          },
+          {
+            "$ref": "#/components/parameters/Anzahl"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Buchungsarten.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BuchungsartVoll"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Verwaltung"
+        ],
+        "operationId": "buchungsartAnlegen",
+        "summary": "Buchungsart anlegen",
+        "security": [
+          {
+            "ident": [
+              "time:admin"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Buchungsart"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Buchungsart"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/buchungsarten/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Verwaltung"
+        ],
+        "operationId": "buchungsartLesen",
+        "summary": "Buchungsart lesen",
+        "security": [
+          {
+            "ident": [
+              "time:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Buchungsart",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Buchungsart"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Verwaltung"
+        ],
+        "operationId": "buchungsartAendern",
+        "summary": "Buchungsart ändern (JSON Merge Patch)",
+        "security": [
+          {
+            "ident": [
+              "time:admin"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Buchungsart"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Buchungsart"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      }
+    },
+    "/v1/arbeitsmodelle": {
+      "get": {
+        "tags": [
+          "Verwaltung"
+        ],
+        "operationId": "arbeitsmodellListe",
+        "summary": "Arbeitsmodelle auflisten",
+        "security": [
+          {
+            "ident": [
+              "time:admin"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Seite"
+          },
+          {
+            "$ref": "#/components/parameters/Anzahl"
+          },
+          {
+            "name": "personId",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Arbeitsmodelle.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ArbeitsmodellVoll"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Verwaltung"
+        ],
+        "operationId": "arbeitsmodellAnlegen",
+        "summary": "Arbeitsmodell anlegen",
+        "security": [
+          {
+            "ident": [
+              "time:admin"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Arbeitsmodell"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Arbeitsmodell"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Protokoll"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/arbeitsmodelle/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Verwaltung"
+        ],
+        "operationId": "arbeitsmodellLesen",
+        "summary": "Arbeitsmodell lesen",
+        "security": [
+          {
+            "ident": [
+              "time:admin"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arbeitsmodell",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Arbeitsmodell"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Protokoll"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Verwaltung"
+        ],
+        "operationId": "arbeitsmodellAendern",
+        "summary": "Arbeitsmodell ändern (JSON Merge Patch)",
+        "security": [
+          {
+            "ident": [
+              "time:admin"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Arbeitsmodell"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Arbeitsmodell"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Protokoll"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      }
+    },
+    "/v1/status": {
+      "get": {
+        "tags": [
+          "Stempeln"
+        ],
+        "operationId": "statusLesen",
+        "summary": "Aktueller Zustand, heute Ist/Soll/Saldo",
+        "security": [
+          {
+            "ident": [
+              "time:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      }
+    },
+    "/v1/buchungen": {
+      "post": {
+        "tags": [
+          "Stempeln"
+        ],
+        "operationId": "stempeln",
+        "summary": "Buchung erfassen (Kommen, Pause, Pause beenden, Gehen)",
+        "security": [
+          {
+            "ident": [
+              "time:stempeln"
+            ]
+          }
+        ],
+        "description": "Prüft die Reihenfolge (z. B. kein Gehen ohne Kommen) und die Zeit (nicht in der Zukunft, offline höchstens max. Nachtragstage zurück). Gleiche ID → 200 mit unverändertem Status.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Buchung"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/buchungen/uebertragen": {
+      "post": {
+        "tags": [
+          "Stempeln"
+        ],
+        "operationId": "uebertragen",
+        "summary": "Offline erfasste Buchungen übertragen (Stapel, idempotent)",
+        "security": [
+          {
+            "ident": [
+              "time:stempeln"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Uebertragung"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UebertragungErgebnis"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/buchungen/{id}/rueckgaengig": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Stempeln"
+        ],
+        "operationId": "rueckgaengig",
+        "summary": "Letzte Buchung innerhalb der Frist rückgängig machen",
+        "security": [
+          {
+            "ident": [
+              "time:stempeln"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/buchungen/nachtragen": {
+      "post": {
+        "tags": [
+          "Stempeln"
+        ],
+        "operationId": "gehenNachtragen",
+        "summary": "Vergessenes Gehen nachtragen (gekennzeichnet)",
+        "security": [
+          {
+            "ident": [
+              "time:stempeln"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Nachtrag"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Status"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/tage/{datum}": {
+      "parameters": [
+        {
+          "name": "datum",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Verlauf"
+        ],
+        "operationId": "tagLesen",
+        "summary": "Tageswerte und Buchungen",
+        "security": [
+          {
+            "ident": [
+              "time:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "personId",
+            "in": "query",
+            "required": false,
+            "description": "nur mit time:visum",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tag"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      }
+    },
+    "/v1/verlauf": {
+      "get": {
+        "tags": [
+          "Verlauf"
+        ],
+        "operationId": "verlaufLesen",
+        "summary": "Woche bzw. letzte 14 Tage (Zeiten, Ist, Saldo)",
+        "security": [
+          {
+            "ident": [
+              "time:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "von",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "bis",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "personId",
+            "in": "query",
+            "required": false,
+            "description": "nur mit time:visum",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Verlauf"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      }
+    },
+    "/v1/korrekturen/{id}/entscheiden": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Korrekturen"
+        ],
+        "operationId": "korrekturEntscheiden",
+        "summary": "Korrektur bestätigen oder ablehnen",
+        "security": [
+          {
+            "ident": [
+              "time:visum"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Entscheid"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Korrektur"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/abwesenheiten/{id}/entscheiden": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Abwesenheiten"
+        ],
+        "operationId": "abwesenheitEntscheiden",
+        "summary": "Abwesenheit bewilligen oder ablehnen",
+        "security": [
+          {
+            "ident": [
+              "time:visum"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Entscheid"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Abwesenheit"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/monate/{monat}": {
+      "parameters": [
+        {
+          "name": "monat",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Monat"
+        ],
+        "operationId": "monatLesen",
+        "summary": "Monatsübersicht mit Saldo und Ferien",
+        "security": [
+          {
+            "ident": [
+              "time:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "personId",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Monat"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      }
+    },
+    "/v1/monate/{monat}/einreichen": {
+      "parameters": [
+        {
+          "name": "monat",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "Monat"
+        ],
+        "operationId": "monatEinreichen",
+        "summary": "Monat einreichen (Werte werden eingefroren)",
+        "security": [
+          {
+            "ident": [
+              "time:antrag"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Monat"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/monate/{monat}/visieren": {
+      "parameters": [
+        {
+          "name": "monat",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "Monat"
+        ],
+        "operationId": "monatVisieren",
+        "summary": "Monat visieren oder zurückweisen (optional mit EduKSX-Sign)",
+        "security": [
+          {
+            "ident": [
+              "time:visum"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Visum.",
+                "properties": {
+                  "personId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "bestaetigt": {
+                    "type": "boolean"
+                  },
+                  "bemerkung": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "mitSignatur": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "personId",
+                  "bestaetigt"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Monat"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/team": {
+      "get": {
+        "tags": [
+          "Monat"
+        ],
+        "operationId": "teamUebersicht",
+        "summary": "Team: Status, offene Anträge, Monate zum Visieren",
+        "security": [
+          {
+            "ident": [
+              "time:visum"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "monat",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Monat"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ident": {
+        "type": "oauth2",
+        "description": "Anmeldung über EduKSX-Ident (OpenID Connect).",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://ident.eduksx.ch/oauth2/authorize",
+            "tokenUrl": "https://ident.eduksx.ch/oauth2/token",
+            "scopes": {
+              "time:lesen": "Eigene Zeiten lesen",
+              "time:stempeln": "Eigene Buchungen erfassen, rückgängig machen, nachtragen",
+              "time:antrag": "Abwesenheiten und Korrekturen beantragen, Monat einreichen",
+              "time:visum": "Zeiten des Teams lesen, Anträge entscheiden, Monat visieren (Schulleitung)",
+              "time:admin": "Regeln, Buchungs- und Abwesenheitsarten, Arbeitsmodelle (Schulverwaltung)"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "Id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "Seite": {
+        "name": "seite",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        }
+      },
+      "Anzahl": {
+        "name": "anzahl",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        }
+      },
+      "IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": true,
+        "description": "ETag des gelesenen Stands (optimistisches Sperren).",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Mandant": {
+        "name": "EduKSX-Mandant",
+        "in": "header",
+        "required": false,
+        "description": "Nur für Personen mit mehreren Mandanten; sonst aus dem Token.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "responses": {
+      "Ungueltig": {
+        "description": "Eingabe ungültig oder Prüfregel verletzt.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "NichtAngemeldet": {
+        "description": "Kein oder ungültiges Token.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "KeinRecht": {
+        "description": "Rolle oder Scope reicht nicht.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "NichtGefunden": {
+        "description": "Nicht vorhanden oder nicht im Mandanten.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "Konflikt": {
+        "description": "Fachlicher Konflikt (z. B. Zustand erlaubt die Aktion nicht).",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "VersionVeraltet": {
+        "description": "If-Match passt nicht zum aktuellen Stand.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Problem": {
+        "type": "object",
+        "description": "Fehler nach RFC 9457 (application/problem+json).",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          },
+          "fehler": {
+            "type": "array",
+            "description": "Verletzte Prüfregeln bzw. ungültige Felder.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "feld": {
+                  "type": "string"
+                },
+                "regel": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "title",
+          "status"
+        ]
+      },
+      "Protokoll": {
+        "type": "object",
+        "description": "Protokollfelder jedes Datensatzes (nur lesbar).",
+        "properties": {
+          "erstelltAm": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "erstelltVon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "readOnly": true
+          },
+          "geaendertAm": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "geaendertVon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "readOnly": true
+          },
+          "version": {
+            "type": "integer",
+            "readOnly": true
+          }
+        }
+      },
+      "Status": {
+        "type": "object",
+        "description": "Aktueller Zustand für die Startseite.",
+        "properties": {
+          "zustand": {
+            "type": "string",
+            "enum": [
+              "aus",
+              "ein",
+              "pause",
+              "vergessen"
+            ],
+            "description": "vergessen = offene Buchung von einem früheren Tag"
+          },
+          "seit": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "art": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "person": {
+            "$ref": "#/components/schemas/PersonKurz",
+            "description": "Name, Funktion, Pensum"
+          },
+          "heute": {
+            "$ref": "#/components/schemas/Tag"
+          },
+          "rueckgaengigBis": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "letzte Buchung bis dahin rückgängig"
+          },
+          "sollErreichtUm": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "voraussichtlich, inkl. gesetzlicher Pause"
+          }
+        }
+      },
+      "PersonKurz": {
+        "type": "object",
+        "description": "Person.",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "funktion": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pensum": {
+            "type": "number"
+          }
+        }
+      },
+      "Buchung": {
+        "type": "object",
+        "description": "Stempelbuchung.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "vom Gerät erzeugt; erneutes Senden derselben ID ist wirkungslos (idempotent)"
+          },
+          "typ": {
+            "type": "string",
+            "enum": [
+              "kommen",
+              "pause_beginn",
+              "pause_ende",
+              "gehen"
+            ]
+          },
+          "zeit": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "art": {
+            "type": "string"
+          },
+          "nachgetragen": {
+            "type": "boolean"
+          },
+          "offlineErfasst": {
+            "type": "boolean"
+          },
+          "erfasstAm": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "empfangenAm": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "storniertAm": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "readOnly": true
+          },
+          "bemerkung": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "typ",
+          "zeit",
+          "art",
+          "erfasstAm"
+        ]
+      },
+      "Tag": {
+        "type": "object",
+        "description": "Tageswerte (berechnet).",
+        "properties": {
+          "tag": {
+            "type": "string",
+            "format": "date"
+          },
+          "sollMin": {
+            "type": "integer"
+          },
+          "istMin": {
+            "type": "integer"
+          },
+          "saldoMin": {
+            "type": "integer"
+          },
+          "pauseMin": {
+            "type": "integer"
+          },
+          "gesetzlichePauseMin": {
+            "type": "integer"
+          },
+          "offen": {
+            "type": "boolean"
+          },
+          "buchungen": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Buchung"
+            }
+          },
+          "abwesenheit": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "Verlauf": {
+        "type": "object",
+        "description": "Zeitraum mit Tageswerten.",
+        "properties": {
+          "von": {
+            "type": "string",
+            "format": "date"
+          },
+          "bis": {
+            "type": "string",
+            "format": "date"
+          },
+          "tage": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          },
+          "sollMin": {
+            "type": "integer"
+          },
+          "istMin": {
+            "type": "integer"
+          },
+          "saldoMin": {
+            "type": "integer"
+          }
+        }
+      },
+      "Uebertragung": {
+        "type": "object",
+        "description": "Mehrere offline erfasste Buchungen auf einmal übertragen.",
+        "properties": {
+          "buchungen": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Buchung"
+            }
+          }
+        },
+        "required": [
+          "buchungen"
+        ]
+      },
+      "UebertragungErgebnis": {
+        "type": "object",
+        "description": "Ergebnis der Übertragung.",
+        "properties": {
+          "angenommen": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "bereitsVorhanden": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "abgelehnt": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "description": "{id, grund}"
+          }
+        }
+      },
+      "Nachtrag": {
+        "type": "object",
+        "description": "Vergessenes Gehen nachtragen.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "zeit": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "bemerkung": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "zeit"
+        ]
+      },
+      "Abwesenheit": {
+        "type": "object",
+        "description": "Abwesenheit (Ausbau).",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "art": {
+            "type": "string"
+          },
+          "von": {
+            "type": "string",
+            "format": "date"
+          },
+          "bis": {
+            "type": "string",
+            "format": "date"
+          },
+          "halbtag": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "vormittag",
+              "nachmittag"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "beantragt",
+              "bewilligt",
+              "abgelehnt",
+              "erfasst"
+            ],
+            "readOnly": true
+          },
+          "bemerkung": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "keine Diagnosen"
+          }
+        },
+        "required": [
+          "art",
+          "von",
+          "bis"
+        ]
+      },
+      "Korrektur": {
+        "type": "object",
+        "description": "Korrekturantrag (Ausbau).",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "tag": {
+            "type": "string",
+            "format": "date"
+          },
+          "buchungId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "neuTyp": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "kommen",
+              "pause_beginn",
+              "pause_ende",
+              "gehen"
+            ]
+          },
+          "neuZeit": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "loeschen": {
+            "type": "boolean"
+          },
+          "begruendung": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "beantragt",
+              "bestaetigt",
+              "abgelehnt"
+            ],
+            "readOnly": true
+          }
+        },
+        "required": [
+          "tag",
+          "begruendung"
+        ]
+      },
+      "Entscheid": {
+        "type": "object",
+        "description": "Entscheid über einen Antrag.",
+        "properties": {
+          "bestaetigt": {
+            "type": "boolean"
+          },
+          "bemerkung": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "bestaetigt"
+        ]
+      },
+      "Monat": {
+        "type": "object",
+        "description": "Monatsabschluss (Ausbau).",
+        "properties": {
+          "monat": {
+            "type": "string",
+            "description": "JJJJ-MM"
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sollMin": {
+            "type": "integer"
+          },
+          "istMin": {
+            "type": "integer"
+          },
+          "abwesendMin": {
+            "type": "integer"
+          },
+          "saldoMonatMin": {
+            "type": "integer"
+          },
+          "saldoVortragMin": {
+            "type": "integer"
+          },
+          "saldoTotalMin": {
+            "type": "integer"
+          },
+          "ferienBezogenTage": {
+            "type": "number"
+          },
+          "ferienRestTage": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "offen",
+              "eingereicht",
+              "visiert",
+              "zurueckgewiesen"
+            ]
+          },
+          "eingereichtAm": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "visiertAm": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "visiertVon": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "signProzess": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "Regel": {
+        "type": "object",
+        "description": "Arbeitszeitregel.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "gueltigAb": {
+            "type": "string",
+            "format": "date"
+          },
+          "soll100Min": {
+            "type": "integer"
+          },
+          "pauseAbMin": {
+            "type": "integer"
+          },
+          "pauseDauerMin": {
+            "type": "integer"
+          },
+          "pauseStufen": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "rueckgaengigSek": {
+            "type": "integer"
+          },
+          "maxNachtragTage": {
+            "type": "integer"
+          },
+          "homeofficeErlaubt": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "gueltigAb",
+          "soll100Min"
+        ]
+      },
+      "Buchungsart": {
+        "type": "object",
+        "description": "Buchungsart.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "schluessel": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "zeichen": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "zaehltAlsArbeitszeit": {
+            "type": "boolean"
+          },
+          "aktiv": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schluessel",
+          "name"
+        ]
+      },
+      "Arbeitsmodell": {
+        "type": "object",
+        "description": "Arbeitsmodell einer Person.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "gueltigAb": {
+            "type": "string",
+            "format": "date"
+          },
+          "gueltigBis": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "pensum": {
+            "type": "number"
+          },
+          "funktion": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "arbeitstage": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "sollJeTagMin": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "quelle": {
+            "type": "string",
+            "enum": [
+              "manuell",
+              "staffing"
+            ]
+          }
+        },
+        "required": [
+          "personId",
+          "gueltigAb",
+          "pensum"
+        ]
+      },
+      "MonatEreignis": {
+        "type": "object",
+        "description": "Ereignis: Monat eingereicht oder visiert.",
+        "properties": {
+          "personId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "monat": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "saldoTotalMin": {
+            "type": "integer"
+          }
+        }
+      },
+      "AbwesenheitVoll": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Abwesenheit"
+          },
+          {
+            "$ref": "#/components/schemas/Protokoll"
+          }
+        ]
+      },
+      "KorrekturVoll": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Korrektur"
+          },
+          {
+            "$ref": "#/components/schemas/Protokoll"
+          }
+        ]
+      },
+      "RegelVoll": {
+        "$ref": "#/components/schemas/Regel"
+      },
+      "BuchungsartVoll": {
+        "$ref": "#/components/schemas/Buchungsart"
+      },
+      "ArbeitsmodellVoll": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Arbeitsmodell"
+          },
+          {
+            "$ref": "#/components/schemas/Protokoll"
+          }
+        ]
+      }
+    }
+  },
+  "webhooks": {
+    "monatGeaendert": {
+      "post": {
+        "summary": "Monat eingereicht oder visiert (für Lohn/Personal über EduKSX-Connect, Flow).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MonatEreignis"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Empfangen."
+          }
+        }
+      }
+    }
+  }
+}

@@ -45,6 +45,11 @@ Signaturdienst; im Prototyp erscheint wie vereinbart kein Herstellername.
 
 Noch in Abstimmung.
 
+## Entwickler
+
+Menüpunkt «Entwickler» bzw. `entwickler/`: Datenmodell (Diagramm, Tabellen, SQL), API-Dokumentation (Scalar),
+Swagger und OpenAPI – erzeugt mit `python3 tools/entwickler_bauen.py` aus `docs/umsetzung/sign/` (nicht von Hand ändern).
+
 ## Hinweise
 
 - Nur erfundene Testdaten; Signaturen, PDF/A-Umwandlung, Siegel und Abgleich sind simuliert

@@ -1,0 +1,4873 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "EduKSX-Flow",
+    "version": "0.1.0",
+    "description": "Ablaufplanung / Termine und ToDo: Ablaufvorlagen mit Schritten, die Vorgänge in anderen Modulen aufrufen (Vorgangsregister), laufende Abläufe mit Fristen ab Stichtag, Aufgaben je Rolle, Aufrufprotokoll, Funktionendiagramm und Jahreskalender mit Zeitregeln. Fristen, Status «bereit» und Kalendervorkommen berechnet der Motor.",
+    "contact": {
+      "name": "EduKSX",
+      "url": "https://github.com/MarkusKeller8200/EduKSX-Prototyp"
+    },
+    "license": {
+      "name": "siehe Repository",
+      "identifier": "LicenseRef-EduKSX"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{mandant}.eduksx.ch/api",
+      "variables": {
+        "mandant": {
+          "default": "demo"
+        }
+      },
+      "description": "Beispiel – Namensraum je Modul setzt das Zusammenführen in EduKSX-Architektur."
+    }
+  ],
+  "security": [
+    {
+      "ident": [
+        "flow:lesen"
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "Aufgaben",
+      "description": "Meine Aufgaben"
+    },
+    {
+      "name": "Abläufe",
+      "description": "Laufende Abläufe"
+    },
+    {
+      "name": "Vorlagen",
+      "description": "Ablaufvorlagen"
+    },
+    {
+      "name": "Register",
+      "description": "Vorgänge der Module"
+    },
+    {
+      "name": "Kalender",
+      "description": "Jahreskalender"
+    },
+    {
+      "name": "Stammdaten",
+      "description": "Rollen, Funktionendiagramm, Quellen"
+    },
+    {
+      "name": "Protokoll",
+      "description": "Aufrufprotokoll und Hinweise"
+    }
+  ],
+  "paths": {
+    "/v1/vorlagen": {
+      "get": {
+        "tags": [
+          "Vorlagen"
+        ],
+        "operationId": "vorlageListe",
+        "summary": "Ablaufvorlagen auflisten",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Seite"
+          },
+          {
+            "$ref": "#/components/parameters/Anzahl"
+          },
+          {
+            "name": "gruppe",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "suche",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Ablaufvorlagen.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/VorlageVoll"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Vorlagen"
+        ],
+        "operationId": "vorlageAnlegen",
+        "summary": "Ablaufvorlage anlegen",
+        "security": [
+          {
+            "ident": [
+              "flow:vorlagen"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Vorlage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Vorlage"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Protokoll"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/vorlagen/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Vorlagen"
+        ],
+        "operationId": "vorlageLesen",
+        "summary": "Ablaufvorlage lesen",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ablaufvorlage",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Vorlage"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Protokoll"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Vorlagen"
+        ],
+        "operationId": "vorlageAendern",
+        "summary": "Ablaufvorlage ändern (JSON Merge Patch)",
+        "security": [
+          {
+            "ident": [
+              "flow:vorlagen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Vorlage"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Vorlage"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Protokoll"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Vorlagen"
+        ],
+        "operationId": "vorlageEntfernen",
+        "summary": "Ablaufvorlage entfernen (archivieren)",
+        "security": [
+          {
+            "ident": [
+              "flow:vorlagen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Entfernt bzw. archiviert."
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      }
+    },
+    "/v1/laeufe": {
+      "get": {
+        "tags": [
+          "Abläufe"
+        ],
+        "operationId": "laufListe",
+        "summary": "Abläufe auflisten",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Seite"
+          },
+          {
+            "$ref": "#/components/parameters/Anzahl"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "vorlage",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "personId",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Abläufe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LaufVoll"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Abläufe"
+        ],
+        "operationId": "laufStarten",
+        "summary": "Ablauf starten (Kopie der freigegebenen Vorlage)",
+        "security": [
+          {
+            "ident": [
+              "flow:bearbeiten"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LaufStart"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lauf"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/laeufe/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Abläufe"
+        ],
+        "operationId": "laufLesen",
+        "summary": "Ablauf lesen",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ablauf",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lauf"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      }
+    },
+    "/v1/kalender/ereignisse": {
+      "get": {
+        "tags": [
+          "Kalender"
+        ],
+        "operationId": "ereignisListe",
+        "summary": "Kalenderereignisse auflisten",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Seite"
+          },
+          {
+            "$ref": "#/components/parameters/Anzahl"
+          },
+          {
+            "name": "bereich",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "rolle",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "quelle",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "regel",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mitAblauf",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Kalenderereignisse.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/EreignisVoll"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Kalender"
+        ],
+        "operationId": "ereignisAnlegen",
+        "summary": "Kalenderereignis anlegen",
+        "security": [
+          {
+            "ident": [
+              "flow:bearbeiten"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ereignis"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Ereignis"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Protokoll"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/kalender/ereignisse/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Kalender"
+        ],
+        "operationId": "ereignisLesen",
+        "summary": "Kalenderereignis lesen",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kalenderereignis",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Ereignis"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Protokoll"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Kalender"
+        ],
+        "operationId": "ereignisAendern",
+        "summary": "Kalenderereignis ändern (JSON Merge Patch)",
+        "security": [
+          {
+            "ident": [
+              "flow:bearbeiten"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Ereignis"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/Ereignis"
+                    },
+                    {
+                      "$ref": "#/components/schemas/Protokoll"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Kalender"
+        ],
+        "operationId": "ereignisEntfernen",
+        "summary": "Kalenderereignis entfernen (archivieren)",
+        "security": [
+          {
+            "ident": [
+              "flow:bearbeiten"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Entfernt bzw. archiviert."
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      }
+    },
+    "/v1/rollen": {
+      "get": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "rolleListe",
+        "summary": "Rollen auflisten",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Seite"
+          },
+          {
+            "$ref": "#/components/parameters/Anzahl"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Rollen.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/RolleVoll"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "rolleAnlegen",
+        "summary": "Rolle anlegen",
+        "security": [
+          {
+            "ident": [
+              "flow:admin"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rolle"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rolle"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/rollen/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "rolleLesen",
+        "summary": "Rolle lesen",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rolle",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rolle"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "rolleAendern",
+        "summary": "Rolle ändern (JSON Merge Patch)",
+        "security": [
+          {
+            "ident": [
+              "flow:admin"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rolle"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Rolle"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "rolleEntfernen",
+        "summary": "Rolle entfernen (archivieren)",
+        "security": [
+          {
+            "ident": [
+              "flow:admin"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Entfernt bzw. archiviert."
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      }
+    },
+    "/v1/funktionen": {
+      "get": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "funktionListe",
+        "summary": "Funktionen (Funktionendiagramm) auflisten",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Seite"
+          },
+          {
+            "$ref": "#/components/parameters/Anzahl"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Funktionen (Funktionendiagramm).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/FunktionVoll"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "funktionAnlegen",
+        "summary": "Funktion anlegen",
+        "security": [
+          {
+            "ident": [
+              "flow:admin"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Funktion"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Funktion"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/funktionen/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "funktionLesen",
+        "summary": "Funktion lesen",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Funktion",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Funktion"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "funktionAendern",
+        "summary": "Funktion ändern (JSON Merge Patch)",
+        "security": [
+          {
+            "ident": [
+              "flow:admin"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Funktion"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Funktion"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "funktionEntfernen",
+        "summary": "Funktion entfernen (archivieren)",
+        "security": [
+          {
+            "ident": [
+              "flow:admin"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Entfernt bzw. archiviert."
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      }
+    },
+    "/v1/quellen": {
+      "get": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "quelleListe",
+        "summary": "Quellen auflisten",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Seite"
+          },
+          {
+            "$ref": "#/components/parameters/Anzahl"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Quellen.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/QuelleVoll"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "quelleAnlegen",
+        "summary": "Quelle anlegen",
+        "security": [
+          {
+            "ident": [
+              "flow:admin"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Quelle"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Quelle"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/quellen/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "quelleLesen",
+        "summary": "Quelle lesen",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Quelle",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Quelle"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "quelleAendern",
+        "summary": "Quelle ändern (JSON Merge Patch)",
+        "security": [
+          {
+            "ident": [
+              "flow:admin"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Quelle"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Quelle"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Stammdaten"
+        ],
+        "operationId": "quelleEntfernen",
+        "summary": "Quelle entfernen (archivieren)",
+        "security": [
+          {
+            "ident": [
+              "flow:admin"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Entfernt bzw. archiviert."
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      }
+    },
+    "/v1/module": {
+      "get": {
+        "tags": [
+          "Register"
+        ],
+        "operationId": "modulListe",
+        "summary": "Module mit Vorgängen auflisten",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Seite"
+          },
+          {
+            "$ref": "#/components/parameters/Anzahl"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste der Module mit Vorgängen.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ModulVoll"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Register"
+        ],
+        "operationId": "modulAnlegen",
+        "summary": "Modul anlegen",
+        "security": [
+          {
+            "ident": [
+              "flow:register"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Modul"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Angelegt.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Modul"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/module/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Register"
+        ],
+        "operationId": "modulLesen",
+        "summary": "Modul lesen",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Modul",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Modul"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Register"
+        ],
+        "operationId": "modulAendern",
+        "summary": "Modul ändern (JSON Merge Patch)",
+        "security": [
+          {
+            "ident": [
+              "flow:register"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Modul"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert.",
+            "headers": {
+              "ETag": {
+                "description": "Version des Datensatzes.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Modul"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Register"
+        ],
+        "operationId": "modulEntfernen",
+        "summary": "Modul entfernen (archivieren)",
+        "security": [
+          {
+            "ident": [
+              "flow:register"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Entfernt bzw. archiviert."
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          },
+          "412": {
+            "$ref": "#/components/responses/VersionVeraltet"
+          }
+        }
+      }
+    },
+    "/v1/uebersicht": {
+      "get": {
+        "tags": [
+          "Aufgaben"
+        ],
+        "operationId": "uebersichtLesen",
+        "summary": "Kennzahlen der Übersicht",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Uebersicht"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      }
+    },
+    "/v1/aufgaben": {
+      "get": {
+        "tags": [
+          "Aufgaben"
+        ],
+        "operationId": "aufgabenListe",
+        "summary": "Meine Aufgaben (bereite Schritte meiner Rolle)",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "rolle",
+            "in": "query",
+            "required": false,
+            "description": "Standard: Rollen aus dem Token",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ueberfaellig",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bis",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Aufgabe"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      }
+    },
+    "/v1/vorlagen/{id}/freigeben": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Vorlagen"
+        ],
+        "operationId": "vorlageFreigeben",
+        "summary": "Vorlage freigeben (neue Version für künftige Starts)",
+        "security": [
+          {
+            "ident": [
+              "flow:vorlagen"
+            ]
+          }
+        ],
+        "description": "Prüft: jeder Schritt hat eine Quelle, Vorgänge existieren im Register, Platzhalter lösen auf, keine Zyklen; Rolle mit «V» im Funktionendiagramm passt.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vorlage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/vorlagen/{id}/kopieren": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Vorlagen"
+        ],
+        "operationId": "vorlageKopieren",
+        "summary": "Vorlage als neuen Entwurf kopieren",
+        "security": [
+          {
+            "ident": [
+              "flow:vorlagen"
+            ]
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vorlage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/vorlagen/{id}/graph": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "Vorlagen"
+        ],
+        "operationId": "vorlageGraph",
+        "summary": "Ablauf als Diagramm (SVG)",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Datei.",
+            "content": {
+              "image/svg+xml": {
+                "schema": {
+                  "type": "string",
+                  "contentMediaType": "image/svg+xml"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          }
+        }
+      }
+    },
+    "/v1/laeufe/vorschau": {
+      "post": {
+        "tags": [
+          "Abläufe"
+        ],
+        "operationId": "laufVorschau",
+        "summary": "Start prüfen: Fristen berechnen, Bedingungen auswerten",
+        "security": [
+          {
+            "ident": [
+              "flow:bearbeiten"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LaufStart"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vorschau"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/laeufe/{id}/abbrechen": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Abläufe"
+        ],
+        "operationId": "laufAbbrechen",
+        "summary": "Ablauf abbrechen",
+        "security": [
+          {
+            "ident": [
+              "flow:bearbeiten"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Grund.",
+                "properties": {
+                  "grund": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "grund"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lauf"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/laeufe/{id}/schritte/{code}/erledigen": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "name": "code",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "Abläufe"
+        ],
+        "operationId": "schrittErledigen",
+        "summary": "Schritt erledigen bzw. Vorgang auslösen",
+        "security": [
+          {
+            "ident": [
+              "flow:bearbeiten"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Erledigen"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lauf"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/laeufe/{id}/schritte/{code}/ueberspringen": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "name": "code",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "Abläufe"
+        ],
+        "operationId": "schrittUeberspringen",
+        "summary": "Schritt mit Begründung überspringen",
+        "security": [
+          {
+            "ident": [
+              "flow:bearbeiten"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Begründung.",
+                "properties": {
+                  "bemerkung": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "bemerkung"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lauf"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/laeufe/{id}/schritte/{code}/wiederholen": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "name": "code",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "Abläufe"
+        ],
+        "operationId": "schrittWiederholen",
+        "summary": "Fehlgeschlagenen Aufruf wiederholen",
+        "security": [
+          {
+            "ident": [
+              "flow:bearbeiten"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lauf"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/laeufe/{id}/schritte/{code}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "name": "code",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "patch": {
+        "tags": [
+          "Abläufe"
+        ],
+        "operationId": "schrittAendern",
+        "summary": "Frist, Zuständigkeit oder Bemerkung eines Schritts ändern",
+        "security": [
+          {
+            "ident": [
+              "flow:bearbeiten"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Änderung.",
+                "properties": {
+                  "frist": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date"
+                  },
+                  "zustaendigId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "uuid"
+                  },
+                  "bemerkung": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lauf"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/aufrufe": {
+      "get": {
+        "tags": [
+          "Protokoll"
+        ],
+        "operationId": "aufrufeListe",
+        "summary": "Aufrufprotokoll",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "laufId",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "vorgang",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "von",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "bis",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Aufruf"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      }
+    },
+    "/v1/aufrufe/rueckmeldung": {
+      "post": {
+        "tags": [
+          "Protokoll"
+        ],
+        "operationId": "rueckmeldungEmpfangen",
+        "summary": "Rückmeldung eines Moduls zu einem ausstehenden Aufruf",
+        "security": [
+          {
+            "ident": [
+              "flow:register"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Rueckmeldung"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Ausgeführt."
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/hinweise": {
+      "get": {
+        "tags": [
+          "Protokoll"
+        ],
+        "operationId": "hinweiseListe",
+        "summary": "Hinweise an meine Rollen",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ungelesen",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Hinweis"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      }
+    },
+    "/v1/hinweise/{id}/gelesen": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Protokoll"
+        ],
+        "operationId": "hinweisGelesen",
+        "summary": "Hinweis als gelesen markieren",
+        "security": [
+          {
+            "ident": [
+              "flow:bearbeiten"
+            ]
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Ausgeführt."
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/module/{id}/pruefen": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Register"
+        ],
+        "operationId": "modulPruefen",
+        "summary": "Erreichbarkeit eines Moduls prüfen",
+        "security": [
+          {
+            "ident": [
+              "flow:register"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Modul"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/kalender/vorkommen": {
+      "get": {
+        "tags": [
+          "Kalender"
+        ],
+        "operationId": "vorkommenListe",
+        "summary": "Vorkommen der Ereignisse in einem Zeitraum (Kalender, Liste, Jahresübersicht)",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "von",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "bis",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "bereich",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "rolle",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "nurOffen",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "nurFlow",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Vorkommen"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      }
+    },
+    "/v1/kalender/ereignisse/{id}/vorkommen/{datum}/erledigt": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "name": "datum",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "Kalender"
+        ],
+        "operationId": "vorkommenErledigt",
+        "summary": "Vorkommen (oder Teilaufgabe) als erledigt markieren bzw. zurücknehmen",
+        "security": [
+          {
+            "ident": [
+              "flow:bearbeiten"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Erledigt.",
+                "properties": {
+                  "erledigt": {
+                    "type": "boolean"
+                  },
+                  "teil": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "erledigt"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vorkommen"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/kalender/ereignisse/{id}/vorkommen/{datum}/starten": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "name": "datum",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "post": {
+        "tags": [
+          "Kalender"
+        ],
+        "operationId": "vorkommenStarten",
+        "summary": "Verknüpften Ablauf aus einem Vorkommen starten",
+        "security": [
+          {
+            "ident": [
+              "flow:bearbeiten"
+            ]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Startwerte.",
+                "properties": {
+                  "kontext": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ergebnis.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lauf"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/Ungueltig"
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          },
+          "404": {
+            "$ref": "#/components/responses/NichtGefunden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Konflikt"
+          }
+        }
+      }
+    },
+    "/v1/kalender/bereiche": {
+      "get": {
+        "tags": [
+          "Kalender"
+        ],
+        "operationId": "bereicheListe",
+        "summary": "Themenbereiche des Kalenders",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "daten": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Kalenderbereich"
+                      }
+                    },
+                    "seite": {
+                      "type": "integer"
+                    },
+                    "anzahl": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "daten",
+                    "seite",
+                    "anzahl",
+                    "total"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      }
+    },
+    "/v1/kalender/export.ics": {
+      "get": {
+        "tags": [
+          "Kalender"
+        ],
+        "operationId": "kalenderIcs",
+        "summary": "Kalender als iCalendar (Abo-Link je Rolle)",
+        "security": [
+          {
+            "ident": [
+              "flow:lesen"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "rolle",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "bereich",
+            "in": "query",
+            "required": false,
+            "description": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Datei.",
+            "content": {
+              "text/calendar": {
+                "schema": {
+                  "type": "string",
+                  "contentMediaType": "text/calendar"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/NichtAngemeldet"
+          },
+          "403": {
+            "$ref": "#/components/responses/KeinRecht"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ident": {
+        "type": "oauth2",
+        "description": "Anmeldung über EduKSX-Ident (OpenID Connect).",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://ident.eduksx.ch/oauth2/authorize",
+            "tokenUrl": "https://ident.eduksx.ch/oauth2/token",
+            "scopes": {
+              "flow:lesen": "Abläufe, Aufgaben und Kalender lesen",
+              "flow:bearbeiten": "Abläufe starten, Aufgaben erledigen, Kalendereinträge pflegen",
+              "flow:vorlagen": "Ablaufvorlagen bearbeiten und freigeben (Schulverwaltung bereitet vor, Ressortvorstand gibt frei)",
+              "flow:register": "Vorgangsregister pflegen (Module melden ihre Vorgänge)",
+              "flow:admin": "Rollen, Funktionendiagramm, Quellen"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "Id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "Seite": {
+        "name": "seite",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        }
+      },
+      "Anzahl": {
+        "name": "anzahl",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        }
+      },
+      "IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": true,
+        "description": "ETag des gelesenen Stands (optimistisches Sperren).",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Mandant": {
+        "name": "EduKSX-Mandant",
+        "in": "header",
+        "required": false,
+        "description": "Nur für Personen mit mehreren Mandanten; sonst aus dem Token.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    },
+    "responses": {
+      "Ungueltig": {
+        "description": "Eingabe ungültig oder Prüfregel verletzt.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "NichtAngemeldet": {
+        "description": "Kein oder ungültiges Token.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "KeinRecht": {
+        "description": "Rolle oder Scope reicht nicht.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "NichtGefunden": {
+        "description": "Nicht vorhanden oder nicht im Mandanten.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "Konflikt": {
+        "description": "Fachlicher Konflikt (z. B. Zustand erlaubt die Aktion nicht).",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      },
+      "VersionVeraltet": {
+        "description": "If-Match passt nicht zum aktuellen Stand.",
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Problem": {
+        "type": "object",
+        "description": "Fehler nach RFC 9457 (application/problem+json).",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          },
+          "fehler": {
+            "type": "array",
+            "description": "Verletzte Prüfregeln bzw. ungültige Felder.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "feld": {
+                  "type": "string"
+                },
+                "regel": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "title",
+          "status"
+        ]
+      },
+      "Protokoll": {
+        "type": "object",
+        "description": "Protokollfelder jedes Datensatzes (nur lesbar).",
+        "properties": {
+          "erstelltAm": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "erstelltVon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "readOnly": true
+          },
+          "geaendertAm": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "geaendertVon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "readOnly": true
+          },
+          "version": {
+            "type": "integer",
+            "readOnly": true
+          }
+        }
+      },
+      "Rolle": {
+        "type": "object",
+        "description": "Rolle in Abläufen oder im Kalender.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "kurz": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "bereich": {
+            "type": "string",
+            "enum": [
+              "ablauf",
+              "kalender",
+              "beide"
+            ]
+          },
+          "kalenderrollen": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "kurz",
+          "name"
+        ]
+      },
+      "Funktion": {
+        "type": "object",
+        "description": "Aufgabe im Funktionendiagramm.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "nr": {
+            "type": "string"
+          },
+          "titel": {
+            "type": "string"
+          },
+          "rollen": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Kompetenz je Rolle, z. B. {\"SPF\":\"E\",\"SV\":\"V\"}"
+          }
+        },
+        "required": [
+          "nr",
+          "titel"
+        ]
+      },
+      "Quelle": {
+        "type": "object",
+        "description": "Quelle (Gesetz, Merkblatt, Prozessliste).",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "kurz": {
+            "type": "string"
+          },
+          "titel": {
+            "type": "string"
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "codexRef": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "kurz",
+          "titel"
+        ]
+      },
+      "Modul": {
+        "type": "object",
+        "description": "Modul im Vorgangsregister.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "schluessel": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "aufgabe": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "endpunkt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "erreichbar": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "geprueftAm": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "readOnly": true
+          },
+          "vorgaenge": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Vorgang"
+            }
+          }
+        },
+        "required": [
+          "schluessel",
+          "name"
+        ]
+      },
+      "Vorgang": {
+        "type": "object",
+        "description": "Vorgang, den ein Modul anbietet.",
+        "properties": {
+          "schluessel": {
+            "type": "string"
+          },
+          "titel": {
+            "type": "string"
+          },
+          "parameter": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "ergebnis": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "art": {
+            "type": "string",
+            "enum": [
+              "sofort",
+              "rueckmeldung"
+            ]
+          },
+          "aktiv": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schluessel",
+          "titel"
+        ]
+      },
+      "Vorlage": {
+        "type": "object",
+        "description": "Ablaufvorlage (versioniert).",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "code": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "titel": {
+            "type": "string"
+          },
+          "gruppe": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "entwurf",
+              "freigegeben",
+              "archiviert"
+            ],
+            "readOnly": true
+          },
+          "stichtagName": {
+            "type": "string"
+          },
+          "beschreibung": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "felder": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Feld"
+            }
+          },
+          "schritte": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VorlageSchritt"
+            }
+          },
+          "freigegebenAm": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "readOnly": true
+          },
+          "warnungen": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true
+          }
+        },
+        "required": [
+          "code",
+          "titel",
+          "stichtagName"
+        ]
+      },
+      "Feld": {
+        "type": "object",
+        "description": "Eingabefeld beim Start.",
+        "properties": {
+          "schluessel": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "typ": {
+            "type": "string",
+            "enum": [
+              "text",
+              "zahl",
+              "datum",
+              "auswahl",
+              "person"
+            ]
+          },
+          "optionen": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "pflicht": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "schluessel",
+          "label",
+          "typ"
+        ]
+      },
+      "VorlageSchritt": {
+        "type": "object",
+        "description": "Schritt einer Vorlage.",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "titel": {
+            "type": "string"
+          },
+          "rolle": {
+            "type": "string"
+          },
+          "tage": {
+            "type": "integer",
+            "description": "Frist relativ zum Stichtag"
+          },
+          "nach": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Codes der Vorgänger"
+          },
+          "vorgang": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "parameter": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "mit Platzhaltern {feld} bzw. {schritt.ergebnis}"
+          },
+          "automatisch": {
+            "type": "boolean"
+          },
+          "informiert": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bedingung": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Bedingung"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "funktionNr": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "quelle": {
+            "type": "string"
+          },
+          "quelleStelle": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "titel",
+          "rolle",
+          "tage",
+          "quelle"
+        ]
+      },
+      "Bedingung": {
+        "type": "object",
+        "description": "Schritt nur ausführen, wenn die Bedingung zutrifft.",
+        "properties": {
+          "feld": {
+            "type": "string"
+          },
+          "op": {
+            "type": "string",
+            "enum": [
+              "gleich",
+              "ungleich",
+              "in",
+              "nicht_in",
+              "groesser",
+              "kleiner"
+            ]
+          },
+          "wert": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "feld",
+          "op",
+          "wert"
+        ]
+      },
+      "Lauf": {
+        "type": "object",
+        "description": "Laufender Ablauf.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "nummer": {
+            "type": "string",
+            "readOnly": true
+          },
+          "vorlage": {
+            "type": "string",
+            "readOnly": true
+          },
+          "vorlageVersion": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "titel": {
+            "type": "string",
+            "readOnly": true
+          },
+          "stichtagName": {
+            "type": "string",
+            "readOnly": true
+          },
+          "stichtag": {
+            "type": "string",
+            "format": "date",
+            "readOnly": true
+          },
+          "kontext": {
+            "type": "object",
+            "additionalProperties": true,
+            "readOnly": true
+          },
+          "personId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "readOnly": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "laeuft",
+              "abgeschlossen",
+              "abgebrochen"
+            ],
+            "readOnly": true
+          },
+          "gestartetAm": {
+            "type": "string",
+            "format": "date",
+            "readOnly": true
+          },
+          "abgeschlossenAm": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "readOnly": true
+          },
+          "ausloeser": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "readOnly": true
+          },
+          "fortschritt": {
+            "$ref": "#/components/schemas/Fortschritt",
+            "description": "berechnet"
+          },
+          "schritte": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LaufSchritt"
+            }
+          }
+        }
+      },
+      "Fortschritt": {
+        "type": "object",
+        "description": "Fortschritt eines Ablaufs.",
+        "properties": {
+          "erledigt": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "ueberfaellig": {
+            "type": "integer"
+          },
+          "naechsterSchritt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "naechsteFrist": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          }
+        }
+      },
+      "LaufSchritt": {
+        "type": "object",
+        "description": "Schritt eines laufenden Ablaufs.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "code": {
+            "type": "string",
+            "readOnly": true
+          },
+          "titel": {
+            "type": "string"
+          },
+          "rolle": {
+            "type": "string"
+          },
+          "zustaendigId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "frist": {
+            "type": "string",
+            "format": "date"
+          },
+          "vorgaenger": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true
+          },
+          "vorgang": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "readOnly": true
+          },
+          "parameter": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true,
+            "readOnly": true
+          },
+          "automatisch": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "funktionNr": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "readOnly": true
+          },
+          "quelle": {
+            "type": "string",
+            "readOnly": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "wartet",
+              "bereit",
+              "geplant",
+              "laeuft",
+              "erledigt",
+              "uebersprungen",
+              "fehler"
+            ],
+            "readOnly": true
+          },
+          "ergebnis": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true,
+            "readOnly": true
+          },
+          "erledigtAm": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "readOnly": true
+          },
+          "bemerkung": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "ueberfaellig": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        }
+      },
+      "LaufStart": {
+        "type": "object",
+        "description": "Ablauf aus einer Vorlage starten.",
+        "properties": {
+          "vorlage": {
+            "type": "string",
+            "description": "Code der Vorlage (freigegebene Version)"
+          },
+          "stichtag": {
+            "type": "string",
+            "format": "date"
+          },
+          "kontext": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Werte der Startfelder"
+          },
+          "personId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "vorlage",
+          "stichtag",
+          "kontext"
+        ]
+      },
+      "Vorschau": {
+        "type": "object",
+        "description": "Vorschau eines Starts: Schritte mit Fristen, weggelassene Schritte, Warnungen.",
+        "properties": {
+          "schritte": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LaufSchritt"
+            }
+          },
+          "weggelassen": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "warnungen": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Aufgabe": {
+        "type": "object",
+        "description": "Aufgabe = bereiter oder fehlgeschlagener Schritt für eine Rolle.",
+        "properties": {
+          "laufId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "laufNummer": {
+            "type": "string"
+          },
+          "laufTitel": {
+            "type": "string"
+          },
+          "person": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "schritt": {
+            "$ref": "#/components/schemas/LaufSchritt"
+          },
+          "rolle": {
+            "type": "string"
+          },
+          "frist": {
+            "type": "string",
+            "format": "date"
+          },
+          "ueberfaellig": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Erledigen": {
+        "type": "object",
+        "description": "Schritt erledigen.",
+        "properties": {
+          "ergebnis": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true,
+            "description": "Ergebnis bei manuellen Schritten"
+          },
+          "bemerkung": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "Aufruf": {
+        "type": "object",
+        "description": "Eintrag im Aufrufprotokoll.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "nummer": {
+            "type": "string"
+          },
+          "zeit": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "laufId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "schritt": {
+            "type": "string"
+          },
+          "titel": {
+            "type": "string"
+          },
+          "person": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "vorgang": {
+            "type": "string"
+          },
+          "parameter": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "fehler",
+              "ausstehend",
+              "wiederholt"
+            ]
+          },
+          "antwort": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          },
+          "dauerMs": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        }
+      },
+      "Hinweis": {
+        "type": "object",
+        "description": "Hinweis an eine Rolle.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "rolle": {
+            "type": "string"
+          },
+          "datum": {
+            "type": "string",
+            "format": "date"
+          },
+          "laufId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "text": {
+            "type": "string"
+          },
+          "gelesen": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Rueckmeldung": {
+        "type": "object",
+        "description": "Rückmeldung eines Moduls zu einem Vorgang der Art «rueckmeldung» (z. B. Unterschrift eingegangen).",
+        "properties": {
+          "aufrufId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "fehler"
+            ]
+          },
+          "ergebnis": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true
+          },
+          "meldung": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "aufrufId",
+          "status"
+        ]
+      },
+      "Ereignis": {
+        "type": "object",
+        "description": "Ereignis im Jahreskalender.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "code": {
+            "type": "string"
+          },
+          "titel": {
+            "type": "string"
+          },
+          "bereich": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "zeit": {
+            "$ref": "#/components/schemas/Zeitregel"
+          },
+          "nurJahr": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "ferienregel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "vorher",
+              "nachher",
+              "auslassen"
+            ]
+          },
+          "rollen": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Beteiligung je Kalenderrolle"
+          },
+          "teile": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "quelle": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "vorlage": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "verknüpfte Ablaufvorlage"
+          },
+          "notiz": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "regelText": {
+            "type": "string",
+            "description": "Zeitregel als Satz",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "code",
+          "titel",
+          "zeit"
+        ]
+      },
+      "Zeitregel": {
+        "type": "object",
+        "description": "Zeitregel eines Ereignisses (Aufbau siehe datenbank.sql, flow.kalender_ereignis.zeit).",
+        "properties": {
+          "regel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "stichtag",
+              "trimester",
+              "semester",
+              "quartal",
+              "monatlich",
+              "woechentlich",
+              "taeglich",
+              "wochentage",
+              "wochenende",
+              "arbeitstage",
+              "schultage"
+            ]
+          },
+          "q": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "kw": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "am": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "MM-TT"
+          },
+          "von": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "MM-TT"
+          },
+          "bis": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "MM-TT"
+          },
+          "anker": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "versatz": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "einheit": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "tage",
+              "wochen",
+              "monate"
+            ]
+          },
+          "bezug": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "beginn",
+              "ende",
+              "ganz"
+            ]
+          },
+          "tag": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Tag im Monat oder «letzter»"
+          },
+          "wochentag": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        }
+      },
+      "Vorkommen": {
+        "type": "object",
+        "description": "Berechnetes Vorkommen eines Ereignisses.",
+        "properties": {
+          "ereignisId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "titel": {
+            "type": "string"
+          },
+          "bereich": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "von": {
+            "type": "string",
+            "format": "date"
+          },
+          "bis": {
+            "type": "string",
+            "format": "date"
+          },
+          "info": {
+            "type": "string",
+            "description": "z. B. «verschoben von …»"
+          },
+          "erledigt": {
+            "type": "boolean"
+          },
+          "teileErledigt": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "vorlage": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "laufId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        }
+      },
+      "Kalenderbereich": {
+        "type": "object",
+        "description": "Themenbereich des Kalenders.",
+        "properties": {
+          "schluessel": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "farbe": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "Uebersicht": {
+        "type": "object",
+        "description": "Kennzahlen der Übersicht.",
+        "properties": {
+          "laufendeAblaeufe": {
+            "type": "integer"
+          },
+          "offeneAufgaben": {
+            "type": "integer"
+          },
+          "ueberfaellig": {
+            "type": "integer"
+          },
+          "fehlgeschlageneAufrufe": {
+            "type": "integer"
+          },
+          "naechsteTermine": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Vorkommen"
+            }
+          }
+        }
+      },
+      "VorlageVoll": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Vorlage"
+          },
+          {
+            "$ref": "#/components/schemas/Protokoll"
+          }
+        ]
+      },
+      "LaufVoll": {
+        "$ref": "#/components/schemas/Lauf"
+      },
+      "EreignisVoll": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Ereignis"
+          },
+          {
+            "$ref": "#/components/schemas/Protokoll"
+          }
+        ]
+      },
+      "RolleVoll": {
+        "$ref": "#/components/schemas/Rolle"
+      },
+      "FunktionVoll": {
+        "$ref": "#/components/schemas/Funktion"
+      },
+      "QuelleVoll": {
+        "$ref": "#/components/schemas/Quelle"
+      },
+      "ModulVoll": {
+        "$ref": "#/components/schemas/Modul"
+      }
+    }
+  },
+  "webhooks": {
+    "laufAbgeschlossen": {
+      "post": {
+        "summary": "Ablauf abgeschlossen (z. B. für EduKSX-Staffing, Archiv).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Lauf"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Empfangen."
+          }
+        }
+      }
+    },
+    "vorgangAufrufen": {
+      "post": {
+        "summary": "Aufruf eines Vorgangs an das anbietende Modul (Antwort sofort oder später über /v1/aufrufe/rueckmeldung).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Aufruf"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sofort erledigt, Ergebnis im Body."
+          },
+          "202": {
+            "description": "Angenommen, Rückmeldung folgt."
+          }
+        }
+      }
+    }
+  }
+}

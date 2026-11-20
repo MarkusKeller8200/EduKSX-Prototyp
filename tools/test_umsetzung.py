@@ -8,6 +8,7 @@
 """
 import re
 import unittest
+import sys
 from pathlib import Path
 
 try:
@@ -15,6 +16,7 @@ try:
 except ImportError:  # pragma: no cover - CI ohne PyYAML
     yaml = None
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 UMSETZUNG = Path(__file__).resolve().parent.parent / "docs" / "umsetzung"
 MODULE = {"staffing": "staffing", "flow": "flow", "codex": "codex", "sign": "sign", "time": "time"}
 TEILE = ["## 1. Zweck und Abgrenzung", "## 2. Anforderungskatalog", "## 3. Pflichtenheft",
@@ -75,6 +77,27 @@ class Api(unittest.TestCase):
                         self.assertTrue(op.get("responses"), f"{modul}: {methode} {pfad} ohne Antworten")
                         ids.append(op["operationId"])
                 self.assertEqual(len(ids), len(set(ids)), f"{modul}: operationId doppelt")
+
+
+class Entwicklerbereich(unittest.TestCase):
+    """prototypen/<name>/entwickler/ ist aus docs/umsetzung/ erzeugt und aktuell (tools/entwickler_bauen.py)."""
+
+    def test_aktuell(self):
+        import entwickler_bauen
+        self.assertEqual(entwickler_bauen.bauen(None, pruefen=True), [], "→ python3 tools/entwickler_bauen.py")
+
+    def test_inhalt(self):
+        import entwickler_bauen
+        for modul, (ordner, _) in entwickler_bauen.MODULE.items():
+            ziel = UMSETZUNG.parent.parent / "prototypen" / ordner / "entwickler"
+            index = (ziel / "index.html").read_text(encoding="utf-8")
+            sql = (UMSETZUNG / modul / "datenbank.sql").read_text(encoding="utf-8")
+            for s, t, _ in tabellen(sql):
+                self.assertIn(f'id="t-{s}-{t}"', index, f"{ordner}: Tabelle {t} fehlt im Datenmodell")
+            api = (ziel / "api.html").read_text(encoding="utf-8")
+            self.assertNotIn('<div id="api-reference"', api, "Scalar würde sonst zusätzlich mit Standardwerten laden")
+            self.assertIn("withDefaultFonts: false", api)
+            self.assertIn("supportedSubmitMethods: []", (ziel / "swagger.html").read_text(encoding="utf-8"))
 
 
 class Pflichtenheft(unittest.TestCase):

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <!-- Kein Element mit id="api-reference": Scalar würde es zusätzlich mit Standardwerten (Schriften aus dem Netz) laden.
+       Die CSP verhindert jeden Abruf ausserhalb. -->
+  <meta http-equiv="Content-Security-Policy" content="font-src 'self' data:; connect-src 'self'; img-src 'self' data:">
+  <title>API – EduKSX-Sign</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../assets/eduksx.css">
+  <style>
+    body { margin: 0; }
+    .entwickler-nav { margin-left: auto; display: flex; flex-wrap: wrap; gap: .25rem .5rem; font-size: .9rem; }
+    .entwickler-nav a[aria-current] { font-weight: 700; color: var(--foreground); text-decoration: none; }
+    .btn.zurueck { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; padding: 0; flex: none; }
+    main.entwickler { max-width: 1200px; margin: 0 auto; padding: 1.25rem; }
+    .entwickler h2 { margin-top: 2rem; }
+    .diagramm-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); max-height: 75vh; }
+    .diagramm { display: block; font: 12px var(--font-sans); }
+    .diagramm .box rect { fill: var(--card); stroke: var(--input); }
+    .diagramm .box .kopfzeile { fill: var(--accent); stroke: var(--input); }
+    .diagramm .box.core rect { fill: var(--muted); stroke-dasharray: 4 3; }
+    .diagramm .box.core .kopfzeile { fill: var(--muted); }
+    .diagramm text { fill: var(--foreground); }
+    .diagramm .name { font-weight: 700; }
+    .diagramm a:hover rect, .diagramm a:focus rect { stroke: var(--ring); stroke-width: 2; }
+    .diagramm .kante { fill: none; stroke: var(--muted-foreground); stroke-width: 1.2; opacity: .55; }
+    .tabelle { margin: 1.25rem 0; scroll-margin-top: 5rem; }
+    .tabelle h3 { margin: 0 0 .25rem; font-family: ui-monospace, monospace; font-size: 1rem; }
+    .tabelle table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    .tabelle th, .tabelle td { text-align: left; padding: .3rem .5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .tabelle td.code, .tabelle td code { font-family: ui-monospace, monospace; }
+    .regeln { font-size: .8rem; margin: .3rem 0 0; }
+    .inhalt-liste { columns: 3 14rem; font-size: .85rem; font-family: ui-monospace, monospace; }
+    .api-karten { display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: .75rem; }
+    #api-doku { min-height: 80vh; }
+  </style>
+  <script>try { var t = localStorage.getItem("eduksx-thema"); if (t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.classList.add("dark"); } catch (e) {}</script>
+</head>
+<body>
+  <header class="kopf">
+    <a class="marke" href="index.html"><span class="wm" role="img" aria-label="EduKSX-Sign"><span aria-hidden="true"><span class="v">E</span><span class="n">du</span><span class="o">K</span><span class="b">SX</span><span class="n">-Sign</span></span></span></a><span class="muted small">Entwickler · API-Dokumentation</span>
+    <a class="btn zurueck" href="../" title="Zurück zum Prototyp" aria-label="Zurück zum Prototyp"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
+    <nav class="entwickler-nav" aria-label="Entwickler"><a href="index.html">Datenmodell</a> · <a href="api.html" aria-current="page">API-Dokumentation</a> · <a href="swagger.html">Swagger</a> · <a href="openapi.json">OpenAPI (JSON)</a> · <a href="openapi.yaml" download>YAML</a> · <a href="datenmodell.sql" download>SQL</a></nav>
+  </header>
+  <div class="hinweis-band" role="note"><strong>Entwurf</strong> – Grundlage für die Umsetzung im Modul-Repository, abgeleitet aus dem Prototyp. Noch keine laufende API; Quelle <code>docs/umsetzung/</code>.</div>
+  <noscript>Die interaktive Dokumentation braucht JavaScript. Die Beschreibung steht als <a href="openapi.json">OpenAPI-Datei</a> zur Verfügung.</noscript>
+  <div id="api-doku"></div>
+  <!-- Scalar API Reference (MIT), selbst ausgeliefert: keine Abrufe bei CDN oder fonts.scalar.com -->
+  <script src="lib/scalar/standalone.js"></script>
+  <script>
+    Scalar.createApiReference("#api-doku", {
+      url: "openapi.json",
+      withDefaultFonts: false,
+      hideDownloadButton: false,
+      hideTestRequestButton: true,
+      showDeveloperTools: "never",
+      telemetry: false,
+      agent: { disabled: true },
+      darkMode: document.documentElement.classList.contains("dark"),
+      defaultHttpClient: { targetKey: "shell", clientKey: "curl" },
+      metaData: { title: "API – EduKSX-Sign" },
+      customCss: ".scalar-app { --scalar-font: var(--font-sans); --scalar-font-code: ui-monospace, SFMono-Regular, Menlo, monospace; }",
+    });
+  </script>
+</body>
+</html>

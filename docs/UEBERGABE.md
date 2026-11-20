@@ -87,6 +87,17 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 - Umgesetzt (#37 → `_3 Beta-Test`): Darstellung (Andockpunkte, Beschriftungen in eigener SVG-Ebene, Hervorhebung), Ansicht je
   Organisation, Querbezüge (`querbezuege()` in tools/build.py, Feld `themen`).
 
+### Sitzung 2026-11-20 (07:55–08:40) – Entwicklerbereich in allen Prototypen
+
+- Auftrag: DB und API direkt lesbar in den Modulen, wie bei EduKSX-Glossary. Entscheid im Chat (2026-11-20):
+  Scalar **und** Swagger; Datenmodell als Tabellen mit eigenem Diagramm (ohne Mermaid).
+- `tools/entwickler_bauen.py` erzeugt `prototypen/<name>/entwickler/` (index, api, swagger, openapi.json/.yaml,
+  datenmodell.sql, lib/). Bibliotheken neu holen: `npm install @scalar/api-reference swagger-ui-dist` in einem
+  temporären Ordner, dann `--lib <node_modules>`. Menüpunkt «Entwickler» in allen fünf Prototypen.
+- Stolperstein: Ein Element mit `id="api-reference"` lässt Scalar zusätzlich mit Standardwerten laden (Schriften
+  von fonts.scalar.com) – darum `#api-doku`; zusätzlich CSP `font-src 'self'`. Geprüft: keine externen Abrufe.
+- Grösse: ca. 6,7 MB je Prototyp (Scalar 4,6 MB). CodeQL überspringt minifizierte Dateien – beobachten.
+
 ### Sitzung 2026-11-20 (03:00–03:50) – Umsetzungsgrundlagen aller Module
 
 - Auftrag im Chat: für alle Module Datenbankstruktur, API sowie Anforderungskatalog/Pflichtenheft/Prüfpunkte.

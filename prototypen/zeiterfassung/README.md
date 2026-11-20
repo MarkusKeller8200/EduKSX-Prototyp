@@ -51,6 +51,11 @@ Worker einen Webserver: `python3 -m http.server -d prototypen/zeiterfassung 8000
 
 Noch offen – Rückmeldungen aus dem Test (Issue #19).
 
+## Entwickler
+
+Menüpunkt «Entwickler» bzw. `entwickler/`: Datenmodell (Diagramm, Tabellen, SQL), API-Dokumentation (Scalar),
+Swagger und OpenAPI – erzeugt mit `python3 tools/entwickler_bauen.py` aus `docs/umsetzung/time/` (nicht von Hand ändern).
+
 ## Hinweise
 
 - Nur erfundene Testdaten (Demo-Person «Lea Muster»); Buchungen liegen nur im Browser (localStorage).

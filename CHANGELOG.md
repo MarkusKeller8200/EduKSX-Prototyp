@@ -8,6 +8,12 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Neu
 
+- **Menüpunkt «Entwickler» in allen Prototypen** (wie die Entwicklerseite von EduKSX-Glossary): Datenmodell mit
+  eigenem Beziehungsdiagramm, Tabellen und Spalten, SQL-Download; API-Dokumentation mit Scalar, Swagger UI (Senden
+  aus), OpenAPI JSON/YAML – unter `prototypen/<name>/entwickler/`, erzeugt mit `tools/entwickler_bauen.py` aus
+  `docs/umsetzung/`. Scalar 1.82.1 (MIT) und Swagger UI 5.35.1 (Apache-2.0) je Prototyp lokal, ohne Abrufe aus dem
+  Netz; EduKSX-Time speichert den Bereich nicht im Service Worker. EduKSX-Staffing 0.2.0, EduKSX-Flow 0.6.0,
+  EduKSX-Codex 0.22.0, EduKSX-Sign 0.2.0, EduKSX-Time 0.4.0.
 - **Umsetzungsgrundlagen für alle Module** (`docs/umsetzung/`): je Modul (EduKSX-Staffing, -Flow, -Codex, -Sign,
   -Time) eine Datenbankstruktur (`datenbank.sql`, PostgreSQL 16, ein Schema je Modul, Core-Platzhalter in
   `core-referenz.sql`), eine API-Beschreibung (`openapi.yaml`, OpenAPI 3.1) und ein Dokument mit

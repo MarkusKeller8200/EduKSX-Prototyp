@@ -97,6 +97,11 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
 Noch offen – nach der Abstimmung festhalten, was nach EduKSX-Flow übernommen wird (Vorgangsregister als
 Schnittstelle zu den Modulen, Vorlagen-Versionierung, Motor für Fristen und automatische Schritte).
 
+## Entwickler
+
+Menüpunkt «Entwickler» bzw. `entwickler/`: Datenmodell (Diagramm, Tabellen, SQL), API-Dokumentation (Scalar),
+Swagger und OpenAPI – erzeugt mit `python3 tools/entwickler_bauen.py` aus `docs/umsetzung/flow/` (nicht von Hand ändern).
+
 ## Hinweise
 
 - Nur erfundene Testdaten verwenden.
