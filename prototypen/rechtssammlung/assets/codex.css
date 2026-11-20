@@ -172,3 +172,4 @@ ins { background: var(--success-soft); } del { background: var(--destructive-sof
 td.mz { max-width: 15rem; } ul.mz-docs a, ul.mz-docs span { overflow-wrap: anywhere; }
 table.matrix tbody th { max-width: 22rem; } table.matrix tbody th .small { font-weight: 400; }
 table.matrix tbody th { white-space: normal; }
+.h-box strong { overflow-wrap: anywhere; hyphens: auto; }

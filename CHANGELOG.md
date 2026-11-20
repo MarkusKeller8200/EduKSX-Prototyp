@@ -141,4 +141,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Codex 0.16.0: Pflichtkatalog Schulgemeinde als Menüpunkt (40 Dokumente, Einstufung Pflicht / bedingt / optional,
   Aufnahme in die Rechtssammlung, Quelle; Vollständigkeit je Organisation); Struktur-Matrix mit Pflichtkatalog-Zeilen, P/B/O-Zählern
   je Spalte und Auswahl von bis zu 3 Organisationen (#40).
+- EduKSX-Codex 0.17.0: Normenhierarchie – kommunale Beispiele geschärft (ohne Behördenbeschlüsse und fachfremde Treffer); neue
+  Themen «Verfahren & Rechtsschutz» (BV, KV, VRG, GG, VSG → Gemeinde) und «Unterricht & Medien» (URG, VSG, IDG, Bildungsrat → Schule),
+  jetzt 9 Themen; Textfassungen KV und VRG; Konzept Kapitel 4a mit nächsten Schritten (#41).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

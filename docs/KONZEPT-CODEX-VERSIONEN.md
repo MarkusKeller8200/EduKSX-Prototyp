@@ -1,6 +1,6 @@
 # Konzept: EduKSX-Codex – Versionen, Abgleich, Textfassung und Normenhierarchie (#32)
 
-Stand: 2026-11-20 (Codex 0.16.0) · Status: **IN ARBEIT**
+Stand: 2026-11-20 (Codex 0.17.0) · Status: **IN ARBEIT**
 
 Ein Konzept ist eine Entscheidungsgrundlage, keine Freigabe: umgesetzt wird erst, was als Issue freigegeben ist.
 
@@ -152,6 +152,22 @@ Reglemente).
   Erweitert (Codex 0.12.0, #36): **Sonderpädagogik**, **Beschaffung & Bau** (Ebene «Interkantonal (Konkordat)» für die
   IVöB) und **Kindesschutz & Schweigepflicht** (Ebene «Völkerrecht» für die KRK) – insgesamt 7 Themen.
 
+## 4a. Normenhierarchie – Stand und nächste Schritte (Vorschlag 20.11.2026)
+
+Stand Codex 0.17.0: 9 Themen (Personalrecht, Finanzen, Volksschule, Datenschutz & ICT, Sonderpädagogik, Beschaffung & Bau,
+Kindesschutz & Schweigepflicht, Verfahren & Rechtsschutz, Unterricht & Medien), Textfassungen für 29 kantonale und 9 Bundeserlasse,
+maschineller Abgleich der Verbindungen (Ingress, § 1, Fussnoten), Ansicht je Organisation, Querbezüge, Pflichtkatalog Schulgemeinde.
+
+| Nr. | Punkt | Vorschlag | Status |
+|---|---|---|---|
+| 1 | Fachliche Prüfung | Alle 9 Themen und die Einstufungen des Pflichtkatalogs von einer Fachperson (Volksschulamt, Gemeindeamt oder Rechtsdienst) prüfen lassen; Rückmeldungen je Verbindung als «geprüft am / von» im Datenmodell festhalten | **ZU PRÜFEN** (extern) |
+| 2 | Vorschläge übernehmen | Maschinelle Vorschläge nicht automatisch übernehmen; je Vorschlag Entscheid «übernehmen / verwerfen» in `HIERARCHIEN` festhalten, damit er nicht erneut erscheint | **OFFEN** |
+| 3 | Verbindungen automatisch | Langfristig Verbindungen aus Ingress und § 1 automatisch erzeugen und nur noch Ausnahmen von Hand pflegen (die Auswertung bestätigt heute 26 von 37 Hand-Verbindungen zwischen Erlassen mit Text, rund 70 %) | **OFFEN** |
+| 4 | Abgleich automatisieren | GitHub Action (wöchentlich): `tools/zhlex_versionen.py`, `tools/fedlex.py`, `tools/texte.py --nur-neu`, Build; neue Fassungen als Pull Request | **OFFEN** |
+| 5 | Kommunale Beispiele | Titelstichwörter durch Zuordnung beim Erfassen ersetzen (Dokument → Katalogeintrag, von Hand bestätigt); weitere Organisationen erfassen | **OFFEN** |
+| 6 | Pflichtkatalog | Einstufungen P/B/O prüfen (Punkt 1); Pflichtkatalog je Organisation als Prüfliste «fehlt / vorhanden / nicht anwendbar» mit Begründung | **ZU PRÜFEN** |
+| 7 | Textqualität | Kantonsverfassung (Artikel ohne Überschriftzeile) und Tabellen (LPVO-Anhang) in `tools/texte.py` verbessern | **OFFEN** |
+
 ## 5. Issues
 
 | Issue | Inhalt | Status |
@@ -165,3 +181,4 @@ Reglemente).
 | #38 | Bundesrecht aus Fedlex als Textfassung, Belegstellen Bund | `_3 Beta-Test` |
 | #39 | Normenhierarchie: maschinelle Verbindungsvorschläge und Abgleich | `_3 Beta-Test` |
 | #40 | Pflichtkatalog Schulgemeinde, Vollständigkeit in der Struktur-Matrix | `_3 Beta-Test` |
+| #41 | Normenhierarchie: Beispiele geschärft, Themen Verfahren und Unterricht, nächste Schritte | `_3 Beta-Test` |

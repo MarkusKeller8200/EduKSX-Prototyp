@@ -1,6 +1,6 @@
 # Prototyp: Rechtssammlung
 
-**Status:** in-arbeit · **Version:** 0.16.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
+**Status:** in-arbeit · **Version:** 0.17.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
 
 ## Frage
 
@@ -33,10 +33,10 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 | `data/pflichtkatalog.json` | Pflichtkatalog Schulgemeinde: 40 Dokumente in 5 Kategorien mit Einstufung P/B/O, Aufnahme in die Rechtssammlung, Quelle und Suchmuster (Recherche 20.11.2026, Original in `quellen/pflichtdokumente_schulgemeinde_zh.md`, zu prüfen) |
 | `data/rechtsgrundlagen.json` | Gesetzestexte & Verordnungen: 65 Rechtsgrundlagen für Schulen (62 aus der Liste, ergänzt um FAG, FAV, CRG; Bund, Kanton, Bildungsrat, Gemeinde) mit Sachbereich, Artikel und Quelle; Fundstelle, Ebene und Direktlink ergänzt `tools/build.py` |
 | `quellen/` | Leitfaden systematische Rechtssammlung (Original von zh.ch und PDF für die Vorschau), Herkunft in `quellen/README.md` |
-| `texte/` | Textfassungen (Markdown) je ZH-Lex-Fassung und Unterschiede je Fassungspaar (JSON), erzeugt von `tools/texte.py` – 27 kantonale Erlasse (u. a. VSG, VSV, VSM, LPVO, GG, VGG, CRG, IDG, IVSV, SVO, PBG) und 9 Bundeserlasse (BV, KRK, BehiG, ZGB, OR, URG, DSG, DSV, StGB) |
+| `texte/` | Textfassungen (Markdown) je ZH-Lex-Fassung und Unterschiede je Fassungspaar (JSON), erzeugt von `tools/texte.py` – 29 kantonale Erlasse (u. a. KV, VRG, VSG, VSV, VSM, LPVO, GG, VGG, CRG, IDG, IVSV, SVO, PBG) und 9 Bundeserlasse (BV, KRK, BehiG, ZGB, OR, URG, DSG, DSV, StGB) |
 | `tools/fedlex.py` | Bundesrecht aus Fedlex: Fassungen über den SPARQL-Endpunkt, amtliche HTML-Fassung → Markdown (`texte/sr-<SR>/`), Fassungsliste `data/raw/fedlex-versionen.json` |
 | `tools/texte.py` | Vorab-Aufbereitung: ZH-Lex-PDF laden, in Markdown umwandeln, Unterschiede berechnen (`python3 tools/texte.py 412.100`) |
-| `tools/build.py` | Generator: Datenmodell, Normenhierarchien (`HIERARCHIEN`: 7 Themen – Personalrecht, Finanzen, Volksschule, Datenschutz & ICT, Sonderpädagogik, Beschaffung & Bau, Kindesschutz), Schulgemeinden (60) mit Einheitsgemeinde-Herleitung, Struktur-Matrix, Nachbauten |
+| `tools/build.py` | Generator: Datenmodell, Normenhierarchien (`HIERARCHIEN`: 9 Themen – Personalrecht, Finanzen, Volksschule, Datenschutz & ICT, Sonderpädagogik, Beschaffung & Bau, Kindesschutz, Verfahren & Rechtsschutz, Unterricht & Medien), Schulgemeinden (60) mit Einheitsgemeinde-Herleitung, Struktur-Matrix, Nachbauten |
 
 ## Erfasst (Stand 17.11.2026)
 

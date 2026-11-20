@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.16.0 – Generator.
+"""EduKSX-Codex Prototyp 0.17.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1527,9 +1527,9 @@ HIERARCHIEN = [
    {"id": "go", "ebene": 2, "titel": "Gemeindeordnung – Finanzbefugnisse", "fundstelle": "kommunal", "art": "Gemeindeordnung (Stimmberechtigte)",
     "hinweis": "Regelt Ausgaben- und Kreditkompetenzen von Gemeindeversammlung, Vorstand bzw. Schulpflege", "muster": r"gemeindeordnung|\(go\)", "ohne": r"sekundarschul.*politische|protokoll"},
    {"id": "fin", "ebene": 2, "titel": "Finanzreglement / Haushaltsregeln", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
-    "hinweis": "Finanzkompetenzen, Haushaltführung, Aktivierungsgrenze, Fonds", "muster": r"finanzreglement|finanzordnung|finanzkompetenz|haushalt|aktivierung|globalbudget|ausgabenkompetenz|fonds|sonderrechnung"},
+    "hinweis": "Finanzkompetenzen, Haushaltführung, Aktivierungsgrenze, Fonds", "muster": r"finanzreglement|finanzordnung|finanzkompetenz|haushalt|aktivierung|globalbudget|ausgabenkompetenz|fonds|sonderrechnung", "ohne": r"mehrwert|oekologie|infrastruktur zuerichsee"},
    {"id": "geb", "ebene": 2, "titel": "Gebührenverordnung / Gebührentarif", "fundstelle": "kommunal", "art": "Gemeindeerlass",
-    "hinweis": "Allgemeine Gebühren; Spezialgebühren (Wasser, Abwasser, Abfall) in eigenen Erlassen", "muster": r"gebuehrenverordnung|gebuehrenreglement|gebuehrentarif|gebuehrenordnung|allgemeiner gebuehrentarif", "ohne": r"wasser|abwasser|siedlung|abfall|feuerwehr|bauwesen"}],
+    "hinweis": "Allgemeine Gebühren; Spezialgebühren (Wasser, Abwasser, Abfall) in eigenen Erlassen", "muster": r"gebuehrenverordnung|gebuehrenreglement|gebuehrentarif|gebuehrenordnung|allgemeiner gebuehrentarif", "ohne": r"wasser|abwasser|siedlung|abfall|feuerwehr|bauwesen|kesb|werke|bibliothek"}],
   "kanten": [
    {"von": "vgg", "nach": "gg", "art": "Vollzug", "beleg": ("131.11", "§ 47.")},
    {"von": "fav", "nach": "fag", "art": "Vollzug", "beleg": ("132.11", "§ 1.")},
@@ -1561,9 +1561,9 @@ HIERARCHIEN = [
    {"id": "go", "ebene": 4, "titel": "Gemeindeordnung (Schulgemeinde)", "fundstelle": "kommunal", "art": "Gemeindeordnung (Stimmberechtigte)",
     "hinweis": "Organisation der Schulpflege, Leitung Bildung, Vertretung der Lehrpersonen", "muster": r"gemeindeordnung|\(go\)", "ohne": r"protokoll"},
    {"id": "os", "ebene": 4, "titel": "Organisationsstatut", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
-    "hinweis": "Zuständigkeiten und Entscheidbefugnisse von Schulpflege, Schulleitung und Schulverwaltung", "muster": r"organisationsstatut|schulorganisation|organisationsreglement|kompetenzregelung|funktionendiagramm"},
+    "hinweis": "Zuständigkeiten und Entscheidbefugnisse von Schulpflege, Schulleitung und Schulverwaltung", "muster": r"organisationsstatut|schulorganisation|organisationsreglement|kompetenzregelung|funktionendiagramm", "ohne": r"gemeinderat|gemeindeverwaltung|stadtverwaltung|werkkommission|\brfo\b|\bika\b|\bara|befoerderung|beilagen"},
    {"id": "so", "ebene": 4, "titel": "Schul- und Betreuungsreglemente", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
-    "hinweis": "Schulordnung, Tagesstrukturen und Betreuung, Absenzen, Disziplin, Schulweg, Sonderpädagogik", "muster": r"schulordnung|schulreglement|tagesstruktur|betreuung|hort|absenz|disziplin|schulweg|sonderpaedagog|schulergaenzend|mittagstisch|musikschul", "ohne": r"zweckverband|alters|pflegeheim|spitex"}],
+    "hinweis": "Schulordnung, Tagesstrukturen und Betreuung, Absenzen, Disziplin, Schulweg, Sonderpädagogik", "muster": r"schulordnung|schulreglement|tagesstruktur|betreuung|hort|absenz|disziplin|schulweg|sonderpaedagog|schulergaenzend|mittagstisch|musikschul", "ohne": r"zweckverband|alters|pflegeheim|spitex|merkblatt|allgemeine geschaeftsbedingungen|vorschul|familienergaenzend"}],
   "kanten": [
    {"von": "big", "nach": "bv", "art": "Grundlage", "beleg": ("sr-101", "Art. 62")},
    {"von": "vsg", "nach": "big", "art": "Rahmen", "beleg": ("410.1", "§ 8.")},
@@ -1592,7 +1592,7 @@ HIERARCHIEN = [
    {"id": "ivsv", "ebene": 2, "titel": "Verordnung über die Informationsverwaltung und -sicherheit (IVSV)", "art": "Verordnung (Regierungsrat)", "ls": "170.8"},
    {"id": "archv", "ebene": 2, "titel": "Archivverordnung (ArchV)", "art": "Verordnung (Regierungsrat)", "ls": "170.61"},
    {"id": "dsk", "ebene": 3, "titel": "Datenschutz-, Informatik- und Nutzungsreglemente", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
-    "hinweis": "Datenschutz, Informationssicherheit, ICT-Nutzung, Videoüberwachung, Social Media", "muster": r"datenschutz|informatik|\bict\b|informationssicherheit|video|social media|nutzungsrichtlinie|nutzungsreglement|internet|e-mail|digital"},
+    "hinweis": "Datenschutz, Informationssicherheit, ICT-Nutzung, Videoüberwachung, Social Media", "muster": r"datenschutz|informatik|\bict\b|informationssicherheit|video|social media|nutzungsrichtlinie|nutzungsreglement|internet|e-mail|digital", "ohne": r"schuetzenstube|forsthaus|parkhaus|liegenschaften|versand|liste der|oeffentliche[mn]? grund"},
    {"id": "akten", "ebene": 3, "titel": "Archiv- und Aktenreglement", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
     "hinweis": "Aktenplan, Registratur, Aufbewahrung und Archivierung", "muster": r"archiv|aktenplan|registratur|aktenfuehrung|aufbewahrung"}],
   "kanten": [
@@ -1619,7 +1619,7 @@ HIERARCHIEN = [
    {"id": "auf", "ebene": 2, "titel": "Verordnung über die Aufsicht über die Sonderschulung", "art": "Verordnung (Bildungsdirektion)", "ls": "412.106.1"},
    {"id": "spiv", "ebene": 2, "titel": "Spitalschulverordnung (SpiV)", "art": "Verordnung (Regierungsrat)", "ls": "412.107"},
    {"id": "kom", "ebene": 3, "titel": "Konzepte und Reglemente Sonderpädagogik", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
-    "hinweis": "Förderkonzept, Integrative Förderung, Therapien, DaZ, Begabtenförderung, Schulpsychologie", "muster": r"sonderpaedagog|integrativ|foerder|therapie|logopaed|psychomotor|\bdaz\b|deutsch als zweit|begab|schulpsycholog|sonderschul", "ohne": r"jugendfoerder|wohn|energie|kultur|sport|wirtschaft|wald|natur"}],
+    "hinweis": "Förderkonzept, Integrative Förderung, Therapien, DaZ, Begabtenförderung, Schulpsychologie", "muster": r"sonderpaedagog|integrativ|(?<!be)foerder|therapie|logopaed|psychomotor|\bdaz\b|deutsch als zweit|begab|schulpsycholog|sonderschul", "ohne": r"jugendfoerder|wohn|energie|kultur|sport|wirtschaft|wald|natur|siedlung|anfrage"}],
   "kanten": [
    {"von": "vsg", "nach": "behig", "art": "Umsetzung", "beleg": ("sr-151.3", "Art. 20"), "beleg_unten": ("412.100", "§ 33.")},
    {"von": "vsm", "nach": "vsg", "art": "Vollzug", "beleg": ("412.103", "§ 1.")},
@@ -1637,9 +1637,9 @@ HIERARCHIEN = [
    {"id": "pbg", "ebene": 1, "titel": "Planungs- und Baugesetz (PBG)", "art": "Gesetz (Kantonsrat)", "ls": "700.1", "hinweis": "Schulhausbauten, Umbauten, Nutzungsänderungen; Pflicht der Gemeinden zur Bau- und Zonenordnung (§ 45)"},
    {"id": "svo", "ebene": 2, "titel": "Submissionsverordnung (SVO)", "art": "Verordnung (Regierungsrat)", "ls": "720.11"},
    {"id": "besch", "ebene": 3, "titel": "Beschaffungsrichtlinien / Vergabereglement", "fundstelle": "kommunal", "art": "Gemeinde- oder Behördenerlass",
-    "hinweis": "Zuständigkeiten und Schwellenwerte für Beschaffungen", "muster": r"beschaffung|submission|vergabe|einkauf", "ohne": r"pacht|landvergabe"},
+    "hinweis": "Zuständigkeiten und Schwellenwerte für Beschaffungen", "muster": r"beschaffung|submission|vergabe|einkauf", "ohne": r"pacht|landvergabe|abnahme|vergabeentscheid|anhang \d"},
    {"id": "bzo", "ebene": 3, "titel": "Bau- und Zonenordnung (BZO)", "fundstelle": "kommunal", "art": "Gemeindeerlass (Stimmberechtigte)",
-    "hinweis": "Nur bei politischen Gemeinden; massgebend für Schulbauten", "muster": r"bau und zonenordnung|bau- und zonenordnung|bauordnung|\bbzo\b|zonenplan|baureglement", "ohne": r"gebuehr|foerderung"}],
+    "hinweis": "Nur bei politischen Gemeinden; massgebend für Schulbauten", "muster": r"bau und zonenordnung|bau- und zonenordnung|bauordnung|\bbzo\b|zonenplan|baureglement", "ohne": r"gebuehr|foerderung|kernzonenplan|vollzugsrichtlinie"}],
   "kanten": [
    {"von": "beig", "nach": "ivoeb", "art": "Beitritt", "beleg": ("720.1", "§ 1.")},
    {"von": "svo", "nach": "beig", "art": "Vollzug", "beleg": ("720.11", "Ingress")},
@@ -1659,7 +1659,7 @@ HIERARCHIEN = [
    {"id": "vsg", "ebene": 2, "titel": "Volksschulgesetz – Meldepflicht und Zusammenarbeit", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 50 Grundsätze, § 51 Meldepflicht"},
    {"id": "vsv", "ebene": 2, "titel": "Volksschulverordnung – Information der Kindesschutzbehörde", "art": "Verordnung (Regierungsrat)", "ls": "412.101"},
    {"id": "kom", "ebene": 3, "titel": "Abläufe Kindesschutz, Krisen und Gewalt", "fundstelle": "kommunal", "art": "Behördenerlass oder Merkblatt",
-    "hinweis": "Meist Leitfäden und Merkblätter statt Erlasse", "muster": r"kindesschutz|gefaehrdung|krise|notfall|meldung|schweigepflicht|gewalt|mobbing|praevention|sucht", "ohne": r"informationstafel|feuerwehr|zivilschutz"}],
+    "hinweis": "Meist Leitfäden und Merkblätter statt Erlasse", "muster": r"kindesschutz|gefaehrdung|krise|notfall|meldung|schweigepflicht|gewalt|mobbing|praevention|sucht", "ohne": r"informationstafel|feuerwehr|zivilschutz|strafrecht"}],
   "kanten": [
    {"von": "zgb", "nach": "ukrk", "art": "Umsetzung", "beleg": ("sr-0.107", "Art. 3")},
    {"von": "vsg", "nach": "zgb", "art": "verweist auf", "beleg": ("412.100", "§ 51."), "beleg_oben": ("sr-210", "Art. 307")},
@@ -1668,6 +1668,51 @@ HIERARCHIEN = [
    {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 58.")},
    {"von": "kom", "nach": "vsg", "art": "gestützt auf"},
    {"von": "kom", "nach": "zgb", "art": "Melderecht", "beleg": ("sr-210", "Art. 314c")}]},
+ {"id": "verfahren", "titel": "Verfahren & Rechtsschutz",
+  "ebenen": ["Bund", "Kanton – Verfassung", "Kanton – Gesetze", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "bv", "ebene": 0, "titel": "Bundesverfassung (BV) – Verfahrensgarantien", "sr": "101", "art": "Verfassung", "url": "https://www.fedlex.admin.ch/eli/cc/1999/404/de",
+    "hinweis": "Art. 29 Verfahrensgarantien (rechtliches Gehör), Art. 29a Rechtsweggarantie"},
+   {"id": "kv", "ebene": 1, "titel": "Verfassung des Kantons Zürich (KV)", "art": "Verfassung (Stimmberechtigte)", "ls": "101",
+    "hinweis": "Art. 18 Verfahrensgarantien, Art. 77 Rechtsschutz, Art. 85/89 Gemeindeautonomie und Gemeindeordnung"},
+   {"id": "vrg", "ebene": 2, "titel": "Verwaltungsrechtspflegegesetz (VRG)", "art": "Gesetz (Kantonsrat)", "ls": "175.2",
+    "hinweis": "Akteneinsicht (§ 8), Begründung und Rechtsmittelbelehrung (§ 10), Rekurs (§§ 19 ff.)"},
+   {"id": "gg", "ebene": 2, "titel": "Gemeindegesetz (GG) – Neubeurteilung", "art": "Gesetz (Kantonsrat)", "ls": "131.1", "hinweis": "§§ 170 f.: Neubeurteilung von Entscheiden unterstellter Organe"},
+   {"id": "vsg", "ebene": 2, "titel": "Volksschulgesetz (VSG) – Rechtsschutz", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 74 Begründung und Neubeurteilung, § 75 Rekursinstanzen"},
+   {"id": "go", "ebene": 3, "titel": "Gemeindeordnung – Zuständigkeiten und Delegation", "fundstelle": "kommunal", "art": "Gemeindeordnung (Stimmberechtigte)",
+    "hinweis": "Legt fest, welche Organe entscheiden – Grundlage für Neubeurteilung und Rekurs", "muster": r"gemeindeordnung|\(go\)", "ohne": r"protokoll"},
+   {"id": "gs", "ebene": 3, "titel": "Geschäftsordnung / Organisationsstatut – Delegation an Schulleitung und Verwaltung", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
+    "hinweis": "Übertragene Entscheide können bei der Schulpflege zur Neubeurteilung gebracht werden", "muster": r"organisationsstatut|funktionendiagramm|geschaeftsordnung.*schul|geschaeftsreglement.*schul|schulpflege.*geschaefts",
+    "ohne": r"gemeinderat|werkkommission|energie|kirch|feuerwehr|forst|wasser|praevention"}],
+  "kanten": [
+   {"von": "kv", "nach": "bv", "art": "konkretisiert", "beleg": ("101", "suche:Art. 18 ¹"), "beleg_oben": ("sr-101", "Art. 29")},
+   {"von": "vrg", "nach": "kv", "art": "Umsetzung", "beleg": ("101", "suche:Art. 77 ¹")},
+   {"von": "gg", "nach": "vrg", "art": "verweist auf", "beleg": ("131.1", "§ 171.")},
+   {"von": "vsg", "nach": "vrg", "art": "verweist auf", "beleg": ("412.100", "§ 75.")},
+   {"von": "go", "nach": "kv", "art": "Grundlage", "beleg": ("101", "suche:Art. 89 ¹")},
+   {"von": "go", "nach": "gg", "art": "Grundlage", "beleg": ("131.1", "§ 170.")},
+   {"von": "gs", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 74.")},
+   {"von": "gs", "nach": "go", "art": "gestützt auf"}]},
+ {"id": "unterricht", "titel": "Unterricht & Medien",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Bildungsrat", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "urg", "ebene": 0, "titel": "Urheberrechtsgesetz (URG)", "sr": "231.1", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/1993/1798_1798_1798/de",
+    "hinweis": "Art. 19 Abs. 1 lit. b: Verwendung geschützter Werke durch Lehrpersonen für den Unterricht in der Klasse; Vergütung über Gemeinsame Tarife"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Lehrplan und Lehrmittel", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 21 Lehrplan, § 22 Lehrmittel"},
+   {"id": "idg", "ebene": 1, "titel": "Gesetz über die Information und den Datenschutz (IDG)", "art": "Gesetz (Kantonsrat)", "ls": "170.4", "hinweis": "Bilder, Videos und Plattformen im Unterricht: Bearbeitung von Personendaten"},
+   {"id": "lm", "ebene": 2, "titel": "Lehrmittel und Lehrplan (Bildungsrat)", "fundstelle": "Bildungsratsbeschlüsse", "art": "Beschluss (Bildungsrat)",
+    "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html", "hinweis": "Obligatorische und zugelassene Lehrmittel; Anforderungen an Lehrmittel",
+    "liste": [{"titel": "BRB 8/2026 – Anforderungen an ein Lehrmittel für Sprachförderung und DaZ", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2026-brb-08.html"},
+              {"titel": "BRB 4/2017 – Lehrplan für die Volksschule", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-4-volksschule-lehrplan-fuer-die-volksschule-des-kantons-zuerich.html"}]},
+   {"id": "kom", "ebene": 3, "titel": "Medien-, ICT- und Lehrmittelregelungen der Schule", "fundstelle": "kommunal", "art": "Behördenerlass oder Konzept",
+    "hinweis": "Medien- und ICT-Konzept, Nutzungsregeln Geräte, Mediothek/Bibliothek", "muster": r"medien|lehrmittel|ict|ipad|tablet|mediothek|schulbibliothek|informatik(konzept| konzept)|nutzungsreglement schueler",
+    "ohne": r"schuetzenstube|forsthaus|gemeindesaal|gebuehr"}],
+  "kanten": [
+   {"von": "lm", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 22.")},
+   {"von": "kom", "nach": "urg", "art": "Eigengebrauch im Unterricht", "beleg": ("sr-231.1", "Art. 19")},
+   {"von": "kom", "nach": "idg", "art": "Personendaten", "beleg": ("170.4", "§ 3.")},
+   {"von": "kom", "nach": "lm", "art": "verweist auf"},
+   {"von": "kom", "nach": "vsg", "art": "gestützt auf", "beleg": ("412.100", "§ 21.")}]},
 ]
 
 # ---------------------------------------------------------------- Maschinelle Verbindungen (Auftrag 20.11.2026, Punkt 4)
@@ -1777,6 +1822,7 @@ def hierarchie(texte, spec):
                 for s in o["sections"]:
                     for d in walk(s):
                         t = norm(d["titel"])
+                        if re.search(BEHOERDE, t) and not re.search(ERLASS, t): continue
                         if re.search(k["muster"], t) and not (k.get("ohne") and re.search(k["ohne"], t)):
                             key = (o["id"], t[-30:])
                             if key in gesehen: continue
@@ -1792,7 +1838,7 @@ def hierarchie(texte, spec):
         if x.get("beleg") and x["beleg"][0] in akt:
             nr, para = x["beleg"]
             text = paragraf(nr, akt[nr], para)
-            stelle = para[6:].split(" ¹")[0] + " (Anhang IVöB)" if para.startswith("suche:") else para
+            stelle = (para[6:].split(" ¹")[0] + (" (Anhang IVöB)" if nr == "720.1" else "")) if para.startswith("suche:") else para
             if text: k["beleg"] = {"fundstelle": texte["erlasse"][nr]["fundstelle"], "stelle": stelle, "text": text}
         zusatz = []
         for schl in ("beleg_oben", "beleg_unten"):
@@ -1865,7 +1911,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.16.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.17.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1873,7 +1919,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.16.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.17.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

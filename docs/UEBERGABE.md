@@ -36,6 +36,11 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – EduKSX-Codex 0.17.0
+
+- Punkte 2, 5, 8 umgesetzt (#41 → `_3 Beta-Test`). Nächste Schritte als Vorschlag in `docs/KONZEPT-CODEX-VERSIONEN.md` Kapitel 4a
+  (OFFEN / ZU PRÜFEN) – Entscheid des Auftraggebers ausstehend. Punkt 1 (fachliche Prüfung) bleibt extern.
+
 ### Sitzung 2026-11-20 – EduKSX-Codex 0.16.0
 
 - Auftrag (Zwischenmeldung): Recherche «Pflichtdokumente und optionale Reglemente …» als Liste/Menüpunkt, in die Struktur-Matrix,

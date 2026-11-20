@@ -3317,6 +3317,38 @@
      }
     }
    ]
+  },
+  "101": {
+   "ordnungsnummer": "101",
+   "titel": "Verfassung des Kantons Zürich",
+   "fassungen": [
+    {
+     "nachtrag": "129",
+     "veroeffentlicht": "01.07.2024",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-101-2005_02_27-2006_01_01-129.html",
+     "seiten": 29,
+     "absaetze": 616,
+     "fussnoten": 11,
+     "pdf_sha256": "4ed77f02d3d98977cd203f9f4c6943ae1554665a279e14cc6a06a900bb8b2ade"
+    }
+   ]
+  },
+  "175.2": {
+   "ordnungsnummer": "175.2",
+   "titel": "Verwaltungsrechtspflegegesetz (VRG)",
+   "fassungen": [
+    {
+     "nachtrag": "133",
+     "veroeffentlicht": "01.07.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-175_2-1959_05_24-1960_05_01-133.html",
+     "seiten": 31,
+     "absaetze": 514,
+     "fussnoten": 77,
+     "pdf_sha256": "19a1f6deed988dd6c92b02e2724ed156ed420a2452623558c20a684bfab66ab6"
+    }
+   ]
   }
  },
  "stand": "20.11.2026"
