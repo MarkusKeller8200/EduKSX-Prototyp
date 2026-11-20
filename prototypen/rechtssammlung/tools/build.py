@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.15.0 – Generator.
+"""EduKSX-Codex Prototyp 0.16.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1033,7 +1033,57 @@ def matrix():
     # Zeilen ohne Treffer bei allen Organisationen weglassen (ausser Katalog-Pflichtzeilen der Rubrik 1)
     zeilen = [z for z in zeilen if z["key"] in zellen or z["menu"].startswith("1 ")]
     zeilen.sort(key=lambda z: 2 if z["menu"] == NICHT_SR else 1 if z["menu"] == "Übergreifend" else 0)  # stabil: Reihenfolge innerhalb bleibt
-    return {"zeilen": zeilen, "zellen": zellen, "nicht_zugeordnet": rest}
+    pz, pzellen, pzus = pflicht_matrix()
+    zellen.update(pzellen)
+    return {"zeilen": pz + zeilen, "zellen": zellen, "nicht_zugeordnet": rest, "pflicht": pzus}
+
+# ---------------------------------------------------------------- Pflichtkatalog Schulgemeinde (Auftrag 20.11.2026)
+# Quelle: Recherche des Auftraggebers (data/pflichtkatalog.json, Original in quellen/). Einstufung P/B/O, fachlich zu prüfen.
+PFLICHT_MENU = "0 Pflichtkatalog Schulgemeinde (Recherche, zu prüfen)"
+def pflichtkatalog():
+    return json.loads((ROOT / "data" / "pflichtkatalog.json").read_text(encoding="utf-8"))
+
+def pflicht_relevanz(o):
+    """Gilt der Katalog für die Rechtssammlung dieser Organisation?"""
+    if o["typ"] != "Politische Gemeinde": return "ja", "Schulgemeinde bzw. Schule"
+    if not (o.get("einheit") or "").startswith("Einheitsgemeinde"): return "nein", "Politische Gemeinde ohne Schulaufgaben – Schule hat eigene Rechtssammlung"
+    if any(x["typ"] == "Schule der Einheitsgemeinde" and x.get("sitz") == o.get("sitz") for x in ORGS):
+        return "teilweise", "Einheitsgemeinde – Schulerlasse in der eigenen Sammlung der Schule erfasst"
+    return "ja", "Einheitsgemeinde – Schulerlasse in der Rechtssammlung der Gemeinde"
+
+def pflicht_matrix():
+    PK = pflichtkatalog()
+    zeilen, zellen, zus = [], {}, {}
+    for kat in PK["kategorien"]:
+        for e in kat["eintraege"]:
+            zeilen.append({"menu": PFLICHT_MENU, "unter": f"{kat['nr']} {kat['titel']}", "dok": e["dokument"], "key": e["id"], "sammel": False,
+                           "stufe": e["stufe"], "pflicht": True, "aufnahme": e["aufnahme"]})
+    for o in ORGS:
+        rel, grund = pflicht_relevanz(o)
+        z = {"relevanz": rel, "grund": grund, "stufen": {st: [0, 0] for st in "PBO"}}
+        docs = []
+        for sec in o["sections"]:
+            for d in walk(sec):
+                t = norm(d["titel"])
+                if re.search(BEHOERDE, t) and not re.search(ERLASS, t): continue
+                docs.append((t, d))
+        for kat in PK["kategorien"]:
+            for e in kat["eintraege"]:
+                z["stufen"][e["stufe"]][1] += 1
+                c = None
+                for t, d in docs:
+                    if e.get("ohne") and re.search(e["ohne"], t): continue
+                    st = "ja" if re.search(e["muster"], t) else "unsicher" if e.get("muster_unsicher") and re.search(e["muster_unsicher"], t) else None
+                    if not st: continue
+                    c = c or {"status": st, "docs": [], "hinweise": []}
+                    if st == "ja": c["status"] = "ja"
+                    c["docs"].append({"titel": d["titel"], "url": d.get("url"), "ablage": None})
+                if c:
+                    if c["status"] == "unsicher": c["hinweise"].append("nur ähnlicher Titel")
+                    zellen.setdefault(e["id"], {})[o["id"]] = c
+                    if c["status"] == "ja": z["stufen"][e["stufe"]][0] += 1
+        zus[o["id"]] = z
+    return zeilen, zellen, zus
 
 # ---------------------------------------------------------------- Leitfaden systematische Rechtssammlung (Gemeindeamt/VZGV 2018/2019)
 LEITFADEN = {
@@ -1778,7 +1828,7 @@ def render_daten(gemeinden):
             if g: o["einheit"] = g["einheit"]
     for o in ORGS: leitfaden_pruefung(o); doc_datum_version(o); analyse_info(o)
     TX = texte_index()
-    daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN, "rechtsgrundlagen": rechtsgrundlagen(),
+    daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN, "rechtsgrundlagen": rechtsgrundlagen(), "pflichtkatalog": pflichtkatalog(),
              "texte": TX, "hierarchien": querbezuege([abgleich_kanten(hierarchie(TX, sp), TX) for sp in HIERARCHIEN], TX),
              "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
     for e in daten["rechtsgrundlagen"]["eintraege"]:
@@ -1815,7 +1865,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.15.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.16.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1823,7 +1873,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.15.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.16.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

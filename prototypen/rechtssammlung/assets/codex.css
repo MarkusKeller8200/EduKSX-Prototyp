@@ -161,3 +161,14 @@ ins { background: var(--success-soft); } del { background: var(--destructive-sof
 .beleg { white-space: pre-line; font-size: .88rem; background: var(--muted); padding: .5rem .7rem; border-radius: calc(var(--radius) - 2px); }
 
 .lg-nicht::before { border-top-style: dashed; border-top-color: #b4232a; }
+
+/* Pflichtkatalog */
+.badge.stufe { font-weight: 700; min-width: 1.6em; justify-content: center; }
+.stufe-P { background: #fde2e1; color: #8a1c17; } .stufe-B { background: #fff1d6; color: #7a4a00; } .stufe-O { background: var(--muted); color: var(--muted-foreground); }
+.mz-pflicht { font-weight: 400; margin-top: .2rem; }
+.balken.klein { display: inline-block; width: 60px; height: 6px; background: var(--muted); border-radius: 3px; vertical-align: middle; overflow: hidden; }
+.balken.klein > span { display: block; height: 100%; background: var(--brand-blue); }
+.filterzeile select { width: auto; max-width: 22rem; flex: 0 1 auto; }
+td.mz { max-width: 15rem; } ul.mz-docs a, ul.mz-docs span { overflow-wrap: anywhere; }
+table.matrix tbody th { max-width: 22rem; } table.matrix tbody th .small { font-weight: 400; }
+table.matrix tbody th { white-space: normal; }

@@ -138,4 +138,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Codex 0.15.0: Normenhierarchie – Verbindungen maschinell aus den Textfassungen ausgelesen (Ingress, § 1 / Art. 1,
   Fussnoten): Status «maschinell bestätigt» / «nur von Hand» je Verbindung, Vorschläge für fehlende Verbindungen (in der Grafik
   zuschaltbar) und Liste weiterer Erlasse, auf die oft verwiesen wird (#39).
+- EduKSX-Codex 0.16.0: Pflichtkatalog Schulgemeinde als Menüpunkt (40 Dokumente, Einstufung Pflicht / bedingt / optional,
+  Aufnahme in die Rechtssammlung, Quelle; Vollständigkeit je Organisation); Struktur-Matrix mit Pflichtkatalog-Zeilen, P/B/O-Zählern
+  je Spalte und Auswahl von bis zu 3 Organisationen (#40).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

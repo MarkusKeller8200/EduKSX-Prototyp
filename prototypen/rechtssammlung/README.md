@@ -1,6 +1,6 @@
 # Prototyp: Rechtssammlung
 
-**Status:** in-arbeit · **Version:** 0.15.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
+**Status:** in-arbeit · **Version:** 0.16.0 · **Technik:** html · **Ziel-Modul:** EduKSX-Codex
 
 ## Frage
 
@@ -30,6 +30,7 @@ Neu erzeugen (JSON, Übersicht, Demo-Seiten, Evaluation): `python3 prototypen/re
 | `data/gemeinden-zh.csv` | 160 politische Gemeinden mit Website (aus Verwaltungs-E-Mail), CMS, Status |
 | `data/raw/zhlex-versionen.json` | Fassungen (Nachträge) von 29 kantonalen Erlassen aus ZH-Lex mit Publikations-, Inkraftsetzungs- und Aufhebungsdatum, abgerufen 20.11.2026 |
 | `data/raw/` | Rohdaten aus den Websites |
+| `data/pflichtkatalog.json` | Pflichtkatalog Schulgemeinde: 40 Dokumente in 5 Kategorien mit Einstufung P/B/O, Aufnahme in die Rechtssammlung, Quelle und Suchmuster (Recherche 20.11.2026, Original in `quellen/pflichtdokumente_schulgemeinde_zh.md`, zu prüfen) |
 | `data/rechtsgrundlagen.json` | Gesetzestexte & Verordnungen: 65 Rechtsgrundlagen für Schulen (62 aus der Liste, ergänzt um FAG, FAV, CRG; Bund, Kanton, Bildungsrat, Gemeinde) mit Sachbereich, Artikel und Quelle; Fundstelle, Ebene und Direktlink ergänzt `tools/build.py` |
 | `quellen/` | Leitfaden systematische Rechtssammlung (Original von zh.ch und PDF für die Vorschau), Herkunft in `quellen/README.md` |
 | `texte/` | Textfassungen (Markdown) je ZH-Lex-Fassung und Unterschiede je Fassungspaar (JSON), erzeugt von `tools/texte.py` – 27 kantonale Erlasse (u. a. VSG, VSV, VSM, LPVO, GG, VGG, CRG, IDG, IVSV, SVO, PBG) und 9 Bundeserlasse (BV, KRK, BehiG, ZGB, OR, URG, DSG, DSV, StGB) |

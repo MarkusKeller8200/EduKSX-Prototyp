@@ -1,0 +1,501 @@
+{
+ "stand": "20.11.2026",
+ "quelle": "Recherche «Pflichtdokumente und optionale Reglemente für die Rechtssammlung einer Zürcher Schulgemeinde» (vom Auftraggeber eingebracht, 20.11.2026), Original in quellen/pflichtdokumente_schulgemeinde_zh.md",
+ "status": "ZU PRÜFEN – Einstufungen fachlich nicht geprüft",
+ "grundlage": {
+  "text": "§ 7 Abs. 2 Gemeindegesetz: Pflicht zur systematischen Rechtssammlung; gilt laut Volksschulamt auch für Schulgemeinden. Eine abschliessende kantonale Liste gibt es nicht.",
+  "ls": "131.1"
+ },
+ "stufen": {
+  "P": "Pflicht – gesetzlich vorgeschrieben oder zwingend zu publizierender kommunaler Erlass",
+  "B": "Bedingte Pflicht – erforderlich, wenn die Gemeinde eine bestimmte Aufgabe wahrnimmt oder Regelung erlässt",
+  "O": "Optional – freiwilliges Reglement oder ergänzende Richtlinie"
+ },
+ "hinweise": [
+  "Dokumentationspflicht und Publikationspflicht sind zu unterscheiden: Ein Dokument kann für den Schulbetrieb zwingend sein, ohne dass es vollständig in die öffentliche Rechtssammlung gehört (z. B. Schulprogramm, Aktenplan).",
+  "Ein freiwillig erlassenes Reglement gehört, sobald es geltendes kommunales Recht enthält, in die öffentliche Rechtssammlung.",
+  "Das Organisationsstatut ist das Dachinstrument: Reglemente, Konzepte, Organigramme und Funktionendiagramme können Bestandteile davon sein.",
+  "Beispielhafte Rechtssammlung im Schulungsmaterial des Volksschulamts: Schulgemeindeordnung, Besoldungsverordnung, Gebührenverordnung, Organisationsstatut, Unterschriften- und Kompetenzenreglement (Beispiel, keine Mindestliste)."
+ ],
+ "vsa_pdf": "https://www.zh.ch/content/dam/zhweb/bilder-dokumente/themen/bildung/jobs-ausbildungen-im-schulfeld/schulungen-fuer-schulbehoerden/3_rechtsgrundlagen.pdf",
+ "kategorien": [
+  {
+   "nr": 1,
+   "titel": "Behördenorganisation und Gemeinderecht",
+   "eintraege": [
+    {
+     "id": "p1",
+     "dokument": "Gemeindeordnung / Schulgemeindeordnung",
+     "stufe": "P",
+     "aufnahme": "Ja",
+     "quelle": "Gemeindeamt – Genehmigung Gemeindeordnung",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation/genehmigung-gemeindeordnung.html",
+     "muster": "gemeindeordnung|\\(go\\)",
+     "muster_unsicher": null,
+     "bemerkung": "§ 7 Abs. 2 GG (Rechtssammlung); Genehmigung durch den Regierungsrat"
+    },
+    {
+     "id": "p2",
+     "dokument": "Organisationsstatut der Schule",
+     "stufe": "P",
+     "aufnahme": "Normative Bestimmungen ja",
+     "quelle": "Volksschulamt – Organisation auf Gemeindeebene",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation/schulinfo-organisation-auf-gemeindeebene.html",
+     "muster": "organisationsstatut",
+     "muster_unsicher": "organisationsreglement|schulorganisation",
+     "bemerkung": "§ 41 a Abs. 2 VSG"
+    },
+    {
+     "id": "p3",
+     "dokument": "Geschäftsordnung der Schulpflege",
+     "stufe": "P",
+     "aufnahme": "Ja, soweit rechtsetzender Erlass",
+     "quelle": "Gemeindeamt",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+     "muster": "geschaeftsordnung|geschaeftsreglement",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p4",
+     "dokument": "Unterschriften- und Kompetenzenreglement",
+     "stufe": "B",
+     "aufnahme": "Ja, wenn selbstständiger normativer Erlass",
+     "quelle": "Gemeindeamt",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+     "muster": "unterschrift|kompetenzreglement|kompetenzenreglement|kompetenzregelung|zustaendigkeitsordnung|funktionendiagramm",
+     "muster_unsicher": "kompetenz",
+     "bemerkung": "Kann in Organisationsstatut oder Geschäftsordnung enthalten sein"
+    },
+    {
+     "id": "p5",
+     "dokument": "Entschädigungs- / Besoldungsverordnung der Behörden",
+     "stufe": "B",
+     "aufnahme": "Ja, bei eigenständigem kommunalem Erlass",
+     "quelle": "Gemeindeamt",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+     "muster": "entschaedigungsverordnung|entschaedigungsreglement|\\bevo\\b|besoldungsverordnung|entschaedigung (der )?behoerde",
+     "muster_unsicher": "entschaedigung",
+     "bemerkung": ""
+    },
+    {
+     "id": "p6",
+     "dokument": "Geschäftsordnung der Schulkonferenz",
+     "stufe": "B",
+     "aufnahme": "Je nach Regelungscharakter",
+     "quelle": "Volksschulamt – Organisation",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation.html",
+     "muster": "schulkonferenz|konvent",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p7",
+     "dokument": "Reglement über Behördenkommissionen",
+     "stufe": "B",
+     "aufnahme": "Ja, sofern rechtsetzender Erlass",
+     "quelle": "Gemeindeamt",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+     "muster": "kommission.*(reglement|ordnung)|(reglement|ordnung).*kommission",
+     "muster_unsicher": null,
+     "bemerkung": "",
+     "ohne": "energie|kirch|feuerwehr|forst|wasser|landwirtschaft|alters|spitex"
+    },
+    {
+     "id": "p8",
+     "dokument": "Reglement über beratende Kommissionen",
+     "stufe": "O",
+     "aufnahme": "Bei normativen Bestimmungen",
+     "quelle": "Gemeindeamt",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+     "muster": "beratende kommission|fachkommission",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    }
+   ]
+  },
+  {
+   "nr": 2,
+   "titel": "Finanzen und Personal",
+   "eintraege": [
+    {
+     "id": "p9",
+     "dokument": "Kommunales Personalreglement",
+     "stufe": "O",
+     "aufnahme": "Ja, falls erlassen",
+     "quelle": "Volksschulamt – kantonales und kommunales Personal",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-personal-fuehren/volksschule-kantonales-kommunales-personal.html",
+     "muster": "personalverordnung|personalreglement|\\bpevo\\b|anstellungs",
+     "muster_unsicher": null,
+     "bemerkung": "Ohne eigenes Recht gilt subsidiär § 53 GG"
+    },
+    {
+     "id": "p10",
+     "dokument": "Kommunales Besoldungs- / Lohnreglement",
+     "stufe": "B",
+     "aufnahme": "Ja, falls eigenständig erlassen",
+     "quelle": "Volksschulamt – Personal führen",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-personal-fuehren.html",
+     "muster": "besoldung|lohnreglement|lohnordnung|lohnverordnung",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p11",
+     "dokument": "Gebührenverordnung",
+     "stufe": "B",
+     "aufnahme": "Ja, wenn kommunale Gebühren normativ geregelt werden",
+     "quelle": "Gemeindeamt",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+     "muster": "gebuehrenverordnung|gebuehrenordnung",
+     "muster_unsicher": null,
+     "bemerkung": "Pflicht nur, wenn Gebühren erhoben werden"
+    },
+    {
+     "id": "p12",
+     "dokument": "Gebührenreglement / Gebührentarif",
+     "stufe": "B",
+     "aufnahme": "Ja, falls als generell-abstrakter Erlass ausgestaltet",
+     "quelle": "Gemeindeamt",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+     "muster": "gebuehrenreglement|gebuehrentarif",
+     "muster_unsicher": "tarif",
+     "bemerkung": ""
+    },
+    {
+     "id": "p13",
+     "dokument": "Finanzkompetenzenreglement",
+     "stufe": "B",
+     "aufnahme": "Ja, wenn separater Rechtserlass",
+     "quelle": "Gemeindefinanzen – Finanzhaushalt",
+     "quelle_url": "https://www.zh.ch/de/steuern-finanzen/gemeindefinanzen/finanzhaushalt-gemeinden.html",
+     "muster": "finanzkompetenz|ausgabenkompetenz|finanzreglement|finanzordnung",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p14",
+     "dokument": "Reglement zur Ausgabenbewilligung",
+     "stufe": "O",
+     "aufnahme": "Bei rechtsetzendem Inhalt",
+     "quelle": "Gemeindefinanzen – Finanzhaushalt",
+     "quelle_url": "https://www.zh.ch/de/steuern-finanzen/gemeindefinanzen/finanzhaushalt-gemeinden.html",
+     "muster": "ausgabenbewilligung|kreditbewilligung",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p15",
+     "dokument": "Spesenreglement",
+     "stufe": "O",
+     "aufnahme": "Bei allgemein verbindlichem Erlass",
+     "quelle": "Handbuch Personalrecht Kanton",
+     "quelle_url": "https://www.zh.ch/de/arbeiten-beim-kanton/fuer-hr-profis/handbuch-personalrecht/definition/grundlagen/gesetzliche-grundlagen.html",
+     "muster": "spesen",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p16",
+     "dokument": "Reglement für Weiterbildungen",
+     "stufe": "O",
+     "aufnahme": "Je nach Inhalt",
+     "quelle": "Volksschulamt – Personal führen",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-personal-fuehren.html",
+     "muster": "weiterbildung",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    }
+   ]
+  },
+  {
+   "nr": 3,
+   "titel": "Schulbetrieb und pädagogische Organisation",
+   "eintraege": [
+    {
+     "id": "p17",
+     "dokument": "Schulprogramm",
+     "stufe": "P",
+     "aufnahme": "Nicht zwingend vollständig als Rechtserlass",
+     "quelle": "Volksschulamt – Organisation",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation.html",
+     "muster": "schulprogramm",
+     "muster_unsicher": null,
+     "bemerkung": "Pflicht zur Dokumentation, nicht zwingend zur Publikation"
+    },
+    {
+     "id": "p18",
+     "dokument": "Schulhausordnung / Schulordnung",
+     "stufe": "B",
+     "aufnahme": "Ja, bei verbindlichen allgemeinen Regeln",
+     "quelle": "Volksschulamt",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html",
+     "muster": "schulordnung|schulhausordnung|schulreglement",
+     "muster_unsicher": "hausordnung",
+     "bemerkung": "",
+     "ohne": "sammelstelle|entsorg|friedhof|werkhof|abfall"
+    },
+    {
+     "id": "p19",
+     "dokument": "Reglement Elternmitwirkung",
+     "stufe": "B",
+     "aufnahme": "Ja, wenn eigenständiger Rechtserlass",
+     "quelle": "Volksschulamt – Elternmitwirkung",
+     "quelle_url": "https://www.zh.ch/de/bildung/schulen/volksschule/rechte-und-pflichten-der-eltern/volksschule-elternmitwirkung.html",
+     "muster": "elternmitwirkung|elternrat|elternforum|elternmitarbeit",
+     "muster_unsicher": null,
+     "bemerkung": "§ 55 VSG: Organisationsstatut regelt die Mitwirkung der Eltern"
+    },
+    {
+     "id": "p20",
+     "dokument": "Schülerpartizipationsreglement",
+     "stufe": "O",
+     "aufnahme": "Je nach Regelungscharakter",
+     "quelle": "Volksschulamt – Partizipation",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation/schulinfo-eltern-schuelerinnen-und-schueler/partizipation-schuelerinnen-schueler-elternmitwirkung.html",
+     "muster": "partizipation|schuelerrat|schuelerparlament|schuelerinnenrat",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p21",
+     "dokument": "Hausaufgabenreglement",
+     "stufe": "O",
+     "aufnahme": "Bei generell verbindlichen lokalen Regeln",
+     "quelle": "Volksschulamt",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html",
+     "muster": "hausaufgabe",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p22",
+     "dokument": "Reglement für Klassenlager und Exkursionen",
+     "stufe": "O",
+     "aufnahme": "Je nach Inhalt",
+     "quelle": "Volksschulamt",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html",
+     "muster": "klassenlager|lagerreglement|\\blager\\b|exkursion|schulreise",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p23",
+     "dokument": "Richtlinien zum Umgang mit Disziplinarmassnahmen",
+     "stufe": "O",
+     "aufnahme": "In der Regel internes Vollzugsdokument",
+     "quelle": "Volksschulamt – Disziplinarmassnahmen",
+     "quelle_url": "https://www.zh.ch/de/bildung/schulen/volksschule/rechte-und-pflichten-der-eltern/volksschule-disziplinarmassnahmen.html",
+     "muster": "disziplin",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p24",
+     "dokument": "Reglement zur Nutzung privater elektronischer Geräte",
+     "stufe": "O",
+     "aufnahme": "Bei rechtsetzendem Inhalt",
+     "quelle": "Volksschulamt",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html",
+     "muster": "handy|smartphone|mobiltelefon|elektronische geraete|private geraete",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p25",
+     "dokument": "Betreuungstarif / Tagesstrukturreglement",
+     "stufe": "B",
+     "aufnahme": "Ja, soweit Gebühren oder allgemein verbindliche Benutzungsregeln festgelegt werden",
+     "quelle": "Volksschulamt – Tagesstrukturen, rechtliche Vorgaben",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-schulinfo-unterrichtsergaenzende-angebote/schulinfo-tagesstrukturen/definition/grundlagen/rechtliche-vorgaben.html",
+     "muster": "tagesstruktur|betreuungsreglement|betreuungstarif|betreuungsverordnung|hortreglement|mittagstisch|schulergaenzend",
+     "muster_unsicher": "betreuung|hort",
+     "bemerkung": "Pflicht, wenn Tagesstrukturen angeboten werden",
+     "ohne": "zweckverband.*pfleg|alters|spitex|pflegezentr"
+    }
+   ]
+  },
+  {
+   "nr": 4,
+   "titel": "Liegenschaften, Turnhallen und Infrastruktur",
+   "eintraege": [
+    {
+     "id": "p26",
+     "dokument": "Turnhallen-Nutzungsordnung",
+     "stufe": "O",
+     "aufnahme": "Ja, wenn allgemein verbindliches Reglement",
+     "quelle": "Gemeindeamt",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+     "muster": "turnhalle|sporthalle|mehrzweckhalle",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p27",
+     "dokument": "Schulraumbenutzungsreglement",
+     "stufe": "O",
+     "aufnahme": "Bei verbindlichen Benutzungsbedingungen",
+     "quelle": "Gemeindeamt",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+     "muster": "schulraum|raumbenuetzung|raumbenutzung|benuetzungsreglement|benutzungsreglement|benuetzungsordnung|benutzungsordnung",
+     "muster_unsicher": null,
+     "bemerkung": "",
+     "ohne": "gasthof|gemeindesaal|friedhof|forsthaus|kirch"
+    },
+    {
+     "id": "p28",
+     "dokument": "Reglement für die ausserschulische Nutzung von Schulanlagen",
+     "stufe": "O",
+     "aufnahme": "Ja, soweit generell-abstrakte Regeln festgelegt werden",
+     "quelle": "Gemeindeamt",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+     "muster": "schulanlage|ausserschulisch",
+     "muster_unsicher": null,
+     "bemerkung": "",
+     "ohne": "video"
+    },
+    {
+     "id": "p29",
+     "dokument": "Tarifordnung für die Vermietung von Schulräumen",
+     "stufe": "B",
+     "aufnahme": "Ja, wenn die Gemeinde allgemein verbindliche Tarife erlässt",
+     "quelle": "Gemeindeamt",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+     "muster": "vermietung|benuetzungsgebuehr|benutzungsgebuehr|raumtarif|mietreglement",
+     "muster_unsicher": null,
+     "bemerkung": "",
+     "ohne": "gewomag|wohn|gasthof|alters"
+    },
+    {
+     "id": "p30",
+     "dokument": "Parkplatzreglement für Schulanlagen",
+     "stufe": "O",
+     "aufnahme": "Bei rechtsetzendem Inhalt",
+     "quelle": "Gemeindeamt",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+     "muster": "parkplatz|parkier",
+     "muster_unsicher": null,
+     "bemerkung": "",
+     "ohne": "bau und zonen|zonenordnung"
+    },
+    {
+     "id": "p31",
+     "dokument": "Reglement über die Nutzung von Aussenanlagen und Sportplätzen",
+     "stufe": "O",
+     "aufnahme": "Bei rechtsetzendem Inhalt",
+     "quelle": "Gemeindeamt",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+     "muster": "aussenanlage|sportplatz|sportanlage|pausenplatz|rasenplatz",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p32",
+     "dokument": "Hausordnung für externe Nutzerinnen und Nutzer",
+     "stufe": "O",
+     "aufnahme": "Je nach Verbindlichkeit und Adressatenkreis",
+     "quelle": "Gemeindeamt",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html",
+     "muster": "hausordnung.*(extern|vermiet|benut|benuet)",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    }
+   ]
+  },
+  {
+   "nr": 5,
+   "titel": "Datenschutz, ICT und Informationsverwaltung",
+   "eintraege": [
+    {
+     "id": "p33",
+     "dokument": "Ordnungssystem / Aktenplan",
+     "stufe": "P",
+     "aufnahme": "In der Regel internes Führungsinstrument",
+     "quelle": "Informationsverwaltung (Kanton)",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/wie-behoerden-informationen-verwalten.html",
+     "muster": "aktenplan|ordnungssystem|registraturplan",
+     "muster_unsicher": null,
+     "bemerkung": "§ 2 IVSV verlangt ein Ordnungssystem; Musteraktenplan des Staatsarchivs"
+    },
+    {
+     "id": "p34",
+     "dokument": "Reglement Informationsverwaltung und Archivierung",
+     "stufe": "B",
+     "aufnahme": "Normative Teile ja, ansonsten intern",
+     "quelle": "Staatsarchiv – Archive der Gemeinden",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/wie-behoerden-informationen-verwalten/wie-gemeinden-archive-fuehren.html",
+     "muster": "informationsverwaltung|archivreglement|archivverordnung|archiv",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p35",
+     "dokument": "Datenschutzreglement",
+     "stufe": "O",
+     "aufnahme": "Falls als kommunaler Rechtserlass ausgestaltet",
+     "quelle": "Volksschulamt – Datenschutz und Archivierung",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation/volksschule-datenschutz-archivierung.html",
+     "muster": "datenschutz",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p36",
+     "dokument": "ICT-Nutzungsreglement Mitarbeitende",
+     "stufe": "O",
+     "aufnahme": "Je nach Regelungscharakter",
+     "quelle": "Volksschulamt – Datenschutz und Archivierung",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation/volksschule-datenschutz-archivierung.html",
+     "muster": "(ict|informatik|internet|e mail).*(nutzung|benutzung|richtlinie|reglement)",
+     "muster_unsicher": "nutzungsreglement|nutzungsrichtlinie",
+     "bemerkung": "",
+     "ohne": "forsthaus|gemeindesaal|gasthof|friedhof"
+    },
+    {
+     "id": "p37",
+     "dokument": "ICT-Nutzungsreglement Schülerinnen und Schüler",
+     "stufe": "O",
+     "aufnahme": "Bei allgemein verbindlichen Vorschriften",
+     "quelle": "Volksschulamt – Datenschutz und Archivierung",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation/volksschule-datenschutz-archivierung.html",
+     "muster": "(ict|medien|internet).*(schueler|sus)|(schueler|sus).*(ict|medien|internet)",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p38",
+     "dokument": "Informationssicherheitsleitlinie",
+     "stufe": "O",
+     "aufnahme": "Meist internes Führungsdokument",
+     "quelle": "Informationsverwaltung (Kanton)",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/wie-behoerden-informationen-verwalten.html",
+     "muster": "informationssicherheit|sicherheitsleitlinie|leitlinie informations",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p39",
+     "dokument": "BYOD-Reglement",
+     "stufe": "O",
+     "aufnahme": "Bei rechtsetzendem Inhalt",
+     "quelle": "Volksschulamt",
+     "quelle_url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html",
+     "muster": "byod|bring your own",
+     "muster_unsicher": null,
+     "bemerkung": ""
+    },
+    {
+     "id": "p40",
+     "dokument": "Reglement Videoüberwachung",
+     "stufe": "B",
+     "aufnahme": "Bei entsprechender Anlage und rechtlicher Regelung",
+     "quelle": "Datenschutz Kanton Zürich",
+     "quelle_url": "https://www.zh.ch/de/politik-staat/datenschutz.html",
+     "muster": "video",
+     "muster_unsicher": null,
+     "bemerkung": "Pflicht, wenn Videoüberwachung betrieben wird"
+    }
+   ]
+  }
+ ]
+}

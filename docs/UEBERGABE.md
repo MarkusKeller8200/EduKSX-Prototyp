@@ -36,6 +36,13 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – EduKSX-Codex 0.16.0
+
+- Auftrag (Zwischenmeldung): Recherche «Pflichtdokumente und optionale Reglemente …» als Liste/Menüpunkt, in die Struktur-Matrix,
+  Matrix mit Auswahl bis 3 Organisationen. Umgesetzt (#40 → `_3 Beta-Test`): `data/pflichtkatalog.json`, `pflicht_matrix()` in
+  tools/build.py, Seite `#/pflicht`, Matrix-Route `#/matrix/<ids>`.
+- Offen: Einstufungen der Recherche sind **ZU PRÜFEN** (KI-gestützte Recherche, nicht abschliessend).
+
 ### Sitzung 2026-11-20 – EduKSX-Codex 0.15.0
 
 - Punkt 4 umgesetzt (#39 → `_3 Beta-Test`): `maschinell()` und `abgleich_kanten()` in tools/build.py; Felder `status`,

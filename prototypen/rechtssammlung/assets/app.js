@@ -123,6 +123,7 @@
         h("li", null, eintrag(link("gemeinden"), "Alle 160 Gemeinden", r.art === "gemeinden")),
         h("li", null, eintrag(link("schulgemeinden"), "Alle " + D.schulgemeinden.length + " Schulgemeinden", r.art === "schulgemeinden")),
         h("li", null, eintrag(link("matrix"), "Struktur-Matrix", r.art === "matrix")),
+        h("li", null, eintrag(link("pflicht"), "Pflichtkatalog Schulgemeinde", r.art === "pflicht", h("span", { cls: "anz", text: String(D.pflichtkatalog.kategorien.reduce(function (n, k) { return n + k.eintraege.length; }, 0)) }))),
         h("li", null, eintrag(link("grundlagen"), "Grundlagen (Leitfaden, ZH-Lex)", r.art === "grundlagen")),
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Gesetzestexte & Verordnungen" }),
         h("li", null, eintrag(link("herkunft"), "Herkunftsliste (Publikationsquellen)", r.art === "herkunft")),
@@ -982,7 +983,7 @@
   // ------------------------------------------------------------------ Struktur-Matrix
   function matrixAnsicht(nurIds) {
     var M = D.matrix, orgs = D.organisationen.filter(function (o) { return !nurIds || nurIds.indexOf(o.id) >= 0; });
-    var filter = { leer: false, behoerde: true, text: "" };
+    var filter = { leer: false, behoerde: true, text: "", nurPflicht: false };
     var huelle = h("div");
     function zelle(z, o) {
       var c = (M.zellen[z.key] || {})[o.id];
@@ -1004,9 +1005,10 @@
       huelle.textContent = "";
       var zeilen = M.zeilen.filter(function (z) {
         if (!filter.behoerde && /^Gehört nicht in die SR/.test(z.menu)) return false;
+        if (filter.nurPflicht && !z.pflicht) return false;
         var hat = orgs.some(function (o) { return (M.zellen[z.key] || {})[o.id]; });
         if (filter.leer && !hat) return false;
-        if (nurIds && !hat && !/^1 /.test(z.menu)) return false;
+        if (nurIds && !hat && !/^[01] /.test(z.menu)) return false;
         var f = filter.text.toLowerCase();
         return !f || (z.menu + " " + z.unter + " " + z.dok).toLowerCase().indexOf(f) >= 0;
       });
@@ -1014,11 +1016,11 @@
       zeilen.forEach(function (z) {
         if (z.menu !== letzt) { letzt = z.menu; body.appendChild(h("tr", { cls: "mz-menu" }, h("th", { colspan: String(3 + orgs.length), scope: "colgroup", text: z.menu }))); }
         body.appendChild(h("tr", null, h("td", { cls: "muted small", text: z.menu.replace(/^(\d) .*/, "$1") }), h("td", { text: z.unter }),
-          h("th", { scope: "row", text: z.dok + (z.sammel ? " (Sammelzeile)" : "") }), orgs.map(function (o) { return zelle(z, o); })));
+          h("th", { scope: "row" }, z.stufe ? [stufeBadge(z.stufe), " "] : null, z.dok + (z.sammel ? " (Sammelzeile)" : ""), z.aufnahme ? h("div", { cls: "small muted", text: "Rechtssammlung: " + z.aufnahme }) : null), orgs.map(function (o) { return zelle(z, o); })));
       });
       huelle.appendChild(h("div", { cls: "tabelle-wrap matrix-wrap" }, h("table", { cls: "matrix" },
         h("thead", null, h("tr", null, h("th", { text: "Menü" }), h("th", { text: "Untermenü" }), h("th", { text: "Dokument" }),
-          orgs.map(function (o) { return h("th", { scope: "col", cls: "mz-org" }, h("a", { href: link("org", o.id), text: o.kurz })); }))),
+          orgs.map(function (o) { return h("th", { scope: "col", cls: "mz-org" }, h("a", { href: link("org", o.id), text: o.kurz }), pflichtKurz(o)); }))),
         body)));
       var rest = orgs.map(function (o) { return [o, M.nicht_zugeordnet[o.id] || []]; }).filter(function (x) { return x[1].length; });
       if (rest.length) huelle.appendChild(h("details", { cls: "karte" }, h("summary", { text: "Nicht zugeordnete Dokumente (" + rest.reduce(function (s, x) { return s + x[1].length; }, 0) + ")" }),
@@ -1028,18 +1030,71 @@
     such.addEventListener("input", function () { filter.text = such.value; bauen(); });
     var cbLeer = h("input", { type: "checkbox" }); cbLeer.addEventListener("change", function () { filter.leer = cbLeer.checked; bauen(); });
     var cbBeh = h("input", { type: "checkbox", checked: "checked" }); cbBeh.addEventListener("change", function () { filter.behoerde = cbBeh.checked; bauen(); });
+    var cbPfl = h("input", { type: "checkbox" }); cbPfl.addEventListener("change", function () { filter.nurPflicht = cbPfl.checked; bauen(); });
     bauen();
     return [h("div", { cls: "formzeile" }, h("label", { cls: "feld" }, "Filtern ", such),
-        h("label", null, cbLeer, " nur Zeilen mit Treffern"), h("label", null, cbBeh, " «Gehört nicht in die SR» zeigen")),
+        h("label", null, cbLeer, " nur Zeilen mit Treffern"), h("label", null, cbBeh, " «Gehört nicht in die SR» zeigen"), h("label", null, cbPfl, " nur Pflichtkatalog")),
       h("p", { cls: "small legende" }, badge("erfolg", "✓", "vorhanden"), " ", badge("warnung", "?", "unsicher (ähnlicher Titel, kombinierter Erlass, falscher Link …)"), " ",
         badge("neutral", "–", "fehlt"), " · Hinter dem Symbol der Link zum Dokument (später zur EduKSX-Dokumentenablage)."),
       huelle];
   }
-  function matrix() {
-    return [kopf("Struktur-Matrix", "Je Zeile ein Dokument der Codex-Struktur (Menü › Untermenü › Dokument), je Spalte eine Organisation. Ähnliche Dokumente werden auch bei abweichender Schreibweise erkannt."),
-      matrixAnsicht(null)];
+  var MAX_MATRIX = 3;
+  function pflichtRelevant() { return D.organisationen.filter(function (o) { var z = D.matrix.pflicht[o.id]; return z && z.relevanz === "ja"; }); }
+  function matrix(auswahl) {
+    var ids = (auswahl || "").split(",").filter(function (x) { return ORG[x]; }).slice(0, MAX_MATRIX);
+    if (!ids.length) ids = pflichtRelevant().slice(0, MAX_MATRIX).map(function (o) { return o.id; });
+    var sortiert = D.organisationen.slice().sort(function (a, b) { return a.kurz.localeCompare(b.kurz, "de"); });
+    var wahl = [0, 1, 2].map(function (i) {
+      var sel = h("select", { "aria-label": "Organisation " + (i + 1), onchange: function () {
+        var neu = wahl.map(function (x) { return x.value; }).filter(Boolean); location.hash = link("matrix", neu.filter(function (x, k) { return neu.indexOf(x) === k; }).join(",")); } },
+        [h("option", { value: "", text: i ? "– keine –" : "Organisation wählen" })].concat(sortiert.map(function (o) {
+          var z = D.matrix.pflicht[o.id], opt = h("option", { value: o.id, text: o.kurz + " (" + o.typ + ")" + (z && z.relevanz !== "ja" ? " – Pflichtkatalog " + (z.relevanz === "nein" ? "nicht anwendbar" : "teilweise") : "") });
+          if (ids[i] === o.id) opt.selected = true; return opt; })));
+      return sel;
+    });
+    return [kopf("Struktur-Matrix", "Je Zeile ein Dokument – oben der Pflichtkatalog für Schulgemeinden, darunter die Codex-Struktur (Menü › Untermenü › Dokument) –, je Spalte eine Organisation. Bis zu drei Organisationen nebeneinander vergleichen."),
+      h("div", { cls: "filterzeile" }, h("span", { cls: "small", text: "Vergleichen: " }), wahl, h("a", { cls: "small", href: link("pflicht"), text: "Vollständigkeit aller Organisationen →" })),
+      matrixAnsicht(ids)];
   }
-
+  function stufeBadge(st) { return h("span", { cls: "badge stufe stufe-" + st, title: D.pflichtkatalog.stufen[st], text: st }); }
+  function pflichtKurz(o) {
+    var z = D.matrix.pflicht && D.matrix.pflicht[o.id]; if (!z) return null;
+    return h("div", { cls: "small mz-pflicht", title: z.grund }, ["P", "B", "O"].map(function (st) { return h("span", { cls: "nowrap", text: st + " " + z.stufen[st][0] + "/" + z.stufen[st][1] + " " }); }),
+      z.relevanz !== "ja" ? h("div", { cls: "muted", text: z.relevanz === "nein" ? "Katalog nicht anwendbar" : "teilweise anwendbar" }) : null);
+  }
+  function pflichtSeite() {
+    var PK = D.pflichtkatalog, M = D.matrix, rel = pflichtRelevant();
+    function balken(a, b) { return h("span", { cls: "balken klein", title: a + " von " + b }, h("span", { style: "width:" + Math.round(100 * a / Math.max(1, b)) + "%" })); }
+    var gl = D.texte.erlasse[PK.grundlage.ls];
+    return [kopf("Pflichtkatalog Schulgemeinde", "Welche Dokumente gehören in die systematische Rechtssammlung einer Zürcher Schulgemeinde? Einstufung Pflicht / bedingte Pflicht / optional und Abgleich mit den erfassten Rechtssammlungen."),
+      h("p", { cls: "meldung warnung" }, h("strong", { text: "Status: " + PK.status + ". " }), "Quelle: " + PK.quelle + " – ", extern("https://github.com/MarkusKeller8200/EduKSX-Prototyp/blob/main/prototypen/rechtssammlung/quellen/pflichtdokumente_schulgemeinde_zh.md", "Recherche ansehen ↗"), "."),
+      h("section", { cls: "karte" }, h("h2", { text: "Grundlage" }), h("p", null, PK.grundlage.text, " ", gl ? h("a", { href: link("text", PK.grundlage.ls, gl.fassungen[gl.fassungen.length - 1].nachtrag), text: "Gemeindegesetz (Textfassung) →" }) : null),
+        h("ul", { cls: "small" }, ["P", "B", "O"].map(function (st) { return h("li", null, stufeBadge(st), " " + PK.stufen[st]); })),
+        h("ul", { cls: "small" }, PK.hinweise.map(function (x) { return h("li", { text: x }); })),
+        h("p", { cls: "small" }, extern(PK.vsa_pdf, "Volksschulamt – Rechtsgrundlagen für Schulbehörden (PDF) ↗"))),
+      h("section", { cls: "karte" }, h("h2", { text: "Vollständigkeit je Organisation" }),
+        h("p", { cls: "small muted", text: "Gezählt sind Dokumente, deren Titel eindeutig zum Katalogeintrag passt (✓). Bedingte und optionale Dokumente fehlen oft zu Recht – massgebend ist, ob die Gemeinde die Aufgabe wahrnimmt." }),
+        h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+          h("thead", null, h("tr", null, ["Organisation", "Anwendbar", "Pflicht (P)", "Bedingt (B)", "Optional (O)", ""].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+          h("tbody", null, D.organisationen.map(function (o) {
+            var z = M.pflicht[o.id];
+            return h("tr", null, h("th", { scope: "row" }, h("a", { href: link("org", o.id), text: o.kurz }), h("div", { cls: "small muted", text: o.typ })),
+              h("td", { cls: "small", title: z.grund, text: z.relevanz === "ja" ? "ja" : z.relevanz === "nein" ? "nein" : "teilweise" }),
+              ["P", "B", "O"].map(function (st) { var x = z.stufen[st]; return h("td", { cls: "nowrap" }, balken(x[0], x[1]), " " + x[0] + " / " + x[1]); }),
+              h("td", null, h("a", { cls: "btn klein", href: link("matrix", o.id), text: "Matrix" })));
+          }))))),
+      PK.kategorien.map(function (k) {
+        return h("section", { cls: "karte" }, h("h2", { text: k.nr + ". " + k.titel }),
+          h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+            h("thead", null, h("tr", null, ["Dokument", "Einstufung", "Aufnahme in die Rechtssammlung", "Grundlage / Quelle", "Vorhanden"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+            h("tbody", null, k.eintraege.map(function (e) {
+              var c = M.zellen[e.id] || {}, n = rel.filter(function (o) { return c[o.id] && c[o.id].status === "ja"; }).length;
+              return h("tr", null, h("th", { scope: "row", text: e.dokument }), h("td", null, stufeBadge(e.stufe)), h("td", { text: e.aufnahme }),
+                h("td", null, extern(e.quelle_url, e.quelle + " ↗"), e.bemerkung ? h("div", { cls: "small muted", text: e.bemerkung }) : null),
+                h("td", { cls: "nowrap" }, balken(n, rel.length), " " + n + " / " + rel.length));
+            })))));
+      })];
+  }
 
   function pdfVorschau(o, d) {
     var dlg = h("dialog", { cls: "vorschau-dialog", "aria-label": "Vorschau " + d.titel });
@@ -1063,7 +1118,8 @@
     else if (r.art === "gemeinde") inhalt = gemeinde(r.a, r.b);
     else if (r.art === "schulgemeinden") inhalt = alleSchulgemeinden();
     else if (r.art === "sg") inhalt = sgAnsicht(r.a);
-    else if (r.art === "matrix") inhalt = matrix();
+    else if (r.art === "matrix") inhalt = matrix(r.a);
+    else if (r.art === "pflicht") inhalt = pflichtSeite();
     else if (r.art === "grundlagen") inhalt = grundlagen();
     else if (r.art === "rechtsgrundlagen") inhalt = rechtsgrundlagenAnsicht();
     else if (r.art === "herkunft") inhalt = herkunftsliste();
