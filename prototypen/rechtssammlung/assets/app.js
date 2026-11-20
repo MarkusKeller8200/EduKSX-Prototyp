@@ -133,7 +133,7 @@
         h("li", null, eintrag(link("hierarchie"), "Normenhierarchie", r.art === "hierarchie")),
         h("li", null, eintrag(link("abgleich"), "Versionen & Abgleich", r.art === "abgleich")),
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Entwicklung" }),
-        h("li", null, eintrag("entwickler/", "Entwickler (Datenmodell, API)", false, null, "Datenmodell und API – Entwurf für die Umsetzung")),
+        h("li", null, eintrag("entwickler/", "Entwickler (Datenmodell, API, Pflege)", false, null, "Datenmodell, API, Pflichtenheft, KI-Recherche und Inhalte im Importformat – Entwurf für die Umsetzung")),
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Bezirke" })),
       h("div", { cls: "suche" }, such),
       liste);

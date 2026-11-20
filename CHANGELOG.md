@@ -186,4 +186,6 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Codex 0.25.0: Redaktionelle Inhalte für die Datenbank – Datenmodell mit Redaktionsstatus und Importläufen, Pflege-API
   (Upsert/Löschen über Schlüssel, Freigabe, Import JSON/Excel/CSV mit Probelauf, Export), `tools/inhalte.py` (Export der
   heutigen Inhalte, Prüfung, Umwandlung, Ladetest), Anweisung für die KI-Recherche (#53).
+- Entwickler-Seiten: Abschnitt «Unterlagen und Pflege der Inhalte» mit Pflichtenheft, Anweisung KI-Recherche und Downloads
+  der Inhalte (Excel, JSON, Vorlage, CSV); Menüeintrag «Entwickler (Datenmodell, API, Pflege)» (#53).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

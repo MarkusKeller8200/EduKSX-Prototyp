@@ -229,6 +229,33 @@ STIL = """  <style>
 """
 
 
+REPO = "https://github.com/MarkusKeller8200/EduKSX-Prototyp/blob/main"
+
+
+def unterlagen(modul: str) -> str:
+    """Abschnitt «Unterlagen und Pflege der Inhalte»: Dokumente in docs/umsetzung/<modul>/ (auf GitHub) und Importdateien des Prototyps."""
+    ordner, _ = MODULE[modul]
+    doku = [("PFLICHTENHEFT.md", "Pflichtenheft", "Anforderungen, Pflichtenheft, Prüfpunkte und offene Punkte; Zuordnung Anzeige → Tabelle"),
+            ("KI-RECHERCHE.md", "Anweisung KI-Recherche", "Auftrag zum Kopieren: Quellen, Schreibweisen, Ablauf Probelauf → Entwurf → Freigabe")]
+    karten = [f'<section class="karte"><h3>{E(t)}</h3><p class="small">{E(b)}</p>'
+              f'<a class="btn" href="{REPO}/docs/umsetzung/{modul}/{d}" target="_blank" rel="noopener">Auf GitHub öffnen ↗</a></section>'
+              for d, t, b in doku if (UMSETZUNG / modul / d).is_file()]
+    inhalte = ROOT / "prototypen" / ordner / "data" / "inhalte"
+    if (inhalte / "codex-inhalte.json").is_file():
+        karten.append('<section class="karte"><h3>Inhalte im Importformat</h3><p class="small">Heutiger Bestand (Normenhierarchien, Elternwegweiser, '
+                      'Pflichtkatalog, Rechtsgrundlagen) als Inhaltspaket – Erstbefüllung und Vorlage für Änderungen.</p>'
+                      '<a class="btn primaer" href="../data/inhalte/codex-inhalte.xlsx" download>Excel</a> '
+                      '<a class="btn" href="../data/inhalte/codex-inhalte.json" download>JSON</a> '
+                      '<a class="btn" href="../data/inhalte/vorlage.xlsx" download>Leere Vorlage</a> '
+                      f'<a class="btn" href="{REPO}/prototypen/{ordner}/data/inhalte" target="_blank" rel="noopener">CSV ↗</a></section>')
+    if not karten:
+        return ""
+    return ('\n    <h2 id="unterlagen">Unterlagen und Pflege der Inhalte</h2>\n'
+            '    <p class="small muted">Redaktionelle Inhalte werden in der Datenbank gepflegt – über die Pflege-API (Import JSON, Excel, CSV mit Probelauf) '
+            'oder eine KI-Recherche; öffentlich erst nach Freigabe.</p>\n'
+            f'    <div class="api-karten">{"".join(karten)}</div>\n')
+
+
 def seite_index(produkt: str, modul: str, tabellen: list[Tabelle], api: dict | None) -> str:
     eigene = [t for t in tabellen if not t.ansicht and not t.standardtabelle]
     standard = [t for t in tabellen if t.standardtabelle]
@@ -281,7 +308,7 @@ def seite_index(produkt: str, modul: str, tabellen: list[Tabelle], api: dict | N
       <section class="karte"><h3>Swagger</h3><p class="small">Dieselbe Beschreibung in Swagger UI. Anfragen senden ist ausgeschaltet, solange es keinen Server gibt.</p><a class="btn" href="swagger.html">Swagger öffnen</a></section>
       <section class="karte"><h3>OpenAPI 3.1</h3><p class="small">{pfade} Operationen, {schemas} Schemas, Modul <code>{E(modul)}</code>. Maschinenlesbar zum Import in API-Werkzeuge.</p><a class="btn" href="openapi.json">JSON</a> <a class="btn" href="openapi.yaml" download>YAML</a></section>
     </div>
-
+{unterlagen(modul)}
     <h2>Datenmodell</h2>
     <p>PostgreSQL 16, Schema <code>{E(modul)}</code>, {len(eigene)} Tabellen und {len(ansichten)} Ansichten, dazu {len(standard)} Standardtabellen
       aus <code>eduksx/core</code> (gestrichelt). Deutsche Beschreibungen stehen auch als <code>COMMENT ON</code> in der Datenbank.

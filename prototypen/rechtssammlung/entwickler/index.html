@@ -60,6 +60,10 @@
       <section class="karte"><h3>OpenAPI 3.1</h3><p class="small">77 Operationen, 41 Schemas, Modul <code>codex</code>. Maschinenlesbar zum Import in API-Werkzeuge.</p><a class="btn" href="openapi.json">JSON</a> <a class="btn" href="openapi.yaml" download>YAML</a></section>
     </div>
 
+    <h2 id="unterlagen">Unterlagen und Pflege der Inhalte</h2>
+    <p class="small muted">Redaktionelle Inhalte werden in der Datenbank gepflegt – über die Pflege-API (Import JSON, Excel, CSV mit Probelauf) oder eine KI-Recherche; öffentlich erst nach Freigabe.</p>
+    <div class="api-karten"><section class="karte"><h3>Pflichtenheft</h3><p class="small">Anforderungen, Pflichtenheft, Prüfpunkte und offene Punkte; Zuordnung Anzeige → Tabelle</p><a class="btn" href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/blob/main/docs/umsetzung/codex/PFLICHTENHEFT.md" target="_blank" rel="noopener">Auf GitHub öffnen ↗</a></section><section class="karte"><h3>Anweisung KI-Recherche</h3><p class="small">Auftrag zum Kopieren: Quellen, Schreibweisen, Ablauf Probelauf → Entwurf → Freigabe</p><a class="btn" href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/blob/main/docs/umsetzung/codex/KI-RECHERCHE.md" target="_blank" rel="noopener">Auf GitHub öffnen ↗</a></section><section class="karte"><h3>Inhalte im Importformat</h3><p class="small">Heutiger Bestand (Normenhierarchien, Elternwegweiser, Pflichtkatalog, Rechtsgrundlagen) als Inhaltspaket – Erstbefüllung und Vorlage für Änderungen.</p><a class="btn primaer" href="../data/inhalte/codex-inhalte.xlsx" download>Excel</a> <a class="btn" href="../data/inhalte/codex-inhalte.json" download>JSON</a> <a class="btn" href="../data/inhalte/vorlage.xlsx" download>Leere Vorlage</a> <a class="btn" href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/blob/main/prototypen/rechtssammlung/data/inhalte" target="_blank" rel="noopener">CSV ↗</a></section></div>
+
     <h2>Datenmodell</h2>
     <p>PostgreSQL 16, Schema <code>codex</code>, 34 Tabellen und 2 Ansichten, dazu 5 Standardtabellen
       aus <code>eduksx/core</code> (gestrichelt). Deutsche Beschreibungen stehen auch als <code>COMMENT ON</code> in der Datenbank.
