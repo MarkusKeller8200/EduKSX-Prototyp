@@ -127,6 +127,7 @@
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Gesetzestexte & Verordnungen" }),
         h("li", null, eintrag(link("herkunft"), "Herkunftsliste (Publikationsquellen)", r.art === "herkunft")),
         h("li", null, eintrag(link("rechtsgrundlagen"), "Rechtsgrundlagen Schule", r.art === "rechtsgrundlagen", h("span", { cls: "anz", text: String(D.rechtsgrundlagen.eintraege.length) }))),
+        h("li", null, eintrag(link("abgleich"), "Versionen & Abgleich", r.art === "abgleich")),
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Bezirke" })),
       h("div", { cls: "suche" }, such),
       liste);
@@ -153,6 +154,7 @@
     var zeilen = [["CMS", "cms"], ["Menüpfad", function (o) { return o.menu_pfad.join(" › "); }],
       ["Rubriken / Dokumente", function (o) { return o.anzahl_rubriken + " / " + o.anzahl_dokumente; }],
       ["Leitfaden-Prüfung", function (o) { return lfZusammenfassung(o); }],
+      ["Analyse", function (o) { return "Version " + o.analyse_version + " · " + o.analysiert_am; }],
       ["Ordnertiefe", "max_tiefe"], ["Nummerierung", "nummerierung"]];
     var erfasst = D.gemeinden.filter(function (g) { return g.org; }).length;
     var schulAufgaben = D.gemeinden.filter(function (g) { return /^Einheitsgemeinde/.test(g.einheit || ""); }).length;
@@ -243,10 +245,10 @@
       h("div", { cls: "spalten" },
         h("section", { cls: "karte" }, h("h2", { text: "Erfasste Rechtssammlungen" }),
           h("table", { cls: "kompakt" },
-            h("thead", null, h("tr", null, ["Organisation", "Bezirk", "Dok.", "Leitfaden"].map(function (t) { return h("th", { scope: "col", text: t }); }))),
+            h("thead", null, h("tr", null, ["Organisation", "Bezirk", "Dok.", "Analyse", "Leitfaden"].map(function (t) { return h("th", { scope: "col", text: t }); }))),
             h("tbody", null, orgsSortiert.map(function (o) {
               return h("tr", null, h("th", { scope: "row" }, h("a", { href: link("org", o.id), text: o.kurz }), h("div", { cls: "small muted", text: o.typ })),
-                h("td", { text: o.bezirk }), h("td", { cls: "zahlrechts", text: String(o.anzahl_dokumente) }), h("td", { cls: "nowrap" }, lfZusammenfassung(o)));
+                h("td", { text: o.bezirk }), h("td", { cls: "zahlrechts", text: String(o.anzahl_dokumente) }), h("td", { cls: "nowrap small", text: "v" + o.analyse_version + " · " + o.analysiert_am }), h("td", { cls: "nowrap" }, lfZusammenfassung(o)));
             })))),
         h("section", { cls: "karte" }, h("h2", { text: "Dokumentarten (alle erfassten Dokumente)" }),
           h("table", { cls: "kompakt" }, h("tbody", null, Object.keys(arten).sort(function (a, b) { return arten[b] - arten[a]; }).map(function (a) {
@@ -268,6 +270,33 @@
     ];
   }
 
+  // ------------------------------------------------------------------ Versionen und Historik
+  function versionKnopf(titel, versionen, info) {
+    var n = (versionen || []).length;
+    if (!n) return h("span", { cls: "muted small", text: "–" });
+    return h("button", { type: "button", cls: "btn klein versionen", title: "Historik anzeigen", "aria-label": n + " Versionen von " + titel + " – Historik anzeigen",
+      onclick: function () { historik(titel, versionen, info); } }, h("span", { "aria-hidden": "true", text: "⟲ " }), String(n));
+  }
+  function historik(titel, versionen, info) {
+    var dlg = h("dialog", { cls: "vorschau-dialog historik", "aria-label": "Historik " + titel });
+    var zu = h("button", { type: "button", cls: "btn", onclick: function () { dlg.close(); }, text: "Schliessen" });
+    var zeilen = versionen.map(function (v, i) {
+      var status = i === 0 ? badge("erfolg", "●", "aktuell") : badge("neutral", "○", v.in_kraft_bis ? "in Kraft bis " + v.in_kraft_bis : "abgelöst");
+      return h("tr", null, h("td", null, v.url ? extern(v.url, v.version + " ↗") : v.version), h("td", null, status),
+        h("td", { text: v.veroeffentlicht || "–" }), h("td", { text: v.inkraft || v.gueltig_seit || "–" }),
+        h("td", { text: v.erlass_neu ? "früherer Erlass vom " + v.erlassdatum : (v.erfasst ? "erfasst " + v.erfasst : "") }), h("td", { text: v.quelle || "" }));
+    });
+    dlg.appendChild(h("div", { cls: "seitenkopf" }, h("div", null, h("strong", { text: titel }), h("div", { cls: "small muted", text: versionen.length + " Versionen · neueste zuerst · alte Versionen bleiben erhalten" })), h("div", { cls: "aktionen" }, zu)));
+    if (info) dlg.appendChild(fakten(info.filter(function (x) { return x[1]; })));
+    dlg.appendChild(h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+      h("thead", null, h("tr", null, ["Version", "Status", "Veröffentlicht", "In Kraft seit", "Hinweis", "Quelle"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+      h("tbody", null, zeilen))));
+    document.body.appendChild(dlg); dlg.showModal();
+    dlg.addEventListener("close", function () { dlg.remove(); });
+  }
+  var KLASSEN = { A: ["violett", "A"], B: ["info", "B"], C: ["neutral", "C"], D: ["neutral", "D"], E: ["warnung", "E"], F: ["neutral", "F"] };
+  function klasseBadge(k) { var x = KLASSEN[k] || ["neutral", k]; var t = (D.rechtsgrundlagen.quellenklassen.filter(function (q) { return q.klasse === k; })[0] || {}).titel || ""; return badge(x[0], x[1], t); }
+
   // ------------------------------------------------------------------ Gesetzestexte & Verordnungen
   var EBENE_BADGE = { Bund: ["info", "CH"], Kanton: ["violett", "ZH"], Bildungsrat: ["neutral", "BR"], Gemeinde: ["warnung", "G"] };
   function ebeneBadge(e) { var b = EBENE_BADGE[e] || ["neutral", ""]; return badge(b[0], b[1], e); }
@@ -283,11 +312,14 @@
     function zeile(e) {
       return h("tr", null,
         h("td", { cls: "zahlrechts", text: String(e.nr) }),
-        h("td", null, h("strong", { text: e.titel }), e.abk && e.titel.indexOf("(" + e.abk + ")") < 0 && e.titel !== e.abk ? h("span", { cls: "muted", text: " (" + e.abk + ")" }) : null),
+        h("td", null, h("strong", { text: e.titel }), h("div", { cls: "small muted", text: e.herausgeber }), e.abk && e.titel.indexOf("(" + e.abk + ")") < 0 && e.titel !== e.abk ? h("span", { cls: "muted", text: " (" + e.abk + ")" }) : null),
         h("td", { cls: "nowrap" }, e.fundstelle || h("span", { cls: "muted", text: "–" }), e.geprueft ? h("span", { cls: "ok-mark", title: "Ordnungsnummer am 20.11.2026 in ZH-Lex geprüft", text: " ✓" }) : null),
         h("td", { text: e.stelle }),
         h("td", { text: e.relevanz }),
-        h("td", null, ebeneBadge(e.ebene)),
+        h("td", null, ebeneBadge(e.ebene), h("div", { style: "margin-top:.25rem" }, klasseBadge(e.klasse))),
+        h("td", { cls: "nowrap", text: e.veroeffentlicht || "–" }),
+        h("td", null, h("div", { cls: "nowrap", text: e.version || "–" }), e.anzahl_versionen ? versionKnopf(e.titel_amtlich || e.titel, e.versionen,
+          [["Herausgebende Behörde", e.herausgeber], ["Massgebende Publikationsstelle", e.publikationsstelle], ["Downloadort", e.downloadort ? extern(e.downloadort, "aktuelle Fassung ↗") : null], ["Fundstelle", e.fundstelle]]) : (e.version_hinweis ? h("div", { cls: "small muted", text: e.version_hinweis }) : null)),
         h("td", null, e.direkt.map(function (d, i) { return [i ? h("br") : null, extern(d.url, d.text + " ↗")]; }),
           e.quelle_url ? [e.direkt.length ? h("br") : null, h("span", { cls: "small muted" }, "Quelle: ", extern(e.quelle_url, e.quelle), e.quelle_generisch ? h("span", { title: "Link führt auf eine allgemeine Seite, nicht direkt auf den Erlass", text: " (allgemein)" }) : null)] : null));
     }
@@ -304,7 +336,7 @@
         if (!t.length) return;
         huelle.appendChild(h("h2", { text: s.nr + ". " + s.titel + " (" + t.length + ")" }));
         huelle.appendChild(h("div", { cls: "tabelle-wrap" }, h("table", { cls: "rg" },
-          h("thead", null, h("tr", null, ["Nr.", "Erlass / Rechtsgrundlage", "Fundstelle", "Artikel / Paragraf", "Relevanz im Schulumfeld", "Ebene", "Erlasstext"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+          h("thead", null, h("tr", null, ["Nr.", "Erlass / Rechtsgrundlage", "Fundstelle", "Artikel / Paragraf", "Relevanz im Schulumfeld", "Ebene / Klasse", "Veröffentlicht", "Version", "Erlasstext"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
           h("tbody", null, t.map(zeile)))));
       });
       if (!treffer.length) huelle.appendChild(h("p", { cls: "muted", text: "Keine Einträge gefunden." }));
@@ -346,8 +378,22 @@
       ["Websites der Gemeinden und Schulgemeinden", D.organisationen.length + " Rechtssammlungen, Stand " + D.stand + " – alle Dokumentlinks führen auf die Originale", link("vergleich")],
       ["Rechtsgrundlagen für öffentliche Schulen im Kanton Zürich", "Ausgangsliste mit " + E.length + " Einträgen, Stand der Recherche " + R.stand + " – abgelegt in quellen/", link("rechtsgrundlagen")]
     ];
-    return [kopf("Herkunftsliste", "Woher die Rechtsgrundlagen und Daten in EduKSX-Codex stammen. Massgebend ist immer die amtliche Publikation."),
-      h("h2", { text: "Offizielle Publikationsquellen" }),
+    var KAT = R.quellenkatalog;
+    var katalog = R.quellenklassen.map(function (k) {
+      var q = KAT.filter(function (x) { return x.klasse === k.klasse; });
+      return [h("h3", null, klasseBadge(k.klasse), " " + k.titel + " (" + q.length + ")", h("span", { cls: "small muted", text: " – Aufnahme: " + k.aufnahme })),
+        h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+          h("thead", null, h("tr", null, ["Quelle", "Ebene", "Herausgeber", "Inhalt", "Verbindlichkeit", "Versionierung", "Priorität"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+          h("tbody", null, q.map(function (x) {
+            return h("tr", null, h("th", { scope: "row" }, x.url ? extern(x.url, x.name + " ↗") : [h("span", { text: x.name }), " ", badge("warnung", "…", x.name.indexOf("XYZ") >= 0 ? "Platzhalter" : "je Bezirk")]),
+              h("td", { text: x.ebene }), h("td", { text: x.herausgeber }), h("td", { text: x.inhalt }), h("td", { text: x.verbindlichkeit }), h("td", { text: x.versionierung }), h("td", { text: x.prioritaet }));
+          }))))];
+    });
+    return [kopf("Herkunftsliste", "Woher die Rechtsgrundlagen und Daten in EduKSX-Codex stammen. Massgebend ist immer die amtliche Publikation; herausgebende Behörde, massgebende Publikationsstelle und Downloadort werden getrennt geführt.",
+        [h("a", { cls: "btn", href: link("abgleich"), text: "Versionen & Abgleich" })]),
+      h("h2", { text: "Quellenkatalog nach Klassen A–F (" + KAT.length + " Quellen)" }),
+      katalog,
+      h("h2", { text: "Massgebende Publikationsquellen der Rechtsgrundlagen-Liste" }),
       h("div", { cls: "tabelle-wrap" }, h("table", null,
         h("thead", null, h("tr", null, ["Ebene", "Massgebende Quelle", "Was dort publiziert wird", "Einträge in der Liste"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
         h("tbody", null, R.publikationsquellen.map(function (q) {
@@ -367,6 +413,37 @@
         h("tbody", null, weitere.map(function (w) {
           return h("tr", null, h("th", { scope: "row", text: w[0] }), h("td", { text: w[1] }), h("td", null, w[2] ? h("a", { href: w[2], text: "ansehen →" }) : null));
         }))))];
+  }
+
+  function abgleich() {
+    var R = D.rechtsgrundlagen, E = R.eintraege;
+    var mitV = E.filter(function (e) { return e.anzahl_versionen; });
+    var erlasse = {}; mitV.forEach(function (e) { erlasse[e.fundstelle.split(" / ")[0]] = e; });
+    var anzErl = Object.keys(erlasse).length, anzV = Object.keys(erlasse).reduce(function (n, k) { return n + erlasse[k].anzahl_versionen; }, 0);
+    var orgs = D.organisationen;
+    return [kopf("Versionen & Abgleich", "Wie EduKSX-Codex neue Fassungen findet und übernimmt. Alte Versionen bleiben erhalten; bei jedem Dokument zeigt «⟲ n» die Anzahl Versionen, ein Klick öffnet die Historik."),
+      h("div", { cls: "karten" },
+        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "ZH-Lex – kantonale Erlasse" }), h("div", { cls: "zahl", text: String(anzErl) }), h("div", { cls: "small muted", text: anzV + " Versionen (Nachträge), abgerufen " + R.zhlex_abgerufen })),
+        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Fedlex – Bundesrecht" }), h("div", { cls: "zahl", text: String(E.filter(function (e) { return e.ebene === "Bund"; }).length) }), h("div", { cls: "small muted", text: "Stand noch nicht abgefragt" })),
+        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Rechtssammlungen der Gemeinden" }), h("div", { cls: "zahl", text: String(orgs.length) }), h("div", { cls: "small muted", text: "Analyse v1, erfasst " + orgs[0].analysiert_am })),
+        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Offene Abgleiche" }), h("div", { cls: "zahl", text: "0" }), h("div", { cls: "small muted", text: "Prüfliste – noch kein Lauf" }))),
+      h("section", { cls: "karte" }, h("h2", { text: "Ablauf eines Abgleichs" }),
+        h("ol", null,
+          h("li", null, h("strong", { text: "Suchen: " }), "je Quelle ein Leser – ZH-Lex über die Suche nach Ordnungsnummer und die «Historie Nachtragsnr.», Fedlex über «Stand am», Gemeinde-Websites über die bekannte Struktur (Menüpfad, Ordner, Tabellen)."),
+          h("li", null, h("strong", { text: "Vergleichen: " }), "jedes Dokument hat eine feste Kennung (LS-/SR-Nummer bzw. Organisation + Erlassnummer oder normalisierter Titel). Neu ist eine Version, wenn sich Nachtrag, Stand, Veröffentlichungsdatum, Dateidatum oder Prüfsumme der Datei ändert."),
+          h("li", null, h("strong", { text: "Prüfliste: " }), "Treffer landen als «neu», «geändert» oder «nicht mehr publiziert» in einer Prüfliste – nichts wird ohne Bestätigung übernommen."),
+          h("li", null, h("strong", { text: "Übernehmen: " }), "bestätigte Änderungen werden als neue Version angehängt; die bisherige wird «abgelöst», aber nie gelöscht. Bei Gemeinden zählt die Analyse-Version eins hoch, mit Datum."),
+          h("li", null, h("strong", { text: "Rhythmus: " }), "geplanter Lauf (z. B. wöchentlich ZH-Lex, monatlich Gemeinden) und auf Knopfdruck; Ergebnis als Mitteilung an die verantwortliche Person."))),
+      h("h2", { text: "Stand je Organisation" }),
+      h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+        h("thead", null, h("tr", null, ["Organisation", "Analyse", "Zuletzt analysiert", "Dokumente", "mit Datum", "mit Version im Titel"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+        h("tbody", null, orgs.map(function (o) {
+          var docs = []; o.sections.forEach(function (s) { (function w(n) { docs = docs.concat(n.dokumente); n.kinder.forEach(w); })(s); });
+          return h("tr", null, h("th", { scope: "row" }, h("a", { href: link("org", o.id), text: o.kurz })), h("td", { text: "Version " + o.analyse_version }), h("td", { text: o.analysiert_am }),
+            h("td", { cls: "zahlrechts", text: String(docs.length) }), h("td", { cls: "zahlrechts", text: String(docs.filter(function (d) { return d.veroeffentlicht; }).length) }),
+            h("td", { cls: "zahlrechts", text: String(docs.filter(function (d) { return d.version; }).length) }));
+        })))),
+      h("p", { cls: "small muted", text: "«mit Datum»: Veröffentlichungsdatum laut Website. Wo die Website keines zeigt, ergänzt der nächste Abgleich das Dateidatum (gekennzeichnet «aus Datei»). «Gültig seit» (Inkraftsetzung) wird getrennt geführt. Konzept: docs/KONZEPT-CODEX-VERSIONEN.md." })];
   }
 
   function alleGemeinden() {
@@ -441,7 +518,8 @@
           fakten([["Website", extern(o.website, o.website)], ["Menüpfad", o.menu_pfad.join(" › ")],
             ["Weitere Einstiege", o.weitere_einstiege.join("; ")], ["CMS", o.cms], ["Aufbau", o.struktur],
             ["Nummerierung", o.nummerierung], ["Umfang", o.anzahl_rubriken + " Rubriken · " + o.anzahl_dokumente + " Dokumente · Ordnertiefe " + o.max_tiefe],
-            ["Stand", o.stand]])),
+            ["Analyse", h("span", null, "Version " + o.analyse_version + " · zuletzt analysiert und katalogisiert am " + o.analysiert_am + " ",
+              versionKnopf("Analysen " + o.name, o.analysen.slice().reverse().map(function (a) { return { version: "Analyse " + a.version, veroeffentlicht: "", erfasst: a.datum, quelle: a.art + " – " + a.rubriken + " Rubriken, " + a.dokumente + " Dokumente" }; })))]])),
         h("div", { cls: "karte" }, h("h2", { text: "Befunde" }), h("ul", null, o.befunde.map(function (b) { return h("li", { text: b }); })))),
       leitfadenKarte(o),
       h("h2", { text: "Struktur der Rechtssammlung" }),
@@ -527,12 +605,15 @@
       krumen.push(x === pfad.length - 1 ? h("strong", { text: lauf.titel }) : h("a", { href: link("org", o.id, pfad.slice(0, x + 1).join("-")), text: lauf.titel }));
     });
     function tabelle(docs) {
-      var spalten = docs.some(function (d) { return d.groesse || d.datum; });
+      var gs = docs.some(function (d) { return d.gueltig_seit; });
       return h("div", { cls: "tabelle-wrap" }, h("table", null,
-        h("thead", null, h("tr", null, h("th", { text: "Dokument" }), spalten ? [h("th", { text: "Grösse" }), h("th", { text: "Datum" })] : null)),
+        h("thead", null, h("tr", null, h("th", { text: "Dokument" }), gs ? h("th", { text: "Gültig seit" }) : null, h("th", { text: "Veröffentlicht" }), h("th", { text: "Version" }), h("th", { text: "Grösse" }))),
         h("tbody", null, docs.map(function (d) {
           return h("tr", null, h("td", null, d.url ? [extern(d.url, d.titel), " ", h("button", { type: "button", cls: "btn klein", onclick: function () { pdfVorschau(o, d); }, text: "Vorschau" })] : h("span", null, d.titel, " ", badge("warnung", "!", "kein Link"))),
-            spalten ? [h("td", { text: d.groesse || "" }), h("td", { text: d.datum || "" })] : null);
+            gs ? h("td", { cls: "nowrap", text: d.gueltig_seit || "–" }) : null,
+            h("td", { cls: "nowrap" }, d.veroeffentlicht || "–", d.datum_herkunft ? h("div", { cls: "small muted", text: d.datum_herkunft === "Datei" ? "aus Datei" : "laut Website" }) : null),
+            h("td", null, h("div", { cls: "nowrap", text: d.version || "–" }), versionKnopf(d.titel, d.versionen)),
+            h("td", { cls: "nowrap", text: d.groesse || "" }));
         }))));
     }
     function abschnitt(k, ebene) {
@@ -707,6 +788,7 @@
     else if (r.art === "grundlagen") inhalt = grundlagen();
     else if (r.art === "rechtsgrundlagen") inhalt = rechtsgrundlagenAnsicht();
     else if (r.art === "herkunft") inhalt = herkunftsliste();
+    else if (r.art === "abgleich") inhalt = abgleich();
     else if (r.art === "org" && ORG[r.a]) inhalt = !r.b ? organisation(ORG[r.a]) : r.b.indexOf("ansicht-") === 0 ? ansicht(ORG[r.a], r.b) : rubrik(ORG[r.a], r.b);
     else inhalt = nichtGefunden();
     var rahmen = document.getElementById("rahmen");

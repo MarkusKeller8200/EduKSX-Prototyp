@@ -50,7 +50,7 @@
   function gehe(pfad) { zustand.dok = null; location.hash = pfad.length ? "r=" + pfad.join("-") : ""; }
 
   function dokZeile(d) {
-    var meta = [d.nummer, d.datum, d.groesse].filter(Boolean).join(" · ");
+    var meta = [d.nummer, d.gueltig_seit ? "gültig seit " + d.gueltig_seit : "", d.veroeffentlicht ? "veröffentlicht " + d.veroeffentlicht : "", d.version ? "Version " + d.version : "", d.groesse].filter(Boolean).join(" · ");
     return h("li", null, h("button", { type: "button", cls: "cx-zeile", onclick: function () { zustand.dok = d; zeigen(); } },
       h("span", { cls: "cx-dok" }, d.titel), meta ? h("span", { cls: "cx-meta", text: meta }) : null));
   }

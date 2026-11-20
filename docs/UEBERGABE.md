@@ -62,6 +62,12 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 - Offen: Stempeln per NFC-Tag (Idee, noch kein Issue – Antwort Projektleitung ausstehend).
 - Offen: weitere Schritte («der ganze Rest») je als Issue nach Freigabe; Icon «time» vorläufig, nicht im Icon-Set.
 
+### Sitzung 2026-11-20 (00:50–01:30) – EduKSX-Codex 0.8.0
+
+- Entscheide 2026-11-20: Quellenklassen A–F; Dateidatum bei fehlendem Website-Datum zulässig (gekennzeichnet); alle Dokumente mit «Veröffentlicht» und «Version»; alte Versionen behalten, Anzahl zeigen, Klick = Historik; Analyse-Version je Gemeinde.
+- Umgesetzt (#32 → `_3 Beta-Test`): Quellenkatalog, ZH-Lex-Fassungen (26 Erlasse / 466 Fassungen), Historik-Dialog, Seite «Versionen & Abgleich».
+- Offen (Konzept `docs/KONZEPT-CODEX-VERSIONEN.md`): Dateidatum der Gemeinde-Dokumente beim ersten Abgleich holen (je Website eine Browser-Freigabe); Fedlex «Stand am»; Markdown-Fassung und farbige Deltas (Empfehlung: vorab aufbereiten, statisch ausliefern, keine KI zur Laufzeit); Normenhierarchie grafisch.
+
 ### Sitzung 2026-11-20 (01:10–01:40) – EduKSX-Codex 0.7.0
 
 - Menüsektion «Gesetzestexte & Verordnungen»: Rechtsgrundlagen Schule (62) und Herkunftsliste (#31 → `_3 Beta-Test`).

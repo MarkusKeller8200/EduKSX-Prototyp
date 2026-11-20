@@ -108,4 +108,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Codex 0.7.1: Herkunftsliste um Ebene «Kommunal – Rechtssammlung der Schule XYZ» ergänzt (Platzhalter, wird durch
   die gewählte Schulgemeinde ersetzt); kommunale Einträge der Rechtsgrundlagen zählen dorthin.
 - EduKSX-Codex 0.7.2: Menü «Gesetzestexte & Verordnungen» – Herkunftsliste als erster Eintrag.
+- EduKSX-Codex 0.8.0: Quellenkatalog mit 29 Quellen in Klassen A–F; Rechtsgrundlagen mit herausgebender Behörde,
+  Publikationsstelle, Downloadort, Spalten «Veröffentlicht» und «Version»; 466 Fassungen von 26 ZH-Lex-Erlassen mit
+  Historik («⟲ n», Klick öffnet die Fassungen); Gemeinde-Dokumente mit «Gültig seit», «Veröffentlicht», «Version»;
+  Analyse-Version und Datum je Organisation; Seite «Versionen & Abgleich»; Konzept `docs/KONZEPT-CODEX-VERSIONEN.md` (#32).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

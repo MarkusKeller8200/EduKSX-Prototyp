@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.7.2 – Generator.
+"""EduKSX-Codex Prototyp 0.8.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1243,10 +1243,137 @@ def rechtsgrundlagen():
         generisch = u.rstrip("/").endswith(("gesetzessammlung.html", "informationen-volksschule.html", "gemeindeorganisation.html"))
         e.update({"titel": kurz, "abk": abk, "fundstelle": fund, "ebene": ebene, "direkt": direkt, "herkunft": herkunft,
                   "quelle_generisch": generisch, "geprueft": any(n in RG_GEPRUEFT for n in nummern)})
+        rg_metadaten(e)
     # Kommunale Ebene: Platzhalter, wird durch die gewählte Schulgemeinde ersetzt (deren erfasste Rechtssammlung)
     d["publikationsquellen"].append({"ebene": "Kommunal", "name": "Rechtssammlung der Schule XYZ", "url": None, "platzhalter": True})
+    d["quellenkatalog"], d["quellenklassen"] = quellenkatalog(), [{"klasse": k, "titel": t, "aufnahme": a} for k, t, a in QUELLENKLASSEN]
+    d["zhlex_abgerufen"] = "20.11.2026"
     d["erlasse"] = sorted({e["fundstelle"] for e in d["eintraege"] if e["fundstelle"] and e["fundstelle"] != "kommunal"} )
     return d
+
+# ---------------------------------------------------------------- Quellenkatalog (Klassen A–F, Entscheid 20.11.2026)
+QUELLENKLASSEN = [("A", "Rechtsnormen", "vollständig aufnehmen"), ("B", "Behördenbeschlüsse", "vollständig, soweit schulrelevant"),
+                  ("C", "Vollzugsvorgaben", "vollständig, sofern gültig und anwendbar"), ("D", "Fachliche Auslegung", "ergänzende Referenz"),
+                  ("E", "Rechtsprechung", "mit den betroffenen Rechtsartikeln verknüpfen"), ("F", "Historische Quellen", "für Versionshistorie und Rechtsentwicklung")]
+VERBINDLICH = {"A": "rechtsverbindlich", "B": "rechtsverbindlich (Beschluss)", "C": "behördliche Vorgabe", "D": "Auslegung / Orientierung",
+               "E": "Rechtsprechung", "F": "historisch"}
+QUELLEN = [  # (Klasse, Name, Ebene, Herausgeber, Inhalt, URL, Priorität, Versionierung)
+ ("A", "Fedlex – Systematische Rechtssammlung (SR)", "Bund", "Bundeskanzlei", "Konsolidiertes geltendes Bundesrecht", "https://www.fedlex.admin.ch/de/cc", "hoch", "«Stand am» je Fassung"),
+ ("A", "Fedlex – Amtliche Sammlung (AS)", "Bund", "Bundeskanzlei", "Amtliche Veröffentlichung neuer und geänderter Bundeserlasse", "https://www.fedlex.admin.ch/de/oc", "niedrig", "Publikationsdatum"),
+ ("A", "Fedlex – Bundesblatt (BBl)", "Bund", "Bundeskanzlei", "Botschaften, Erläuterungen, amtliche Bekanntmachungen", "https://www.fedlex.admin.ch/de/fga", "niedrig", "Publikationsdatum"),
+ ("A", "ZH-Lex – Loseblattsammlung (LS)", "Kanton", "Staatskanzlei, Rechtsdienst", "Systematisch gegliedertes geltendes kantonales Recht", "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html", "hoch", "Nachtragsnummer mit Publikations- und Aufhebungsdatum"),
+ ("A", "ZH-Lex – Offizielle Gesetzessammlung (OS)", "Kanton", "Staatskanzlei, Rechtsdienst", "Chronologische Veröffentlichung kantonaler Erlasse und Änderungen", "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung.html", "mittel", "Band und Seite"),
+ ("A", "Amtsblatt des Kantons Zürich", "Kanton", "Staatskanzlei", "Amtliche Bekanntmachungen von Kanton und Gemeinden", "https://www.amtsblatt.zh.ch/", "mittel", "Publikationsdatum"),
+ ("A", "Rechtssammlung der Schule XYZ", "Gemeinde", "Schulgemeinde bzw. Gemeinde mit Schulaufgaben", "Gemeindeordnung, Organisationsstatut, Verordnungen, Reglemente – Platzhalter, wird durch die gewählte Schulgemeinde ersetzt", None, "hoch", "Dateidatum / Version im Titel, Abgleich mit erfasster Fassung"),
+ ("A", "Amtliches Publikationsorgan der Gemeinde", "Gemeinde", "Gemeinde / Schulgemeinde", "Rechtsverbindliche Bekanntmachung von Erlassen und Beschlüssen; je Gemeinde verschieden (Zeitung, Amtsblatt, Mitteilungsblatt, elektronische Plattform)", "https://www.zh.ch/de/politik-staat/wahlen-abstimmungen/vorgaben-zur-amtlichen-publikation.html", "mittel", "Publikationsdatum"),
+ ("B", "Bildungsratsbeschlüsse (BRB)", "Kanton", "Bildungsrat", "Lehrplan, Lektionentafel, Lehrmittel, Beurteilung", "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat.html", "hoch", "Beschlussnummer und Sitzungsdatum"),
+ ("B", "Regierungsratsbeschlüsse (RRB)", "Kanton", "Regierungsrat", "Regierungsentscheide, Erlassvorlagen, Ausführungsbeschlüsse", "https://www.zh.ch/de/politik-staat/gesetze-beschluesse.html", "mittel", "Beschlussnummer und Datum"),
+ ("B", "Zürcher Lehrplan 21", "Kanton", "Bildungsrat", "Verbindliche Kompetenzen und Fachbereiche", "https://zh.lehrplan.ch/", "mittel", "BRB-Stand"),
+ ("B", "Lehrmittelverzeichnis", "Kanton", "Bildungsrat / Volksschulamt", "Obligatorische und alternativ-obligatorische Lehrmittel, jährlich", "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html", "mittel", "Schuljahr"),
+ ("C", "Volksschulamt – Informationen für die Volksschule", "Kanton", "Volksschulamt", "Vollzugshilfen zu Organisation, Personal, Unterricht", "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule.html", "hoch", "Seitenstand / Dokumentdatum"),
+ ("C", "Volksschulamt – Bildung und ICT", "Kanton", "Volksschulamt", "ICT-Vorgaben, Datenschutzgrundlagen, Orientierungshilfen", "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-fuehrung/volksschule-finanzen-infrastruktur/bildung-und-ict.html", "mittel", "Dokumentdatum"),
+ ("C", "Gemeindeamt – Gemeindeorganisation", "Kanton", "Gemeindeamt", "Mustergemeindeordnungen, Leitfaden systematische Rechtssammlung", "https://www.zh.ch/de/politik-staat/gemeinden/gemeindeorganisation.html", "hoch", "Fassung (z. B. April 2025)"),
+ ("C", "Gemeindeamt – Finanzhaushalt", "Kanton", "Gemeindeamt", "Handbuch Finanzhaushalt, HRM2, Kontenrahmen", "https://www.zh.ch/de/steuern-finanzen/gemeindefinanzen/finanzhaushalt-gemeinden.html", "mittel", "Fassung"),
+ ("C", "Kantonale Beschaffung – Hilfsmittel", "Kanton", "Baudirektion / Kommission Beschaffungswesen", "Leitfäden, Schwellenwerte, Praxishilfen", "https://www.zh.ch/de/politik-staat/kanton/kantonale-verwaltung/beschaffung-einkaeufe/hilfsmittel-beratung.html", "mittel", "Dokumentdatum"),
+ ("C", "Bezirksrat", "Bezirk", "Bezirksrat", "Aufsicht über die Gemeinden und Schulgemeinden; Rekursinstanz gegen Anordnungen der Schulpflege", None, "mittel", "Entscheiddatum"),
+ ("D", "Behördenhandbuch Volksschule", "Kanton", "Volksschulamt", "Rechtliche Grundlagen, Führung, Zuständigkeiten der Schulbehörden", "https://www.behoerdenhandbuch.ch/", "mittel", "Seitenstand"),
+ ("D", "Datenschutzbeauftragte Kanton Zürich", "Kanton", "Datenschutzbeauftragte", "Datenschutzlexikon Volksschule, Merkblätter, Empfehlungen", "https://www.zh.ch/de/politik-staat/datenschutz.html", "mittel", "Dokumentdatum"),
+ ("D", "Staatsarchiv – Informationsverwaltung", "Kanton", "Staatsarchiv", "Leitfäden zu Informationsverwaltung, Archivierung, Aktenführung", "https://www.zh.ch/de/politik-staat/wie-behoerden-informationen-verwalten.html", "mittel", "Version im Dokument"),
+ ("D", "Fachstelle für Schulbeurteilung", "Kanton", "Bildungsdirektion", "Evaluationsvorgaben, Qualitätsrahmen", "https://www.zh.ch/de/bildungsdirektion/fachstelle-fuer-schulbeurteilung.html", "niedrig", "Dokumentdatum"),
+ ("D", "Amt für Jugend und Berufsberatung – Schulsozialarbeit", "Kanton", "AJB", "Grundlagen und Empfehlungen zur Zusammenarbeit", "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-schulinfo-unterrichtsergaenzende-angebote/schulinfo-schulsozialarbeit.html", "niedrig", "Dokumentdatum"),
+ ("D", "Schulblatt Kanton Zürich", "Kanton", "Bildungsdirektion", "Amtliche Mitteilungen, Bildungsratsgeschäfte", "https://www.zh.ch/de/bildung/bildungssystem/schulblatt.html", "niedrig", "Ausgabe"),
+ ("E", "ZHEntscheide", "Kanton", "Staatskanzlei", "Ausgewählte Rekursentscheide kantonaler Behörden (u. a. Bildungsdirektion) ab 2001", "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/rekursentscheide.html", "mittel", "Entscheiddatum"),
+ ("E", "Verwaltungsgericht des Kantons Zürich", "Kanton", "Verwaltungsgericht", "Entscheide zu Verwaltungs-, Personal- und Schulrecht", "https://www.zh.ch/de/politik-staat/streitigkeiten-vor-verwaltungsgericht/rechtsprechung-des-verwaltungsgerichts.html", "mittel", "Entscheiddatum, Rechtskraft"),
+ ("E", "Bundesgericht", "Bund", "Bundesgericht", "Höchstrichterliche Rechtsprechung", "https://www.bger.ch/", "niedrig", "Entscheiddatum"),
+ ("E", "EDK – Interkantonale Rechtssammlung", "Interkantonal", "EDK", "Konkordate und Vereinbarungen – Beitritt Zürich je prüfen", "https://www.edk.ch/de/dokumentation/rechtstexte-beschluesse/rechtssammlung", "niedrig", "Stand"),
+ ("F", "Staatsarchiv – Zentrale Serien", "Kanton", "Staatsarchiv", "Historische Gesetzessammlungen, Amtsblätter, Protokolle", "https://zszh.sources-online.org/", "niedrig", "historische Fassung"),
+]
+# Klasse E «EDK» ist interkantonales Recht (Klasse A), sobald Zürich beigetreten ist – hier vorerst als Referenz geführt.
+
+def quellenkatalog():
+    return [{"klasse": k, "name": n, "ebene": e, "herausgeber": h, "inhalt": i, "url": u, "prioritaet": p, "versionierung": v,
+             "verbindlichkeit": VERBINDLICH[k]} for k, n, e, h, i, u, p, v in QUELLEN]
+
+ZHLEX_SEITE = "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/"
+def _ymd(d): return "_".join(reversed(d.split("."))) if d and d != "-" else ""
+def zhlex_versionen(nr):
+    roh = json.loads((RAW / "zhlex-versionen.json").read_text(encoding="utf-8")).get(nr)
+    if not roh: return None
+    out, gesehen = [], set()
+    for z in roh["v"]:
+        f = z.split("|")
+        nachtrag, pub, aufh = f[0], f[1], f[2]
+        ed, ik = (f[3], f[4]) if len(f) > 3 else (roh["e"], roh["i"])
+        if (nachtrag, ed) in gesehen: continue   # ZH-Lex führt einzelne Nachträge doppelt
+        gesehen.add((nachtrag, ed))
+        out.append({"version": "Nachtrag " + nachtrag, "veroeffentlicht": "" if pub == "-" else pub, "in_kraft_bis": aufh,
+                    "erlassdatum": ed, "inkraft": "" if ik == "-" else ik, "erlass_neu": ed != roh["e"],
+                    "url": f"{ZHLEX_SEITE}erlass-{nr.replace('.', '_')}-{_ymd(ed)}-{_ymd(ik)}-{nachtrag}.html", "quelle": "ZH-Lex"})
+    return {"titel_amtlich": roh["t"], "versionen": out}
+
+ERLASSENDE = [(r"^Verfassung", "Stimmberechtigte"), (r"^Reglement", "Bildungsrat"), (r"[Vv]erordnung", "Regierungsrat"),
+              (r"[Gg]esetz", "Kantonsrat")]
+def rg_metadaten(e):
+    """Felder nach Entscheid 20.11.2026: Quellenklasse, herausgebende Behörde, massgebende Publikationsstelle, Downloadort, Versionen."""
+    fund = e["fundstelle"]
+    if e["ebene"] == "Bildungsrat":
+        e.update(klasse="B", herausgeber="Bildungsrat", publikationsstelle="Bildungsratsbeschlüsse (zh.ch), Schulblatt", downloadort=e["quelle_url"],
+                 veroeffentlicht=None, version=e["stelle"], versionen=[])
+    elif e["ebene"] == "Gemeinde":
+        e.update(klasse="A", herausgeber="Schulgemeinde (Schule XYZ)", publikationsstelle="Amtliches Publikationsorgan der Gemeinde",
+                 downloadort="Rechtssammlung der Schule XYZ", veroeffentlicht=None, version=None, versionen=[])
+    elif e["ebene"] == "Bund":
+        her = "Bundesrat" if re.search(r"verordnung", e["titel"], re.I) else "UNO / Bundesversammlung" if "Konvention" in e["titel"] else "Bundesversammlung"
+        e.update(klasse="A", herausgeber=her, publikationsstelle="Fedlex SR (Erstpublikation AS)", downloadort=e["quelle_url"],
+                 veroeffentlicht=None, version=None, versionen=[], version_hinweis="Stand bei Fedlex noch nicht abgefragt")
+    else:
+        nummern = re.findall(r"\d{3}(?:\.\d+)*", fund)
+        zv = zhlex_versionen(nummern[0]) if nummern else None
+        def erlassend(t): return next((b for m, b in ERLASSENDE if re.search(m, t)), "Kanton Zürich")
+        teile = e["titel"].split(" und ") if " und " in e["titel"] and "/" in fund else [zv["titel_amtlich"] if zv else e["titel"]]
+        her = " / ".join(dict.fromkeys(erlassend(t) for t in teile))
+        if fund.startswith("LS 720.1 (Anhang)"): her = "Interkantonales Organ (Beitritt Kantonsrat)"
+        akt = zv["versionen"][0] if zv else None
+        e.update(klasse="A", herausgeber=her, publikationsstelle="ZH-Lex LS (Erstpublikation OS)",
+                 downloadort=akt["url"] if akt else (e["direkt"][0]["url"] if e["direkt"] else None),
+                 veroeffentlicht=akt["veroeffentlicht"] if akt else None, version=akt["version"] if akt else None,
+                 versionen=zv["versionen"] if zv else [], titel_amtlich=zv["titel_amtlich"] if zv else None)
+        if len(nummern) > 1: e["version_hinweis"] = "Versionen für LS " + nummern[0] + "; " + ", ".join("LS " + n for n in nummern[1:]) + " siehe Direktlink"
+    e["anzahl_versionen"] = len(e["versionen"])
+
+# ---------------------------------------------------------------- Analyse-Version je Organisation (Auftrag 20.11.2026)
+# Jede Analyse (Website lesen, Struktur und Dokumente katalogisieren) erhält eine Versionsnummer und ein Datum.
+# Ein späterer Abgleich hängt eine neue Analyse an; frühere bleiben erhalten.
+ANALYSEN = {o_id: [{"version": 1, "datum": "17.11.2026", "art": "Erstanalyse", "bemerkung": "Struktur und Dokumentliste erfasst"}]
+            for o_id in ["pg-truellikon", "ps-truellikon", "skm-marthalen", "sek-buelach", "pg-meilen", "pg-bachenbuelach", "schule-bachenbuelach",
+                         "pg-hoeri", "ps-hoeri", "pg-winkel", "schule-winkel", "pg-hochfelden", "pg-duebendorf", "schule-duebendorf",
+                         "ssg-duebendorf-schwerzenbach", "pg-fehraltorf"]}
+def analyse_info(o):
+    a = ANALYSEN.get(o["id"], [{"version": 1, "datum": STAND, "art": "Erstanalyse", "bemerkung": ""}])
+    for x in a: x.setdefault("dokumente", o["anzahl_dokumente"]); x.setdefault("rubriken", o["anzahl_rubriken"])
+    o["analysen"] = a
+    o["analyse_version"], o["analysiert_am"] = a[-1]["version"], a[-1]["datum"]
+
+# ---------------------------------------------------------------- Datum und Version der erfassten Dokumente
+ERFASST_AM = "17.11.2026"  # Datum der Erstanalyse aller bisher erfassten Organisationen
+VERSION_IM_TITEL = r"\b[Vv](?:ersion)?\s?(\d+(?:\.\d+)+)\b|\bVersion\s+(\d+)\b|\bStand\s+(\d{1,2}\.\d{1,2}\.\d{4}|[A-Za-zä]+\s+\d{4}|\d{4})|\b[Rr]ev(?:idiert|\.)?\s*(\d{4})"
+def doc_datum_version(o):
+    for s in o["sections"]:
+        for d in walk(s):
+            if o["renderer"] == "iweb_gk" and d.get("datum"):
+                d["gueltig_seit"] = d["datum"]          # i-web «Gültig seit» = Inkraftsetzung, nicht Veröffentlichung
+                d["veroeffentlicht"], d["datum_herkunft"] = None, None
+            elif d.get("datum"):
+                d["veroeffentlicht"], d["datum_herkunft"] = d["datum"], "Website"
+            else:
+                d["veroeffentlicht"], d["datum_herkunft"] = None, None
+            m = re.search(VERSION_IM_TITEL, d["titel"])
+            d["version"] = next((g for g in m.groups() if g), None) if m else None
+            if m and m.group(3): d["version"] = "Stand " + m.group(3)
+            d["vid"] = o["id"] + ":" + (d.get("nummer") or norm(d["titel"])[:60])
+            d["versionen"] = [{"version": d["version"] or "erfasst", "veroeffentlicht": d["veroeffentlicht"], "gueltig_seit": d.get("gueltig_seit"),
+                               "erfasst": ERFASST_AM, "url": d.get("url"), "quelle": o["website"], "status": "aktuell"}]
+            d["anzahl_versionen"] = 1
 
 # ---------------------------------------------------------------- Übersicht
 WM = ('<span class="wm" role="img" aria-label="EduKSX-Codex"><span aria-hidden="true"><span class="v">E</span><span class="n">du</span>'
@@ -1265,7 +1392,7 @@ def render_daten(gemeinden):
         if o["typ"] == "Politische Gemeinde":
             g = next((x for x in gem if x["gemeinde"] == o["sitz"]), None)
             if g: o["einheit"] = g["einheit"]
-    for o in ORGS: leitfaden_pruefung(o)
+    for o in ORGS: leitfaden_pruefung(o); doc_datum_version(o); analyse_info(o)
     daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN, "rechtsgrundlagen": rechtsgrundlagen(),
              "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
     return ("/* Erzeugt von tools/build.py – nicht von Hand bearbeiten. */\nwindow.CODEX = "
@@ -1295,7 +1422,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.7.2 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.8.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1303,7 +1430,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.7.2 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.8.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

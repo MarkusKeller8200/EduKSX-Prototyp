@@ -1,0 +1,137 @@
+# Konzept: EduKSX-Codex – Versionen, Abgleich, Textfassung und Normenhierarchie (#32)
+
+Stand: 2026-11-20 (Codex 0.8.0) · Status: **IN ARBEIT**
+
+Ein Konzept ist eine Entscheidungsgrundlage, keine Freigabe: umgesetzt wird erst, was als Issue freigegeben ist.
+
+| Stufe | Bedeutung |
+|---|---|
+| **BESCHLOSSEN** | Vorgabe von Projektverantwortliche:r (mit Datum) |
+| **EMPFOHLEN** | Vorschlag, noch nicht bestätigt |
+| **OFFEN** | muss vor der Umsetzung entschieden werden |
+| **ZU PRÜFEN** | technische Machbarkeit, Lizenz oder Kosten klären |
+
+## 1. Ziel
+
+Aufträge aus dem Chat vom 20.11.2026:
+
+- Quellen nach Klassen A–F führen; herausgebende Behörde, massgebende Publikationsstelle und Downloadort getrennt
+  (**BESCHLOSSEN** 2026-11-20).
+- Bei allen Dokumenten eigene Spalten «Veröffentlicht» und – wenn vorhanden – «Version» (**BESCHLOSSEN** 2026-11-20).
+- Fehlt auf der Website ein Datum, darf das Dateidatum verwendet werden, sichtbar gekennzeichnet «aus Datei»
+  (**BESCHLOSSEN** 2026-11-20).
+- Neue Versionen suchen und übernehmen; alte Versionen behalten; Anzahl Versionen anzeigen; ein Klick zeigt die
+  Historik (**BESCHLOSSEN** 2026-11-20).
+- Je Gemeinde eine Analyse-Version und das Datum der letzten Analyse/Katalogisierung (**BESCHLOSSEN** 2026-11-20).
+- Rechtstexte (meist PDF) in eine KI-lesbare Markdown-Fassung bringen; Unterschiede zwischen Versionen farbig
+  hervorheben (Wunsch 2026-11-20, **OFFEN**).
+- Hierarchie grafisch darstellen, z. B. OR → Personalgesetz → Personalverordnung → Personalverordnung der Gemeinde
+  (Frage 2026-11-20, **OFFEN**).
+
+**Nichtziele:** keine rechtliche Beurteilung von Änderungen; keine automatische Übernahme ohne Bestätigung.
+
+## 2. Versionen und Abgleich
+
+### 2.1 Kennung je Dokument (**EMPFOHLEN**)
+
+| Quelle | Feste Kennung | Version | Veröffentlicht |
+|---|---|---|---|
+| ZH-Lex LS | Ordnungsnummer (z. B. 412.100) | Nachtragsnummer (z. B. 126) | Publikationsdatum der Fassung |
+| Fedlex SR | SR-Nummer bzw. ELI | «Stand am» | Datum der Fassung |
+| Bildungsratsbeschluss | BRB-Nummer/Jahr | – | Sitzungsdatum |
+| Kommunale Rechtssammlung | Organisation + Erlassnummer, sonst normalisierter Titel | Version im Titel («V5.0», «Stand 2025», «rev. 2024») oder Prüfsumme der Datei | Datum laut Website, sonst Dateidatum («aus Datei») |
+
+«Gültig seit» (Inkraftsetzung) bleibt eine eigene Angabe und wird nicht als Veröffentlichung gezählt.
+
+### 2.2 Ablauf (**EMPFOHLEN**)
+
+1. **Suchen** – je Quelle ein Leser (Adapter):
+   - ZH-Lex: Suche nach Ordnungsnummer (`lawcollectionsearch … zhweb-zhlex-ls … .json?referenceNumber=`), dann die
+     Erlassseite mit «Historie Nachtragsnr.» und je Fassung Publikations-, Inkraftsetzungs- und Aufhebungsdatum.
+     **Umgesetzt** für 26 Erlasse / 466 Fassungen (abgerufen 20.11.2026).
+   - Fedlex: «Stand am» je Fassung (**ZU PRÜFEN**: Zugriff über SPARQL-Schnittstelle oder Seite).
+   - Gemeinde-Websites: bekannte Struktur erneut lesen (Menüpfad, Ordner, Tabellen); Dateidatum über die
+     Server-Angabe (Last-Modified) bzw. PDF-Eigenschaften; Prüfsumme (SHA-256) der Datei.
+2. **Vergleichen** – gleiche Kennung, aber geänderte Version, Datum oder Prüfsumme = neue Version; Kennung neu = neues
+   Dokument; Kennung fehlt = «nicht mehr publiziert».
+3. **Prüfliste** – Treffer als «neu», «geändert», «nicht mehr publiziert»; nichts wird ohne Bestätigung übernommen.
+4. **Übernehmen** – neue Version wird angehängt, die bisherige als «abgelöst» markiert, **nie gelöscht**. Bei Gemeinden
+   zählt die Analyse-Version eins hoch (mit Datum, Anzahl Rubriken und Dokumente).
+5. **Rhythmus** – geplanter Lauf (Vorschlag: ZH-Lex wöchentlich, Gemeinden monatlich) und auf Knopfdruck; Ergebnis als
+   Mitteilung an die verantwortliche Person (**OFFEN**: wer bestätigt?).
+
+### 2.3 Datenmodell (**EMPFOHLEN**)
+
+```text
+dokument { vid, organisation|fundstelle, titel, klasse, herausgeber, publikationsstelle, downloadort,
+           versionen: [ { version, veroeffentlicht, datum_herkunft (Website|Datei|ZH-Lex|Fedlex), gueltig_seit,
+                          in_kraft_bis, url, sha256, erfasst, quelle, status (aktuell|abgelöst|nicht mehr publiziert) } ] }
+organisation { analysen: [ { version, datum, art (Erstanalyse|Abgleich), rubriken, dokumente, bemerkung } ] }
+```
+
+Ablage im Prototyp: `data/raw/zhlex-versionen.json` (ZH-Lex), Analysen in `tools/build.py` (`ANALYSEN`). Später in
+EduKSX-Core (Dokumentenablage) – append-only.
+
+### 2.4 Anzeige (**umgesetzt** in 0.8.0)
+
+- Spalten «Veröffentlicht» und «Version» in den Rechtsgrundlagen und in jeder Rubrik der Gemeinden; «Gültig seit»
+  getrennt; Widget zeigt dieselben Angaben.
+- Knopf «⟲ n» = Anzahl Versionen; Klick öffnet die Historik (neueste zuerst, Status, Daten, Link je Fassung) mit
+  herausgebender Behörde, Publikationsstelle und Downloadort.
+- Steckbrief der Gemeinde: «Analyse Version n · zuletzt analysiert und katalogisiert am …» mit Historik der Analysen.
+- Seite «Versionen & Abgleich» mit Stand je Quelle und Organisation.
+
+## 3. Textfassung (Markdown) und Unterschiede zwischen Versionen
+
+### 3.1 Braucht es ein KI-Modell zur Laufzeit? (**EMPFOHLEN**: nein)
+
+- **PDF → Markdown** ist Textextraktion, keine KI-Aufgabe. Erlass-PDFs von ZH-Lex und Fedlex haben eine Textebene;
+  Werkzeuge wie pdfplumber/pdfminer (Text und Layout) bzw. Docling oder Marker (Überschriften, Tabellen, Fussnoten)
+  liefern Markdown. Eine Nachbearbeitung mit Regeln erkennt Gliederung (Titel, Abschnitte, §, Abs., lit.), Randtitel
+  und Fussnoten.
+- **KI nur, wo nötig:** gescannte PDFs ohne Textebene (OCR) und schwierige Gliederungen. Das läuft **einmal bei der
+  Aufbereitung**, nicht beim Anzeigen.
+- **Unterschiede (Delta)** sind ein Textvergleich, keine KI: Vergleich je Paragraf, innerhalb des Paragrafen
+  wortgenau (z. B. diff-match-patch oder jsdiff). Hinzugefügtes grün, Gestrichenes rot durchgestrichen, verschobene
+  Paragrafen markiert – Zustand nie nur über Farbe (zusätzlich «+»/«–» und Text für Screenreader).
+
+### 3.2 Wo wird gerechnet? (**EMPFOHLEN**: vorab aufbereiten, statisch ausliefern)
+
+| Variante | Vorteile | Nachteile |
+|---|---|---|
+| **A – vorab im Abgleich** (lokal bzw. GitHub Action): PDF → Markdown je Version, Delta je Versionspaar, Ergebnis als Dateien (`texte/<LS>/<Nachtrag>.md`, `deltas/<LS>/<alt>-<neu>.json`) auf GitHub Pages | kein Server, keine Laufzeitkosten, schnell, prüfbar (Markdown ist versioniert), KI-lesbar | Aufbereitung muss laufen, bevor Neues sichtbar ist |
+| B – im Browser zur Laufzeit (PDF.js + Diff in JavaScript) | keine Aufbereitung | langsam bei grossen Erlassen, Gliederung unzuverlässig, Fremd-PDFs oft nicht ladbar (Einbettungs- und CORS-Sperren) |
+| C – eigene API mit Dienst | flexibel, später für EduKSX-Core | Betrieb, Datenschutz, Kosten – erst nötig, wenn die Ablage serverseitig läuft |
+
+Empfehlung: **A** im Prototyp; die erzeugten Dateien sind dieselben, die später eine API (EduKSX-Core) ausliefert.
+Für die vergleichende Anzeige reicht der Abschnitt `deltas/…json`; der Browser färbt nur ein.
+
+### 3.3 Offene Entscheide
+
+| Nr. | Frage | Optionen | Entscheid | Status |
+|---|---|---|---|---|
+| E1 | Aufbereitung | A vorab / B Browser / C API | A (Empfehlung) | OFFEN |
+| E2 | Werkzeug PDF → Markdown | pdfplumber + Regeln / Docling / Marker | – | ZU PRÜFEN (Lizenz, Qualität an 3 Erlassen) |
+| E3 | Umfang | zuerst 26 ZH-Lex-Erlasse, dann kommunale Erlasse | – | OFFEN |
+
+## 4. Normenhierarchie grafisch (**EMPFOHLEN**)
+
+Beispiel Personalrecht: Bundesrecht (OR, SR 220 – subsidiär für öffentlich-rechtliche Anstellungen) → kantonales
+Personalgesetz (PG, LS 177.10) → Personalverordnung (PVO, LS 177.11) und Vollzugsverordnung (VVO, LS 177.111) →
+§ 53 GG (Verweis aufs kantonale Recht) → kommunale Personalverordnung der Schulgemeinde (Ausführungsbestimmungen,
+Reglemente).
+
+- **Daten:** je Erlass «stützt sich auf» (Rechtsgrundlage im Ingress, z. B. «gestützt auf § 31 Abs. 3 VSG») und
+  «verweist auf» (Verweise im Text). Aus der Markdown-Fassung (Kapitel 3) lassen sich Ingress und Verweise
+  regelbasiert auslesen; kommunale Erlasse über ihre Titel und Ingresse zuordnen.
+- **Anzeige:** Baum bzw. Ebenen-Diagramm Bund → Kanton (Gesetz → Verordnung → Reglement/BRB) → Gemeinde, Knoten
+  anklickbar (Erlass, Versionen, Unterschiede). Zuerst für die Themen Personal, Volksschule, Datenschutz.
+- **Status:** **OFFEN** – Freigabe abwarten.
+
+## 5. Issues
+
+| Issue | Inhalt | Status |
+|---|---|---|
+| #32 | Codex 0.8.0: Quellenkatalog A–F, Veröffentlicht/Version, Versionshistorik, Analyse-Version | `_3 Beta-Test` |
+| – | Textfassung Markdown und Deltas (Kapitel 3) | Vorschlag, Freigabe offen |
+| – | Normenhierarchie grafisch (Kapitel 4) | Vorschlag, Freigabe offen |
