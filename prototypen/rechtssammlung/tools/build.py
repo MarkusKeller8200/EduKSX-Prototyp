@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.14.0 – Generator.
+"""EduKSX-Codex Prototyp 0.15.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1620,6 +1620,75 @@ HIERARCHIEN = [
    {"von": "kom", "nach": "zgb", "art": "Melderecht", "beleg": ("sr-210", "Art. 314c")}]},
 ]
 
+# ---------------------------------------------------------------- Maschinelle Verbindungen (Auftrag 20.11.2026, Punkt 4)
+# Aus den Textfassungen: Ingress («gestützt auf …») = Grundlage, § 1 / Art. 1 mit «Vollzug» = Vollzug, Fussnoten = Verweise.
+# Die Vorschläge werden neben den von Hand gesetzten Verbindungen gezeigt; massgebend bleiben die Hand-Verbindungen.
+def _fussnoten(md):
+    d = {}
+    for m in re.finditer(r"^\[\^(\w+)\]: (.*)$", md, re.M):
+        d[m.group(1)] = [f"{a} {n}" for a, n in re.findall(r"\b(LS|SR) (\d[\d.]*\d)", m.group(2))]
+    return d
+
+def maschinell(nr, nachtrag):
+    """Grundlagen laut Ingress und Vollzugsbestimmung der geltenden Fassung: {Fundstelle: (Art, Stelle, Text)}."""
+    md = _md(nr, nachtrag)
+    if not md: return {}
+    rumpf = md.split("\n---\n\n[^")[0]
+    rumpf = re.sub(r"^---\n.*?\n---\n", "", rumpf, flags=re.S)
+    F, out = _fussnoten(md), {}
+    absaetze = [x.strip() for x in rumpf.split("\n\n") if x.strip()]
+    ingress = next((x for x in absaetze[:6] if not x.startswith("#") and re.search(r"gestützt auf|beschliesst|verordnet|verfügt|erlässt|vereinbar", x)), "")
+    if "gestützt auf" in ingress:
+        for r in re.findall(r"\[\^(\w+)\]", ingress):
+            for z in F.get(r, []): out.setdefault(z, ("Grundlage (Ingress)", "Ingress", re.sub(r"\[\^\w+\]", "", ingress)[:400]))
+    m = re.search(r"^### (?:§|Art\.) 1(?![\d])[^\n]*\n\n(.*?)(?=\n### |\n## |\Z)", rumpf, re.S | re.M)
+    if m and re.search(r"Vollzug|Ausführung", m.group(1)):
+        for r in re.findall(r"\[\^(\w+)\]", m.group(1)):
+            for z in F.get(r, []): out.setdefault(z, ("Vollzug (§ 1)" if nr[:3] != "sr-" else "Vollzug (Art. 1)", "§ 1" if nr[:3] != "sr-" else "Art. 1", re.sub(r"\[\^\w+\]", "", m.group(1))[:400]))
+    return out
+
+def abgleich_kanten(H, texte):
+    """Hand-Verbindungen mit der maschinellen Auswertung vergleichen; Vorschläge für fehlende Verbindungen."""
+    akt = {nr: e["fassungen"][-1]["nachtrag"] for nr, e in texte["erlasse"].items() if e["fassungen"]}
+    fund = {k["id"]: k["fundstelle"] for k in H["knoten"]}
+    nach_fund = {}
+    for k in H["knoten"]: nach_fund.setdefault(k["fundstelle"], []).append(k["id"])
+    hand = {(k["von"], k["nach"]) for k in H["kanten"]}
+    vorschlaege, fehlt = [], []
+    for k in H["knoten"]:
+        nr = k.get("ls")
+        if not nr or nr not in akt: continue
+        m = maschinell(nr, akt[nr])
+        vw = dict(map(tuple, texte["erlasse"][nr]["verweise"]))
+        ziele = set(m) | {z for z, n in vw.items() if n >= 1}
+        for z in ziele:
+            if z == k["fundstelle"]: continue
+            art, stelle, text = m.get(z, ("verweist auf", "Fussnoten", ""))
+            ids = [i for i in nach_fund.get(z, []) if i != k["id"]]
+            if ids:
+                for zid in ids:
+                    if (k["id"], zid) in hand:
+                        for x in H["kanten"]:
+                            if (x["von"], x["nach"]) == (k["id"], zid): x["maschinell"] = {"art": art, "stelle": stelle, "verweise": vw.get(z, 0)}
+                    elif (zid, k["id"]) not in hand and (z in m or vw.get(z, 0) >= 2):
+                        vorschlaege.append({"von": k["id"], "nach": zid, "art": art, "stelle": stelle, "verweise": vw.get(z, 0), "text": text})
+            elif z in m or vw.get(z, 0) >= 3:
+                fehlt.append({"von": k["id"], "ziel": z, "art": art, "verweise": vw.get(z, 0)})
+    for x in H["kanten"]:
+        x["status"] = "bestaetigt" if x.get("maschinell") else ("nur_hand" if fund[x["von"]] != "kommunal" and K_hat_text(H, x["von"], akt) else "kommunal_oder_ohne_text")
+    H["vorschlaege"] = vorschlaege
+    namen = {e["fundstelle"]: e["titel"] for e in texte["erlasse"].values()}
+    zl = json.loads((ROOT / "data" / "raw" / "zhlex-versionen.json").read_text(encoding="utf-8"))
+    for nr, z in zl.items():
+        if isinstance(z, dict) and z.get("t"): namen.setdefault("LS " + nr, z["t"])
+    for f in fehlt: f["titel"] = namen.get(f["ziel"], "")
+    H["fehlende_erlasse"] = sorted(fehlt, key=lambda x: -x["verweise"])[:12]
+    return H
+
+def K_hat_text(H, kid, akt):
+    k = next(x for x in H["knoten"] if x["id"] == kid)
+    return bool(k.get("ls") and k["ls"] in akt)
+
 def querbezuege(hs, texte):
     """Querbezüge: in welchen Themen kommt ein Erlass vor (Schlüssel LS-Nummer bzw. SR-Fundstelle)."""
     def schluessel(k): return k["fundstelle"] if k["fundstelle"] != "kommunal" else None
@@ -1710,7 +1779,7 @@ def render_daten(gemeinden):
     for o in ORGS: leitfaden_pruefung(o); doc_datum_version(o); analyse_info(o)
     TX = texte_index()
     daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN, "rechtsgrundlagen": rechtsgrundlagen(),
-             "texte": TX, "hierarchien": querbezuege([hierarchie(TX, sp) for sp in HIERARCHIEN], TX),
+             "texte": TX, "hierarchien": querbezuege([abgleich_kanten(hierarchie(TX, sp), TX) for sp in HIERARCHIEN], TX),
              "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
     for e in daten["rechtsgrundlagen"]["eintraege"]:
         t = []
@@ -1746,7 +1815,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.14.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.15.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -1754,7 +1823,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.14.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.15.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

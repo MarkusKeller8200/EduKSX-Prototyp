@@ -36,6 +36,11 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – EduKSX-Codex 0.15.0
+
+- Punkt 4 umgesetzt (#39 → `_3 Beta-Test`): `maschinell()` und `abgleich_kanten()` in tools/build.py; Felder `status`,
+  `maschinell`, `vorschlaege`, `fehlende_erlasse`.
+
 ### Sitzung 2026-11-20 – EduKSX-Codex 0.14.0
 
 - Punkt 3 umgesetzt (#38 → `_3 Beta-Test`): `tools/fedlex.py` (SPARQL fedlex.data.admin.ch + HTML-Filestore, beide aus dem

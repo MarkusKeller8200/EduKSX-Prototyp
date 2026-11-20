@@ -533,7 +533,8 @@
   // ------------------------------------------------------------------ Normenhierarchie
   function hierarchie(id, orgId) {
     var H = D.hierarchien.filter(function (x) { return x.id === id; })[0] || D.hierarchien[0], K = {}; H.knoten.forEach(function (k) { K[k.id] = k; });
-    var org = orgId && ORG[orgId] ? ORG[orgId] : null, gewaehlt = null;
+    var org = orgId && ORG[orgId] ? ORG[orgId] : null, gewaehlt = null, zeigeV = false;
+    function kantenAlle() { return zeigeV ? H.kanten.concat((H.vorschlaege || []).map(function (v) { return { von: v.von, nach: v.nach, art: "Vorschlag: " + v.art, vorschlag: true }; })) : H.kanten; }
     function bsp(k) { return !k.beispiele ? null : org ? k.beispiele.filter(function (b) { return b.org === org.id; }) : k.beispiele; }
     var detail = h("section", { cls: "karte hierarchie-detail", "aria-live": "polite" }, h("p", { cls: "muted", text: "Erlass anklicken, um Grundlage, Belegstellen und Versionen zu sehen. Die Verbindungen des gewählten Erlasses werden hervorgehoben." }));
     var buehne = h("div", { cls: "hierarchie" + (org ? " mit-org" : "") });
@@ -563,7 +564,7 @@
     function klasse(art) { return /nicht direkt/.test(art) ? "nicht" : /Vollzug/.test(art) ? "vollzug" : /subsidi/.test(art) ? "subsidiaer" : /Grundlage/.test(art) ? "grundlage" : "verweis"; }
     function linien() {
       if (!buehne.isConnected) return;
-      var R0 = buehne.getBoundingClientRect();
+      var R0 = buehne.getBoundingClientRect(), KA = kantenAlle();
       svg.setAttribute("width", R0.width); svg.setAttribute("height", R0.height);
       svg.textContent = ""; oben.textContent = ""; oben.setAttribute("width", R0.width); oben.setAttribute("height", R0.height);
       var defs = el("defs", {});
@@ -572,7 +573,7 @@
       var R = {}; Object.keys(boxen).forEach(function (x) { var r = boxen[x].getBoundingClientRect(); R[x] = { l: r.left - R0.left, r: r.right - R0.left, t: r.top - R0.top, b: r.bottom - R0.top, cx: r.left + r.width / 2 - R0.left, cy: r.top + r.height / 2 - R0.top, w: r.width }; });
       // Andockpunkte verteilen: je Box die abgehenden (oben) und ankommenden (unten) Linien nach Zielposition sortieren
       var aus = {}, ein = {};
-      H.kanten.forEach(function (k, n) { (aus[k.von] = aus[k.von] || []).push(n); (ein[k.nach] = ein[k.nach] || []).push(n); });
+      KA.forEach(function (k, n) { (aus[k.von] = aus[k.von] || []).push(n); (ein[k.nach] = ein[k.nach] || []).push(n); });
       function versatz(liste, box, gegen) {
         var m = {}; if (!liste) return m;
         liste.slice().sort(function (a, b) { return R[gegen(a)].cx - R[gegen(b)].cx; }).forEach(function (n, i, arr) {
@@ -581,7 +582,7 @@
       }
       var VA = {}, VE = {};
       Object.keys(boxen).forEach(function (x) {
-        var a = versatz(aus[x], x, function (n) { return H.kanten[n].nach; }), e = versatz(ein[x], x, function (n) { return H.kanten[n].von; });
+        var a = versatz(aus[x], x, function (n) { return KA[n].nach; }), e = versatz(ein[x], x, function (n) { return KA[n].von; });
         Object.keys(a).forEach(function (n) { VA[n] = a[n]; }); Object.keys(e).forEach(function (n) { VE[n] = e[n]; });
       });
       var belegt = [];
@@ -589,7 +590,7 @@
         var boxHit = !ueberBox && Object.keys(R).some(function (q) { var r = R[q]; return bx.r > r.l && bx.l < r.r && bx.b > r.t && bx.t < r.b; });
         return !boxHit && !belegt.some(function (o) { return bx.r > o.l && bx.l < o.r && bx.b > o.t && bx.t < o.b; }) ? bx : null; }
       var spaeter = [];
-      H.kanten.forEach(function (k, n) {
+      KA.forEach(function (k, n) {
         var a = R[k.von], b = R[k.nach], d, pt;
         var gleich = K[k.von].ebene === K[k.nach].ebene;
         if (gleich) {
@@ -603,7 +604,7 @@
         }
         var an = gewaehlt && (k.von === gewaehlt || k.nach === gewaehlt), aus2 = gewaehlt && !an;
         var g = el("g", { class: "h-kante" + (an ? " an" : "") + (aus2 ? " aus" : "") });
-        var l = el("path", { d: d, class: "h-linie h-" + klasse(k.art), "marker-end": "url(#pfeil)" });
+        var l = el("path", { d: d, class: "h-linie h-" + (k.vorschlag ? "vorschlag" : klasse(k.art)), "marker-end": "url(#pfeil)" });
         var tt = el("title", {}); tt.textContent = K[k.von].titel + " → " + K[k.nach].titel + ": " + k.art; l.appendChild(tt);
         g.appendChild(l); svg.appendChild(g);
         spaeter.push({ k: k, g: g, pt: pt, an: an, aus: aus2 });
@@ -636,6 +637,7 @@
         var ziel = K[richtung === "hoch" ? x.nach : x.von];
         return h("li", null, h("strong", { text: (richtung === "hoch" ? "stützt sich auf " : "Grundlage für ") + ziel.titel }), " – " + x.art,
           x.verweise ? h("span", { cls: "small muted", text: " · " + x.verweise + " Verweise in den Fussnoten" }) : null,
+          x.status === "bestaetigt" ? h("span", { cls: "small ok-mark", title: "In der maschinellen Auswertung der Textfassung gefunden", text: " ✓ maschinell bestätigt (" + x.maschinell.art + ")" }) : x.status === "nur_hand" ? h("span", { cls: "small muted", title: "Weder im Ingress, in § 1 noch in den Fussnoten gefunden – Verbindung von Hand gesetzt", text: " · nur von Hand" }) : null,
           [x.beleg].concat(x.weitere_belege || []).filter(function (b) { return b && b.text; }).map(function (b) { return h("details", null, h("summary", { text: "Belegstelle " + b.fundstelle + " " + b.stelle }), h("p", { cls: "beleg", text: b.text })); }));
       }
       if (hoch.length) { detail.appendChild(h("h3", { text: "Übergeordnet" })); detail.appendChild(h("ul", null, hoch.map(function (x) { return kante(x, "hoch"); }))); }
@@ -665,7 +667,25 @@
       h("div", { cls: "filterzeile" }, h("label", { cls: "small", text: "Ansicht für " }), orgWahl, org ? h("a", { cls: "small", href: link("org", org.id), text: "Rechtssammlung " + org.kurz + " →" }) : null),
       h("p", { cls: "small muted", text: H.hinweis }),
       h("div", { cls: "hierarchie-legende small" }, h("span", { cls: "lg lg-vollzug", text: "Vollzug" }), h("span", { cls: "lg lg-subsidiaer", text: "subsidiär anwendbar" }), h("span", { cls: "lg lg-verweis", text: "verweist auf" }), h("span", { cls: "lg lg-grundlage", text: "Grundlage" }), H.kanten.some(function (x) { return /nicht direkt/.test(x.art); }) ? h("span", { cls: "lg lg-nicht", text: "nicht direkt anwendbar" }) : null),
-      h("div", { cls: "hierarchie-rahmen" }, buehne, detail)];
+      h("div", { cls: "hierarchie-rahmen" }, buehne, detail),
+      abgleichAbschnitt()];
+    function abgleichAbschnitt() {
+      var st = { bestaetigt: 0, nur_hand: 0, kommunal_oder_ohne_text: 0 }; H.kanten.forEach(function (k) { st[k.status] = (st[k.status] || 0) + 1; });
+      var cb = h("input", { type: "checkbox", onchange: function () { zeigeV = cb.checked; linien(); } });
+      var V = H.vorschlaege || [], F = H.fehlende_erlasse || [];
+      function key(z) { return z.replace(/^LS /, "").replace(/^SR /, "sr-"); }
+      return h("section", { cls: "karte" }, h("h2", { text: "Abgleich mit der maschinellen Auswertung" }),
+        h("p", { cls: "small muted", text: "Aus den Textfassungen ausgelesen: Ingress («gestützt auf …») als Grundlage, § 1 bzw. Art. 1 mit «Vollzug» als Vollzug, Fussnoten als Verweise. Massgebend bleiben die von Hand gesetzten Verbindungen; Vorschläge sind zu prüfen." }),
+        h("p", null, badge("erfolg", "✓", st.bestaetigt + " bestätigt"), " ", badge("warnung", "✋", st.nur_hand + " nur von Hand"), " ", badge("neutral", "○", st.kommunal_oder_ohne_text + " ohne Textfassung (kommunal, Beschlüsse)"), " ",
+          V.length ? h("label", { cls: "small" }, cb, " " + V.length + (V.length === 1 ? " Vorschlag" : " Vorschläge") + " in der Grafik zeigen (orange gestrichelt)") : h("span", { cls: "small muted", text: "keine Vorschläge" })),
+        V.length ? h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" }, h("caption", { cls: "small", text: "Vorschläge: Verbindungen zwischen Erlassen dieses Themas, die von Hand noch nicht gesetzt sind" }),
+          h("thead", null, h("tr", null, ["Von", "Nach", "Art", "Fundstelle", "Verweise"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+          h("tbody", null, V.map(function (v) { return h("tr", null, h("td", { text: K[v.von].titel }), h("td", { text: K[v.nach].titel }), h("td", { text: v.art }), h("td", { text: v.stelle }), h("td", { cls: "zahlrechts", text: String(v.verweise || "–") })); })))) : null,
+        F.length ? h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" }, h("caption", { cls: "small", text: "Weitere Erlasse, auf die sich die Erlasse dieses Themas stützen oder oft verweisen – nicht in der Hierarchie" }),
+          h("thead", null, h("tr", null, ["Erlass im Thema", "verweist auf", "Titel", "Art", "Verweise"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+          h("tbody", null, F.map(function (f) { var tx = D.texte.erlasse[key(f.ziel)];
+            return h("tr", null, h("td", { text: K[f.von].titel }), h("td", { cls: "nowrap" }, tx ? h("a", { href: link("text", key(f.ziel), tx.fassungen[tx.fassungen.length - 1].nachtrag), text: f.ziel }) : f.ziel), h("td", { text: f.titel || "–" }), h("td", { text: f.art }), h("td", { cls: "zahlrechts", text: String(f.verweise || "–") })); })))) : null);
+    }
   }
 
   function themenLinks(themen, ausser) {

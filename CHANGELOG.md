@@ -135,4 +135,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Codex 0.14.0: Bundesrecht aus Fedlex (`tools/fedlex.py`) – 9 Bundeserlasse als Textfassung mit Änderungen
   zwischen den Ständen, Fassungsliste aller Konsolidierungen in den Rechtsgrundlagen (Historik, «künftig»), Belegstellen aus
   BV, OR, DSG, DSV, BehiG, KRK, ZGB und StGB in der Normenhierarchie (#38).
+- EduKSX-Codex 0.15.0: Normenhierarchie – Verbindungen maschinell aus den Textfassungen ausgelesen (Ingress, § 1 / Art. 1,
+  Fussnoten): Status «maschinell bestätigt» / «nur von Hand» je Verbindung, Vorschläge für fehlende Verbindungen (in der Grafik
+  zuschaltbar) und Liste weiterer Erlasse, auf die oft verwiesen wird (#39).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.
