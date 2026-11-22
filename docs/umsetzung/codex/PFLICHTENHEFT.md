@@ -63,6 +63,7 @@ Geschäftsverwaltung/Beschlüsse, allgemeine Dokumentablage.
 | CDX-F-39 | Links je Schulträger erzeugen und beim Schulträger speichern (`links`): Codex-Karte mit Schulträgergebiet (stabil), Schulträgerkarte, Schulverzeichnis, Website, map.geo.admin.ch (LV95). | SOLL | Schulgemeinde, Gemeinde |
 | CDX-F-40 | Beta-Release: je Schulträger ein einmaliger PIN (zufällig, nur Hash, Ablauf, Sperre nach 5 Fehlversuchen) an die Funktionsadresse; Prüfsitzung nur für diesen Schulträger; Bestätigen oder Korrekturen je Feld einreichen (Verwaltung, Kontakt, Schulanlagen mit Stufe, Mitgliedgemeinden); Redaktion übernimmt oder lehnt ab. Tabellen `data_review_campaigns`, `data_review_invitations`, `data_corrections`, API `/data-review/…`. | MUSS | Angaben prüfen (Beta) |
 | CDX-F-41 | Weitere amtliche Standortlisten: Sonderschulen (Volksschulamt, nach Bezirk und Typ), Sekundarstufe II (Geodatensatz GIS-ZH 600); Privatschulen (Register Volksschulamt) importiert, aber ausgeblendet. | KANN | Schulstandorte (Karte) |
+| CDX-F-42 | Zweite Darstellung «Schulträgerkarte» als Flächenkarte wie beim Gemeindeamt: Wechsel Primar/Sekundar, Gemeinde suchen, Auswahl (Chips, im Link), Legende «Trägertyp (effektiv)» mit Anzahl, Tabelle Schulträger/Trägertyp/Gemeindegebiet; Quellenangabe Gemeindeamt/Statistisches Amt auf der Seite und im Code (eigene Umsetzung). | SOLL | Schulträgerkarte |
 
 ### 2.2 Nicht fachliche Anforderungen
 

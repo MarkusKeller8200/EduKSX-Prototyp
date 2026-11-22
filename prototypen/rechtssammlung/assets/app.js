@@ -156,6 +156,7 @@
         h("li", null, eintrag(link("gemeinden"), "Alle 160 Gemeinden", r.art === "gemeinden")),
         h("li", null, eintrag(link("schulgemeinden"), "Alle " + D.schulgemeinden.length + " Schulgemeinden", r.art === "schulgemeinden")),
         h("li", null, eintrag(link("standorte"), "Schulstandorte (Karte)", r.art === "standorte", h("span", { cls: "anz", text: String(SV.verwaltungen.length) }), "Schulträger, Verwaltungen und Schulanlagen mit Lage")),
+        h("li", null, eintrag(link("schultraeger"), "Schulträgerkarte", r.art === "schultraeger", null, "Primar- und Sekundarschulträger als Flächenkarte")),
         h("li", null, eintrag(link("beta"), "Angaben prüfen (Beta, PIN)", r.art === "beta", null, "Verwaltungen bestätigen oder korrigieren ihre Angaben mit einmaligem PIN – Simulation")),
         h("li", null, eintrag(link("matrix"), "Struktur-Matrix", r.art === "matrix")),
         h("li", null, eintrag(link("pflicht"), "Pflichtkatalog Schulgemeinde", r.art === "pflicht", h("span", { cls: "anz", text: String(D.pflichtkatalog.kategorien.reduce(function (n, k) { return n + k.eintraege.length; }, 0)) }))),
@@ -1163,7 +1164,7 @@
 
   function linksKarte(titel, l) {
     if (!l) return null;
-    var namen = { codex_karte: "Codex: Standorte und Schulträgergebiet (stabiler Link)", schultraegerkarte: "Schulträgerkarte Gemeindeamt (ohne Direktauswahl)", schulverzeichnis: "Schulverzeichnis Bildungsdirektion", website: "Website", map_geo_admin: "Verwaltung auf map.geo.admin.ch" };
+    var namen = { codex_traegerkarte: "Codex: Schulträgerkarte mit Auswahl (stabiler Link)", codex_karte: "Codex: Standorte und Schulträgergebiet (stabiler Link)", schultraegerkarte: "Schulträgerkarte Gemeindeamt (ohne Direktauswahl)", schulverzeichnis: "Schulverzeichnis Bildungsdirektion", website: "Website", map_geo_admin: "Verwaltung auf map.geo.admin.ch" };
     return h("section", { cls: "karte" }, h("h2", { text: titel }),
       h("ul", { cls: "small" }, Object.keys(namen).filter(function (k) { return l[k]; }).map(function (k) {
         var btn = h("button", { type: "button", cls: "btn klein", text: "Kopieren" });
@@ -1292,6 +1293,93 @@
     b1.addEventListener("click", function () { senden(true); }); b2.addEventListener("click", function () { senden(false); });
     teile.push(h("p", null, b1, " ", b2), aus);
     return h("div", null, teile);
+  }
+
+  // ------------------------------------------------------------------ Schulträgerkarte (Darstellung wie Gemeindeamt): Flächen, Trägertyp, Auswahl
+  // Quelle: Darstellung (Aufbau: Karte wechseln, Gemeinde suchen, Auswahl-Chips, Legende «Trägertyp (effektiv)», Tabelle) nach der
+  // Schulträgerkarte des Gemeindeamts Kanton Zürich, https://www.zh.ch/de/politik-staat/gemeinden.html (Umsetzung Statistisches Amt,
+  // Observable-Notebook https://observablehq.com/d/e7eda8b7a89086a1). Eigene Umsetzung ohne übernommenen Code; Daten und Gebiete aus dieser
+  // Quelle (tools/schulverzeichnis.py, data/schultraeger.json).
+  var TT_FARBE = { "Politische Gemeinde": "--muted-foreground", "Primarschulgemeinde": "--success", "Sekundarschulgemeinde": "--success", "Volksschulgemeinde": "--brand-violet", "Zweckverband": "--info", "Anschlussvertrag": "--warning" };
+  function traegerkarteSeite(auswahlText, stufeParam) {
+    var STK = SV.schultraegerkarte;
+    if (!STK) return [kopf("Schulträgerkarte", "Keine Daten.")];
+    var stufe = stufeParam === "S" ? "S" : "P", auswahl = (auswahlText || "").split(",").filter(Boolean);
+    var huelle = h("div");
+    function typEff(t) { return t.anschlussvertrag ? "Anschlussvertrag" : t.typ; }
+    function zeichnen() {
+      huelle.textContent = "";
+      try { history.replaceState(null, "", link("schultraeger", auswahl.join(","), stufe)); } catch (e) { /* ohne Verlauf */ }
+      var T = {}; STK.traeger.filter(function (t) { return t.stufe === stufe; }).forEach(function (t) { T[t.code] = t; });
+      var F = STK.flaechen[stufe];
+      // Projektion (flächentreu genug für den Kanton): x = Länge·cos(47.4°), y = −Breite
+      var minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9, K = Math.cos(47.4 * Math.PI / 180);
+      function jede(c, f) { if (typeof c[0] === "number") f(c); else c.forEach(function (x) { jede(x, f); }); }
+      F.forEach(function (f) { jede(f.koord, function (p) { var x = p[0] * K, y = -p[1]; if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y; }); });
+      var B = 600, S = B / (maxX - minX), H = (maxY - minY) * S;
+      function pfad(f) {
+        var ringe = f.typ === "MultiPolygon" ? [].concat.apply([], f.koord) : f.koord;
+        return ringe.map(function (r) { return "M" + r.map(function (p) { return ((p[0] * K - minX) * S).toFixed(1) + "," + ((-p[1] - minY) * S).toFixed(1); }).join("L") + "Z"; }).join("");
+      }
+      var ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
+      svg.setAttribute("viewBox", "-6 -6 " + (B + 12) + " " + (H + 12)); svg.setAttribute("class", "tk-karte"); svg.setAttribute("role", "group"); svg.setAttribute("aria-label", (stufe === "P" ? "Primarschulträger" : "Sekundarschulträger") + " im Kanton Zürich");
+      var oben = [];
+      F.forEach(function (f) {
+        var t = T[f.code] || { typ: "Politische Gemeinde", bezeichnung: f.name, code: f.code, schulgebiet: "" }, an = auswahl.indexOf(f.code) >= 0;
+        var el = document.createElementNS(ns, "path");
+        el.setAttribute("d", pfad(f)); el.setAttribute("fill", "var(" + (TT_FARBE[typEff(t)] || "--muted-foreground") + ")");
+        el.setAttribute("class", "tk-flaeche" + (an ? " an" : "")); el.setAttribute("tabindex", "0"); el.setAttribute("role", "button");
+        el.setAttribute("aria-pressed", an ? "true" : "false"); el.setAttribute("aria-label", t.bezeichnung + ", " + typEff(t));
+        var tt = document.createElementNS(ns, "title"); tt.textContent = t.bezeichnung + " – " + typEff(t) + (t.schulgebiet ? " – " + t.schulgebiet : ""); el.appendChild(tt);
+        function wahl() { var i = auswahl.indexOf(f.code); if (i >= 0) auswahl.splice(i, 1); else { auswahl.push(f.code); if (auswahl.length > 6) auswahl.shift(); } zeichnen(); }
+        el.addEventListener("click", wahl); el.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); wahl(); } });
+        if (an) oben.push(el); else svg.appendChild(el);
+      });
+      oben.forEach(function (el) { svg.appendChild(el); });   // Auswahl zuoberst, Rand sichtbar
+      // Legende mit Anzahl
+      var zahl = {}; Object.keys(T).forEach(function (c) { var y = typEff(T[c]); zahl[y] = (zahl[y] || 0) + 1; });
+      var legende = h("div", { cls: "tk-legende" }, h("strong", { text: "Trägertyp (effektiv)" }), h("div", null, Object.keys(TT_FARBE).filter(function (y) { return zahl[y]; }).map(function (y) {
+        return h("span", { cls: "tk-leg" }, h("span", { cls: "tk-feld", style: "background:var(" + TT_FARBE[y] + ")", "aria-hidden": "true" }), y + " (" + zahl[y] + ")");
+      })));
+      // Suche nach Gemeinde
+      var dl = h("datalist", { id: "tk-gemeinden" }, D.gemeinden.map(function (g) { return h("option", { value: g.gemeinde }); }));
+      var such = h("input", { type: "search", list: "tk-gemeinden", placeholder: "Gemeinde suchen", "aria-label": "Gemeinde suchen" });
+      such.addEventListener("change", function () {
+        var g = D.gemeinden.filter(function (x) { return x.gemeinde.toLowerCase() === such.value.trim().toLowerCase(); })[0];
+        var ts = g && g.traeger_karte && g.traeger_karte[stufe];
+        if (ts) { ts.forEach(function (t) { if (auswahl.indexOf(t.code) < 0) auswahl.push(t.code); }); zeichnen(); }
+      });
+      var chips = h("div", { cls: "tk-chips" }, auswahl.map(function (c) {
+        var t = T[c]; if (!t) return null;
+        var x = h("button", { type: "button", cls: "tk-chip", "aria-label": t.bezeichnung + " entfernen" }, h("span", { cls: "tk-punkt", "aria-hidden": "true" }), t.name, h("span", { "aria-hidden": "true", text: " ×" }));
+        x.addEventListener("click", function () { auswahl.splice(auswahl.indexOf(c), 1); zeichnen(); });
+        return x;
+      }));
+      var tab = h("div", { cls: "tk-tabelle" }, h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+        h("thead", null, h("tr", null, ["Schulträger", "Trägertyp", "Gemeindegebiet", ""].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+        h("tbody", null, auswahl.length ? auswahl.map(function (c) {
+          var t = T[c]; if (!t) return null;
+          var sg = D.schulgemeinden.filter(function (x) { return (x.traeger_codes || []).indexOf(c) >= 0; })[0];
+          var ziel = sg ? link("sg", sg.name) : (function () { var g = D.gemeinden.filter(function (x) { return x.bfs === t.bfs; })[0]; return g ? link("gemeinde", g.bezirk, g.gemeinde) : null; })();
+          return h("tr", null, h("td", null, h("span", { cls: "tk-punkt", "aria-hidden": "true" }), " ", ziel ? h("a", { href: ziel, text: t.bezeichnung }) : t.bezeichnung, h("div", { cls: "small muted", text: "Code " + c })),
+            h("td", { text: typEff(t) + (t.anschlussvertrag ? " – " + t.anschlussvertrag : "") }), h("td", { cls: "small", text: t.schulgebiet }),
+            h("td", null, h("a", { cls: "btn klein", href: link("standorte", sg ? sg.name : (D.gemeinden.filter(function (x) { return x.bfs === t.bfs; })[0] || {}).gemeinde || ""), text: "Standorte" })));
+        }) : h("tr", null, h("td", { colspan: "4", cls: "muted", text: "Auf der Karte klicken oder eine Gemeinde suchen, um Schulträger auszuwählen." }))))));
+      huelle.appendChild(h("div", { cls: "tk-kopf" }, h("div", { cls: "filterzeile" }, such, dl), chips));
+      huelle.appendChild(legende);
+      huelle.appendChild(h("div", { cls: "tk-raster" }, h("div", { cls: "tk-kartenbox" }, svg), tab));
+    }
+    var radios = h("fieldset", { cls: "tk-wechsel" }, h("legend", { text: "Karte wechseln" }), [["P", "Primarschulträger"], ["S", "Sekundarschulträger"]].map(function (z) {
+      var r = h("input", { type: "radio", name: "tk-stufe", value: z[0] }); r.checked = z[0] === stufe;
+      r.addEventListener("change", function () { stufe = z[0]; auswahl = []; zeichnen(); });
+      return h("label", null, r, " " + z[1]);
+    }));
+    zeichnen();
+    return [kopf("Schulträgerkarte", "Wo Schulgemeinden und wo politische Gemeinden die Aufgaben der Volksschule erfüllen – Darstellung nach der Schulträgerkarte des Gemeindeamts.",
+        h("a", { cls: "btn", href: link("standorte"), text: "Schulstandorte (Karte)" })),
+      radios, huelle,
+      h("p", { cls: "small muted" }, "Quelle: Darstellung, Daten und Gebiete nach der ", extern(STK.meta.quelle, "Schulträgerkarte des Gemeindeamts Kanton Zürich ↗"),
+        " (Umsetzung und Daten: Statistisches Amt Kanton Zürich, ", extern("https://observablehq.com/d/e7eda8b7a89086a1", "Observable-Notebook ↗"), "; Gebiete Stand " + STK.meta.flaechen_stand + "). Eigene Umsetzung in EduKSX-Codex, kein Code übernommen. Die Auswahl steht in der Adresse und lässt sich als Link teilen.")];
   }
 
   function sgAnsicht(name) {
@@ -1709,6 +1797,7 @@
     else if (r.art === "sg") inhalt = sgAnsicht(r.a);
     else if (r.art === "standorte") inhalt = standorteSeite(r.a);
     else if (r.art === "beta") inhalt = betaSeite();
+    else if (r.art === "schultraeger") inhalt = traegerkarteSeite(r.a, r.b);
     else if (r.art === "matrix") inhalt = matrix(r.a);
     else if (r.art === "pflicht") inhalt = pflichtSeite(r.a);
     else if (r.art === "aenderungen") inhalt = aenderungenSeite(r.a, r.b);

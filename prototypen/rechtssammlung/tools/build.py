@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.40.1 – Generator.
+"""EduKSX-Codex Prototyp 0.41.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1041,10 +1041,16 @@ def schultraegerkarte(gem, sgs, standorte):
     vw = {v["id"]: v for v in (standorte or {}).get("verwaltungen", [])}
     def links(name, verw_ids):
         v = next((vw[i] for i in verw_ids if i in vw), None)
-        l = {"codex_karte": PAGES_URL + "#/standorte/" + urllib.parse.quote(name), "schultraegerkarte": k["meta"]["quelle"], "schulverzeichnis": QUELLE_ZH_VERZ}
+        codes = codes_je.get(name, [])
+        l = {"codex_traegerkarte": PAGES_URL + "#/schultraeger/" + ",".join(codes) + "/" + ("S" if codes and all(c in sek_codes for c in codes) else "P") if codes else None,
+             "codex_karte": PAGES_URL + "#/standorte/" + urllib.parse.quote(name), "schultraegerkarte": k["meta"]["quelle"], "schulverzeichnis": QUELLE_ZH_VERZ}
         if v and v.get("websites"): l["website"] = v["websites"][0]
         if v and v.get("lat"): l["map_geo_admin"] = geo_admin_link(v["lat"], v["lon"])
-        return l
+        return {a: b for a, b in l.items() if b}
+    sek_codes = {t["code"] for t in k["traeger"] if t["stufe"] == "S"}
+    codes_je = {x["name"]: x.get("traeger_codes", []) for x in sgs}
+    for g in gem:
+        if g.get("traeger_karte"): codes_je[g["gemeinde"]] = list(dict.fromkeys(t["code"] for st in ("P", "S") for t in g["traeger_karte"].get(st, []) if t["name"] == "Gemeinde"))
     for x in sgs: x["links"] = links(x["name"], x.get("verwaltungen", []))
     for g in gem:
         if g["kuerzel"] != "PG": g["links"] = links(g["gemeinde"], g.get("verwaltungen", []))
@@ -2935,7 +2941,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.40.1 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.41.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <link rel="stylesheet" href="assets/lib/leaflet/leaflet.css">
   <script src="assets/lib/leaflet/leaflet.js"></script>
   <script src="assets/daten.js"></script>
@@ -2945,7 +2951,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.40.1 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.41.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

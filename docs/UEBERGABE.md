@@ -36,6 +36,10 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Schulträgerkarte als zweite Darstellung
+
+Flächenkarte wie beim Gemeindeamt, Auswahl im Link; Quellenangabe vermerkt (kein Code übernommen).
+
 ### Sitzung 2026-11-20 – Karte lesbarer
 
 Markierungen mit Buchstaben und Kontrast, hellere Grundkarte, Grundkarte wählbar.
