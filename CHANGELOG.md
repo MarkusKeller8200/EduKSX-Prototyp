@@ -199,4 +199,6 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   HSK), religiöse Feiertage (BV Art. 15) und Gesundheitsschutz/Gleichstellung im Personalrecht (ArG, ArGV 3, GlG) (#57).
 - EduKSX-Codex 0.30.0: Normenhierarchie – Gruppe «Ressourcen» aufgeteilt in Finanzen & Beschaffung, Information & ICT,
   Infrastruktur & Sicherheit (#58).
+- EduKSX-Codex 0.31.0: Normenhierarchie – Schulsozialarbeit & Jugendhilfe (Gruppe Kinder) und Schulanlagen & Raumnutzung
+  (Gruppe Infrastruktur & Sicherheit) (#59).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

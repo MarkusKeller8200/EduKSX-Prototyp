@@ -1407,6 +1407,182 @@
    ]
   },
   {
+   "hierarchy_key": "schulsozialarbeit",
+   "title": "Schulsozialarbeit & Jugendhilfe",
+   "short_title": "Schulsozialarbeit",
+   "hierarchy_group": "Kinder",
+   "levels": [
+    "Bund",
+    "Kanton – Gesetze",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 7,
+   "nodes": [
+    {
+     "node_key": "zgb",
+     "level_index": 0,
+     "citation": "SR 210",
+     "title": "Zivilgesetzbuch (ZGB) – Melderechte und Meldepflichten",
+     "act_kind": "Bundesgesetz",
+     "note": "Art. 314c Melderecht, Art. 314d Meldepflicht von Fachpersonen aus Bildung, Sozialberatung und Erziehung an die KESB",
+     "position": 0
+    },
+    {
+     "node_key": "stgb",
+     "level_index": 0,
+     "citation": "SR 311.0",
+     "title": "Strafgesetzbuch (StGB) – Amtsgeheimnis",
+     "act_kind": "Bundesgesetz",
+     "note": "Art. 320 Amtsgeheimnis – gilt für Schulsozialarbeitende im Dienst der Gemeinde",
+     "position": 1
+    },
+    {
+     "node_key": "kjhg",
+     "level_index": 1,
+     "citation": "LS 852.1",
+     "title": "Kinder- und Jugendhilfegesetz (KJHG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 19 Schulsozialarbeit (Pflicht der Gemeinden, Übertragung an die Jugendhilfestelle), § 12 Leistungsvereinbarung, §§ 6 a und 6 c Personendaten und Datenaustausch mit Schulen",
+     "position": 2
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 1,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Meldepflicht, unterstützende Dienste",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 19 schulpsychologischer Dienst (Abgrenzung), § 51 Meldepflicht der Schulpflege bei Gefährdung des Kindeswohls",
+     "position": 3
+    },
+    {
+     "node_key": "idg",
+     "level_index": 1,
+     "citation": "LS 170.4",
+     "title": "Gesetz über die Information und den Datenschutz (IDG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§§ 16–17 Bekanntgabe von (besonderen) Personendaten – Schweigepflicht und Einwilligung",
+     "position": 4
+    },
+    {
+     "node_key": "kom",
+     "level_index": 2,
+     "citation": "kommunal",
+     "title": "Konzept, Leistungsvereinbarung und Reglement Schulsozialarbeit",
+     "act_kind": "Behördenerlass (Schulpflege) bzw. Vertrag",
+     "note": "Auftrag, Zusammenarbeit mit Schulleitung und Lehrpersonen, Schweigepflicht, Meldewege",
+     "match_pattern": "schulsozialarbeit|schulsozialdienst|jugendhilfe|jugendarbeit|kinder.? und jugendhilfe",
+     "exclusion_pattern": "anstellung|stellenplan",
+     "position": 5
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "kjhg",
+     "to_node_key": "zgb",
+     "relation": "Kindesschutz (Datenaustausch)",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 852.1",
+       "location": "§ 6 c.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 210",
+       "location": "Art. 314d",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "zgb",
+     "relation": "Meldepflicht der Schulpflege",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 51.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "kjhg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 852.1",
+       "location": "§ 19.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 852.1",
+       "location": "§ 12.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "idg",
+     "relation": "Schweigepflicht und Datenbekanntgabe",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 170.4",
+       "location": "§ 17.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 170.4",
+       "location": "§ 16.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "stgb",
+     "relation": "Amtsgeheimnis",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 311.0",
+       "location": "Art. 320",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "zgb",
+     "relation": "Melderecht und Meldepflicht",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 210",
+       "location": "Art. 314d",
+       "side": "to"
+      },
+      {
+       "citation": "SR 210",
+       "location": "Art. 314c",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
    "hierarchy_key": "disziplin",
    "title": "Disziplin, Wegweisung & Auszeit",
    "short_title": "Disziplin & Wegweisung",
@@ -1417,7 +1593,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 7,
+   "position": 8,
    "nodes": [
     {
      "node_key": "krk",
@@ -1599,7 +1775,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 8,
+   "position": 9,
    "nodes": [
     {
      "node_key": "epg",
@@ -1819,7 +1995,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 9,
+   "position": 10,
    "nodes": [
     {
      "node_key": "krk",
@@ -2025,7 +2201,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 10,
+   "position": 11,
    "nodes": [
     {
      "node_key": "vsg",
@@ -2151,7 +2327,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 11,
+   "position": 12,
    "nodes": [
     {
      "node_key": "bv",
@@ -2316,7 +2492,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 12,
+   "position": 13,
    "nodes": [
     {
      "node_key": "or",
@@ -2672,7 +2848,7 @@
     "Bildungsrat",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 13,
+   "position": 14,
    "nodes": [
     {
      "node_key": "urg",
@@ -2814,7 +2990,7 @@
     "Bildungsrat",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 14,
+   "position": 15,
    "nodes": [
     {
      "node_key": "vsg",
@@ -3078,7 +3254,7 @@
     "Bildungsrat",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 15,
+   "position": 16,
    "nodes": [
     {
      "node_key": "bv",
@@ -3260,7 +3436,7 @@
     "Bildungsrat",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 16,
+   "position": 17,
    "nodes": [
     {
      "node_key": "spofoeg",
@@ -3431,7 +3607,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 17,
+   "position": 18,
    "nodes": [
     {
      "node_key": "kv",
@@ -3618,7 +3794,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 18,
+   "position": 19,
    "nodes": [
     {
      "node_key": "kv",
@@ -3789,7 +3965,7 @@
     "Kanton – Gesetze",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 19,
+   "position": 20,
    "nodes": [
     {
      "node_key": "gg",
@@ -3952,7 +4128,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 20,
+   "position": 21,
    "nodes": [
     {
      "node_key": "gpr",
@@ -4089,7 +4265,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 21,
+   "position": 22,
    "nodes": [
     {
      "node_key": "kv",
@@ -4350,7 +4526,7 @@
     "Kanton – Gesetze",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 22,
+   "position": 23,
    "nodes": [
     {
      "node_key": "gg",
@@ -4432,7 +4608,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 23,
+   "position": 24,
    "nodes": [
     {
      "node_key": "gg",
@@ -4557,7 +4733,7 @@
     "Kanton – Gesetze",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 24,
+   "position": 25,
    "nodes": [
     {
      "node_key": "bv",
@@ -4756,7 +4932,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 25,
+   "position": 26,
    "nodes": [
     {
      "node_key": "gg",
@@ -5025,7 +5201,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 26,
+   "position": 27,
    "nodes": [
     {
      "node_key": "ivoeb",
@@ -5177,7 +5353,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 27,
+   "position": 28,
    "nodes": [
     {
      "node_key": "dsg",
@@ -5441,6 +5617,136 @@
    ]
   },
   {
+   "hierarchy_key": "schulanlagen",
+   "title": "Schulanlagen & Raumnutzung",
+   "short_title": "Schulanlagen & Räume",
+   "hierarchy_group": "Infrastruktur & Sicherheit",
+   "levels": [
+    "Bund",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 29,
+   "nodes": [
+    {
+     "node_key": "behig",
+     "level_index": 0,
+     "citation": "SR 151.3",
+     "title": "Behindertengleichstellungsgesetz (BehiG) – Bauten",
+     "act_kind": "Bundesgesetz",
+     "note": "Art. 3 lit. a öffentlich zugängliche Bauten und Anlagen – hindernisfreie Schulhäuser bei Neubau und Erneuerung",
+     "position": 0
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 1,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Schulträger",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 41 Gemeinden führen die Volksschule",
+     "position": 1
+    },
+    {
+     "node_key": "pbg",
+     "level_index": 1,
+     "citation": "LS 700.1",
+     "title": "Planungs- und Baugesetz (PBG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 60 Zone für öffentliche Bauten, § 239 a behindertengerechtes Bauen",
+     "position": 2
+    },
+    {
+     "node_key": "vsv",
+     "level_index": 2,
+     "citation": "LS 412.101",
+     "title": "Volksschulverordnung (VSV) – Schulhausanlagen",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§ 3 a Schulhausanlagen (Schulhäuser, Kindergärten, Turnhallen, Aussenanlagen); Empfehlungen der Bildungs- und Baudirektion zu Raumflächen",
+     "position": 3
+    },
+    {
+     "node_key": "kom",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Benützungs- und Gebührenreglement für Schulanlagen",
+     "act_kind": "Behördenerlass bzw. Gemeindeerlass",
+     "note": "Benützung und Vermietung von Schulräumen, Turnhallen und Sportanlagen, Hausordnung, Hauswartung",
+     "match_pattern": "benuetz\\w*.*(schul|turn|sport|anlage|raeum|halle)|(schul|turn|sport)anlage|schulraeum|schulraum|vermietung.*schul|raumbenuetz|hauswart",
+     "exclusion_pattern": "friedhof|wasser|abwasser|personal|anstellung|schulraumplanung.*bericht|schiess|abschliessbar|velo|parkplatz|statuten|club",
+     "position": 4
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "pbg",
+     "to_node_key": "behig",
+     "relation": "Behindertengerechtes Bauen",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 700.1",
+       "location": "§ 239 a.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 151.3",
+       "location": "Art. 3",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "vsg",
+     "relation": "Gemeinden als Schulträger",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 3 a.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 412.100",
+       "location": "§ 41.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "vsv",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 3 a.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "pbg",
+     "relation": "Zone für öffentliche Bauten",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 700.1",
+       "location": "§ 60.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
    "hierarchy_key": "haftung",
    "title": "Haftung, Versicherung & Sicherheit",
    "short_title": "Haftung & Versicherung",
@@ -5451,7 +5757,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 28,
+   "position": 30,
    "nodes": [
     {
      "node_key": "uvg",

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.30.0 – Generator.
+"""EduKSX-Codex Prototyp 0.31.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -2224,6 +2224,52 @@ HIERARCHIEN += [
    {"von": "kom", "nach": "vsv", "art": "Schulweg", "beleg": ("412.101", "§ 8."), "beleg_unten": ("412.101", "§ 32 m.")}]},
 ]
 
+# Phase 3 (22.11.2026): Schulsozialarbeit & Jugendhilfe, Schulanlagen & Raumnutzung
+HIERARCHIEN += [
+ {"id": "schulsozialarbeit", "titel": "Schulsozialarbeit & Jugendhilfe",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "zgb", "ebene": 0, "titel": "Zivilgesetzbuch (ZGB) – Melderechte und Meldepflichten", "sr": "210", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/24/233_245_233/de",
+    "hinweis": "Art. 314c Melderecht, Art. 314d Meldepflicht von Fachpersonen aus Bildung, Sozialberatung und Erziehung an die KESB"},
+   {"id": "stgb", "ebene": 0, "titel": "Strafgesetzbuch (StGB) – Amtsgeheimnis", "sr": "311.0", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/54/757_781_799/de",
+    "hinweis": "Art. 320 Amtsgeheimnis – gilt für Schulsozialarbeitende im Dienst der Gemeinde"},
+   {"id": "kjhg", "ebene": 1, "titel": "Kinder- und Jugendhilfegesetz (KJHG)", "art": "Gesetz (Kantonsrat)", "ls": "852.1",
+    "hinweis": "§ 19 Schulsozialarbeit (Pflicht der Gemeinden, Übertragung an die Jugendhilfestelle), § 12 Leistungsvereinbarung, §§ 6 a und 6 c Personendaten und Datenaustausch mit Schulen"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Meldepflicht, unterstützende Dienste", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
+    "hinweis": "§ 19 schulpsychologischer Dienst (Abgrenzung), § 51 Meldepflicht der Schulpflege bei Gefährdung des Kindeswohls"},
+   {"id": "idg", "ebene": 1, "titel": "Gesetz über die Information und den Datenschutz (IDG)", "art": "Gesetz (Kantonsrat)", "ls": "170.4",
+    "hinweis": "§§ 16–17 Bekanntgabe von (besonderen) Personendaten – Schweigepflicht und Einwilligung"},
+   {"id": "kom", "ebene": 2, "titel": "Konzept, Leistungsvereinbarung und Reglement Schulsozialarbeit", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege) bzw. Vertrag",
+    "hinweis": "Auftrag, Zusammenarbeit mit Schulleitung und Lehrpersonen, Schweigepflicht, Meldewege",
+    "muster": r"schulsozialarbeit|schulsozialdienst|jugendhilfe|jugendarbeit|kinder.? und jugendhilfe", "ohne": r"anstellung|stellenplan"}],
+  "kanten": [
+   {"von": "kjhg", "nach": "zgb", "art": "Kindesschutz (Datenaustausch)", "beleg": ("852.1", "§ 6 c."), "beleg_oben": ("sr-210", "Art. 314d")},
+   {"von": "vsg", "nach": "zgb", "art": "Meldepflicht der Schulpflege", "beleg": ("412.100", "§ 51.")},
+   {"von": "kom", "nach": "kjhg", "art": "Grundlage", "beleg": ("852.1", "§ 19."), "beleg_unten": ("852.1", "§ 12.")},
+   {"von": "kom", "nach": "idg", "art": "Schweigepflicht und Datenbekanntgabe", "beleg": ("170.4", "§ 17."), "beleg_unten": ("170.4", "§ 16.")},
+   {"von": "kom", "nach": "stgb", "art": "Amtsgeheimnis", "beleg": ("sr-311.0", "Art. 320")},
+   {"von": "kom", "nach": "zgb", "art": "Melderecht und Meldepflicht", "beleg": ("sr-210", "Art. 314d"), "beleg_oben": ("sr-210", "Art. 314c")}]},
+ {"id": "schulanlagen", "titel": "Schulanlagen & Raumnutzung",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "behig", "ebene": 0, "titel": "Behindertengleichstellungsgesetz (BehiG) – Bauten", "sr": "151.3", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/2003/667/de",
+    "hinweis": "Art. 3 lit. a öffentlich zugängliche Bauten und Anlagen – hindernisfreie Schulhäuser bei Neubau und Erneuerung"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Schulträger", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 41 Gemeinden führen die Volksschule"},
+   {"id": "pbg", "ebene": 1, "titel": "Planungs- und Baugesetz (PBG)", "art": "Gesetz (Kantonsrat)", "ls": "700.1",
+    "hinweis": "§ 60 Zone für öffentliche Bauten, § 239 a behindertengerechtes Bauen"},
+   {"id": "vsv", "ebene": 2, "titel": "Volksschulverordnung (VSV) – Schulhausanlagen", "art": "Verordnung (Regierungsrat)", "ls": "412.101",
+    "hinweis": "§ 3 a Schulhausanlagen (Schulhäuser, Kindergärten, Turnhallen, Aussenanlagen); Empfehlungen der Bildungs- und Baudirektion zu Raumflächen"},
+   {"id": "kom", "ebene": 3, "titel": "Benützungs- und Gebührenreglement für Schulanlagen", "fundstelle": "kommunal", "art": "Behördenerlass bzw. Gemeindeerlass",
+    "hinweis": "Benützung und Vermietung von Schulräumen, Turnhallen und Sportanlagen, Hausordnung, Hauswartung",
+    "muster": r"benuetz\w*.*(schul|turn|sport|anlage|raeum|halle)|(schul|turn|sport)anlage|schulraeum|schulraum|vermietung.*schul|raumbenuetz|hauswart",
+    "ohne": r"friedhof|wasser|abwasser|personal|anstellung|schulraumplanung.*bericht|schiess|abschliessbar|velo|parkplatz|statuten|club"}],
+  "kanten": [
+   {"von": "pbg", "nach": "behig", "art": "Behindertengerechtes Bauen", "beleg": ("700.1", "§ 239 a."), "beleg_oben": ("sr-151.3", "Art. 3")},
+   {"von": "vsv", "nach": "vsg", "art": "Gemeinden als Schulträger", "beleg": ("412.101", "§ 3 a."), "beleg_oben": ("412.100", "§ 41.")},
+   {"von": "kom", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 3 a.")},
+   {"von": "kom", "nach": "pbg", "art": "Zone für öffentliche Bauten", "beleg": ("700.1", "§ 60.")}]},
+]
+
 # Ergänzungen bestehender Themen (22.11.2026): Berufswahl, ergänzende Angebote, religiöse Feiertage, Gesundheitsschutz und Gleichstellung
 def _ergaenzen(hid, oben=None, knoten=(), kanten=(), hinweise=None, belege=None, titel=None):
     """Fügt einem Thema Knoten und Verbindungen hinzu. oben: neue oberste Ebene (bestehende rücken eine Ebene nach unten)."""
@@ -2275,17 +2321,17 @@ _ergaenzen("personal",
           {"von": "gem", "nach": "arg", "art": "Gesundheitsschutz (Art. 3a ArG)", "beleg": ("sr-822.11", "Art. 3a")},
           {"von": "gem", "nach": "glg", "art": "Gleichstellung im Arbeitsverhältnis", "beleg": ("sr-151.1", "Art. 2"), "beleg_oben": ("sr-151.1", "Art. 3")}])
 
-REIHENFOLGE = ["volksschule", "schulpflicht", "privatschulen", "tagesstrukturen", "schulbetrieb", "sonderpaedagogik", "kindesschutz", "disziplin", "gesundheit", "eltern", "absenzen", "kosten",
+REIHENFOLGE = ["volksschule", "schulpflicht", "privatschulen", "tagesstrukturen", "schulbetrieb", "sonderpaedagogik", "kindesschutz", "schulsozialarbeit", "disziplin", "gesundheit", "eltern", "absenzen", "kosten",
                "personal", "unterricht", "beurteilung", "sprache", "sport",
                "gemeindeorganisation", "stimmberechtigte", "behoerden", "wahlen", "organisation", "kontrolle", "zusammenarbeit", "verfahren",
-               "finanzen", "beschaffung", "datenschutz", "haftung"]
+               "finanzen", "beschaffung", "datenschutz", "schulanlagen", "haftung"]
 HIERARCHIEN.sort(key=lambda h: REIHENFOLGE.index(h["id"]))
-KURZTITEL = {"sport": "Sport & Lager", "haftung": "Haftung & Versicherung", "schulpflicht": "Schulpflicht & Schulort", "privatschulen": "Privatschulen & Privatunterricht", "schulbetrieb": "Klassen, Unterrichtszeit & Ferien", "disziplin": "Disziplin & Wegweisung", "tagesstrukturen": "Tagesstrukturen & Angebote", "kindesschutz": "Kindesschutz",
+KURZTITEL = {"schulsozialarbeit": "Schulsozialarbeit", "schulanlagen": "Schulanlagen & Räume", "sport": "Sport & Lager", "haftung": "Haftung & Versicherung", "schulpflicht": "Schulpflicht & Schulort", "privatschulen": "Privatschulen & Privatunterricht", "schulbetrieb": "Klassen, Unterrichtszeit & Ferien", "disziplin": "Disziplin & Wegweisung", "tagesstrukturen": "Tagesstrukturen & Angebote", "kindesschutz": "Kindesschutz",
              "absenzen": "Absenzen & Urlaub", "unterricht": "Unterricht & Medien", "beurteilung": "Beurteilung & Berufswahl",
              "gemeindeorganisation": "Gemeinde & Information", "stimmberechtigte": "Versammlung & Parlament", "behoerden": "Behörden & Kommissionen",
              "wahlen": "Wahlen & Behördenmitglieder", "organisation": "Schulorganisation & Qualität", "kontrolle": "Prüfung & Aufsicht",
              "zusammenarbeit": "Zusammenarbeit & Strukturen", "verfahren": "Verfahren & Rechtsschutz", "beschaffung": "Beschaffung & Bau"}
-GRUPPEN = {"sport": "Unterricht", "haftung": "Infrastruktur & Sicherheit", "volksschule": "Schule", "schulpflicht": "Schule", "privatschulen": "Schule", "tagesstrukturen": "Schule", "schulbetrieb": "Schule", "disziplin": "Kinder",
+GRUPPEN = {"schulsozialarbeit": "Kinder", "schulanlagen": "Infrastruktur & Sicherheit", "sport": "Unterricht", "haftung": "Infrastruktur & Sicherheit", "volksschule": "Schule", "schulpflicht": "Schule", "privatschulen": "Schule", "tagesstrukturen": "Schule", "schulbetrieb": "Schule", "disziplin": "Kinder",
            "sonderpaedagogik": "Kinder", "kindesschutz": "Kinder", "gesundheit": "Kinder", "eltern": "Eltern", "absenzen": "Eltern", "kosten": "Eltern",
            "personal": "Personal", "unterricht": "Unterricht", "beurteilung": "Unterricht", "sprache": "Unterricht",
            "gemeindeorganisation": "Behörden & Organisation", "stimmberechtigte": "Behörden & Organisation", "behoerden": "Behörden & Organisation",
@@ -2490,7 +2536,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.30.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.31.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2498,7 +2544,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.30.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.31.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

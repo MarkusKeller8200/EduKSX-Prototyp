@@ -65,6 +65,16 @@ kindesschutz;vsg;ukrk;SR 0.107;Art. 12;to
 kindesschutz;vsg;stgb;SR 311.0;Art. 320;to
 kindesschutz;vsv;vsg;LS 412.101;§ 58.;from
 kindesschutz;kom;zgb;SR 210;Art. 314c;to
+schulsozialarbeit;kjhg;zgb;LS 852.1;§ 6 c.;from
+schulsozialarbeit;kjhg;zgb;SR 210;Art. 314d;to
+schulsozialarbeit;vsg;zgb;LS 412.100;§ 51.;from
+schulsozialarbeit;kom;kjhg;LS 852.1;§ 19.;to
+schulsozialarbeit;kom;kjhg;LS 852.1;§ 12.;to
+schulsozialarbeit;kom;idg;LS 170.4;§ 17.;to
+schulsozialarbeit;kom;idg;LS 170.4;§ 16.;to
+schulsozialarbeit;kom;stgb;SR 311.0;Art. 320;to
+schulsozialarbeit;kom;zgb;SR 210;Art. 314d;to
+schulsozialarbeit;kom;zgb;SR 210;Art. 314c;to
 disziplin;vsg;bv;LS 412.100;§ 52.;from
 disziplin;vsg;bv;SR 101;Art. 19;to
 disziplin;vsg;krk;LS 412.100;§ 50.;from
@@ -255,6 +265,12 @@ datenschutz;ausl;idg;LS 172.71;§ 3.;from
 datenschutz;dsk;idg;LS 170.4;§ 3.;to
 datenschutz;dsk;ivsv;LS 170.8;§ 1.;to
 datenschutz;akten;archg;LS 170.6;§ 6.;to
+schulanlagen;pbg;behig;LS 700.1;§ 239 a.;from
+schulanlagen;pbg;behig;SR 151.3;Art. 3;to
+schulanlagen;vsv;vsg;LS 412.101;§ 3 a.;from
+schulanlagen;vsv;vsg;LS 412.100;§ 41.;to
+schulanlagen;kom;vsv;LS 412.101;§ 3 a.;to
+schulanlagen;kom;pbg;LS 700.1;§ 60.;to
 haftung;vsv;vsg;LS 412.101;§ 8.;from
 haftung;vsv;vsg;LS 412.100;§ 10.;to
 haftung;kom;hg;LS 170.1;§ 2.;to

@@ -52,6 +52,12 @@ kindesschutz;vsg;stgb;Amtsgeheimnis;reference;manual
 kindesschutz;vsv;vsg;Vollzug;implementation;manual
 kindesschutz;kom;vsg;gestützt auf;reference;manual
 kindesschutz;kom;zgb;Melderecht;reference;manual
+schulsozialarbeit;kjhg;zgb;Kindesschutz (Datenaustausch);reference;manual
+schulsozialarbeit;vsg;zgb;Meldepflicht der Schulpflege;reference;manual
+schulsozialarbeit;kom;kjhg;Grundlage;basis;manual
+schulsozialarbeit;kom;idg;Schweigepflicht und Datenbekanntgabe;reference;manual
+schulsozialarbeit;kom;stgb;Amtsgeheimnis;reference;manual
+schulsozialarbeit;kom;zgb;Melderecht und Meldepflicht;reference;manual
 disziplin;vsg;bv;Umsetzung;basis;manual
 disziplin;vsg;krk;Umsetzung;basis;manual
 disziplin;vsg;vrg;Verfahren (Rekurs);reference;manual
@@ -209,6 +215,10 @@ datenschutz;dsk;ivsv;Grundlage;basis;manual
 datenschutz;dsk;ausl;bei Auslagerung;reference;manual
 datenschutz;akten;archg;Grundlage;basis;manual
 datenschutz;akten;archv;subsidiär (§ 1 Abs. 2 ArchV);subsidiary;manual
+schulanlagen;pbg;behig;Behindertengerechtes Bauen;reference;manual
+schulanlagen;vsv;vsg;Gemeinden als Schulträger;reference;manual
+schulanlagen;kom;vsv;Grundlage;basis;manual
+schulanlagen;kom;pbg;Zone für öffentliche Bauten;reference;manual
 haftung;vsv;vsg;Vollzug;implementation;manual
 haftung;kom;hg;Haftung der Schulgemeinde;reference;manual
 haftung;kom;uvg;Unfallversicherung Personal;reference;manual

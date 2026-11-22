@@ -36,6 +36,11 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Codex 0.31.0 – Schulsozialarbeit, Schulanlagen, Phase 3 (#59)
+
+- Phase 3 des Plans, 31 Themen. **schulsozialarbeit**: ZGB Art. 314c/314d, StGB Art. 320 → KJHG §§ 6 c, 12, 19, VSG § 51, IDG §§ 16–17 → Konzept/Leistungsvereinbarung (keine Beispiele in den erfassten Sammlungen). **schulanlagen**: BehiG Art. 3 → PBG §§ 60, 239 a, VSG § 41 → VSV § 3 a → Benützungs- und Gebührenreglemente (9 Beispiele: SKM, Sek Bülach, Meilen, Hochfelden, Dübendorf, Sek Dübendorf-Schwerzenbach, Fehraltorf; Schiessanlagen, Veloabstellplätze, Statuten, Clubs ausgeschlossen).
+- Nächste Phase: 4 – Dokumenttyp A/B/C (Vorschlag mit Status ZU PRÜFEN; fachliche Abnahme offen).
+
 ### Sitzung 2026-11-20 – Codex 0.30.0 – Gruppen neu, Phase 2 (#58)
 
 - Phase 2 des Plans: neun statt sieben Gruppen. Finanzen & Beschaffung (finanzen, beschaffung), Information & ICT (datenschutz), Infrastruktur & Sicherheit (haftung; Schulanlagen folgt in Phase 3). Reihenfolge finanzen → beschaffung → datenschutz → haftung. Adressen der Themen unverändert.
