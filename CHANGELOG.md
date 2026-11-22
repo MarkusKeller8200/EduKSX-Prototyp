@@ -193,4 +193,6 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Vergleich, …); Listen und Tabellen immer von Bund über Kanton, Bildungsrat, Volksschulamt, Gemeindeamt bis Gemeinde (#54).
 - EduKSX-Codex 0.27.0: Normenhierarchie – drei Themen aus dem Volksschulgesetz: Klassen, Unterrichtszeit & Ferien; Disziplin,
   Wegweisung & Auszeit; Privatschulen & Privatunterricht; im Elternwegweiser verknüpft (#55).
+- EduKSX-Codex 0.28.0: Normenhierarchie – Sport, Bewegung & Lager und Haftung, Versicherung & Sicherheit; neue Erlasse SpoFöG,
+  SpoFöV, KVG, UVG (Fedlex) und Haftungsgesetz LS 170.1 (ZH-Lex) als Textfassung (#56).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

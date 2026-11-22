@@ -139,6 +139,14 @@ sprache;vsm;vsg;LS 412.103;§ 1.;from
 sprache;brb;vsg;LS 412.100;§ 22.;to
 sprache;kom;vsm;LS 412.103;§ 12.;to
 sprache;kom;vsv;LS 412.101;§ 20.;to
+sport;spofoev;spofoeg;SR 415.01;Art. 49;from
+sport;spofoev;spofoeg;SR 415.0;Art. 12;to
+sport;vsg;spofoeg;SR 415.0;Art. 12;to
+sport;vsg;spofoeg;LS 412.100;§ 21.;from
+sport;lp;vsg;LS 412.100;§ 21.;to
+sport;lp;spofoev;SR 415.01;Art. 49;to
+sport;kom;vsg;LS 412.100;§ 18.;to
+sport;kom;spofoeg;SR 415.0;Art. 8;to
 gemeindeorganisation;gg;kv;LS 101;suche:Art. 85 ¹;to
 gemeindeorganisation;vgg;gg;LS 131.11;§ 2.;from
 gemeindeorganisation;vgg;gg;LS 131.1;§ 7.;to
@@ -231,3 +239,12 @@ beschaffung;svo;beig;LS 720.11;Ingress;from
 beschaffung;svo;ivoeb;LS 720.11;§ 2.;from
 beschaffung;besch;ivoeb;LS 720.1;suche:Art. 4 ¹ Im Staatsvertragsbereich;other
 beschaffung;bzo;pbg;LS 700.1;§ 45.;to
+haftung;vsv;vsg;LS 412.101;§ 8.;from
+haftung;vsv;vsg;LS 412.100;§ 10.;to
+haftung;kom;hg;LS 170.1;§ 2.;to
+haftung;kom;hg;LS 170.1;§ 6.;to
+haftung;kom;uvg;SR 832.20;Art. 1a;to
+haftung;kom;kvg;SR 832.10;Art. 28;to
+haftung;kom;kvg;SR 832.10;Art. 1a;to
+haftung;kom;vsv;LS 412.101;§ 8.;to
+haftung;kom;vsv;LS 412.101;§ 32 m.;to

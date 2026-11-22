@@ -3021,6 +3021,178 @@
    ]
   },
   {
+   "hierarchy_key": "sport",
+   "title": "Sport, Bewegung & Lager",
+   "short_title": "Sport & Lager",
+   "hierarchy_group": "Unterricht",
+   "levels": [
+    "Bund – Gesetze",
+    "Bund – Verordnungen",
+    "Kanton – Gesetze",
+    "Bildungsrat",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 16,
+   "nodes": [
+    {
+     "node_key": "spofoeg",
+     "level_index": 0,
+     "citation": "SR 415.0",
+     "title": "Sportförderungsgesetz (SpoFöG)",
+     "act_kind": "Bundesgesetz",
+     "note": "Art. 12 Sportunterricht in der obligatorischen Schule obligatorisch, Kantone sorgen für Anlagen; Art. 6–8 «Jugend und Sport» (Kurse und Lager)",
+     "position": 0
+    },
+    {
+     "node_key": "spofoev",
+     "level_index": 1,
+     "citation": "SR 415.01",
+     "title": "Sportförderungsverordnung (SpoFöV)",
+     "act_kind": "Verordnung (Bundesrat)",
+     "note": "Art. 49 mindestens drei Lektionen Sport pro Woche (Primar- und Sekundarstufe I), Art. 50 Lehrplan Sport; J+S-Leitende Schulsport",
+     "position": 1
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 2,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Sport und Schulsport",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 18 freiwilliger Schulsport, § 21 Lehrplan und Lektionentafeln, § 71 Schulsport für Privatschülerinnen und -schüler",
+     "position": 2
+    },
+    {
+     "node_key": "lp",
+     "level_index": 3,
+     "citation": "Bildungsratsbeschlüsse",
+     "title": "Lehrplan und Lektionentafel – Bewegung und Sport (Bildungsrat)",
+     "act_kind": "Beschluss (Bildungsrat)",
+     "note": "Fachbereich Bewegung und Sport, Lektionen je Stufe",
+     "external_url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-5-volksschule-lektionentafel-fuer-die-kindergarten-primar-und-sekundarstufe.html",
+     "position": 3,
+     "links": [
+      {
+       "title": "BRB 4/2017 – Lehrplan für die Volksschule",
+       "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-4-volksschule-lehrplan-fuer-die-volksschule-des-kantons-zuerich.html",
+       "note": null
+      },
+      {
+       "title": "BRB 5/2017 – Lektionentafel Kindergarten-, Primar- und Sekundarstufe",
+       "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-5-volksschule-lektionentafel-fuer-die-kindergarten-primar-und-sekundarstufe.html",
+       "note": null
+      }
+     ]
+    },
+    {
+     "node_key": "kom",
+     "level_index": 4,
+     "citation": "kommunal",
+     "title": "Schulsport, Lager und Sportanlagen der Schule",
+     "act_kind": "Behördenerlass (Schulpflege)",
+     "note": "Freiwilliger Schulsport, Klassen- und Skilager, Schwimmunterricht, Nutzung der Turnhallen",
+     "match_pattern": "schulsport|sportlager|skilager|schneesport|klassenlager|lagerreglement|schullager|schwimmunterricht|turnhalle|sporthalle",
+     "exclusion_pattern": "vermiet|gebuehr|tarif|benuetzungsgebuehr|vereine",
+     "position": 4
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "spofoev",
+     "to_node_key": "spofoeg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 415.01",
+       "location": "Art. 49",
+       "side": "from"
+      },
+      {
+       "citation": "SR 415.0",
+       "location": "Art. 12",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsg",
+     "to_node_key": "spofoeg",
+     "relation": "Rahmen (Sportunterricht obligatorisch)",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 415.0",
+       "location": "Art. 12",
+       "side": "to"
+      },
+      {
+       "citation": "LS 412.100",
+       "location": "§ 21.",
+       "side": "from"
+      }
+     ]
+    },
+    {
+     "from_node_key": "lp",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 21.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "lp",
+     "to_node_key": "spofoev",
+     "relation": "Mindestlektionen",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 415.01",
+       "location": "Art. 49",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "vsg",
+     "relation": "gestützt auf",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 18.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "spofoeg",
+     "relation": "J+S-Kurse und Lager",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 415.0",
+       "location": "Art. 8",
+       "side": "to"
+      }
+     ]
+    }
+   ]
+  },
+  {
    "hierarchy_key": "gemeindeorganisation",
    "title": "Gemeindeorganisation, Rechtsetzung & Information",
    "short_title": "Gemeinde & Information",
@@ -3031,7 +3203,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 16,
+   "position": 17,
    "nodes": [
     {
      "node_key": "kv",
@@ -3218,7 +3390,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 17,
+   "position": 18,
    "nodes": [
     {
      "node_key": "kv",
@@ -3389,7 +3561,7 @@
     "Kanton – Gesetze",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 18,
+   "position": 19,
    "nodes": [
     {
      "node_key": "gg",
@@ -3552,7 +3724,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 19,
+   "position": 20,
    "nodes": [
     {
      "node_key": "gpr",
@@ -3689,7 +3861,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 20,
+   "position": 21,
    "nodes": [
     {
      "node_key": "kv",
@@ -3950,7 +4122,7 @@
     "Kanton – Gesetze",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 21,
+   "position": 22,
    "nodes": [
     {
      "node_key": "gg",
@@ -4032,7 +4204,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 22,
+   "position": 23,
    "nodes": [
     {
      "node_key": "gg",
@@ -4157,7 +4329,7 @@
     "Kanton – Gesetze",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 23,
+   "position": 24,
    "nodes": [
     {
      "node_key": "bv",
@@ -4356,7 +4528,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 24,
+   "position": 25,
    "nodes": [
     {
      "node_key": "gg",
@@ -4625,7 +4797,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 25,
+   "position": 26,
    "nodes": [
     {
      "node_key": "dsg",
@@ -4899,7 +5071,7 @@
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
    ],
-   "position": 26,
+   "position": 27,
    "nodes": [
     {
      "node_key": "ivoeb",
@@ -5039,6 +5211,169 @@
      ]
     }
    ]
+  },
+  {
+   "hierarchy_key": "haftung",
+   "title": "Haftung, Versicherung & Sicherheit",
+   "short_title": "Haftung & Versicherung",
+   "hierarchy_group": "Ressourcen",
+   "levels": [
+    "Bund",
+    "Kanton – Gesetze",
+    "Kanton – Verordnungen",
+    "Gemeinde / Schulgemeinde"
+   ],
+   "position": 28,
+   "nodes": [
+    {
+     "node_key": "uvg",
+     "level_index": 0,
+     "citation": "SR 832.20",
+     "title": "Unfallversicherungsgesetz (UVG)",
+     "act_kind": "Bundesgesetz",
+     "note": "Art. 1a obligatorische Unfallversicherung der Arbeitnehmenden – Lehrpersonen und Personal der Schule",
+     "position": 0
+    },
+    {
+     "node_key": "kvg",
+     "level_index": 0,
+     "citation": "SR 832.10",
+     "title": "Krankenversicherungsgesetz (KVG)",
+     "act_kind": "Bundesgesetz",
+     "note": "Art. 1a Abs. 2 lit. b und Art. 28: Unfälle von Schülerinnen und Schülern deckt die Krankenversicherung, soweit keine Unfallversicherung aufkommt",
+     "position": 1
+    },
+    {
+     "node_key": "hg",
+     "level_index": 1,
+     "citation": "LS 170.1",
+     "title": "Haftungsgesetz (HG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 2 gilt für Gemeinden und Schulgemeinden, § 6 Haftung für Schäden durch Angestellte (kein direkter Anspruch gegen Lehrpersonen), §§ 14–15 Rückgriff bei Vorsatz oder grober Fahrlässigkeit",
+     "position": 2
+    },
+    {
+     "node_key": "vsg",
+     "level_index": 1,
+     "citation": "LS 412.100",
+     "title": "Volksschulgesetz (VSG) – Schulort",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 10 Schulort",
+     "position": 3
+    },
+    {
+     "node_key": "vsv",
+     "level_index": 2,
+     "citation": "LS 412.101",
+     "title": "Volksschulverordnung (VSV) – Schulweg, Versicherung",
+     "act_kind": "Verordnung (Regierungsrat)",
+     "note": "§ 8 Schulort und Schulweg, § 32 m Versicherung von Kinderhorten",
+     "position": 4
+    },
+    {
+     "node_key": "kom",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Versicherungen, Schulweg und Sicherheitskonzepte der Schule",
+     "act_kind": "Behördenerlass bzw. Konzept",
+     "note": "Haftpflicht- und Unfallversicherung, Schulweg und Schülertransport, Notfall- und Krisenkonzept",
+     "match_pattern": "haftpflicht|unfallversicher|schulversicher|schulweg|schuelertransport|schulbus|sicherheitskonzept|notfallkonzept|krisenkonzept|notfallorganisation",
+     "exclusion_pattern": "pensionskasse|vorsorge|feuerwehr|gebaeudeversicher|wasser|abwasser",
+     "position": 5
+    }
+   ],
+   "edges": [
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "vsg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 8.",
+       "side": "from"
+      },
+      {
+       "citation": "LS 412.100",
+       "location": "§ 10.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "hg",
+     "relation": "Haftung der Schulgemeinde",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 170.1",
+       "location": "§ 2.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 170.1",
+       "location": "§ 6.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "uvg",
+     "relation": "Unfallversicherung Personal",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 832.20",
+       "location": "Art. 1a",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "kvg",
+     "relation": "Unfälle der Kinder",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 832.10",
+       "location": "Art. 28",
+       "side": "to"
+      },
+      {
+       "citation": "SR 832.10",
+       "location": "Art. 1a",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "vsv",
+     "relation": "Schulweg",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 8.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 412.101",
+       "location": "§ 32 m.",
+       "side": "to"
+      }
+     ]
+    }
+   ]
   }
  ],
  "parent_guide_topics": [
@@ -5122,7 +5457,8 @@
    "position": 2,
    "hierarchy_keys": [
     "kosten",
-    "tagesstrukturen"
+    "tagesstrukturen",
+    "sport"
    ],
    "provisions": [
     {

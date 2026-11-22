@@ -36,6 +36,13 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Codex 0.28.0 – Sport und Haftung mit neuen Erlassen (#56)
+
+- Neue Erlasse (57 statt 52 Textfassungen): SR 415.0 SpoFöG (ELI 2012/460), SR 415.01 SpoFöV (2012/461), SR 832.10 KVG und SR 832.20 UVG (je die zwei letzten geltenden Fassungen) über `tools/fedlex.py`; LS 170.1 Haftungsgesetz über `tools/zhlex_versionen.py` (13 Fassungen) und `tools/texte.py --nur-aktuell`. ELI über SPARQL nach SR-Nummer ermittelt.
+- Neue Normenhierarchien (29): **sport** (Gruppe Unterricht; SpoFöG Art. 8, 12 → SpoFöV Art. 49 drei Lektionen → VSG §§ 18, 21 → Lehrplan/Lektionentafel → Schulsport- und Lagerreglemente; 6 Beispiele: Sek Bülach, Meilen, Sek Dübendorf-Schwerzenbach), **haftung** (Gruppe Ressourcen; UVG Art. 1a, KVG Art. 1a/28 → Haftungsgesetz §§ 2, 6 → VSG § 10 → VSV §§ 8, 32 m → Versicherungen, Schulweg, Schülertransport; 5 Beispiele: Trüllikon, Meilen).
+- Elternwegweiser: Kosten → sport (Lager). Inhaltspaket neu exportiert (29 Hierarchien, 185 Knoten, 206 Verbindungen).
+- Offen (als Ergänzung bestehender Themen vorgeschlagen): Berufswahl/Sek II zu Beurteilung & Laufbahn, ergänzende Angebote zu Tagesstrukturen, religiöse Feiertage zu Absenzen, Arbeitssicherheit/Gleichstellung zu Personal.
+
 ### Sitzung 2026-11-20 – Codex 0.27.0 – Schulbetrieb, Disziplin, Privatschulen (#55)
 
 - Neue Normenhierarchien (27 statt 24): **schulbetrieb** (Gruppe Schule; VSG §§ 21, 26, 27, 30 → VSV §§ 21, 26, 32 → Lektionentafel BRB 5/2017, 1/2019, 5/2021 → Ferienplan/Stundenplan), **disziplin** (Gruppe Kinder; KRK Art. 28, BV Art. 19 → VSG §§ 50, 52, 52 a, 75 → VRG § 19 → VSV §§ 56, 58 → Schul-/Hausordnung), **privatschulen** (Gruppe Schule; BV Art. 62 → VSG §§ 68, 69, 71 → VSV §§ 67, 73). Alle Belegstellen in der geltenden Fassung gefunden.

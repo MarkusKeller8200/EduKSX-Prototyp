@@ -4104,6 +4104,308 @@
      "pdf_sha256": "e5163d031737ff14d2587ac9e99ec1250d531e6484246a4dd6ea25b9c0d77af3"
     }
    ]
+  },
+  "sr-415.0": {
+   "ordnungsnummer": "SR 415.0",
+   "titel": "Sportförderungsgesetz (SpoFöG)",
+   "titel_amtlich": "Bundesgesetz über die Förderung von Sport und Bewegung",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 5,
+   "fassungen": [
+    {
+     "nachtrag": "20210101",
+     "veroeffentlicht": "01.01.2021",
+     "in_kraft_bis": "01.01.2022",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2012/460/20210101/de",
+     "absaetze": 93,
+     "fussnoten": 15,
+     "artikel": 40,
+     "html_sha256": "0deddf39fac5307a97c294e7a69737ef1a4b927968c2fcc10bcf2ac45c8a2789"
+    },
+    {
+     "nachtrag": "20220101",
+     "veroeffentlicht": "01.01.2022",
+     "in_kraft_bis": "23.01.2023",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2012/460/20220101/de",
+     "absaetze": 93,
+     "fussnoten": 18,
+     "artikel": 40,
+     "html_sha256": "d6cc87e36cf8d2c3e36c4c53f1f9f2674908e30cfc6a9ceade7d1085fcd80cd1",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "20230123",
+     "veroeffentlicht": "23.01.2023",
+     "in_kraft_bis": "01.07.2023",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2012/460/20230123/de",
+     "absaetze": 93,
+     "fussnoten": 20,
+     "artikel": 40,
+     "html_sha256": "6864dc50c75c09da20fc9d63fc6569651d5169866bf9b9130e9c79699caf2bba",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 1,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "20230701",
+     "veroeffentlicht": "01.07.2023",
+     "in_kraft_bis": "01.09.2023",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2012/460/20230701/de",
+     "absaetze": 93,
+     "fussnoten": 22,
+     "artikel": 40,
+     "html_sha256": "06635556629f989c6e261dd16c810415a7dde6f1f62beb862a2db589d56bd520",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "20230901",
+     "veroeffentlicht": "01.09.2023",
+     "in_kraft_bis": "",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2012/460/20230901/de",
+     "absaetze": 93,
+     "fussnoten": 26,
+     "artikel": 40,
+     "html_sha256": "40dbdeb94559142999d40bb01020b2c39e5e1eb8e9fed0f553c0c637d2ec3ce8",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 3
+     }
+    }
+   ]
+  },
+  "sr-415.01": {
+   "ordnungsnummer": "SR 415.01",
+   "titel": "Sportförderungsverordnung (SpoFöV)",
+   "titel_amtlich": "Verordnung über die Förderung von Sport und Bewegung",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 10,
+   "fassungen": [
+    {
+     "nachtrag": "20201201",
+     "veroeffentlicht": "01.12.2020",
+     "in_kraft_bis": "01.08.2021",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2012/461/20201201/de",
+     "absaetze": 246,
+     "fussnoten": 79,
+     "artikel": 99,
+     "html_sha256": "2383f1d47afe14a1479b9fe271f48201a04af2fe116318272c3731c3fa15c156"
+    },
+    {
+     "nachtrag": "20210801",
+     "veroeffentlicht": "01.08.2021",
+     "in_kraft_bis": "01.10.2021",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2012/461/20210801/de",
+     "absaetze": 246,
+     "fussnoten": 79,
+     "artikel": 99,
+     "html_sha256": "3c95e8d304dc7627911d8e5337079b6be4bf99a746047903813d0b4bfd482cf0",
+     "delta": {
+      "neu": 2,
+      "gestrichen": 4,
+      "geaendert": 1
+     }
+    },
+    {
+     "nachtrag": "20211001",
+     "veroeffentlicht": "01.10.2021",
+     "in_kraft_bis": "01.01.2022",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2012/461/20211001/de",
+     "absaetze": 256,
+     "fussnoten": 100,
+     "artikel": 103,
+     "html_sha256": "8debf8e39f0e587bcf984dd1c91a919c3a949fa8614fa1bc0a3147f7a89d2228",
+     "delta": {
+      "neu": 52,
+      "gestrichen": 31,
+      "geaendert": 21
+     }
+    },
+    {
+     "nachtrag": "20220101",
+     "veroeffentlicht": "01.01.2022",
+     "in_kraft_bis": "01.12.2022",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2012/461/20220101/de",
+     "absaetze": 255,
+     "fussnoten": 100,
+     "artikel": 103,
+     "html_sha256": "c480423fe4a107452fd4457f0940eaa89836ddfa04e9c3a5eac187b8acb29a90",
+     "delta": {
+      "neu": 5,
+      "gestrichen": 7,
+      "geaendert": 3
+     }
+    },
+    {
+     "nachtrag": "20221201",
+     "veroeffentlicht": "01.12.2022",
+     "in_kraft_bis": "01.01.2023",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2012/461/20221201/de",
+     "absaetze": 262,
+     "fussnoten": 119,
+     "artikel": 106,
+     "html_sha256": "79e09978428865f29da53b332102a50b371066f35c4762d51f647862af991419",
+     "delta": {
+      "neu": 19,
+      "gestrichen": 7,
+      "geaendert": 27
+     }
+    },
+    {
+     "nachtrag": "20230101",
+     "veroeffentlicht": "01.01.2023",
+     "in_kraft_bis": "01.03.2023",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2012/461/20230101/de",
+     "absaetze": 262,
+     "fussnoten": 120,
+     "artikel": 107,
+     "html_sha256": "fc17ef3833e93fccf2010a9b285620cbf27c33ec9b184f72ca225a2736cb6de8",
+     "delta": {
+      "neu": 18,
+      "gestrichen": 12,
+      "geaendert": 7
+     }
+    },
+    {
+     "nachtrag": "20230301",
+     "veroeffentlicht": "01.03.2023",
+     "in_kraft_bis": "01.08.2024",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2012/461/20230301/de",
+     "absaetze": 281,
+     "fussnoten": 125,
+     "artikel": 115,
+     "html_sha256": "c0db40ca7a52bebf520442d1f551e1ebe7665eb159c21195387331480ff60ba3",
+     "delta": {
+      "neu": 52,
+      "gestrichen": 4,
+      "geaendert": 14
+     }
+    },
+    {
+     "nachtrag": "20240801",
+     "veroeffentlicht": "01.08.2024",
+     "in_kraft_bis": "01.01.2026",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2012/461/20240801/de",
+     "absaetze": 284,
+     "fussnoten": 128,
+     "artikel": 116,
+     "html_sha256": "b52556fb2b315acc90b093c5b92aa1944ba5baf4fe9375c22800b832a4f3ed2d",
+     "delta": {
+      "neu": 11,
+      "gestrichen": 0,
+      "geaendert": 2
+     }
+    },
+    {
+     "nachtrag": "20260101",
+     "veroeffentlicht": "01.01.2026",
+     "in_kraft_bis": "01.01.2027",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2012/461/20260101/de",
+     "absaetze": 284,
+     "fussnoten": 130,
+     "artikel": 116,
+     "html_sha256": "41ae6ee30a331809bd147f5bfbe4c58be9a8f868dbd85c117e25ab94c77c94e7",
+     "delta": {
+      "neu": 0,
+      "gestrichen": 0,
+      "geaendert": 4
+     }
+    }
+   ]
+  },
+  "sr-832.10": {
+   "ordnungsnummer": "SR 832.10",
+   "titel": "Krankenversicherungsgesetz (KVG)",
+   "titel_amtlich": "Bundesgesetz über die Krankenversicherung",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 16,
+   "fassungen": [
+    {
+     "nachtrag": "20260101",
+     "veroeffentlicht": "01.01.2026",
+     "in_kraft_bis": "01.07.2026",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1995/1328_1328_1328/20260101/de",
+     "absaetze": 381,
+     "fussnoten": 409,
+     "artikel": 152,
+     "html_sha256": "4cfe13070526b4dedd77fb539bd3003faff8789a74dea1d63fed61d694ed6ced"
+    },
+    {
+     "nachtrag": "20260701",
+     "veroeffentlicht": "01.07.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1995/1328_1328_1328/20260701/de",
+     "absaetze": 383,
+     "fussnoten": 415,
+     "artikel": 153,
+     "html_sha256": "b12f85f82037cc2e3553fb6a8dc724de07cc391dea1cf989e7d147c456ebcbea",
+     "delta": {
+      "neu": 6,
+      "gestrichen": 0,
+      "geaendert": 1
+     }
+    }
+   ]
+  },
+  "sr-832.20": {
+   "ordnungsnummer": "SR 832.20",
+   "titel": "Unfallversicherungsgesetz (UVG)",
+   "titel_amtlich": "Bundesgesetz über die Unfallversicherung",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 7,
+   "fassungen": [
+    {
+     "nachtrag": "20240101",
+     "veroeffentlicht": "01.01.2024",
+     "in_kraft_bis": "01.01.2026",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1982/1676_1676_1676/20240101/de",
+     "absaetze": 279,
+     "fussnoten": 287,
+     "artikel": 137,
+     "html_sha256": "4dbeaf1686d9612b21f9edb5387dbdb6b80f2ae4e95d3eba95b5d16bfe7d98e6"
+    },
+    {
+     "nachtrag": "20260101",
+     "veroeffentlicht": "01.01.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1982/1676_1676_1676/20260101/de",
+     "absaetze": 281,
+     "fussnoten": 288,
+     "artikel": 138,
+     "html_sha256": "50f83922ef3f4c0e617716c2aaf0951c05f3503f7182b8db0759782dc7edf159",
+     "delta": {
+      "neu": 3,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    }
+   ]
+  },
+  "170.1": {
+   "ordnungsnummer": "170.1",
+   "titel": "Haftungsgesetz",
+   "fassungen": [
+    {
+     "nachtrag": "100",
+     "veroeffentlicht": "01.01.2018",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-170_1-1969_09_14-1970_07_01-100.html",
+     "seiten": 9,
+     "absaetze": 126,
+     "fussnoten": 21,
+     "pdf_sha256": "04dadd7db7c45709cb1c72f382dc3c46ee5c78d84970a0b8bfeae9ec190b9b75"
+    }
+   ]
   }
  },
  "stand": "20.11.2026"

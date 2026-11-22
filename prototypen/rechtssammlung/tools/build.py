@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.27.0 – Generator.
+"""EduKSX-Codex Prototyp 0.28.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -2051,7 +2051,7 @@ ELTERNFRAGEN = [
   "stellen": [("412.100", "§ 28."), ("412.101", "§ 28."), ("412.101", "§ 29."), ("412.101", "§ 30.")], "themen": ["absenzen", "schulbetrieb", "eltern"],
   "muster": r"absenz|jokertag|dispens|urlaub", "ohne": r"personal|mitarbeit|lehrperson"},
  {"id": "kosten", "titel": "Kosten für Eltern", "fragen": ["Was ist unentgeltlich, was bezahle ich (Lager, Verpflegung, Betreuung, Musikschule)?"],
-  "stellen": [("sr-101", "Art. 19"), ("412.100", "§ 11."), ("412.101", "§ 11."), ("410.6", "§ 9.")], "themen": ["kosten", "tagesstrukturen"],
+  "stellen": [("sr-101", "Art. 19"), ("412.100", "§ 11."), ("412.101", "§ 11."), ("410.6", "§ 9.")], "themen": ["kosten", "tagesstrukturen", "sport"],
   "muster": r"elternbeitr|lagerbeitr|kostenbeteiligung|tarif|beitragsverordnung|schulgeld", "ohne": r"wasser|abwasser|werke|kesb|bibliothek|bau|personal|gebuehrentarif$|benuetzer|benutzer|schulraeume|vermiet"},
  {"id": "betreuung", "titel": "Betreuung ausserhalb des Unterrichts", "fragen": ["Welche Betreuung bietet die Gemeinde an (Morgen, Mittag, Nachmittag, Ferien)?"],
   "stellen": [("412.100", "§ 30 a."), ("412.101", "§ 32 a.")], "themen": ["tagesstrukturen"],
@@ -2174,17 +2174,67 @@ HIERARCHIEN += [
    {"von": "kom", "nach": "vsv", "art": "gestützt auf", "beleg": ("412.101", "§ 73.")}]},
 ]
 
+# Zwei Themen mit neu aufgenommenen Erlassen (22.11.2026): Sport & Bewegung, Haftung & Versicherung
+HIERARCHIEN += [
+ {"id": "sport", "titel": "Sport, Bewegung & Lager",
+  "ebenen": ["Bund – Gesetze", "Bund – Verordnungen", "Kanton – Gesetze", "Bildungsrat", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "spofoeg", "ebene": 0, "titel": "Sportförderungsgesetz (SpoFöG)", "sr": "415.0", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/2012/460/de",
+    "hinweis": "Art. 12 Sportunterricht in der obligatorischen Schule obligatorisch, Kantone sorgen für Anlagen; Art. 6–8 «Jugend und Sport» (Kurse und Lager)"},
+   {"id": "spofoev", "ebene": 1, "titel": "Sportförderungsverordnung (SpoFöV)", "sr": "415.01", "art": "Verordnung (Bundesrat)", "url": "https://www.fedlex.admin.ch/eli/cc/2012/461/de",
+    "hinweis": "Art. 49 mindestens drei Lektionen Sport pro Woche (Primar- und Sekundarstufe I), Art. 50 Lehrplan Sport; J+S-Leitende Schulsport"},
+   {"id": "vsg", "ebene": 2, "titel": "Volksschulgesetz (VSG) – Sport und Schulsport", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
+    "hinweis": "§ 18 freiwilliger Schulsport, § 21 Lehrplan und Lektionentafeln, § 71 Schulsport für Privatschülerinnen und -schüler"},
+   {"id": "lp", "ebene": 3, "titel": "Lehrplan und Lektionentafel – Bewegung und Sport (Bildungsrat)", "fundstelle": "Bildungsratsbeschlüsse", "art": "Beschluss (Bildungsrat)",
+    "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-5-volksschule-lektionentafel-fuer-die-kindergarten-primar-und-sekundarstufe.html", "hinweis": "Fachbereich Bewegung und Sport, Lektionen je Stufe",
+    "liste": [{"titel": "BRB 4/2017 – Lehrplan für die Volksschule", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-4-volksschule-lehrplan-fuer-die-volksschule-des-kantons-zuerich.html"},
+              {"titel": "BRB 5/2017 – Lektionentafel Kindergarten-, Primar- und Sekundarstufe", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-5-volksschule-lektionentafel-fuer-die-kindergarten-primar-und-sekundarstufe.html"}]},
+   {"id": "kom", "ebene": 4, "titel": "Schulsport, Lager und Sportanlagen der Schule", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
+    "hinweis": "Freiwilliger Schulsport, Klassen- und Skilager, Schwimmunterricht, Nutzung der Turnhallen",
+    "muster": r"schulsport|sportlager|skilager|schneesport|klassenlager|lagerreglement|schullager|schwimmunterricht|turnhalle|sporthalle",
+    "ohne": r"vermiet|gebuehr|tarif|benuetzungsgebuehr|vereine"}],
+  "kanten": [
+   {"von": "spofoev", "nach": "spofoeg", "art": "Vollzug", "beleg": ("sr-415.01", "Art. 49"), "beleg_oben": ("sr-415.0", "Art. 12")},
+   {"von": "vsg", "nach": "spofoeg", "art": "Rahmen (Sportunterricht obligatorisch)", "beleg": ("sr-415.0", "Art. 12"), "beleg_unten": ("412.100", "§ 21.")},
+   {"von": "lp", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 21.")},
+   {"von": "lp", "nach": "spofoev", "art": "Mindestlektionen", "beleg": ("sr-415.01", "Art. 49")},
+   {"von": "kom", "nach": "vsg", "art": "gestützt auf", "beleg": ("412.100", "§ 18.")},
+   {"von": "kom", "nach": "spofoeg", "art": "J+S-Kurse und Lager", "beleg": ("sr-415.0", "Art. 8")}]},
+ {"id": "haftung", "titel": "Haftung, Versicherung & Sicherheit",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "uvg", "ebene": 0, "titel": "Unfallversicherungsgesetz (UVG)", "sr": "832.20", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/1982/1676_1676_1676/de",
+    "hinweis": "Art. 1a obligatorische Unfallversicherung der Arbeitnehmenden – Lehrpersonen und Personal der Schule"},
+   {"id": "kvg", "ebene": 0, "titel": "Krankenversicherungsgesetz (KVG)", "sr": "832.10", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/1995/1328_1328_1328/de",
+    "hinweis": "Art. 1a Abs. 2 lit. b und Art. 28: Unfälle von Schülerinnen und Schülern deckt die Krankenversicherung, soweit keine Unfallversicherung aufkommt"},
+   {"id": "hg", "ebene": 1, "titel": "Haftungsgesetz (HG)", "art": "Gesetz (Kantonsrat)", "ls": "170.1",
+    "hinweis": "§ 2 gilt für Gemeinden und Schulgemeinden, § 6 Haftung für Schäden durch Angestellte (kein direkter Anspruch gegen Lehrpersonen), §§ 14–15 Rückgriff bei Vorsatz oder grober Fahrlässigkeit"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Schulort", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 10 Schulort"},
+   {"id": "vsv", "ebene": 2, "titel": "Volksschulverordnung (VSV) – Schulweg, Versicherung", "art": "Verordnung (Regierungsrat)", "ls": "412.101",
+    "hinweis": "§ 8 Schulort und Schulweg, § 32 m Versicherung von Kinderhorten"},
+   {"id": "kom", "ebene": 3, "titel": "Versicherungen, Schulweg und Sicherheitskonzepte der Schule", "fundstelle": "kommunal", "art": "Behördenerlass bzw. Konzept",
+    "hinweis": "Haftpflicht- und Unfallversicherung, Schulweg und Schülertransport, Notfall- und Krisenkonzept",
+    "muster": r"haftpflicht|unfallversicher|schulversicher|schulweg|schuelertransport|schulbus|sicherheitskonzept|notfallkonzept|krisenkonzept|notfallorganisation",
+    "ohne": r"pensionskasse|vorsorge|feuerwehr|gebaeudeversicher|wasser|abwasser"}],
+  "kanten": [
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 8."), "beleg_oben": ("412.100", "§ 10.")},
+   {"von": "kom", "nach": "hg", "art": "Haftung der Schulgemeinde", "beleg": ("170.1", "§ 2."), "beleg_unten": ("170.1", "§ 6.")},
+   {"von": "kom", "nach": "uvg", "art": "Unfallversicherung Personal", "beleg": ("sr-832.20", "Art. 1a")},
+   {"von": "kom", "nach": "kvg", "art": "Unfälle der Kinder", "beleg": ("sr-832.10", "Art. 28"), "beleg_oben": ("sr-832.10", "Art. 1a")},
+   {"von": "kom", "nach": "vsv", "art": "Schulweg", "beleg": ("412.101", "§ 8."), "beleg_unten": ("412.101", "§ 32 m.")}]},
+]
+
 REIHENFOLGE = ["volksschule", "schulpflicht", "privatschulen", "tagesstrukturen", "schulbetrieb", "sonderpaedagogik", "kindesschutz", "disziplin", "gesundheit", "eltern", "absenzen", "kosten",
-               "personal", "unterricht", "beurteilung", "sprache",
+               "personal", "unterricht", "beurteilung", "sprache", "sport",
                "gemeindeorganisation", "stimmberechtigte", "behoerden", "wahlen", "organisation", "kontrolle", "zusammenarbeit", "verfahren",
-               "finanzen", "datenschutz", "beschaffung"]
+               "finanzen", "datenschutz", "beschaffung", "haftung"]
 HIERARCHIEN.sort(key=lambda h: REIHENFOLGE.index(h["id"]))
-KURZTITEL = {"schulpflicht": "Schulpflicht & Schulort", "privatschulen": "Privatschulen & Privatunterricht", "schulbetrieb": "Klassen, Unterrichtszeit & Ferien", "disziplin": "Disziplin & Wegweisung", "tagesstrukturen": "Tagesstrukturen & Angebote", "kindesschutz": "Kindesschutz",
+KURZTITEL = {"sport": "Sport & Lager", "haftung": "Haftung & Versicherung", "schulpflicht": "Schulpflicht & Schulort", "privatschulen": "Privatschulen & Privatunterricht", "schulbetrieb": "Klassen, Unterrichtszeit & Ferien", "disziplin": "Disziplin & Wegweisung", "tagesstrukturen": "Tagesstrukturen & Angebote", "kindesschutz": "Kindesschutz",
              "absenzen": "Absenzen & Urlaub", "unterricht": "Unterricht & Medien", "beurteilung": "Beurteilung & Laufbahn",
              "gemeindeorganisation": "Gemeinde & Information", "stimmberechtigte": "Versammlung & Parlament", "behoerden": "Behörden & Kommissionen",
              "wahlen": "Wahlen & Behördenmitglieder", "organisation": "Schulorganisation & Qualität", "kontrolle": "Prüfung & Aufsicht",
              "zusammenarbeit": "Zusammenarbeit & Strukturen", "verfahren": "Verfahren & Rechtsschutz", "beschaffung": "Beschaffung & Bau"}
-GRUPPEN = {"volksschule": "Schule", "schulpflicht": "Schule", "privatschulen": "Schule", "tagesstrukturen": "Schule", "schulbetrieb": "Schule", "disziplin": "Kinder",
+GRUPPEN = {"sport": "Unterricht", "haftung": "Ressourcen", "volksschule": "Schule", "schulpflicht": "Schule", "privatschulen": "Schule", "tagesstrukturen": "Schule", "schulbetrieb": "Schule", "disziplin": "Kinder",
            "sonderpaedagogik": "Kinder", "kindesschutz": "Kinder", "gesundheit": "Kinder", "eltern": "Eltern", "absenzen": "Eltern", "kosten": "Eltern",
            "personal": "Personal", "unterricht": "Unterricht", "beurteilung": "Unterricht", "sprache": "Unterricht",
            "gemeindeorganisation": "Behörden & Organisation", "stimmberechtigte": "Behörden & Organisation", "behoerden": "Behörden & Organisation",
@@ -2389,7 +2439,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.27.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.28.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2397,7 +2447,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.27.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.28.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

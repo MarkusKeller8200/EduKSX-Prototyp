@@ -115,6 +115,12 @@ sprache;brb;vsg;Grundlage;basis;manual
 sprache;kom;vsm;Grundlage;basis;manual
 sprache;kom;vsv;Grundlage;basis;manual
 sprache;kom;brb;verweist auf;reference;manual
+sport;spofoev;spofoeg;Vollzug;implementation;manual
+sport;vsg;spofoeg;Rahmen (Sportunterricht obligatorisch);reference;manual
+sport;lp;vsg;Grundlage;basis;manual
+sport;lp;spofoev;Mindestlektionen;reference;manual
+sport;kom;vsg;gestützt auf;reference;manual
+sport;kom;spofoeg;J+S-Kurse und Lager;reference;manual
 gemeindeorganisation;gg;kv;Grundlage;basis;manual
 gemeindeorganisation;vgg;gg;Vollzug;implementation;manual
 gemeindeorganisation;go;kv;Grundlage;basis;manual
@@ -194,3 +200,8 @@ beschaffung;svo;ivoeb;verweist auf;reference;manual
 beschaffung;besch;ivoeb;Grundlage;basis;manual
 beschaffung;besch;svo;verweist auf;reference;manual
 beschaffung;bzo;pbg;Grundlage;basis;manual
+haftung;vsv;vsg;Vollzug;implementation;manual
+haftung;kom;hg;Haftung der Schulgemeinde;reference;manual
+haftung;kom;uvg;Unfallversicherung Personal;reference;manual
+haftung;kom;kvg;Unfälle der Kinder;reference;manual
+haftung;kom;vsv;Schulweg;reference;manual
