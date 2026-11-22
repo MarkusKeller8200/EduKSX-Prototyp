@@ -72,7 +72,7 @@ Sie liefert einen Probelauf, ein Mensch prüft und gibt frei.
 | Auftrag | Vorgehen |
 |---|---|
 | **Änderungen prüfen** (monatlich) | Für alle Erlasse im Paket den aktuellen Nachtrag in ZH-Lex/Fedlex mit `act_versions` vergleichen. Bei neuer Fassung: Belegstellen der betroffenen Verbindungen und Elternthemen nachprüfen (verschoben, aufgehoben, neu nummeriert). Neue Erlasse, die eine bestehende Hierarchie betreffen, als Knoten vorschlagen. |
-| **Neue Normenhierarchie** | Thema abgrenzen (Gruppe: Schule, Kinder, Eltern, Personal, Unterricht, Behörden & Organisation, Ressourcen). Ebenen von Bund bis Gemeinde festlegen. Vom Volksschulgesetz (LS 412.100) und der Kantonsverfassung (LS 101) aus die Delegationsnormen suchen; je Kante eine Belegstelle. Kommunale Ebene als Platzhalter mit Suchmuster. |
+| **Neue Normenhierarchie** | Thema abgrenzen (Gruppe: Schule, Kinder, Eltern, Personal, Unterricht, Behörden & Organisation, Finanzen & Beschaffung, Information & ICT, Infrastruktur & Sicherheit). Ebenen von Bund bis Gemeinde festlegen. Vom Volksschulgesetz (LS 412.100) und der Kantonsverfassung (LS 101) aus die Delegationsnormen suchen; je Kante eine Belegstelle. Kommunale Ebene als Platzhalter mit Suchmuster. |
 | **Hierarchie aktualisieren** | Bestehende Hierarchie exportieren, ändern, vollständig zurückliefern. Geänderte Kanten in `research_note` aufzählen. |
 | **Hierarchie löschen** | Nur wenn das Thema in einer anderen aufgeht oder die Grundlage entfällt: `delete_keys.norm_hierarchies` und Begründung; verknüpfte Elternthemen (`hierarchy_keys`) mitliefern. |
 | **Elternwegweiser** | Frage aus Elternsicht formulieren; Rechtsstellen nur, wenn sie die Frage beantworten (Pflichten, Rechte, Zuständigkeit). Passende Hierarchien verknüpfen. |

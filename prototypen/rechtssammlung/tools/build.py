@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.29.0 – Generator.
+"""EduKSX-Codex Prototyp 0.30.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -2278,20 +2278,20 @@ _ergaenzen("personal",
 REIHENFOLGE = ["volksschule", "schulpflicht", "privatschulen", "tagesstrukturen", "schulbetrieb", "sonderpaedagogik", "kindesschutz", "disziplin", "gesundheit", "eltern", "absenzen", "kosten",
                "personal", "unterricht", "beurteilung", "sprache", "sport",
                "gemeindeorganisation", "stimmberechtigte", "behoerden", "wahlen", "organisation", "kontrolle", "zusammenarbeit", "verfahren",
-               "finanzen", "datenschutz", "beschaffung", "haftung"]
+               "finanzen", "beschaffung", "datenschutz", "haftung"]
 HIERARCHIEN.sort(key=lambda h: REIHENFOLGE.index(h["id"]))
 KURZTITEL = {"sport": "Sport & Lager", "haftung": "Haftung & Versicherung", "schulpflicht": "Schulpflicht & Schulort", "privatschulen": "Privatschulen & Privatunterricht", "schulbetrieb": "Klassen, Unterrichtszeit & Ferien", "disziplin": "Disziplin & Wegweisung", "tagesstrukturen": "Tagesstrukturen & Angebote", "kindesschutz": "Kindesschutz",
              "absenzen": "Absenzen & Urlaub", "unterricht": "Unterricht & Medien", "beurteilung": "Beurteilung & Berufswahl",
              "gemeindeorganisation": "Gemeinde & Information", "stimmberechtigte": "Versammlung & Parlament", "behoerden": "Behörden & Kommissionen",
              "wahlen": "Wahlen & Behördenmitglieder", "organisation": "Schulorganisation & Qualität", "kontrolle": "Prüfung & Aufsicht",
              "zusammenarbeit": "Zusammenarbeit & Strukturen", "verfahren": "Verfahren & Rechtsschutz", "beschaffung": "Beschaffung & Bau"}
-GRUPPEN = {"sport": "Unterricht", "haftung": "Ressourcen", "volksschule": "Schule", "schulpflicht": "Schule", "privatschulen": "Schule", "tagesstrukturen": "Schule", "schulbetrieb": "Schule", "disziplin": "Kinder",
+GRUPPEN = {"sport": "Unterricht", "haftung": "Infrastruktur & Sicherheit", "volksschule": "Schule", "schulpflicht": "Schule", "privatschulen": "Schule", "tagesstrukturen": "Schule", "schulbetrieb": "Schule", "disziplin": "Kinder",
            "sonderpaedagogik": "Kinder", "kindesschutz": "Kinder", "gesundheit": "Kinder", "eltern": "Eltern", "absenzen": "Eltern", "kosten": "Eltern",
            "personal": "Personal", "unterricht": "Unterricht", "beurteilung": "Unterricht", "sprache": "Unterricht",
            "gemeindeorganisation": "Behörden & Organisation", "stimmberechtigte": "Behörden & Organisation", "behoerden": "Behörden & Organisation",
            "wahlen": "Behörden & Organisation", "organisation": "Behörden & Organisation", "kontrolle": "Behörden & Organisation",
            "zusammenarbeit": "Behörden & Organisation", "verfahren": "Behörden & Organisation",
-           "finanzen": "Ressourcen", "datenschutz": "Ressourcen", "beschaffung": "Ressourcen"}
+           "finanzen": "Finanzen & Beschaffung", "beschaffung": "Finanzen & Beschaffung", "datenschutz": "Information & ICT"}
 
 # ---------------------------------------------------------------- Maschinelle Verbindungen (Auftrag 20.11.2026, Punkt 4)
 # Aus den Textfassungen: Ingress («gestützt auf …») = Grundlage, § 1 / Art. 1 mit «Vollzug» = Vollzug, Fussnoten = Verweise.
@@ -2490,7 +2490,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.29.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.30.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2498,7 +2498,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.29.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.30.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

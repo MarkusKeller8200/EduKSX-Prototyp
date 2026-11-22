@@ -191,6 +191,12 @@ finanzen;geb;gg;Verursacherprinzip;reference;manual
 finanzen;vfiso;vsgfin;Vollzug;implementation;manual
 finanzen;fin;vsgfin;Mitteleinsatz;reference;manual
 finanzen;geb;vsgfin;Elternbeiträge;reference;manual
+beschaffung;beig;ivoeb;Beitritt;reference;manual
+beschaffung;svo;beig;Vollzug;implementation;manual
+beschaffung;svo;ivoeb;verweist auf;reference;manual
+beschaffung;besch;ivoeb;Grundlage;basis;manual
+beschaffung;besch;svo;verweist auf;reference;manual
+beschaffung;bzo;pbg;Grundlage;basis;manual
 datenschutz;dsv;dsg;Vollzug;implementation;manual
 datenschutz;idg;dsg;nicht direkt anwendbar;not_applicable;manual
 datenschutz;vsgd;idg;besondere Bestimmungen;reference;manual
@@ -203,12 +209,6 @@ datenschutz;dsk;ivsv;Grundlage;basis;manual
 datenschutz;dsk;ausl;bei Auslagerung;reference;manual
 datenschutz;akten;archg;Grundlage;basis;manual
 datenschutz;akten;archv;subsidiär (§ 1 Abs. 2 ArchV);subsidiary;manual
-beschaffung;beig;ivoeb;Beitritt;reference;manual
-beschaffung;svo;beig;Vollzug;implementation;manual
-beschaffung;svo;ivoeb;verweist auf;reference;manual
-beschaffung;besch;ivoeb;Grundlage;basis;manual
-beschaffung;besch;svo;verweist auf;reference;manual
-beschaffung;bzo;pbg;Grundlage;basis;manual
 haftung;vsv;vsg;Vollzug;implementation;manual
 haftung;kom;hg;Haftung der Schulgemeinde;reference;manual
 haftung;kom;uvg;Unfallversicherung Personal;reference;manual

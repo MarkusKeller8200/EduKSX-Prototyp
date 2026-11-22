@@ -24,7 +24,7 @@ organisation;Schulorganisation & Qualität;Schulorganisation & Qualität;Behörd
 kontrolle;Prüfung & Aufsicht;Prüfung & Aufsicht;Behörden & Organisation;22;Kanton – Gesetze | Gemeinde / Schulgemeinde;;
 zusammenarbeit;Zusammenarbeit & Gemeindestrukturen;Zusammenarbeit & Strukturen;Behörden & Organisation;23;Kanton – Gesetze | Kanton – Verordnungen | Gemeinde / Schulgemeinde;;
 verfahren;Verfahren & Rechtsschutz;Verfahren & Rechtsschutz;Behörden & Organisation;24;Bund | Kanton – Verfassung | Kanton – Gesetze | Gemeinde / Schulgemeinde;;
-finanzen;Finanzen;;Ressourcen;25;Kanton – Gesetze | Kanton – Verordnungen | Gemeinde / Schulgemeinde;;
-datenschutz;Datenschutz & ICT;;Ressourcen;26;Bund | Kanton – Gesetze | Kanton – Verordnungen | Gemeinde / Schulgemeinde;;
-beschaffung;Beschaffung & Bau;Beschaffung & Bau;Ressourcen;27;Interkantonal (Konkordat) | Kanton – Gesetze | Kanton – Verordnungen | Gemeinde / Schulgemeinde;;
-haftung;Haftung, Versicherung & Sicherheit;Haftung & Versicherung;Ressourcen;28;Bund | Kanton – Gesetze | Kanton – Verordnungen | Gemeinde / Schulgemeinde;;
+finanzen;Finanzen;;Finanzen & Beschaffung;25;Kanton – Gesetze | Kanton – Verordnungen | Gemeinde / Schulgemeinde;;
+beschaffung;Beschaffung & Bau;Beschaffung & Bau;Finanzen & Beschaffung;26;Interkantonal (Konkordat) | Kanton – Gesetze | Kanton – Verordnungen | Gemeinde / Schulgemeinde;;
+datenschutz;Datenschutz & ICT;;Information & ICT;27;Bund | Kanton – Gesetze | Kanton – Verordnungen | Gemeinde / Schulgemeinde;;
+haftung;Haftung, Versicherung & Sicherheit;Haftung & Versicherung;Infrastruktur & Sicherheit;28;Bund | Kanton – Gesetze | Kanton – Verordnungen | Gemeinde / Schulgemeinde;;

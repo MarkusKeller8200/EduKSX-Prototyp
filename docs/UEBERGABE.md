@@ -36,6 +36,12 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Codex 0.30.0 – Gruppen neu, Phase 2 (#58)
+
+- Phase 2 des Plans: neun statt sieben Gruppen. Finanzen & Beschaffung (finanzen, beschaffung), Information & ICT (datenschutz), Infrastruktur & Sicherheit (haftung; Schulanlagen folgt in Phase 3). Reihenfolge finanzen → beschaffung → datenschutz → haftung. Adressen der Themen unverändert.
+- KI-RECHERCHE.md und KONZEPT-CODEX-VERSIONEN.md mit den neuen Gruppennamen.
+- Nächste Phase: 3 – Schulsozialarbeit & Jugendhilfe, Schulanlagen & Raumnutzung.
+
 ### Sitzung 2026-11-20 – Codex 0.29.0 – vier Ergänzungen, Phase 1 (#57)
 
 - Phase 1 des Plans (Whiteboard «EduKSX-Codex – Plan Ausbau Normenhierarchie», https://claude.ai/artifact/MvC5pVrPpdWuQ6fddfqUGK).

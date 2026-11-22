@@ -9,7 +9,7 @@ WARNING hierarchy_edge     unterricht/kom→lm                        ohne Beleg
 WARNING hierarchy_edge     beurteilung/kom→zr                       ohne Belegstelle
 WARNING hierarchy_edge     sprache/kom→brb                          ohne Belegstelle
 WARNING hierarchy_node     zusammenarbeit/eg                        kommunaler Knoten ohne Suchmuster – keine Beispiele
+WARNING hierarchy_edge     beschaffung/besch→svo                    ohne Belegstelle
 WARNING hierarchy_edge     datenschutz/dsv→dsg                      SR 235.11 Ingress: Stelle in der geltenden Fassung nicht gefunden
 WARNING hierarchy_edge     datenschutz/dsk→ausl                     ohne Belegstelle
 WARNING hierarchy_edge     datenschutz/akten→archv                  ohne Belegstelle
-WARNING hierarchy_edge     beschaffung/besch→svo                    ohne Belegstelle

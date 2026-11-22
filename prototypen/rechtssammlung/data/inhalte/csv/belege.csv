@@ -239,6 +239,11 @@ finanzen;vfiso;vsgfin;LS 412.100;§ 64.;to
 finanzen;fin;vsgfin;LS 412.100;§ 66.;to
 finanzen;fin;vsgfin;LS 412.100;§ 61.;to
 finanzen;geb;vsgfin;LS 412.100;§ 11.;to
+beschaffung;beig;ivoeb;LS 720.1;§ 1.;from
+beschaffung;svo;beig;LS 720.11;Ingress;from
+beschaffung;svo;ivoeb;LS 720.11;§ 2.;from
+beschaffung;besch;ivoeb;LS 720.1;suche:Art. 4 ¹ Im Staatsvertragsbereich;other
+beschaffung;bzo;pbg;LS 700.1;§ 45.;to
 datenschutz;dsv;dsg;SR 235.11;Ingress;from
 datenschutz;idg;dsg;LS 170.4;§ 2.;from
 datenschutz;idg;dsg;SR 235.1;Art. 2;to
@@ -250,11 +255,6 @@ datenschutz;ausl;idg;LS 172.71;§ 3.;from
 datenschutz;dsk;idg;LS 170.4;§ 3.;to
 datenschutz;dsk;ivsv;LS 170.8;§ 1.;to
 datenschutz;akten;archg;LS 170.6;§ 6.;to
-beschaffung;beig;ivoeb;LS 720.1;§ 1.;from
-beschaffung;svo;beig;LS 720.11;Ingress;from
-beschaffung;svo;ivoeb;LS 720.11;§ 2.;from
-beschaffung;besch;ivoeb;LS 720.1;suche:Art. 4 ¹ Im Staatsvertragsbereich;other
-beschaffung;bzo;pbg;LS 700.1;§ 45.;to
 haftung;vsv;vsg;LS 412.101;§ 8.;from
 haftung;vsv;vsg;LS 412.100;§ 10.;to
 haftung;kom;hg;LS 170.1;§ 2.;to
