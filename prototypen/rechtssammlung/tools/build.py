@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.41.0 – Generator.
+"""EduKSX-Codex Prototyp 0.41.1 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -510,8 +510,13 @@ for o in ORGS:
     o["max_tiefe"] = max(depth(s) for s in o["sections"])
 
 # ---------------------------------------------------------------- Renderer
+def kurz_url(u):
+    """Lange Adressen nicht ausschreiben: Domain ohne www, «› …» bei weiterem Pfad (Entscheid 22.11.2026)."""
+    m = re.match(r"(?:https?://)?(?:www\.)?([^/?#]+)([^?#]*)", u or "")
+    return (m[1] + (" › …" if m[2].strip("/") else "")) if m else (u or "")
+
 BANNER = ('<div class="cx-banner"><a href="../index.html">← Übersicht EduKSX-Codex</a> · Prototyp – Nachbau des Seitenaufbaus '
-          'zu Analysezwecken, <strong>keine offizielle Seite</strong>. Original: <a href="{u}" target="_blank" rel="noopener">{u}</a> · Stand {s}</div>')
+          'zu Analysezwecken, <strong>keine offizielle Seite</strong>. Original: <a href="{u}" target="_blank" rel="noopener" title="{u}">{k}</a> · Stand {s}</div>')
 
 def logo(o):
     """Platzhalter statt Original-Logo: die Demo-Seiten sind öffentlich und dürfen nicht wie die echte Seite wirken."""
@@ -535,7 +540,7 @@ def page(o, css, body, extra_js=""):
 <title>Rechtssammlung – {esc(o['name'])} (EduKSX-Codex Prototyp)</title>
 {links}
 <style>{BASE_CSS}{css}</style></head>
-<body>{BANNER.format(u=esc(o['rs_url']), s=STAND)}{body}{extra_js}</body></html>"""
+<body>{BANNER.format(u=esc(o['rs_url']), k=esc(kurz_url(o['rs_url'])), s=STAND)}{body}{extra_js}</body></html>"""
 
 # --- i-web (PG Trüllikon)
 def render_iweb(o):
@@ -2941,7 +2946,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.41.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.41.1 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <link rel="stylesheet" href="assets/lib/leaflet/leaflet.css">
   <script src="assets/lib/leaflet/leaflet.js"></script>
   <script src="assets/daten.js"></script>
@@ -2951,7 +2956,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.41.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.41.1 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

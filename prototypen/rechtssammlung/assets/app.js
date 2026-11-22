@@ -29,7 +29,19 @@
   function enc(s) { return encodeURIComponent(s); }
   function badge(cls, sym, text) { return h("span", { cls: "badge " + cls }, h("span", { "aria-hidden": "true", text: sym }), text); }
   function status(erfasst) { return erfasst ? badge("erfolg", "✓", "erfasst") : badge("neutral", "○", "offen"); }
-  function extern(url, text) { return h("a", { href: url, target: "_blank", rel: "noopener" }, text); }
+  // Lange Adressen nie ausschreiben: sichtbarer Text = Domain (ohne www), «›…» bei weiterem Pfad; volle Adresse als Tooltip (Entscheid 22.11.2026)
+  function kurzUrl(u) {
+    var m = /^(?:https?:\/\/)?(?:www\.)?([^\/?#]+)([^?#]*)/i.exec(String(u || ""));
+    if (!m) return String(u || "");
+    var pfad = m[2].replace(/\/+$/, "");
+    return m[1] + (pfad ? " › …" : "");
+  }
+  function istUrl(t) { return typeof t === "string" && /^(https?:\/\/|www\.)\S+$/i.test(t.trim()); }
+  function extern(url, text) {
+    if (text === undefined || text === null || text === url || istUrl(text)) text = kurzUrl(text || url) + " ↗";
+    else if (typeof text === "string" && /^(https?:\/\/|www\.)\S+ ↗$/.test(text)) text = kurzUrl(text.slice(0, -2)) + " ↗";
+    return h("a", { href: url, target: "_blank", rel: "noopener", title: url }, text);
+  }
   function zaehle(n) { return (n.dokumente || []).length + (n.kinder || []).reduce(function (s, k) { return s + zaehle(k); }, 0); }
   function knoten(o, pfad) {
     var n = { kinder: o.sections };
@@ -1130,7 +1142,7 @@
             h("td", null, vwTraegerLink(v)), h("td", { text: stufeText(v.stufe) }),
             h("td", null, (v.adresse || []).join(", "), v.adresse_hinweis ? h("div", { cls: "small muted", text: v.adresse_hinweis }) : null),
             h("td", { cls: "small" }, v.telefon ? h("div", { text: v.telefon }) : null, v.email ? h("div", null, h("a", { href: "mailto:" + v.email, text: v.email })) : null,
-              (v.websites || []).slice(0, 2).map(function (w) { return h("div", null, extern(w, w.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "") + " ↗")); })),
+              (v.websites || []).slice(0, 2).map(function (w) { return h("div", null, extern(w)); })),
             h("td", { cls: "small" }, v.lat ? [extern(geoAdminLink(v), "map.geo.admin ↗"), h("div", { cls: "muted", text: v.koordinaten_quelle + (v.egid ? " · EGID " + v.egid : "") + (v.abweichung_m > 200 ? " · Verzeichnis-Punkt " + v.abweichung_m + " m daneben" : "") })] : "–"));
         })))));
       huelle.appendChild(h("details", { cls: "karte" }, h("summary", null, h("strong", { text: "Schulanlagen (" + an.length + ")" })),

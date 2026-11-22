@@ -36,6 +36,10 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Lange URL verdeckt
+
+Linktexte mit Adresse werden automatisch gekürzt (Domain › …), volle Adresse im Tooltip; Einbettungscode bleibt vollständig.
+
 ### Sitzung 2026-11-20 – Schulträgerkarte als zweite Darstellung
 
 Flächenkarte wie beim Gemeindeamt, Auswahl im Link; Quellenangabe vermerkt (kein Code übernommen).

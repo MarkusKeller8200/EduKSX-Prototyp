@@ -1,6 +1,6 @@
 # Konzept: EduKSX-Codex – Versionen, Abgleich, Textfassung und Normenhierarchie (#32)
 
-Stand: 2026-11-20 (Codex 0.41.0) · Status: **IN ARBEIT**
+Stand: 2026-11-20 (Codex 0.41.1) · Status: **IN ARBEIT**
 
 Ein Konzept ist eine Entscheidungsgrundlage, keine Freigabe: umgesetzt wird erst, was als Issue freigegeben ist.
 
@@ -200,6 +200,7 @@ maschineller Abgleich der Verbindungen (Ingress, § 1, Fussnoten), Ansicht je Or
 | #62 | Rechtsänderungs-Monitoring und Prüfliste | `_3 Beta-Test` |
 | #63 | Praxisthemen für Schulleitungen mit Hinweisen und Quellen | `_3 Beta-Test` |
 | #64 | Gemeindeart, Sek Bülach KSG-S, Versionierung der Hierarchien | `_3 Beta-Test` |
+| 0.41.1 | Lange URL verdeckt | umgesetzt |
 | 0.41.0 | Schulträgerkarte als zweite Darstellung | umgesetzt |
 | 0.40.1 | Karte Schulstandorte lesbarer | umgesetzt |
 | 0.40.0 | Schulträgerkarte, Links je Schulträger, Beta-PIN | umgesetzt |
