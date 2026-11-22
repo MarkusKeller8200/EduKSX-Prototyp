@@ -204,3 +204,7 @@ table.matrix tbody th { white-space: normal; }
 .nr-details select, .nr-details input { font-size: .78rem; max-width: 16rem; }
 td.bei-org { min-width: 12rem; }
 td.mz-nr { background: var(--muted); }
+
+/* Praxisthemen: Hinweise kantonaler Stellen */
+ul.hinweise { list-style: none; padding: 0; margin: .3rem 0 .8rem; }
+ul.hinweise li { padding: .45rem .6rem; border-left: 3px solid var(--border); margin-bottom: .45rem; background: var(--muted); border-radius: 4px; }

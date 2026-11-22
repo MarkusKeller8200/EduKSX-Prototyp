@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.34.0 – Generator.
+"""EduKSX-Codex Prototyp 0.35.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -2111,10 +2111,69 @@ ELTERNFRAGEN = [
   "muster": r"rekurs|beschwerde|neubeurteilung|ombuds|anlaufstelle"},
 ]
 
-def elternwegweiser(texte):
+VSA = "https://www.zh.ch/de/bildung/informationen-fuer-schulen"
+# Praxisthemen für Schulleitungen (Phase 5, 22.11.2026): Frage → Rechtsstellen → Normenhierarchien → lokale Dokumente,
+# ergänzt um Hinweise kantonaler Stellen (Quellenklasse C – Erläuterung, keine Rechtsgrundlage) mit Quelle.
+PRAXISTHEMEN = [
+ {"id": "ki", "titel": "KI & digitale Bildung",
+  "fragen": ["Dürfen Lehrpersonen und Schülerinnen und Schüler KI-Werkzeuge nutzen – und mit welchen Daten?", "Wie regeln wir KI bei Prüfungen, Projektarbeiten und in der Beurteilung?"],
+  "stellen": [("170.4", "§ 8."), ("170.4", "§ 7."), ("412.100", "§ 31."), ("sr-231.1", "Art. 19")], "themen": ["unterricht", "datenschutz", "beurteilung"],
+  "muster": r"\bki\b|kuenstliche intelligenz|medienkonzept|ict.?konzept|(nutzungs|benutzungs)(reglement|vereinbarung).*(schueler|ipad|tablet|ict|informatik|geraet|digital)|digital", "ohne": r"personalakte|steuer|baugesuch|schuetzen|forsthaus",
+  "hinweise": [
+   {"titel": "Künstliche Intelligenz in der Volksschule", "herausgeber": "Volksschulamt, Fachstelle Bildung und ICT", "url": VSA + "/informationen-volksschule/volksschule-schulinfo-unterricht/kuenstliche-intelligenz.html",
+    "text": "Fünf Leitsätze statt starrer Vorschriften: KI als Werkzeug, das den pädagogischen Dialog ergänzt; Verständnis und kritisches Denken fördern; Chancengleichheit; rechtskonforme Nutzung. Keine Personendaten von Schülerinnen und Schülern in KI-Werkzeuge eingeben. Bei summativer Beurteilung KI-Einsatz regeln und deklarieren lassen; unerlaubte Nutzung gilt als Täuschung."},
+   {"titel": "Künstliche Intelligenz in der Bildung – Rechtliche Best Practices", "herausgeber": "Kanton Zürich, Innovation-Sandbox für KI (Oktober 2023)", "url": "https://www.zh.ch/de/wirtschaft-arbeit/wirtschaftsstandort/innovation-sandbox/phase-i/ki-in-der-bildung-rechtliche-best-practices.html",
+    "text": "Volksschulen sind öffentliche Organe: für Datenbearbeitungen mit KI gilt das IDG, ergänzt durch Volksschulrecht und kommunale Erlasse. Leitfaden vor allem für Anbieter, hilfreich für Schulverantwortliche bei der Beschaffung."}]},
+ {"id": "praevention", "titel": "Prävention, Gewalt & Mobbing",
+  "fragen": ["Was muss die Schule zur Prävention von Gewalt, Mobbing und Sucht vorkehren?", "Wann informieren wir die KESB, wer unterstützt uns (Schulsozialarbeit, Fachstellen)?"],
+  "stellen": [("sr-0.107", "Art. 19"), ("412.100", "§ 50."), ("412.100", "§ 51."), ("412.101", "§ 54."), ("852.1", "§ 19."), ("sr-210", "Art. 314d")],
+  "themen": ["kindesschutz", "schulsozialarbeit", "disziplin", "gesundheit"],
+  "muster": r"praevention|mobbing|gewalt|schutzkonzept|sucht|frueherkennung|schulsozialarbeit", "ohne": r"feuerwehr|zivilschutz|personal|strafrecht|opferhilfe",
+  "hinweise": [
+   {"titel": "Gewalt und Gewaltprävention – Unterstützung für Schulen", "herausgeber": "Bildungsdirektion Kanton Zürich", "url": VSA + "/praevention-gesundheit-in-schule/schulinfo-gewaltpraevention.html",
+    "text": "Die Schulsozialarbeit leistet einen wichtigen Beitrag zur Gewaltprävention und kennt Programme (z. B. gegen Mobbing) sowie Fach- und Beratungsstellen."},
+   {"titel": "Beauftragter Gewaltprävention im schulischen Umfeld", "herausgeber": "Bildungsdirektion Kanton Zürich", "url": "https://zh.ch/schule-gewaltpraevention",
+    "text": "Schulen aller Stufen sind aufgefordert, sich dem Netzwerk Kantonales Bedrohungsmanagement (KBM) der Kantonspolizei anzuschliessen; Angebot Sicherheitskonzept-Workshop."},
+   {"titel": "Qualitätsanspruch Gesundheitsförderung und Prävention (Fokusthema 2026–2031)", "herausgeber": "Fachstelle für Schulbeurteilung", "url": "https://www.zh.ch/content/dam/zhweb/bilder-dokumente/organisation/bildungsdirektion/fsb/qualitaetsansprueche-fokusthemen/260119-fsb_qa_fokusthemen-gesundheitsfoerderung-praevention-GFP.pdf",
+    "text": "Die Schulbeurteilung achtet u. a. auf ein Konzept zur Früherkennung und Frühintervention sowie auf systematisch aufgebaute Gewalt- und Suchtprävention."},
+   {"titel": "Suchtprävention – Unterstützung für Schulen", "herausgeber": "Prävention und Gesundheitsförderung Kanton Zürich", "url": VSA + "/praevention-gesundheit-in-schule/schulinfo-suchtpraevention.html",
+    "text": "Die Stellen für Suchtprävention beraten Lehrpersonen, Schulleitungen und Schulsozialarbeitende der Volksschule."}]},
+ {"id": "notfall", "titel": "Notfall, Krise & Sicherheit",
+  "fragen": ["Was gehört in das Sicherheits- und Krisenkonzept der Schule, wer bildet das Krisenteam?", "Wer haftet, wer hilft im Notfall und bei Bedrohungen?"],
+  "stellen": [("412.101", "§ 54."), ("170.1", "§ 6."), ("sr-822.11", "Art. 6"), ("412.100", "§ 51.")], "themen": ["haftung", "schulanlagen", "kindesschutz"],
+  "muster": r"notfall|krisen|sicherheitskonzept|evakuation|alarm|brandschutz|notfallorganisation", "ohne": r"feuerwehr.*(gebuehr|sold)|zivilschutzanlage|kredit|beschluss",
+  "hinweise": [
+   {"titel": "Sicherheit an Schulen", "herausgeber": "Bildungsdirektion Kanton Zürich", "url": VSA + "/praevention-gesundheit-in-schule/sicherheit-an-schulen.html",
+    "text": "Jede Schule hat ein Krisenteam, das das Sicherheits- und Krisenkonzept aktuell hält und im Ernstfall koordiniert. Hilfsmittel: Sicherheitsordner, Checklisten für 26 Notfall- und Krisenarten, Notfallapp, Weiterbildungen. Notruf 117/118/144; Care Kanton Zürich über die Polizei; Beitritt zum Kantonalen Bedrohungsmanagement empfohlen."},
+   {"titel": "Umgang mit Krisen", "herausgeber": "Bildungsdirektion Kanton Zürich", "url": VSA + "/praevention-gesundheit-in-schule/schulinfo-krisensituationen.html",
+    "text": "Es gibt kein kantonales Kriseninterventions-Angebot für Schulen; Kriseninterventionen führen vorwiegend private Dienstleister durch. Übersicht über Anlaufstellen und Fachstellen."},
+   {"titel": "Suizidprävention an Schulen", "herausgeber": "Bildungsdirektion Kanton Zürich", "url": VSA + "/praevention-gesundheit-in-schule/schulinfo-suizidpraevention.html",
+    "text": "Unterstützungsangebote für Schulen im Umgang mit suizidalen Krisen."}]},
+ {"id": "kommunikation", "titel": "Kommunikation, Fotos & Daten",
+  "fragen": ["Darf die Schule Fotos und Videos von Schülerinnen und Schülern veröffentlichen, welche Messenger sind zulässig?", "Worüber muss die Schule informieren, wer erhält Einsicht?"],
+  "stellen": [("170.4", "§ 14."), ("170.4", "§ 16."), ("170.4", "§ 17."), ("170.4", "§ 20."), ("412.100", "§ 3 a."), ("412.100", "§ 54.")],
+  "themen": ["datenschutz", "eltern", "gemeindeorganisation"],
+  "muster": r"kommunikation|foto|video|website|soziale medien|social media|messenger|oeffentlichkeitsarbeit|informationskonzept|einwilligung", "ohne": r"videoueberwach|baugesuch",
+  "hinweise": [
+   {"titel": "Datenschutz & Archivierung (Volksschule)", "herausgeber": "Volksschulamt", "url": VSA + "/informationen-volksschule/volksschule-organisation/volksschule-datenschutz-archivierung.html",
+    "text": "Massgebend sind IDG und IDV. Hilfsmittel: «Umgang mit Schülerdaten», Datenschutzlexikon für Volksschulen, Musteraktenpläne des Staatsarchivs; Rechtsberatung beim Rechtsdienst des Volksschulamts."},
+   {"titel": "Datenschutzlexikon für Volksschulen", "herausgeber": "Datenschutzbeauftragte des Kantons Zürich", "url": "https://www.datenschutz.ch/lexika/volksschule",
+    "text": "Stichworte von A bis Z, u. a. zu Fotos auf der Schulwebsite, Einwilligung, Messengern und Weitergabe von Schülerdaten."},
+   {"titel": "Umgang mit Schülerdaten (PDF)", "herausgeber": "Volksschulamt", "url": "https://www.zh.ch/content/dam/zhweb/bilder-dokumente/themen/bildung/informationen-fuer-schulen/informationen-fuer-die-volksschule/organisation/datenschutz-archivierung-urheberrecht/umgang_mit_schuelerdaten.pdf",
+    "text": "Merkblatt zur Bearbeitung und Weitergabe von Daten über Schülerinnen und Schüler."}]},
+ {"id": "partizipation", "titel": "Schülerpartizipation & Mitwirkung",
+  "fragen": ["Wie beteiligen wir Schülerinnen und Schüler (Klassenrat, Schülerrat)?", "Wo muss die Partizipation geregelt sein?"],
+  "stellen": [("sr-0.107", "Art. 12"), ("412.100", "§ 50."), ("412.100", "§ 41 b."), ("412.100", "§ 45.")], "themen": ["eltern", "organisation", "disziplin"],
+  "muster": r"partizipation|schuelerrat|schuelerparlament|schuelerforum|klassenrat|mitsprache", "ohne": r"personal",
+  "hinweise": [
+   {"titel": "Partizipation von Schülerinnen und Schülern, Elternmitwirkung", "herausgeber": "Volksschulamt", "url": VSA + "/informationen-volksschule/volksschule-organisation/schulinfo-eltern-schuelerinnen-und-schueler/partizipation-schuelerinnen-schueler-elternmitwirkung.html",
+    "text": "Die Schulkonferenz denkt über die Mitwirkung von Eltern und Schülerinnen und Schülern nach und berücksichtigt das Schulprogramm; der Lehrplan 21 sieht Mitbestimmung in Klasse und Schule vor. Organisationsstatut und Schulprogramm regeln die Partizipation (§ 50 Abs. 3 VSG)."}]},
+]
+
+def wegweiser(liste, texte):
     akt = {nr: e["fassungen"][-1]["nachtrag"] for nr, e in texte["erlasse"].items() if e["fassungen"]}
     out = []
-    for f in ELTERNFRAGEN:
+    for f in liste:
         stellen = []
         for nr, para in f["stellen"]:
             if nr not in akt: continue
@@ -2130,8 +2189,12 @@ def elternwegweiser(texte):
                         if re.search(BEHOERDE, t) and not re.search(ERLASS, t): continue
                         if re.search(f["muster"], t) and not (f.get("ohne") and re.search(f["ohne"], t)) and t not in gesehen:
                             gesehen.add(t); docs.append({"org": o["id"], "titel": d["titel"], "url": d.get("url")})
-        out.append({"id": f["id"], "titel": f["titel"], "fragen": f["fragen"], "stellen": stellen, "themen": f["themen"], "dokumente": docs})
+        out.append({"id": f["id"], "titel": f["titel"], "fragen": f["fragen"], "stellen": stellen, "themen": f["themen"], "dokumente": docs,
+                    "hinweise": f.get("hinweise", [])})
     return out
+
+def elternwegweiser(texte): return wegweiser(ELTERNFRAGEN, texte)
+def praxisthemen(texte): return wegweiser(PRAXISTHEMEN, texte)
 
 # Reihenfolge nach Bezug zur Volksschule (Auftrag 20.11.2026): Schule → Kinder → Personal → Unterricht → Organisation und Ressourcen
 # Drei weitere Themen aus dem Volksschulgesetz (22.11.2026): Schulbetrieb, Disziplin, Privatschulen
@@ -2626,7 +2689,7 @@ def render_daten(gemeinden):
     for o in ORGS: leitfaden_pruefung(o); doc_datum_version(o); analyse_info(o)
     TX = texte_index()
     daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN, "rechtsgrundlagen": rechtsgrundlagen(), "pflichtkatalog": pflichtkatalog(),
-             "elternwegweiser": elternwegweiser(TX),
+             "elternwegweiser": elternwegweiser(TX), "praxisthemen": praxisthemen(TX),
              "texte": TX, "hierarchien": querbezuege([abgleich_kanten(hierarchie(TX, sp), TX) for sp in HIERARCHIEN], TX),
              "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
     daten["monitoring"] = rechtsaenderungen(TX, daten["hierarchien"], daten["elternwegweiser"], ORGS)
@@ -2664,7 +2727,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.34.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.35.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2672,7 +2735,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.34.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.35.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

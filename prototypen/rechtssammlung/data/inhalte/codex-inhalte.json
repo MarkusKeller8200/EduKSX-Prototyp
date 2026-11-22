@@ -5914,6 +5914,7 @@
   {
    "topic_key": "eintritt",
    "title": "Schuleintritt & Schulweg",
+   "audience": "parents",
    "questions": [
     "Wann beginnt die Schulpflicht, kann der Eintritt verschoben werden?",
     "Welche Schule besucht mein Kind, wie ist der Schulweg geregelt?"
@@ -5951,6 +5952,7 @@
   {
    "topic_key": "absenzen",
    "title": "Absenzen, Urlaub, Jokertage",
+   "audience": "parents",
    "questions": [
     "Mein Kind ist krank – was muss ich melden?",
     "Wie beantrage ich Urlaub, eine Dispensation oder einen Jokertag?"
@@ -5985,6 +5987,7 @@
   {
    "topic_key": "kosten",
    "title": "Kosten für Eltern",
+   "audience": "parents",
    "questions": [
     "Was ist unentgeltlich, was bezahle ich (Lager, Verpflegung, Betreuung, Musikschule)?"
    ],
@@ -6018,6 +6021,7 @@
   {
    "topic_key": "betreuung",
    "title": "Betreuung ausserhalb des Unterrichts",
+   "audience": "parents",
    "questions": [
     "Welche Betreuung bietet die Gemeinde an (Morgen, Mittag, Nachmittag, Ferien)?"
    ],
@@ -6041,6 +6045,7 @@
   {
    "topic_key": "mitwirkung",
    "title": "Information & Mitwirkung",
+   "audience": "parents",
    "questions": [
     "Wie werde ich informiert, wann gibt es Elterngespräche?",
     "Wo kann ich mitwirken (Elternrat, Elternforum)?"
@@ -6076,6 +6081,7 @@
   {
    "topic_key": "pflichten",
    "title": "Pflichten der Eltern",
+   "audience": "parents",
    "questions": [
     "Welche Pflichten habe ich gegenüber der Schule?"
    ],
@@ -6101,6 +6107,7 @@
   {
    "topic_key": "disziplin",
    "title": "Verhalten, Disziplin, Auszeit",
+   "audience": "parents",
    "questions": [
     "Was darf die Schule bei Fehlverhalten tun?",
     "Was bedeutet eine Auszeit oder eine vorübergehende Wegweisung?"
@@ -6138,6 +6145,7 @@
   {
    "topic_key": "foerderung",
    "title": "Förderung & Sonderpädagogik",
+   "audience": "parents",
    "questions": [
     "Bekommt mein Kind Unterstützung (Integrative Förderung, Therapie, DaZ)?",
     "Wer entscheidet über sonderpädagogische Massnahmen?"
@@ -6171,6 +6179,7 @@
   {
    "topic_key": "uebertritt",
    "title": "Zeugnis, Promotion, Übertritt",
+   "audience": "parents",
    "questions": [
     "Wie wird mein Kind beurteilt?",
     "Wie läuft der Übertritt in die Sekundarschule oder ans Gymnasium?"
@@ -6203,6 +6212,7 @@
   {
    "topic_key": "gesundheit",
    "title": "Gesundheit",
+   "audience": "parents",
    "questions": [
     "Welche schulärztlichen Untersuchungen und Impfberatungen gibt es?",
     "Wie ist die Schulzahnpflege organisiert?"
@@ -6234,6 +6244,7 @@
   {
    "topic_key": "daten",
    "title": "Daten & Fotos",
+   "audience": "parents",
    "questions": [
     "Welche Daten über mein Kind darf die Schule bearbeiten und weitergeben?",
     "Darf die Schule Fotos veröffentlichen?"
@@ -6258,6 +6269,7 @@
   {
    "topic_key": "entscheid",
    "title": "Wer entscheidet an unserer Schule?",
+   "audience": "parents",
    "questions": [
     "Wer ist zuständig – Schulpflege, Schulleitung, Gemeindeversammlung?",
     "Wie wird die Schulpflege gewählt?"
@@ -6297,6 +6309,7 @@
   {
    "topic_key": "beschwerde",
    "title": "Nicht einverstanden – was tun?",
+   "audience": "parents",
    "questions": [
     "Wie verlange ich eine Begründung oder Neubeurteilung?",
     "Wie und wo kann ich Rekurs erheben?"
@@ -6324,6 +6337,299 @@
     }
    ],
    "match_pattern": "rekurs|beschwerde|neubeurteilung|ombuds|anlaufstelle"
+  },
+  {
+   "topic_key": "praxis-ki",
+   "title": "KI & digitale Bildung",
+   "audience": "school_leaders",
+   "questions": [
+    "Dürfen Lehrpersonen und Schülerinnen und Schüler KI-Werkzeuge nutzen – und mit welchen Daten?",
+    "Wie regeln wir KI bei Prüfungen, Projektarbeiten und in der Beurteilung?"
+   ],
+   "position": 13,
+   "hierarchy_keys": [
+    "unterricht",
+    "datenschutz",
+    "beurteilung"
+   ],
+   "notes": [
+    {
+     "title": "Künstliche Intelligenz in der Volksschule",
+     "publisher_name": "Volksschulamt, Fachstelle Bildung und ICT",
+     "url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-schulinfo-unterricht/kuenstliche-intelligenz.html",
+     "note": "Fünf Leitsätze statt starrer Vorschriften: KI als Werkzeug, das den pädagogischen Dialog ergänzt; Verständnis und kritisches Denken fördern; Chancengleichheit; rechtskonforme Nutzung. Keine Personendaten von Schülerinnen und Schülern in KI-Werkzeuge eingeben. Bei summativer Beurteilung KI-Einsatz regeln und deklarieren lassen; unerlaubte Nutzung gilt als Täuschung.",
+     "retrieved_at": "2026-11-22"
+    },
+    {
+     "title": "Künstliche Intelligenz in der Bildung – Rechtliche Best Practices",
+     "publisher_name": "Kanton Zürich, Innovation-Sandbox für KI (Oktober 2023)",
+     "url": "https://www.zh.ch/de/wirtschaft-arbeit/wirtschaftsstandort/innovation-sandbox/phase-i/ki-in-der-bildung-rechtliche-best-practices.html",
+     "note": "Volksschulen sind öffentliche Organe: für Datenbearbeitungen mit KI gilt das IDG, ergänzt durch Volksschulrecht und kommunale Erlasse. Leitfaden vor allem für Anbieter, hilfreich für Schulverantwortliche bei der Beschaffung.",
+     "retrieved_at": "2026-11-22"
+    }
+   ],
+   "provisions": [
+    {
+     "citation": "LS 170.4",
+     "location": "§ 8."
+    },
+    {
+     "citation": "LS 170.4",
+     "location": "§ 7."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 31."
+    },
+    {
+     "citation": "SR 231.1",
+     "location": "Art. 19"
+    }
+   ],
+   "match_pattern": "\\bki\\b|kuenstliche intelligenz|medienkonzept|ict.?konzept|(nutzungs|benutzungs)(reglement|vereinbarung).*(schueler|ipad|tablet|ict|informatik|geraet|digital)|digital",
+   "exclusion_pattern": "personalakte|steuer|baugesuch|schuetzen|forsthaus"
+  },
+  {
+   "topic_key": "praxis-praevention",
+   "title": "Prävention, Gewalt & Mobbing",
+   "audience": "school_leaders",
+   "questions": [
+    "Was muss die Schule zur Prävention von Gewalt, Mobbing und Sucht vorkehren?",
+    "Wann informieren wir die KESB, wer unterstützt uns (Schulsozialarbeit, Fachstellen)?"
+   ],
+   "position": 14,
+   "hierarchy_keys": [
+    "kindesschutz",
+    "schulsozialarbeit",
+    "disziplin",
+    "gesundheit"
+   ],
+   "notes": [
+    {
+     "title": "Gewalt und Gewaltprävention – Unterstützung für Schulen",
+     "publisher_name": "Bildungsdirektion Kanton Zürich",
+     "url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/praevention-gesundheit-in-schule/schulinfo-gewaltpraevention.html",
+     "note": "Die Schulsozialarbeit leistet einen wichtigen Beitrag zur Gewaltprävention und kennt Programme (z. B. gegen Mobbing) sowie Fach- und Beratungsstellen.",
+     "retrieved_at": "2026-11-22"
+    },
+    {
+     "title": "Beauftragter Gewaltprävention im schulischen Umfeld",
+     "publisher_name": "Bildungsdirektion Kanton Zürich",
+     "url": "https://zh.ch/schule-gewaltpraevention",
+     "note": "Schulen aller Stufen sind aufgefordert, sich dem Netzwerk Kantonales Bedrohungsmanagement (KBM) der Kantonspolizei anzuschliessen; Angebot Sicherheitskonzept-Workshop.",
+     "retrieved_at": "2026-11-22"
+    },
+    {
+     "title": "Qualitätsanspruch Gesundheitsförderung und Prävention (Fokusthema 2026–2031)",
+     "publisher_name": "Fachstelle für Schulbeurteilung",
+     "url": "https://www.zh.ch/content/dam/zhweb/bilder-dokumente/organisation/bildungsdirektion/fsb/qualitaetsansprueche-fokusthemen/260119-fsb_qa_fokusthemen-gesundheitsfoerderung-praevention-GFP.pdf",
+     "note": "Die Schulbeurteilung achtet u. a. auf ein Konzept zur Früherkennung und Frühintervention sowie auf systematisch aufgebaute Gewalt- und Suchtprävention.",
+     "retrieved_at": "2026-11-22"
+    },
+    {
+     "title": "Suchtprävention – Unterstützung für Schulen",
+     "publisher_name": "Prävention und Gesundheitsförderung Kanton Zürich",
+     "url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/praevention-gesundheit-in-schule/schulinfo-suchtpraevention.html",
+     "note": "Die Stellen für Suchtprävention beraten Lehrpersonen, Schulleitungen und Schulsozialarbeitende der Volksschule.",
+     "retrieved_at": "2026-11-22"
+    }
+   ],
+   "provisions": [
+    {
+     "citation": "SR 0.107",
+     "location": "Art. 19"
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 50."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 51."
+    },
+    {
+     "citation": "LS 412.101",
+     "location": "§ 54."
+    },
+    {
+     "citation": "LS 852.1",
+     "location": "§ 19."
+    },
+    {
+     "citation": "SR 210",
+     "location": "Art. 314d"
+    }
+   ],
+   "match_pattern": "praevention|mobbing|gewalt|schutzkonzept|sucht|frueherkennung|schulsozialarbeit",
+   "exclusion_pattern": "feuerwehr|zivilschutz|personal|strafrecht|opferhilfe"
+  },
+  {
+   "topic_key": "praxis-notfall",
+   "title": "Notfall, Krise & Sicherheit",
+   "audience": "school_leaders",
+   "questions": [
+    "Was gehört in das Sicherheits- und Krisenkonzept der Schule, wer bildet das Krisenteam?",
+    "Wer haftet, wer hilft im Notfall und bei Bedrohungen?"
+   ],
+   "position": 15,
+   "hierarchy_keys": [
+    "haftung",
+    "schulanlagen",
+    "kindesschutz"
+   ],
+   "notes": [
+    {
+     "title": "Sicherheit an Schulen",
+     "publisher_name": "Bildungsdirektion Kanton Zürich",
+     "url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/praevention-gesundheit-in-schule/sicherheit-an-schulen.html",
+     "note": "Jede Schule hat ein Krisenteam, das das Sicherheits- und Krisenkonzept aktuell hält und im Ernstfall koordiniert. Hilfsmittel: Sicherheitsordner, Checklisten für 26 Notfall- und Krisenarten, Notfallapp, Weiterbildungen. Notruf 117/118/144; Care Kanton Zürich über die Polizei; Beitritt zum Kantonalen Bedrohungsmanagement empfohlen.",
+     "retrieved_at": "2026-11-22"
+    },
+    {
+     "title": "Umgang mit Krisen",
+     "publisher_name": "Bildungsdirektion Kanton Zürich",
+     "url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/praevention-gesundheit-in-schule/schulinfo-krisensituationen.html",
+     "note": "Es gibt kein kantonales Kriseninterventions-Angebot für Schulen; Kriseninterventionen führen vorwiegend private Dienstleister durch. Übersicht über Anlaufstellen und Fachstellen.",
+     "retrieved_at": "2026-11-22"
+    },
+    {
+     "title": "Suizidprävention an Schulen",
+     "publisher_name": "Bildungsdirektion Kanton Zürich",
+     "url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/praevention-gesundheit-in-schule/schulinfo-suizidpraevention.html",
+     "note": "Unterstützungsangebote für Schulen im Umgang mit suizidalen Krisen.",
+     "retrieved_at": "2026-11-22"
+    }
+   ],
+   "provisions": [
+    {
+     "citation": "LS 412.101",
+     "location": "§ 54."
+    },
+    {
+     "citation": "LS 170.1",
+     "location": "§ 6."
+    },
+    {
+     "citation": "SR 822.11",
+     "location": "Art. 6"
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 51."
+    }
+   ],
+   "match_pattern": "notfall|krisen|sicherheitskonzept|evakuation|alarm|brandschutz|notfallorganisation",
+   "exclusion_pattern": "feuerwehr.*(gebuehr|sold)|zivilschutzanlage|kredit|beschluss"
+  },
+  {
+   "topic_key": "praxis-kommunikation",
+   "title": "Kommunikation, Fotos & Daten",
+   "audience": "school_leaders",
+   "questions": [
+    "Darf die Schule Fotos und Videos von Schülerinnen und Schülern veröffentlichen, welche Messenger sind zulässig?",
+    "Worüber muss die Schule informieren, wer erhält Einsicht?"
+   ],
+   "position": 16,
+   "hierarchy_keys": [
+    "datenschutz",
+    "eltern",
+    "gemeindeorganisation"
+   ],
+   "notes": [
+    {
+     "title": "Datenschutz & Archivierung (Volksschule)",
+     "publisher_name": "Volksschulamt",
+     "url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation/volksschule-datenschutz-archivierung.html",
+     "note": "Massgebend sind IDG und IDV. Hilfsmittel: «Umgang mit Schülerdaten», Datenschutzlexikon für Volksschulen, Musteraktenpläne des Staatsarchivs; Rechtsberatung beim Rechtsdienst des Volksschulamts.",
+     "retrieved_at": "2026-11-22"
+    },
+    {
+     "title": "Datenschutzlexikon für Volksschulen",
+     "publisher_name": "Datenschutzbeauftragte des Kantons Zürich",
+     "url": "https://www.datenschutz.ch/lexika/volksschule",
+     "note": "Stichworte von A bis Z, u. a. zu Fotos auf der Schulwebsite, Einwilligung, Messengern und Weitergabe von Schülerdaten.",
+     "retrieved_at": "2026-11-22"
+    },
+    {
+     "title": "Umgang mit Schülerdaten (PDF)",
+     "publisher_name": "Volksschulamt",
+     "url": "https://www.zh.ch/content/dam/zhweb/bilder-dokumente/themen/bildung/informationen-fuer-schulen/informationen-fuer-die-volksschule/organisation/datenschutz-archivierung-urheberrecht/umgang_mit_schuelerdaten.pdf",
+     "note": "Merkblatt zur Bearbeitung und Weitergabe von Daten über Schülerinnen und Schüler.",
+     "retrieved_at": "2026-11-22"
+    }
+   ],
+   "provisions": [
+    {
+     "citation": "LS 170.4",
+     "location": "§ 14."
+    },
+    {
+     "citation": "LS 170.4",
+     "location": "§ 16."
+    },
+    {
+     "citation": "LS 170.4",
+     "location": "§ 17."
+    },
+    {
+     "citation": "LS 170.4",
+     "location": "§ 20."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 3 a."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 54."
+    }
+   ],
+   "match_pattern": "kommunikation|foto|video|website|soziale medien|social media|messenger|oeffentlichkeitsarbeit|informationskonzept|einwilligung",
+   "exclusion_pattern": "videoueberwach|baugesuch"
+  },
+  {
+   "topic_key": "praxis-partizipation",
+   "title": "Schülerpartizipation & Mitwirkung",
+   "audience": "school_leaders",
+   "questions": [
+    "Wie beteiligen wir Schülerinnen und Schüler (Klassenrat, Schülerrat)?",
+    "Wo muss die Partizipation geregelt sein?"
+   ],
+   "position": 17,
+   "hierarchy_keys": [
+    "eltern",
+    "organisation",
+    "disziplin"
+   ],
+   "notes": [
+    {
+     "title": "Partizipation von Schülerinnen und Schülern, Elternmitwirkung",
+     "publisher_name": "Volksschulamt",
+     "url": "https://www.zh.ch/de/bildung/informationen-fuer-schulen/informationen-volksschule/volksschule-organisation/schulinfo-eltern-schuelerinnen-und-schueler/partizipation-schuelerinnen-schueler-elternmitwirkung.html",
+     "note": "Die Schulkonferenz denkt über die Mitwirkung von Eltern und Schülerinnen und Schülern nach und berücksichtigt das Schulprogramm; der Lehrplan 21 sieht Mitbestimmung in Klasse und Schule vor. Organisationsstatut und Schulprogramm regeln die Partizipation (§ 50 Abs. 3 VSG).",
+     "retrieved_at": "2026-11-22"
+    }
+   ],
+   "provisions": [
+    {
+     "citation": "SR 0.107",
+     "location": "Art. 12"
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 50."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 41 b."
+    },
+    {
+     "citation": "LS 412.100",
+     "location": "§ 45."
+    }
+   ],
+   "match_pattern": "partizipation|schuelerrat|schuelerparlament|schuelerforum|klassenrat|mitsprache",
+   "exclusion_pattern": "personal"
   }
  ],
  "mandatory_documents": [

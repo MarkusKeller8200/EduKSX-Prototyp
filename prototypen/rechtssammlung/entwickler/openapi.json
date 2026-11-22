@@ -3551,6 +3551,7 @@
               "example": {
                 "topic_key": "Beispiel",
                 "title": "Beispiel",
+                "audience": "parents",
                 "questions": [
                   "Beispiel"
                 ],
@@ -6043,6 +6044,10 @@
               "example": {
                 "topic_key": "Beispiel",
                 "title": "Beispiel",
+                "audience": "parents",
+                "notes": [
+                  "Beispiel"
+                ],
                 "questions": [
                   "Beispiel"
                 ],
@@ -9184,13 +9189,33 @@
             "description": "z. B. «Absenzen, Urlaub, Jokertage»",
             "x-eduksx-data-class": "public"
           },
+          "audience": {
+            "type": "string",
+            "x-extensible-enum": [
+              "parents",
+              "school_leaders"
+            ],
+            "x-eduksx-labels": {
+              "parents": "Eltern (Elternwegweiser)",
+              "school_leaders": "Schulleitungen (Praxisthemen)"
+            },
+            "title": "Zielgruppe",
+            "description": "Elternwegweiser oder Praxisthemen",
+            "x-eduksx-data-class": "public"
+          },
+          "audience_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Zielgruppe (Text)",
+            "description": "deutsches Label zu «audience» in der gewählten Sprache"
+          },
           "questions": {
             "type": "array",
             "items": {
               "type": "string"
             },
             "title": "Fragen",
-            "description": "typische Fragen von Eltern",
+            "description": "typische Fragen von Eltern bzw. Schulleitungen",
             "x-eduksx-data-class": "public"
           },
           "match_pattern": {
@@ -10804,6 +10829,34 @@
             "title": "Thema",
             "description": "Anzeige"
           },
+          "audience": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "parents",
+              "school_leaders"
+            ],
+            "x-eduksx-labels": {
+              "parents": "Eltern",
+              "school_leaders": "Schulleitungen"
+            },
+            "title": "Zielgruppe",
+            "description": "Vorgabe Eltern; Praxisthemen = Schulleitungen"
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/GuideTopicNote"
+                }
+              ]
+            },
+            "title": "Hinweise",
+            "description": "kantonaler Stellen mit Quelle (Klasse C)"
+          },
           "questions": {
             "type": "array",
             "items": {
@@ -10871,6 +10924,49 @@
           "title",
           "questions",
           "provisions"
+        ]
+      },
+      "GuideTopicNote": {
+        "type": "object",
+        "title": "Hinweis mit Quelle",
+        "description": "Erläuterung einer kantonalen Stelle – ergänzende Quelle, keine Rechtsgrundlage",
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Titel",
+            "description": "der Quelle"
+          },
+          "publisher_name": {
+            "type": "string",
+            "title": "Herausgeber",
+            "description": "z. B. «Volksschulamt»"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "title": "Quelle",
+            "description": "Originaladresse"
+          },
+          "note": {
+            "type": "string",
+            "title": "Hinweis",
+            "description": "in eigenen Worten"
+          },
+          "retrieved_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "title": "Abgerufen am",
+            "description": "Stand"
+          }
+        },
+        "required": [
+          "title",
+          "publisher_name",
+          "url",
+          "note"
         ]
       },
       "MandatoryDocumentEntry": {

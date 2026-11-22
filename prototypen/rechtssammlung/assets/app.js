@@ -123,6 +123,7 @@
         h("li", null, eintrag(link("hierarchie"), "Normenhierarchien", r.art === "hierarchie", h("span", { cls: "anz", text: String(D.hierarchien.length) }), "Je Thema vom Bundesrecht bis zum Erlass der Gemeinde")),
         h("li", null, eintrag(link("texte"), "Textfassungen & Änderungen", r.art === "texte" || r.art === "text", h("span", { cls: "anz", text: String(Object.keys(D.texte.erlasse).length) }))),
         h("li", null, eintrag(link("aenderungen"), "Rechtsänderungen & Prüfliste", r.art === "aenderungen", h("span", { cls: "anz", text: String(D.monitoring.aenderungen.length) }), "Was sich in den Erlassen geändert hat und welche kommunalen Dokumente zu prüfen sind")),
+        h("li", null, eintrag(link("praxis"), "Praxisthemen Schulleitung", r.art === "praxis", h("span", { cls: "anz", text: String(D.praxisthemen.length) }), "KI, Prävention, Notfall, Kommunikation, Partizipation – Rechtsstellen und Hinweise kantonaler Stellen")),
         h("li", null, eintrag(link("eltern"), "Elternwegweiser", r.art === "eltern", h("span", { cls: "anz", text: String(D.elternwegweiser.length) }))),
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Gemeinde-Sammlungen" }),
         h("li", null, eintrag(link("abgleich"), "Versionen & Abgleich", r.art === "abgleich")),
@@ -1090,6 +1091,39 @@
     return h("div", { cls: "small mz-pflicht", title: z.grund }, ["P", "B", "O"].map(function (st) { return h("span", { cls: "nowrap", text: st + " " + z.stufen[st][0] + "/" + z.stufen[st][1] + " " }); }),
       z.relevanz !== "ja" ? h("div", { cls: "muted", text: z.relevanz === "nein" ? "Katalog nicht anwendbar" : "teilweise anwendbar" }) : null);
   }
+  function praxisSeite(orgId) {
+    var org = orgId && ORG[orgId] ? ORG[orgId] : null, W = D.praxisthemen;
+    var titelH = {}; D.hierarchien.forEach(function (x) { titelH[x.id] = x.kurz || x.titel; });
+    var sel = h("select", { "aria-label": "Gemeinde oder Schule wählen", onchange: function () { location.hash = link("praxis", this.value || null); } },
+      [h("option", { value: "", text: "Gemeinde oder Schule wählen …" })].concat(D.organisationen.slice().sort(function (a, b) { return a.kurz.localeCompare(b.kurz, "de"); }).map(function (o) {
+        var opt = h("option", { value: o.id, text: o.kurz + " (" + o.typ + ")" }); if (org && org.id === o.id) opt.selected = true; return opt; })));
+    var inhalt = h("nav", { cls: "chips", "aria-label": "Themen" }, W.map(function (f) { return h("a", { cls: "chip", href: "#praxis-" + f.id, onclick: function (ev) { ev.preventDefault(); var z = document.getElementById("praxis-" + f.id); if (z) z.scrollIntoView({ behavior: "smooth" }); }, text: f.titel }); }));
+    return [kopf("Praxisthemen für Schulleitungen" + (org ? " · " + org.kurz : ""), "Häufige Fragen aus dem Schulalltag – mit den massgebenden Rechtsstellen, den Normenhierarchien, den Regelungen der Gemeinde und Hinweisen kantonaler Stellen."),
+      h("p", { cls: "meldung info" }, h("strong", { text: "Rechtsstellen und Hinweise getrennt: " }), "Verbindlich sind die Rechtsstellen (Bund, Kanton). Die Hinweise kantonaler Stellen (Volksschulamt, Datenschutzbeauftragte, Fachstellen) sind ergänzende Quellen der Klasse C – Erläuterungen und Hilfsmittel, keine Rechtsgrundlage. Massgebend ist die verlinkte Originalquelle."),
+      h("div", { cls: "filterzeile" }, h("label", { cls: "small", text: "Regelungen anzeigen für " }), sel, org ? h("a", { cls: "small", href: link("org", org.id), text: "Rechtssammlung " + org.kurz + " →" }) : null),
+      inhalt,
+      W.map(function (f) {
+        var docs = org ? f.dokumente.filter(function (d) { return d.org === org.id; }) : [];
+        var anzOrgs = {}; f.dokumente.forEach(function (d) { anzOrgs[d.org] = 1; });
+        return h("section", { cls: "karte eltern-frage", id: "praxis-" + f.id },
+          h("h2", { text: f.titel }),
+          h("ul", { cls: "fragen" }, f.fragen.map(function (q) { return h("li", { text: q }); })),
+          h("h3", { text: "Was gilt? – Rechtsstellen" }),
+          h("div", null, nachEbene(f.stellen, function (st) { return st.fundstelle; }).map(function (st) {
+            return h("details", { cls: "beleg-block" }, h("summary", null, h("strong", { text: st.fundstelle + " " + st.stelle.replace(/\.$/, "") }), " – " + st.titel),
+              h("p", { cls: "beleg", text: st.text }), h("p", { cls: "small" }, h("a", { href: link("text", st.ls, st.nachtrag), text: "Im Erlass lesen →" })));
+          })),
+          f.hinweise.length ? [h("h3", { text: "Hinweise kantonaler Stellen" }), h("ul", { cls: "hinweise" }, f.hinweise.map(function (x) {
+            return h("li", null, extern(x.url, x.titel + " ↗"), " ", h("span", { cls: "badge neutral", title: "Ergänzende Quelle (Klasse C) – keine Rechtsgrundlage", text: "Klasse C" }),
+              h("div", { cls: "small muted", text: x.herausgeber }), h("div", { cls: "small", text: x.text }));
+          }))] : null,
+          h("h3", { text: org ? "Regelungen in " + org.name : "Regelungen der Gemeinden" }),
+          org ? (docs.length ? h("ul", null, docs.map(function (d) { return h("li", null, d.url ? extern(d.url, d.titel + " ↗") : d.titel); }))
+                             : h("p", { cls: "muted small", text: "In der erfassten Rechtssammlung nicht gefunden – oft als internes Konzept geführt (Dokumenttyp B)." }))
+              : h("p", { cls: "muted small", text: f.dokumente.length ? "In " + Object.keys(anzOrgs).length + " der erfassten Organisationen gefunden – oben eine Gemeinde oder Schule wählen." : "In den erfassten Rechtssammlungen nicht gefunden – meist als internes Konzept oder Führungsdokument geregelt (Dokumenttyp B)." }),
+          h("p", { cls: "small" }, h("span", { cls: "muted", text: "Normenhierarchie: " }), f.themen.map(function (t, i) { return [i ? ", " : "", h("a", { href: link("hierarchie", t, org ? org.id : null), text: titelH[t] || t })]; })));
+      })];
+  }
   function elternSeite(orgId) {
     var org = orgId && ORG[orgId] ? ORG[orgId] : null, W = D.elternwegweiser;
     var titelH = {}; D.hierarchien.forEach(function (x) { titelH[x.id] = x.titel; });
@@ -1300,6 +1334,7 @@
     else if (r.art === "pflicht") inhalt = pflichtSeite(r.a);
     else if (r.art === "aenderungen") inhalt = aenderungenSeite(r.a, r.b);
     else if (r.art === "eltern") inhalt = elternSeite(r.a);
+    else if (r.art === "praxis") inhalt = praxisSeite(r.a);
     else if (r.art === "grundlagen") inhalt = grundlagen();
     else if (r.art === "rechtsgrundlagen") inhalt = rechtsgrundlagenAnsicht();
     else if (r.art === "herkunft") inhalt = herkunftsliste();

@@ -207,4 +207,6 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Vollständigkeit, Anzeige in der Struktur-Matrix; Datenmodell `mandatory_document_assessments` und API (#61).
 - EduKSX-Codex 0.34.0: Rechtsänderungs-Monitoring – Seite «Rechtsänderungen & Prüfliste» mit geänderten Stellen je Erlass,
   betroffenen Verbindungen, Elternwegweiser und kommunalen Dokumenten zu prüfen; Datenmodell `change_review_items`, API `/legal-changes` (#62).
+- EduKSX-Codex 0.35.0: Praxisthemen für Schulleitungen – KI, Prävention, Notfall, Kommunikation, Partizipation mit Rechtsstellen,
+  Normenhierarchien, Regelungen der Gemeinde und Hinweisen kantonaler Stellen mit Quelle (Klasse C); Datenmodell und Import (#63).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

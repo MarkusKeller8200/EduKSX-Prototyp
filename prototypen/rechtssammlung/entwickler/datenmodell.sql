@@ -608,7 +608,8 @@ CREATE TABLE parent_guide_topics (
     id                      uuid PRIMARY KEY,
     topic_key               text NOT NULL UNIQUE,            -- Schlüssel | z. B. «absenzen»
     title                   text NOT NULL,                   -- Thema | z. B. «Absenzen, Urlaub, Jokertage»
-    questions               text[] NOT NULL DEFAULT '{}',    -- Fragen | typische Fragen von Eltern
+    audience                text NOT NULL DEFAULT 'parents' CHECK (audience IN ('parents','school_leaders')),   -- Zielgruppe | Elternwegweiser oder Praxisthemen | öffentlich | parents=Eltern (Elternwegweiser); school_leaders=Schulleitungen (Praxisthemen)
+    questions               text[] NOT NULL DEFAULT '{}',    -- Fragen | typische Fragen von Eltern bzw. Schulleitungen
     match_pattern           text,                            -- Suchmuster | Reglemente und Formulare der Gemeinde
     exclusion_pattern       text,                            -- Ausschlussmuster | Treffer, die nicht passen
     position                integer NOT NULL DEFAULT 0,      -- Reihenfolge | Anzeige
@@ -631,6 +632,22 @@ CREATE TABLE parent_guide_topic_hierarchies (
     norm_hierarchy_id       uuid NOT NULL REFERENCES norm_hierarchies(id) ON DELETE CASCADE,      -- Normenhierarchie | Verweis
     position                integer NOT NULL DEFAULT 0,      -- Reihenfolge | Anzeige
     PRIMARY KEY (parent_guide_topic_id, norm_hierarchy_id)
+);
+
+-- Hinweis einer kantonalen Stelle zu einem Thema (Erläuterung, Quellenklasse C – keine Rechtsgrundlage)
+-- Geltungsbereich: global · Datenklasse: öffentlich
+-- Herkunft/Verwendung: Recherche (Mensch oder KI) mit Quelle; Praxisthemen für Schulleitungen und Elternwegweiser
+CREATE TABLE guide_topic_notes (
+    id                      uuid PRIMARY KEY,
+    parent_guide_topic_id   uuid NOT NULL REFERENCES parent_guide_topics(id) ON DELETE CASCADE,   -- Thema | Verweis
+    title                   text NOT NULL,                   -- Titel | Titel der Quelle, z. B. «Sicherheit an Schulen»
+    publisher_name          text NOT NULL,                   -- Herausgeber | z. B. «Volksschulamt»
+    url                     text NOT NULL,                   -- Quelle | Adresse der Originalquelle
+    note                    text NOT NULL,                   -- Hinweis | Zusammenfassung in eigenen Worten
+    source_class            char(1) NOT NULL DEFAULT 'C',    -- Quellenklasse | C = ergänzende Quelle
+    retrieved_at            date,                            -- Abgerufen am | Stand der Quelle
+    position                integer NOT NULL DEFAULT 0,      -- Reihenfolge | Anzeige
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid
 );
 
 -- Rechtsstelle zu einem Thema des Elternwegweisers
@@ -757,6 +774,7 @@ CREATE INDEX mandatory_document_assessments_mandatory_document_id_index ON manda
 CREATE INDEX matrix_rows_mandatory_document_id_index ON matrix_rows (mandatory_document_id);
 CREATE INDEX matrix_cells_publisher_id_index ON matrix_cells (publisher_id);
 CREATE INDEX parent_guide_topics_content_import_id_index ON parent_guide_topics (content_import_id);
+CREATE INDEX guide_topic_notes_parent_guide_topic_id_index ON guide_topic_notes (parent_guide_topic_id);
 CREATE INDEX parent_guide_provisions_parent_guide_topic_id_index ON parent_guide_provisions (parent_guide_topic_id);
 CREATE INDEX parent_guide_provisions_legal_act_id_index ON parent_guide_provisions (legal_act_id);
 CREATE INDEX parent_guide_provisions_act_version_id_index ON parent_guide_provisions (act_version_id);
@@ -1214,7 +1232,8 @@ COMMENT ON TABLE parent_guide_topics IS 'Thema des Elternwegweisers (Fragen von 
 COMMENT ON COLUMN parent_guide_topics.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN parent_guide_topics.topic_key IS 'Schlüssel – z. B. «absenzen»';
 COMMENT ON COLUMN parent_guide_topics.title IS 'Thema – z. B. «Absenzen, Urlaub, Jokertage»';
-COMMENT ON COLUMN parent_guide_topics.questions IS 'Fragen – typische Fragen von Eltern';
+COMMENT ON COLUMN parent_guide_topics.audience IS 'Zielgruppe – Elternwegweiser oder Praxisthemen';
+COMMENT ON COLUMN parent_guide_topics.questions IS 'Fragen – typische Fragen von Eltern bzw. Schulleitungen';
 COMMENT ON COLUMN parent_guide_topics.match_pattern IS 'Suchmuster – Reglemente und Formulare der Gemeinde';
 COMMENT ON COLUMN parent_guide_topics.exclusion_pattern IS 'Ausschlussmuster – Treffer, die nicht passen';
 COMMENT ON COLUMN parent_guide_topics.position IS 'Reihenfolge – Anzeige';
@@ -1237,6 +1256,23 @@ COMMENT ON TABLE parent_guide_topic_hierarchies IS 'Normenhierarchie zu einem Th
 COMMENT ON COLUMN parent_guide_topic_hierarchies.parent_guide_topic_id IS 'Thema – Verweis';
 COMMENT ON COLUMN parent_guide_topic_hierarchies.norm_hierarchy_id IS 'Normenhierarchie – Verweis';
 COMMENT ON COLUMN parent_guide_topic_hierarchies.position IS 'Reihenfolge – Anzeige';
+COMMENT ON TABLE guide_topic_notes IS 'Hinweis einer kantonalen Stelle zu einem Thema (Erläuterung, Quellenklasse C – keine Rechtsgrundlage) – Recherche (Mensch oder KI) mit Quelle; Praxisthemen für Schulleitungen und Elternwegweiser';
+COMMENT ON COLUMN guide_topic_notes.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN guide_topic_notes.parent_guide_topic_id IS 'Thema – Verweis';
+COMMENT ON COLUMN guide_topic_notes.title IS 'Titel – Titel der Quelle, z. B. «Sicherheit an Schulen»';
+COMMENT ON COLUMN guide_topic_notes.publisher_name IS 'Herausgeber – z. B. «Volksschulamt»';
+COMMENT ON COLUMN guide_topic_notes.url IS 'Quelle – Adresse der Originalquelle';
+COMMENT ON COLUMN guide_topic_notes.note IS 'Hinweis – Zusammenfassung in eigenen Worten';
+COMMENT ON COLUMN guide_topic_notes.source_class IS 'Quellenklasse';
+COMMENT ON COLUMN guide_topic_notes.retrieved_at IS 'Abgerufen am – Stand der Quelle';
+COMMENT ON COLUMN guide_topic_notes.position IS 'Reihenfolge – Anzeige';
+COMMENT ON COLUMN guide_topic_notes.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN guide_topic_notes.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN guide_topic_notes.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN guide_topic_notes.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN guide_topic_notes.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN guide_topic_notes.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN guide_topic_notes.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
 COMMENT ON TABLE parent_guide_provisions IS 'Rechtsstelle zu einem Thema des Elternwegweisers – Redaktion bzw. Import (Erlass + Stelle); Auszug aus der geltenden Fassung im Elternwegweiser';
 COMMENT ON COLUMN parent_guide_provisions.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN parent_guide_provisions.parent_guide_topic_id IS 'Thema – Verweis';

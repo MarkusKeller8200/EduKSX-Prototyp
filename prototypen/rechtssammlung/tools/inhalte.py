@@ -30,8 +30,9 @@ BLAETTER = {
     "beschluesse":      ["hierarchy_key", "node_key", "title", "url", "note"],
     "verbindungen":     ["hierarchy_key", "from_node_key", "to_node_key", "relation", "relation_type", "status"],
     "belege":           ["hierarchy_key", "from_node_key", "to_node_key", "citation", "location", "side"],
-    "elternthemen":     ["topic_key", "title", "position", "questions", "hierarchy_keys", "match_pattern", "exclusion_pattern", "research_note"],
+    "elternthemen":     ["topic_key", "title", "audience", "position", "questions", "hierarchy_keys", "match_pattern", "exclusion_pattern", "research_note"],
     "elternstellen":    ["topic_key", "citation", "location"],
+    "hinweise":         ["topic_key", "title", "publisher_name", "url", "note", "retrieved_at"],
     "pflichtdokumente": ["document_key", "category_number", "category_title", "document", "obligation", "intake", "document_class", "source", "source_url",
                          "match_pattern", "uncertain_pattern", "exclusion_pattern", "remark"],
     "rechtsgrundlagen": ["number", "legal_area_number", "citation", "title", "location", "relevance", "source_url"],
@@ -44,8 +45,9 @@ BESCHREIBUNG = {
     "beschluesse": "Liste «Beschlüsse und Erlasse» eines Knotens (z. B. Bildungsratsbeschlüsse)",
     "verbindungen": "Von = untergeordneter Knoten, Nach = übergeordneter Knoten; relation_type: basis, implementation, subsidiary, reference, not_applicable",
     "belege": "Belegstellen einer Verbindung: Erlass (citation) und Stelle (z. B. «§ 41 a.», «Art. 62», «Ingress», «suche:Art. 4 ¹ Im …»); side: from, to, other",
-    "elternthemen": "Je Thema des Elternwegweisers eine Zeile; Fragen und Hierarchie-Schlüssel getrennt mit « | »",
-    "elternstellen": "Rechtsstellen zu einem Elternthema (Erlass und Stelle)",
+    "elternthemen": "Je Thema eine Zeile; audience parents (Elternwegweiser) oder school_leaders (Praxisthemen); Fragen und Hierarchie-Schlüssel getrennt mit « | »",
+    "elternstellen": "Rechtsstellen zu einem Elternthema bzw. Praxisthema (Erlass und Stelle)",
+    "hinweise": "Hinweise kantonaler Stellen zu einem Thema – Quelle (url) ist Pflicht; ergänzende Quelle Klasse C, keine Rechtsgrundlage",
     "pflichtdokumente": "Pflichtkatalog Schulgemeinde; obligation P (Pflicht), B (bedingt), O (optional); document_class A, A/B, B, C (Dokumenttyp, Vorschlag ZU PRÜFEN)",
     "rechtsgrundlagen": "Verzeichnis «Rechtsgrundlagen Volksschule»; number ist der Schlüssel",
     "loeschen": "Zu löschende Einträge: content_type (norm_hierarchies, parent_guide_topics, mandatory_documents, legal_bases) und Schlüssel",
@@ -94,9 +96,10 @@ def export_prototyp():
             kanten.append(e)
         paket["norm_hierarchies"].append({"hierarchy_key": sp["id"], "title": sp["titel"], "short_title": B.KURZTITEL.get(sp["id"]),
                                           "hierarchy_group": B.GRUPPEN.get(sp["id"], ""), "levels": sp["ebenen"], "position": pos, "nodes": knoten, "edges": kanten})
-    for pos, f in enumerate(B.ELTERNFRAGEN):
+    for pos, (f, zielgruppe) in enumerate([(x, "parents") for x in B.ELTERNFRAGEN] + [(x, "school_leaders") for x in B.PRAXISTHEMEN]):
         paket["parent_guide_topics"].append({k: v for k, v in {
-            "topic_key": f["id"], "title": f["titel"], "questions": f["fragen"], "position": pos, "hierarchy_keys": f["themen"],
+            "topic_key": f["id"] if zielgruppe == "parents" else "praxis-" + f["id"], "title": f["titel"], "audience": zielgruppe, "questions": f["fragen"], "position": pos, "hierarchy_keys": f["themen"],
+            "notes": [{"title": x["titel"], "publisher_name": x["herausgeber"], "url": x["url"], "note": x["text"], "retrieved_at": "2026-11-22"} for x in f.get("hinweise", [])],
             "provisions": [{"citation": fs_von(nr), "location": st} for nr, st in f["stellen"]],
             "match_pattern": f.get("muster"), "exclusion_pattern": f.get("ohne")}.items() if v not in (None, [])})
     pk = B.pflichtkatalog()
@@ -136,6 +139,8 @@ def paket_zu_tabellen(p):
         T["elternthemen"].append({**{k: t.get(k) for k in BLAETTER["elternthemen"]}, "questions": liste(t.get("questions")), "hierarchy_keys": liste(t.get("hierarchy_keys"))})
         for s in t.get("provisions", []):
             T["elternstellen"].append({"topic_key": t["topic_key"], "citation": s["citation"], "location": s["location"]})
+        for n in t.get("notes", []):
+            T["hinweise"].append({"topic_key": t["topic_key"], **{k: n.get(k) for k in BLAETTER["hinweise"][1:]}})
     for d in p.get("mandatory_documents", []):
         T["pflichtdokumente"].append({k: d.get(k) for k in BLAETTER["pflichtdokumente"]})
     for r in p.get("legal_bases", []):
@@ -189,6 +194,11 @@ def tabellen_zu_paket(T):
     for r in T.get("elternstellen", []):
         r = sauber(r); t = TH.get(r.get("topic_key"))
         if t is not None: t["provisions"].append({"citation": r.get("citation"), "location": r.get("location")})
+    for r in T.get("hinweise", []):
+        r = sauber(r); t = TH.get(r.get("topic_key"))
+        if t is not None:
+            if "retrieved_at" in r: r["retrieved_at"] = str(r["retrieved_at"])[:10]
+            t.setdefault("notes", []).append({k: r[k] for k in BLAETTER["hinweise"][1:] if k in r})
     for r in T.get("pflichtdokumente", []):
         r = sauber(r)
         if r: p["mandatory_documents"].append({**r, "category_number": zahl(r.get("category_number"))})
@@ -352,6 +362,11 @@ def pruefen(p, mit_texten=True):
             if hkeys and k not in hkeys: meld("parent_guide_topic", s, f"Normenhierarchie «{k}» nicht im Paket – muss bereits bestehen", "warning")
         regex("parent_guide_topic", s, "match_pattern", t.get("match_pattern")); regex("parent_guide_topic", s, "exclusion_pattern", t.get("exclusion_pattern"))
         for x in t.get("provisions", []): stelle("parent_guide_topic", s, x.get("citation"), x.get("location"))
+        if t.get("audience") not in (None, "parents", "school_leaders"): meld("parent_guide_topic", s, f"Zielgruppe «{t.get('audience')}» – erlaubt parents, school_leaders")
+        for n in t.get("notes", []):
+            if not n.get("url") or not str(n["url"]).startswith("http"): meld("parent_guide_topic", s, f"Hinweis «{n.get('title')}» ohne Quelle (url)")
+            for f in ("title", "publisher_name", "note"):
+                if not n.get(f): meld("parent_guide_topic", s, f"Hinweis «{n.get('title')}»: Pflichtfeld «{f}» fehlt")
     dk = set()
     for d in p.get("mandatory_documents", []):
         s = d.get("document_key") or "?"
@@ -434,10 +449,13 @@ def als_sql(p):
                     L.append(ins("hierarchy_edge_evidences", {"id": U(), "hierarchy_edge_id": eid, "legal_act_id": act(b["citation"]), "location": b["location"], "side": b.get("side", "from"), "position": j}))
     for t in p.get("parent_guide_topics", []):
         tid = U()
-        L.append(ins("parent_guide_topics", {"id": tid, "topic_key": t["topic_key"], "title": t["title"], "questions": t["questions"], "match_pattern": t.get("match_pattern"),
+        L.append(ins("parent_guide_topics", {"id": tid, "topic_key": t["topic_key"], "title": t["title"], "audience": t.get("audience", "parents"), "questions": t["questions"], "match_pattern": t.get("match_pattern"),
                                              "exclusion_pattern": t.get("exclusion_pattern"), "position": t.get("position", 0), "research_note": t.get("research_note"), **red}))
         for i, k in enumerate(t.get("hierarchy_keys", [])):
             L.append(ins("parent_guide_topic_hierarchies", {"parent_guide_topic_id": tid, "norm_hierarchy_id": H[k], "position": i}))
+        for i, n in enumerate(t.get("notes", [])):
+            L.append(ins("guide_topic_notes", {"id": U(), "parent_guide_topic_id": tid, "title": n["title"], "publisher_name": n["publisher_name"], "url": n["url"], "note": n["note"],
+                                               "retrieved_at": n.get("retrieved_at"), "position": i}))
         for i, x in enumerate(t.get("provisions", [])):
             L.append(ins("parent_guide_provisions", {"id": U(), "parent_guide_topic_id": tid, "legal_act_id": act(x["citation"]), "location": x["location"], "position": i}))
     K = {}

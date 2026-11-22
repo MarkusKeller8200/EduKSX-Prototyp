@@ -36,6 +36,15 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Codex 0.35.0 – Praxisthemen, Phase 5 und Abschluss des Plans (#63)
+
+- Phase 5 des Plans, damit sind alle Phasen umgesetzt (Whiteboard «EduKSX-Codex – Plan Ausbau Normenhierarchie»).
+- `PRAXISTHEMEN` in build.py, gemeinsame Funktion `wegweiser()` mit dem Elternwegweiser. Fünf Themen: KI & digitale Bildung (IDG §§ 7, 8, VSG § 31, URG Art. 19), Prävention, Gewalt & Mobbing (KRK Art. 19, VSG §§ 50, 51, VSV § 54, KJHG § 19, ZGB Art. 314d), Notfall, Krise & Sicherheit (VSV § 54, HG § 6, ArG Art. 6, VSG § 51), Kommunikation, Fotos & Daten (IDG §§ 14, 16, 17, 20, VSG §§ 3 a, 54), Schülerpartizipation (KRK Art. 12, VSG §§ 41 b, 45, 50).
+- 13 Hinweise kantonaler Stellen mit Quelle, recherchiert am 22.11.2026 auf zh.ch und datenschutz.ch (VSA KI-Leitsätze, Innovation-Sandbox KI, Gewaltprävention, Beauftragter Gewaltprävention/KBM, FSB-Qualitätsanspruch Prävention, Suchtprävention, Sicherheit an Schulen, Umgang mit Krisen, Suizidprävention, Datenschutz & Archivierung, Datenschutzlexikon, Umgang mit Schülerdaten, Partizipation). Getrennt von den Rechtsstellen, gekennzeichnet als Klasse C.
+- Seite `#/praxis/<org>`, Menü «Praxisthemen Schulleitung». Kommunale Beispiele mit engen Suchmustern (Schützenstube, Forsthaus, Kredite ausgeschlossen).
+- Datenmodell: `parent_guide_topics.audience` (parents, school_leaders), Tabelle `guide_topic_notes`; API-Schemas GuideTopicNote, ParentGuideTopicDocument.audience/notes; Importblatt «hinweise», Spalte «audience»; Rundlauf und Ladetest ok. KI-RECHERCHE.md: Hinweise nur mit Quelle.
+- Entscheide 22.11.2026 im Pflichtenheft: Gruppennamen bestätigt (10), A/B/C bleibt Vorschlag bis zum Review (8), Hinweise in Praxisthemen mit Quellen (11). CDX-F-29.
+
 ### Sitzung 2026-11-20 – Codex 0.34.0 – Rechtsänderungs-Monitoring, Phase 6 (#62)
 
 - Phase 6 des Plans. `rechtsaenderungen()` in build.py: je Erlass Unterschied der zwei jüngsten geltenden Fassungen (texte/<nr>/delta_*.json), Absätze den Paragrafen zugeordnet; reine Umbrüche der PDF-Umwandlung (gleiche Zeichen) ausgeblendet. 37 Erlasse mit inhaltlicher Änderung.

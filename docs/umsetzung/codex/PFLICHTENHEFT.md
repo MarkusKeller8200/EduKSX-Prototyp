@@ -50,6 +50,7 @@ Geschäftsverwaltung/Beschlüsse, allgemeine Dokumentablage.
 | CDX-F-26 | Dokumenttyp A/B/C je Pflichtdokument und je kommunalem Dokument: A Rechtserlass (gehört in die Rechtssammlung, § 7 Abs. 2 GG), B verbindliches Führungsdokument, C ergänzendes Dokument; A/B je nach Ausgestaltung. Vorschlag bis zur fachlichen Abnahme sichtbar als «zu prüfen». | SOLL | Pflichtkatalog, Struktur-Matrix, Dokumentlisten |
 | CDX-F-27 | Je Organisation und Pflichtdokument «keine Relevanz» setzen, mit Grund (gibt es nicht, muss nicht geregelt werden, anderswo geregelt, anderer Grund) und Bemerkung; nicht relevante Einträge zählen nicht zur Vollständigkeit und erscheinen in der Struktur-Matrix als «keine Relevanz». Recht: Redaktion der Organisation. | MUSS | Pflichtkatalog «Für Organisation erfassen» (im Prototyp nur im Browser gespeichert) |
 | CDX-F-28 | Rechtsänderungs-Monitoring: bei neuer Fassung die geänderten Stellen bestimmen (reine Umbrüche der Umwandlung ausgenommen), Verbindungen mit geänderter Belegstelle und Rechtsstellen im Elternwegweiser kennzeichnen und für die kommunalen Dokumente der betroffenen Knoten Prüfaufträge anlegen (zu prüfen bzw. zur Kenntnis); Status je Prüfauftrag (offen, keine Anpassung, Anpassung nötig, angepasst, nicht relevant); Mitteilung an die Organisation. | MUSS | Seite «Rechtsänderungen & Prüfliste» (Prüfstatus im Prototyp nur im Browser) |
+| CDX-F-29 | Praxisthemen für Schulleitungen (KI, Prävention, Notfall, Kommunikation, Partizipation): Fragen, Rechtsstellen, Normenhierarchien, Regelungen der Gemeinde und Hinweise kantonaler Stellen mit Quelle, als ergänzende Quelle (Klasse C) getrennt von den Rechtsstellen. | SOLL | Seite «Praxisthemen Schulleitung» |
 
 ### 2.2 Nicht fachliche Anforderungen
 
@@ -184,5 +185,7 @@ Zusätzlich zu den gemeinsamen Prüfpunkten in [`../README.md`](../README.md#4-g
 5. OFFEN: Darf ein technischer Client (KI-Recherche) Probeläufe nur einreichen (EMPFOHLEN) oder auch übernehmen? Freigabe bleibt in jedem Fall beim Menschen.
 6. OFFEN: Wird eine Hierarchie beim Ersetzen versioniert (Historie der Fassungen der Hierarchie) oder genügt das Änderungsprotokoll `data_changes` (EMPFOHLEN für den Start)?
 7. ZU PRÜFEN: Rhythmus der KI-Recherche (EMPFOHLEN monatlich und nach Kantonsrats-Publikationen) und wer den Prüfbericht abnimmt.
-8. ZU PRÜFEN: Einstufung Dokumenttyp A/B/C (Vorschlag Codex 0.32.0: Pflichtkatalog 18 × A, 13 × A/B, 9 × B; kommunale Dokumente aus Dokumentart und Titel) – fachliche Abnahme und abnehmende Stelle offen.
+8. ENTSCHIEDEN (22.11.2026): Einstufung Dokumenttyp A/B/C bleibt Vorschlag (Codex 0.32.0: Pflichtkatalog 18 × A, 13 × A/B, 9 × B; kommunale Dokumente aus Dokumentart und Titel) und wird beim Review fachlich geprüft; bis dahin sichtbar als «zu prüfen».
 9. OFFEN: Monitoring – nur Belegstellen (EMPFOHLEN, wenig Fehlalarme) oder alle Stellen eines Erlasses als Prüfauftrag? Wer erhält die Mitteilung (Schulverwaltung, Schulpflege)? Rhythmus (bei jeder neuen Fassung, EMPFOHLEN)?
+10. ENTSCHIEDEN (22.11.2026): Gruppennamen der Normenhierarchie (neun Gruppen, Codex 0.30.0) vorerst bestätigt.
+11. ENTSCHIEDEN (22.11.2026): Praxisthemen nehmen Hinweise kantonaler Stellen auf – mit Quelle, als Klasse C (Erläuterung, keine Rechtsgrundlage).

@@ -24,8 +24,9 @@ Sie liefert einen Probelauf, ein Mensch prüft und gibt frei.
 > - Bundesrecht: Fedlex, Systematische Rechtssammlung «SR …» (SPARQL `https://fedlex.data.admin.ch/sparqlendpoint`
 >   oder die Erlassseite); nur die geltende Fassung, künftige Fassungen nur als Hinweis.
 > - Bildungsratsbeschlüsse: Suche Bildungsratsbeschlüsse der Bildungsdirektion (Nummer/Jahr, z. B. «BRB 4/2017»).
-> - Volksschulamt, Gemeindeamt, Datenschutzbeauftragte: nur als Erläuterung (Hinweis, `research_note`), nie als
->   Rechtsgrundlage einer Verbindung.
+> - Volksschulamt, Gemeindeamt, Datenschutzbeauftragte: nur als Erläuterung, nie als Rechtsgrundlage einer
+>   Verbindung. In Praxisthemen (`audience` «school_leaders») und im Elternwegweiser als Hinweis (`notes`) mit Titel,
+>   Herausgeber, Adresse der Originalseite und Zusammenfassung in eigenen Worten – ohne Quelle kein Hinweis.
 > - Keine Belege aus Sekundärquellen (Zeitungen, Foren, Kommentare, KI-Antworten).
 >
 > **3. Nichts erfinden.** Jede Fundstelle (`citation`) und jede Stelle (`location`) muss in der geltenden Fassung
