@@ -36,6 +36,10 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Mitteilungsempfänger und Abgleich Gemeindeart
+
+Empfänger je Organisation umgesetzt (DB, API, Prototyp, localStorage). Gemeindeart: 19 von 60 Schulgemeinden mit belegten Mitgliedern; Codex leitet 135 Gemeinden mit Schulaufgaben her, Gemeindeamt nennt 114 → ca. 21 Fehleinordnungen. Offen: Mitgliederliste beim Gemeindeamt anfordern und in die CSV übernehmen.
+
 ### Sitzung 2026-11-20 – Codex 0.36.0 – Gemeindeart, Versionierung, Entscheide (#64)
 
 - Gemeindeart (CDX-F-31): `GEMEINDEARTEN`/`SCHULSTUFEN` in build.py; Kürzel je Gemeinde (PG, EG, EG-P, EG-S), je Schulgemeinde (SG bzw. KSG bei mehreren politischen Gemeinden, § 3 Abs. 1 GG, mit Stufe -P/-S/-V) und je erfasster Organisation; «?» bei hergeleiteter Einordnung. Anzeige im Menü (Gemeinden, Schulgemeinden, Schulen der Einheitsgemeinden), Spalte «Art» bei den Schulgemeinden, Legende. Verteilung: 49 PG/EG gesichert, 103 mit «?»; Schulgemeinden 22 SG-P, 16 SG-S, 12 KSG-S, 6 SG-V, 2 KSG-V, 2 KSG-P.

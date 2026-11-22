@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.36.0 – Generator.
+"""EduKSX-Codex Prototyp 0.37.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -870,14 +870,32 @@ STUFE_FIX = {"Bachenbülach": ("Gemeinde", None), "Winkel": ("Gemeinde", None), 
              "Meilen": ("Gemeinde", "Gemeinde"), "Fehraltorf": ("Gemeinde", "Gemeinde"),
              "Dübendorf": ("Gemeinde", "Sekundarschulgemeinde Dübendorf - Schwerzenbach")}
 
+# Mitglieder der Schulgemeinden: pflegbare Liste mit Quelle (data/schulgemeinden-mitglieder.csv) – ergänzt bzw. ersetzt SG
+MITGLIEDER_CSV = ROOT / "data" / "schulgemeinden-mitglieder.csv"
+# Amtliche Eckwerte zum Abgleich (Gemeindeamt, Seite «Gemeindefusion», Stand Juli 2026)
+GEMEINDEAMT_ECKWERTE = {"stand": "Juli 2026", "quelle": "https://www.zh.ch/de/politik-staat/gemeinden/gemeindefusion.html",
+                        "politische_gemeinden": 160, "mit_schulaufgaben": 114, "schulgemeinden": 60, "volksschulgemeinden": 8}
+
+def mitglieder_csv():
+    if not MITGLIEDER_CSV.exists(): return {}
+    je = {}
+    for r in csv.DictReader(open(MITGLIEDER_CSV, encoding="utf-8")):
+        je.setdefault((r["schulgemeinde_typ"], r["schulgemeinde"]), {"mitglieder": [], "quellen": set()})
+        je[(r["schulgemeinde_typ"], r["schulgemeinde"])]["mitglieder"].append(r["gemeinde"])
+        je[(r["schulgemeinde_typ"], r["schulgemeinde"])]["quellen"].add(r["quelle"])
+    return je
+
 def schulgemeinden():
     out = []
+    csvm = mitglieder_csv()
     for typ, name, bez, sitz, mit in SG:
+        if (typ, name) in csvm: mit = csvm[(typ, name)]["mitglieder"]
         art_ = "KSG" if mit and len(mit) > 1 else "SG"
         out.append({"typ": typ, "name": f"{typ} {lang(name)}", "kurz": lang(name), "bezirk": bez, "sitz": sitz,
                     "art": art_, "stufe": STUFE_JE_TYP[typ], "kuerzel": f"{art_}-{STUFE_JE_TYP[typ]}",
                     "mitglieder": mit or [sitz], "mitglieder_sicher": mit is not None,
-                    "mitglieder_unsicher": UNSICHER_MITGLIED.get((typ, name), []), "org": ORG_SG.get((typ, name))})
+                    "mitglieder_unsicher": UNSICHER_MITGLIED.get((typ, name), []), "org": ORG_SG.get((typ, name)),
+                    "mitglieder_quelle": "; ".join(sorted(csvm[(typ, name)]["quellen"])) if (typ, name) in csvm else None})
     return out
 
 def einheit(gemeinden, sgs):
@@ -2712,7 +2730,7 @@ def render_daten(gemeinden):
     TX = texte_index()
     daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN, "rechtsgrundlagen": rechtsgrundlagen(), "pflichtkatalog": pflichtkatalog(),
              "elternwegweiser": elternwegweiser(TX), "praxisthemen": praxisthemen(TX),
-             "gemeindearten": GEMEINDEARTEN, "schulstufen": SCHULSTUFEN,
+             "gemeindearten": GEMEINDEARTEN, "schulstufen": SCHULSTUFEN, "gemeindeamt_eckwerte": GEMEINDEAMT_ECKWERTE,
              "texte": TX, "hierarchien": querbezuege([abgleich_kanten(hierarchie(TX, sp), TX) for sp in HIERARCHIEN], TX),
              "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
     daten["monitoring"] = rechtsaenderungen(TX, daten["hierarchien"], daten["elternwegweiser"], ORGS)
@@ -2750,7 +2768,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.36.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.37.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2758,7 +2776,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.36.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.37.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

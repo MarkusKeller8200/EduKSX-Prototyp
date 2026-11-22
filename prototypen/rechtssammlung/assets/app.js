@@ -50,6 +50,22 @@
   function artTitel(k) { var b = (k || "").replace(/\s*\?$/, "").split("-"), a = D.gemeindearten[b[0]] || D.gemeindearten[(k || "").replace(/\s*\?$/, "")];
     return a ? a[0] + (b[1] && D.schulstufen[b[1]] && b[0] !== "EG" ? ", " + D.schulstufen[b[1]] : "") + " – " + a[1] : ""; }
   function artBadge(k) { return k ? h("span", { cls: "badge neutral", title: artTitel(k), text: k }) : null; }
+  function eckwerteAbgleich() {
+    var E = D.gemeindeamt_eckwerte, G = D.gemeinden, S = D.schulgemeinden;
+    var mitSchule = G.filter(function (g) { return g.kuerzel !== "PG"; }), gesichert = mitSchule.filter(function (g) { return g.einheit_sicher; }).length;
+    var sgSicher = S.filter(function (s) { return s.mitglieder_sicher; }).length, vsg = S.filter(function (s) { return s.stufe === "V"; }).length;
+    function zeile(t, amt, codex, ok) { return h("tr", null, h("th", { scope: "row", text: t }), h("td", { cls: "zahlrechts", text: String(amt) }), h("td", null, codex), h("td", null, ok ? badge("erfolg", "✓", "stimmt") : badge("warnung", "?", "abweichend – Mitglieder prüfen"))); }
+    return h("section", { cls: "karte" }, h("h2", { text: "Abgleich mit dem Gemeindeamt" }),
+      h("p", { cls: "small muted" }, "Amtliche Eckwerte (", extern(E.quelle, "Gemeindeamt, Stand " + E.stand + " ↗"), ") gegenüber der Herleitung in Codex. Gesichert ist eine Einordnung, wenn die Mitglieder der Schulgemeinden belegt sind (Liste ", h("code", { text: "data/schulgemeinden-mitglieder.csv" }), ", mit Quelle je Zeile)."),
+      h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+        h("thead", null, h("tr", null, ["", "Gemeindeamt", "Codex", ""].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+        h("tbody", null,
+          zeile("Politische Gemeinden", E.politische_gemeinden, String(G.length), G.length === E.politische_gemeinden),
+          zeile("davon mit Schulaufgaben (EG, EG-P, EG-S)", E.mit_schulaufgaben, mitSchule.length + " (" + gesichert + " gesichert, " + (mitSchule.length - gesichert) + " hergeleitet)", mitSchule.length === E.mit_schulaufgaben),
+          zeile("Schulgemeinden", E.schulgemeinden, S.length + " (Mitglieder belegt: " + sgSicher + ")", S.length === E.schulgemeinden),
+          zeile("davon Volksschulgemeinden (alle Aufgaben)", E.volksschulgemeinden, String(vsg), vsg === E.volksschulgemeinden)))),
+      h("p", { cls: "small" }, "Die übrigen «?» lassen sich erst auflösen, wenn die Mitglieder aller Schulgemeinden belegt sind – Quelle dafür ist die Schulträgerkarte des Gemeindeamts bzw. eine Liste der Schulgemeinden mit ihren Gemeinden (beim Gemeindeamt anfragen)."));
+  }
   function artLegende() {
     return h("ul", { cls: "small" }, Object.keys(D.gemeindearten).map(function (k) { return h("li", null, h("strong", { text: k }), " – " + D.gemeindearten[k][0] + ": " + D.gemeindearten[k][1]); }),
       h("li", null, "Stufe bei Schulgemeinden: ", Object.keys(D.schulstufen).map(function (s, i) { return [i ? ", " : "", h("strong", { text: "-" + s }), " " + D.schulstufen[s]]; }), " – z. B. ", h("strong", { text: "KSG-S" }), " = Kreissekundarschule"),
@@ -764,6 +780,7 @@
     });
     return [kopf("Alle 160 politischen Gemeinden", "Stand gemäss Gemeindeverzeichnis Kanton Zürich."),
       h("details", { cls: "karte" }, h("summary", null, h("strong", { text: "Gemeindeart – Erläuterung der Kürzel" })), artLegende()),
+      eckwerteAbgleich(),
       h("div", { cls: "formzeile" }, h("label", { cls: "feld" }, "Filtern ", such)),
       h("div", { cls: "tabelle-wrap" }, h("table", null,
         h("thead", null, h("tr", null, ["Bezirk", "Gemeinde", "Schulträger", "CMS", "Status"].map(function (t) { return h("th", { text: t }); }))), body))];
@@ -948,7 +965,7 @@
         var o = s.org ? ORG[s.org] : null;
         return h("tr", null, h("td", null, h("a", { href: o ? link("org", o.id) : link("sg", s.name), text: s.name })),
           h("td", null, artBadge(s.kuerzel + (s.mitglieder_sicher ? "" : " ?"))), h("td", { text: s.bezirk }), h("td", { text: s.sitz }),
-          h("td", { text: s.mitglieder.join(", ") + (s.mitglieder_sicher ? "" : " (nur Sitz bekannt)") + (s.mitglieder_unsicher.length ? "; vermutet: " + s.mitglieder_unsicher.join(", ") : "") }),
+          h("td", { title: s.mitglieder_quelle ? "Quelle: " + s.mitglieder_quelle : null, text: s.mitglieder.join(", ") + (s.mitglieder_sicher ? "" : " (nur Sitz bekannt)") + (s.mitglieder_unsicher.length ? "; vermutet: " + s.mitglieder_unsicher.join(", ") : "") }),
           h("td", null, status(!!o)));
       }))));
   }
@@ -956,6 +973,7 @@
     var typen = ["Volksschulgemeinde", "Primarschulgemeinde", "Sekundarschulgemeinde"];
     return [kopf("Alle " + D.schulgemeinden.length + " Schulgemeinden", D.quelle_sg),
       h("section", { cls: "karte" }, h("h2", { text: "Gemeindeart – Kürzel in Klammer im Menü" }), artLegende()),
+      eckwerteAbgleich(),
       typen.map(function (t) {
         var l = D.schulgemeinden.filter(function (s) { return s.typ === t; });
         return [h("h2", { text: t + "n (" + l.length + ")" }), sgTabelle(l)];
@@ -1166,6 +1184,36 @@
   var PL_KEY = "eduksx-codex-pruefliste";   // im Prototyp: «geprüft» nur in diesem Browser
   function plAlle() { try { return JSON.parse(localStorage.getItem(PL_KEY) || "{}") || {}; } catch (e) { return {}; } }
   function plSetzen(k, wert) { var a = plAlle(); if (wert) a[k] = wert; else delete a[k]; try { localStorage.setItem(PL_KEY, JSON.stringify(a)); } catch (e) { /* Speicher nicht verfügbar */ } }
+  // Empfänger der Mitteilungen je Organisation (Vorgabe: alle vier Rollen) – im Prototyp nur in diesem Browser
+  var EM_KEY = "eduksx-codex-empfaenger";
+  var EM_ROLLEN = [["school_administration", "Schulverwaltung"], ["school_board", "Schulpflege"], ["school_management", "Schulleitung"], ["municipal_clerk", "Gemeindeschreiber/in"]];
+  function emLesen(orgId) {
+    var a; try { a = JSON.parse(localStorage.getItem(EM_KEY) || "{}") || {}; } catch (e) { a = {}; }
+    var o = a[orgId] || {};
+    EM_ROLLEN.forEach(function (r) { if (!o[r[0]]) o[r[0]] = { aktiv: true, email: "", anlass: "evidence_changed" }; });
+    return o;
+  }
+  function emSpeichern(orgId, wert) {
+    var a; try { a = JSON.parse(localStorage.getItem(EM_KEY) || "{}") || {}; } catch (e) { a = {}; }
+    a[orgId] = wert; try { localStorage.setItem(EM_KEY, JSON.stringify(a)); } catch (e) { /* Speicher nicht verfügbar */ }
+  }
+  function emAktiv(orgId) { var e = emLesen(orgId); return EM_ROLLEN.filter(function (r) { return e[r[0]].aktiv; }).map(function (r) { return r[1]; }); }
+  function empfaengerKarte(o) {
+    var e = emLesen(o.id);
+    return h("section", { cls: "karte" }, h("h2", { text: "Mitteilung bei Rechtsänderungen – " + o.kurz }),
+      h("p", { cls: "small muted", text: "Wer informiert wird, wenn kommunale Dokumente zu prüfen sind. Vorgabe: alle vier Rollen (Entscheid 22.11.2026). Im Prototyp nur in diesem Browser gespeichert; produktiv je Organisation in der Datenbank." }),
+      h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+        h("thead", null, h("tr", null, ["Rolle", "Mitteilen", "E-Mail (leer = Funktionsadresse)", "Anlass"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+        h("tbody", null, EM_ROLLEN.map(function (r) {
+          var w = e[r[0]];
+          var cb = h("input", { type: "checkbox", "aria-label": r[1] + " mitteilen" }); cb.checked = w.aktiv;
+          var mail = h("input", { type: "email", cls: "klein", placeholder: "z. B. schulverwaltung@…", "aria-label": "E-Mail " + r[1], value: w.email || "" });
+          var anl = h("select", { cls: "klein", "aria-label": "Anlass " + r[1] }, [["evidence_changed", "nur Prüfaufträge"], ["all", "auch «zur Kenntnis»"]].map(function (x) { var op = h("option", { value: x[0], text: x[1] }); if (w.anlass === x[0]) op.selected = true; return op; }));
+          function speichern() { e[r[0]] = { aktiv: cb.checked, email: mail.value.trim(), anlass: anl.value }; emSpeichern(o.id, e); }
+          [cb, mail, anl].forEach(function (el) { el.addEventListener("change", speichern); });
+          return h("tr", null, h("th", { scope: "row", text: r[1] }), h("td", null, cb), h("td", null, mail), h("td", null, anl));
+        })))));
+  }
   function datumWert(t) { var j = (t || "").split("."); return j.length === 3 ? new Date(+j[2], +j[1] - 1, +j[0]) : new Date(0); }
   function aenderungenSeite(orgId, zeitraum) {
     var MO = D.monitoring, org = orgId && orgId !== "alle" && ORG[orgId] ? ORG[orgId] : null, monate = zeitraum ? +zeitraum : 24;
@@ -1195,9 +1243,10 @@
     var orgs = Object.keys(jeOrg).sort(function (a, b) { return (jeOrg[b][0] - jeOrg[a][0]) || ((jeOrg[b][3] || 0) - (jeOrg[a][3] || 0)); });
     var tabelleOrg = orgs.length ? h("section", { cls: "karte" }, h("h2", { text: "Prüfliste je Organisation" }),
       h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
-        h("thead", null, h("tr", null, ["Organisation", "Zu prüfen", "Geprüft", "Zur Kenntnis", ""].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+        h("thead", null, h("tr", null, ["Organisation", "Zu prüfen", "Geprüft", "Zur Kenntnis", "Mitteilung an", ""].map(function (x) { return h("th", { scope: "col", text: x }); }))),
         h("tbody", null, orgs.map(function (o) { var x = jeOrg[o];
           return h("tr", null, h("th", { scope: "row", text: x[2] }), h("td", { cls: "zahlrechts", text: String(x[0]) }), h("td", { cls: "zahlrechts", text: String(x[1]) }), h("td", { cls: "zahlrechts", text: String(x[3] || 0) }),
+            h("td", { cls: "small", text: emAktiv(o).join(", ") || "–" }),
             h("td", null, h("a", { cls: "btn klein", href: link("aenderungen", o, String(monate)), text: "Nur diese" })));
         }))))) : null;
     var karteJe = liste.map(function (a) {
@@ -1227,7 +1276,7 @@
     }).filter(Boolean);
     return [kopf("Rechtsänderungen & Prüfliste" + (org ? " · " + org.kurz : ""), "Was sich in Bundes- und Kantonserlassen zuletzt geändert hat – und welche kommunalen Reglemente deshalb zu prüfen sind."),
       h("p", { cls: "meldung info" }, MO.hinweis + " «Geprüft» wird im Prototyp nur in diesem Browser gespeichert; produktiv als Prüfliste in der Datenbank."),
-      wahl(), karten, tabelleOrg,
+      wahl(), karten, org ? empfaengerKarte(org) : null, tabelleOrg,
       karteJe.length ? karteJe : h("p", { cls: "muted", text: "Keine Änderungen im gewählten Zeitraum." })];
   }
 

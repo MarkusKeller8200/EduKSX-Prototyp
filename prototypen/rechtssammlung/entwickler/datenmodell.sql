@@ -548,6 +548,20 @@ CREATE TABLE mandatory_documents (
     created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid
 );
 
+-- Empfänger der Mitteilungen bei Rechtsänderungen, je Organisation einstellbar (Entscheid 22.11.2026)
+-- Geltungsbereich: global · Datenklasse: intern
+-- Herkunft/Verwendung: Einstellung der Organisation (Redaktion des Herausgebers); Versand bei codex.change_review.created
+CREATE TABLE change_notification_recipients (
+    id                      uuid PRIMARY KEY,
+    publisher_id            uuid NOT NULL REFERENCES publishers(id) ON DELETE CASCADE,   -- Herausgeber | Organisation
+    recipient_role          text NOT NULL CHECK (recipient_role IN ('school_administration','school_board','school_management','municipal_clerk','other')),   -- Rolle | Empfänger | intern | school_administration=Schulverwaltung; school_board=Schulpflege; school_management=Schulleitung; municipal_clerk=Gemeindeschreiber/in; other=andere
+    name                    text,                            -- Name | Person oder Funktion | persönlich
+    email                   text,                            -- E-Mail | Adresse für die Mitteilung (leer = Funktionsadresse der Organisation) | persönlich
+    notify_on               text NOT NULL DEFAULT 'evidence_changed' CHECK (notify_on IN ('evidence_changed','all')),   -- Anlass | wann mitteilen | intern | evidence_changed=nur Prüfaufträge (Belegstelle geändert); all=auch «zur Kenntnis»
+    is_active               boolean NOT NULL DEFAULT true,   -- Aktiv | Mitteilung senden
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid
+);
+
 -- Prüfauftrag nach einer Rechtsänderung: kommunales Dokument, dessen Belegstelle sich geändert hat
 -- Geltungsbereich: global · Datenklasse: intern
 -- Herkunft/Verwendung: automatisch bei neuer Fassung (Unterschied → Belegstellen der Hierarchien → Beispiele der kommunalen Knoten); Prüfliste der Redaktion des Herausgebers
@@ -790,6 +804,7 @@ CREATE INDEX hierarchy_edge_evidences_hierarchy_edge_id_index ON hierarchy_edge_
 CREATE INDEX hierarchy_edge_evidences_legal_act_id_index ON hierarchy_edge_evidences (legal_act_id);
 CREATE INDEX mandatory_documents_category_id_index ON mandatory_documents (category_id);
 CREATE INDEX mandatory_documents_content_import_id_index ON mandatory_documents (content_import_id);
+CREATE INDEX change_notification_recipients_publisher_id_index ON change_notification_recipients (publisher_id);
 CREATE INDEX change_review_items_publisher_id_index ON change_review_items (publisher_id);
 CREATE INDEX change_review_items_legal_act_id_index ON change_review_items (legal_act_id);
 CREATE INDEX change_review_items_hierarchy_edge_id_index ON change_review_items (hierarchy_edge_id);
@@ -1211,6 +1226,21 @@ COMMENT ON COLUMN mandatory_documents.updated_by_id IS 'Geändert von – Person
 COMMENT ON COLUMN mandatory_documents.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
 COMMENT ON COLUMN mandatory_documents.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
 COMMENT ON COLUMN mandatory_documents.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
+COMMENT ON TABLE change_notification_recipients IS 'Empfänger der Mitteilungen bei Rechtsänderungen, je Organisation einstellbar (Entscheid 22.11.2026) – Einstellung der Organisation (Redaktion des Herausgebers); Versand bei codex.change_review.created';
+COMMENT ON COLUMN change_notification_recipients.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN change_notification_recipients.publisher_id IS 'Herausgeber – Organisation';
+COMMENT ON COLUMN change_notification_recipients.recipient_role IS 'Rolle – Empfänger';
+COMMENT ON COLUMN change_notification_recipients.name IS 'Name – Person oder Funktion';
+COMMENT ON COLUMN change_notification_recipients.email IS 'E-Mail – persönlich';
+COMMENT ON COLUMN change_notification_recipients.notify_on IS 'Anlass – wann mitteilen';
+COMMENT ON COLUMN change_notification_recipients.is_active IS 'Aktiv – Mitteilung senden';
+COMMENT ON COLUMN change_notification_recipients.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN change_notification_recipients.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN change_notification_recipients.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN change_notification_recipients.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN change_notification_recipients.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN change_notification_recipients.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN change_notification_recipients.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
 COMMENT ON TABLE change_review_items IS 'Prüfauftrag nach einer Rechtsänderung: kommunales Dokument, dessen Belegstelle sich geändert hat – automatisch bei neuer Fassung (Unterschied → Belegstellen der Hierarchien → Beispiele der kommunalen Knoten); Prüfliste der Redaktion des Herausgebers';
 COMMENT ON COLUMN change_review_items.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN change_review_items.difference_id IS 'Rechtsänderung – Unterschied zwischen zwei Fassungen';

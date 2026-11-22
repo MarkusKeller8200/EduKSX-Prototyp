@@ -211,4 +211,5 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Normenhierarchien, Regelungen der Gemeinde und Hinweisen kantonaler Stellen mit Quelle (Klasse C); Datenmodell und Import (#63).
 - EduKSX-Codex 0.36.0: Gemeindeart mit Kürzeln (PG, EG, EG-P, EG-S, SG-P/S/V, KSG-P/S/V), Sek Bülach als Kreissekundarschule;
   Datenmodell und API für die Versionierung der Normenhierarchien; Entscheide zu Quellenklassen und KI-Zugang (#64).
+Mitteilung bei Rechtsänderungen: Empfänger je Organisation einstellbar (Schulverwaltung, Schulpflege, Schulleitung, Gemeindeschreiber/in; E-Mail, Anlass) – Tabelle change_notification_recipients, API notification-recipients, Prototyp auf der Seite Rechtsänderungen. Mitglieder der Schulgemeinden als pflegbare Liste data/schulgemeinden-mitglieder.csv mit Quelle; Abgleich mit den Eckwerten des Gemeindeamts (160/114/60/8) auf den Seiten Gemeinden und Schulgemeinden (CDX-F-32, CDX-F-33).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

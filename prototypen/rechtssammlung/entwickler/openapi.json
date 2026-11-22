@@ -6578,6 +6578,160 @@
         }
       }
     },
+    "/api/v1/publishers/{publisher_key}/notification-recipients": {
+      "parameters": [
+        {
+          "name": "publisher_key",
+          "in": "path",
+          "required": true,
+          "description": "Schlüssel der Organisation",
+          "schema": {
+            "type": "string",
+            "title": "Herausgeber"
+          },
+          "example": "sek-buelach"
+        }
+      ],
+      "get": {
+        "tags": [
+          "change-review-items"
+        ],
+        "operationId": "listNotificationRecipients",
+        "summary": "Empfänger der Mitteilungen bei Rechtsänderungen",
+        "description": "Empfänger der Mitteilungen bei Rechtsänderungen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:change-review-items.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "change-review-items.read",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Empfänger der Mitteilungen bei Rechtsänderungen",
+        "responses": {
+          "200": {
+            "description": "Liste",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/NotificationRecipient"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "change-review-items"
+        ],
+        "operationId": "setNotificationRecipients",
+        "summary": "Empfänger der Mitteilungen festlegen (ersetzt die Liste)",
+        "description": "Vorgabe nach Entscheid 22.11.2026: Schulverwaltung, Schulpflege, Schulleitung, Gemeindeschreiber/in; je Organisation anpassbar.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:change-review-items.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "change-review-items.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Empfänger der Mitteilungen festlegen (ersetzt die Liste)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotificationRecipientList"
+              },
+              "example": {
+                "recipients": [
+                  "Beispiel"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Liste",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/NotificationRecipient"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
     "/api/v1/publishers/{publisher_key}/mandatory-documents/{document_key}/relevance": {
       "parameters": [
         {
@@ -11694,6 +11848,93 @@
             "description": "kommunale Dokumente"
           }
         }
+      },
+      "NotificationRecipient": {
+        "type": "object",
+        "title": "Empfänger",
+        "description": "Empfänger einer Mitteilung bei Rechtsänderungen",
+        "properties": {
+          "recipient_role": {
+            "type": "string",
+            "x-extensible-enum": [
+              "school_administration",
+              "school_board",
+              "school_management",
+              "municipal_clerk",
+              "other"
+            ],
+            "x-eduksx-labels": {
+              "school_administration": "Schulverwaltung",
+              "school_board": "Schulpflege",
+              "school_management": "Schulleitung",
+              "municipal_clerk": "Gemeindeschreiber/in",
+              "other": "andere"
+            },
+            "title": "Rolle",
+            "description": "Empfänger"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Name",
+            "description": "Person oder Funktion"
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "E-Mail",
+            "description": "leer = Funktionsadresse"
+          },
+          "notify_on": {
+            "type": "string",
+            "x-extensible-enum": [
+              "evidence_changed",
+              "all"
+            ],
+            "x-eduksx-labels": {
+              "evidence_changed": "nur Prüfaufträge",
+              "all": "auch zur Kenntnis"
+            },
+            "title": "Anlass",
+            "description": "wann mitteilen"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Aktiv",
+            "description": "senden"
+          }
+        },
+        "required": [
+          "recipient_role",
+          "notify_on",
+          "is_active"
+        ]
+      },
+      "NotificationRecipientList": {
+        "type": "object",
+        "title": "Empfängerliste",
+        "description": "Alle Empfänger einer Organisation",
+        "properties": {
+          "recipients": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/NotificationRecipient"
+                }
+              ]
+            },
+            "title": "Empfänger",
+            "description": "vollständige Liste"
+          }
+        },
+        "required": [
+          "recipients"
+        ]
       },
       "MandatoryDocumentRelevance": {
         "type": "object",
