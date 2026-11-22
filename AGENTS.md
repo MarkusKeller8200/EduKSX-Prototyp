@@ -23,6 +23,14 @@ Projekt: EduKSX-Prototyp.
 - Begriffe: EduKSX-Glossary über die feste Einbindung mit Prüfsumme (Version und `integrity` aus
   https://glossary.eduksx.ch/embed/manifest.json); bei neuer Version beides zusammen ändern.
 - GitHub Pages: projekteigener Workflow `seite.yml` mit `tools/seite_bauen.py` (nicht `pages.yml` des Blueprints).
+- Meilensteine je Prototyp (Abweichung vom Blueprint): jedes Issue erhält zusätzlich zur Art genau ein Label
+  `prototyp:<schlüssel>` (`staffing`, `flow`, `codex`, `time`, `sign`, übergreifend `alle`); der Workflow
+  `issue-milestone` ordnet es damit dem Meilenstein des Prototyps zu (`[meilensteine] zuordnung` in
+  `.github/blueprint.toml`). Die Sammlungen Fehler/Verbesserungen/Funktionen gelten nur für Issues ohne
+  Prototyp-Label. Neuer Prototyp: Label in `[issues] zusatzlabels`, Eintrag in `zuordnung` und Meilenstein
+  «EduKSX-<Produkt> – <Name>» anlegen. CodeQL-Issues tragen kein Prototyp-Label – beim Sichten von Hand setzen.
+- Bewusst keine DEV/TEST/PROD-Umgebungen (`[betrieb] umgebungen = []`): Prototypen laufen nur als Testseiten auf
+  GitHub Pages.
 
 <!-- blueprint:github-ablauf -->
 
@@ -70,6 +78,8 @@ Aus dem GitHub-Blueprint, Details in `docs/GITHUB-ABLAUF.md`.
   Kompatibilität, Lizenz und Pflege; neue Komponenten in `docs/third-party.json` eintragen.
 - Widersprüche zwischen Dokumenten explizit entscheiden und festhalten, statt stillschweigend zu überschreiben.
 - Bei jeder Änderung Tests und die betroffenen Dokumente (README, Doku, CHANGELOG «Unveröffentlicht») nachführen.
+- Branches werden nach dem Merge in main automatisch gelöscht (Einstellung «Automatically delete head branches»
+  und Workflow `branch-aufraeumen.yml`); für einen Folge-PR einen neuen Branch anlegen.
 - Löschen (Dateien, Branches, Issues, Releases) nur nach Rückfrage. Keine Zugangsdaten anfassen; Schlüssel und
   Secrets trägt Projektverantwortliche:r selbst ein.
 - **Plugin-/Modul-Versionen:** Wer ein Plugin bzw. Modul ändert, erhöht dessen `version` im Manifest; `python3 .github/blueprint/release.py check` weist auf vergessene Erhöhungen hin.

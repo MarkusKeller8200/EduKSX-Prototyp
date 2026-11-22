@@ -60,8 +60,8 @@ sicherheit_nicht_im_bereich = []
 sichtbarkeit = "oeffentlich"
 standard_branch = "main"          # Workflows des Blueprints erwarten «main»
 beschreibung = "Ablage für Prototypen der EduKSX-Plattform: Klickprototypen und lauffähige Versuche, je als eigenes Unterprojekt unter prototypen/<name>/ – zum Ausprobieren und Abstimmen von Ideen, bevor sie in ein Modul-Repository übernommen werden." # Text bei «About»
-webseite = ""
-themen = []                       # Topics, z. B. ["schule", "laravel"]
+webseite = "auto"
+themen = ["eduksx", "prototyp", "schule", "volksschule", "kanton-zuerich", "github-pages"] # Topics (Pflicht, mindestens 3)
 vorlage = false                   # als Template-Repository markieren
 issues = true
 projekte = true
@@ -109,13 +109,24 @@ protokoll_ort = ""                # wo das Protokoll liegt, z. B. "~/Projekt/Log
 uebersetzung_sprachen = []
 uebersetzung_ablage = ""          # z. B. "lang/*.json" oder "web/i18n/"
 # GitHub-Standard-Labels (bug, enhancement, …) entfernen
-standard_labels_entfernen = true
+standard_labels_entfernen = false # vorerst aus: Entfernen der GitHub-Standard-Labels erst nach Rückfrage
 # Eigene zusätzliche Labels: { name = "…", farbe = "rrggbb", beschreibung = "…" }
-zusatzlabels = []
+# Projekteigenheit EduKSX-Prototyp: ein Label je Prototyp (steuert den Meilenstein, siehe [meilensteine] zuordnung)
+zusatzlabels = [
+  { name = "prototyp:staffing", farbe = "1d76db", beschreibung = "EduKSX-Staffing – Einsatzplanung" },
+  { name = "prototyp:flow", farbe = "0e8a16", beschreibung = "EduKSX-Flow – Ablaufplanung" },
+  { name = "prototyp:codex", farbe = "5319e7", beschreibung = "EduKSX-Codex – Rechtssammlung" },
+  { name = "prototyp:time", farbe = "fbca04", beschreibung = "EduKSX-Time – Zeiterfassung" },
+  { name = "prototyp:sign", farbe = "d93f0b", beschreibung = "EduKSX-Sign – Signatur" },
+  { name = "prototyp:alle", farbe = "bfdadc", beschreibung = "Alle Prototypen (übergreifend)" },
+]
 
 [meilensteine]
 # Sammlungen Fehler / Verbesserungen / Funktionen anlegen und neue Issues danach zuordnen
 sammlungen = true
+# Projekteigenheit EduKSX-Prototyp: je Prototyp ein Meilenstein; neue Issues nach Prototyp-Label zuordnen.
+# Reihenfolge zählt – das erste passende Label gewinnt. Ohne Prototyp-Label greifen die Sammlungen (falls vorhanden).
+zuordnung = { "prototyp:staffing" = "EduKSX-Staffing – Einsatzplanung", "prototyp:flow" = "EduKSX-Flow – Ablaufplanung", "prototyp:codex" = "EduKSX-Codex – Rechtssammlung", "prototyp:time" = "EduKSX-Time – Zeiterfassung", "prototyp:sign" = "EduKSX-Sign – Signatur", "prototyp:alle" = "Alle Prototypen (übergreifend)", fehler = "Fehler", verbesserung = "Verbesserungen", funktion = "Funktionen" }
 # erster Release-Meilenstein, leer = keiner
 erster_release = "0.1.0 – Grundgerüst"
 
@@ -210,12 +221,26 @@ uebergabe = true
 projekt_kopie = false             # Kopien als claude/uebergabe.md und claude/projektstand.md im Claude-Projekt führen
 konzepte = true                   # docs/KONZEPT-VORLAGE.md (Verbindlichkeitsstufen BESCHLOSSEN/EMPFOHLEN/OFFEN/ZU PRÜFEN)
 regeln = ["Nichtziel: kein produktiver Betrieb und keine echten Personendaten (nur erfundene Testdaten)", "Nichtziel: kein gemeinsamer Code für Module (gehört nach EduKSX-Core)", "Nichtziel: kein Ersatz für die Modul-Repositorys: übernommene Prototypen werden dort neu umgesetzt"] # eigene Leitplanken für AGENTS.md, z. B. ["Keine neue Pflicht-Abhängigkeit im Kern"]
+team = false                      # Entwicklungsteam als Subagents in .claude/agents/ (hier nicht genutzt)
+
+[betrieb]
+# Projekteigenheit: bewusst keine DEV/TEST/PROD-Umgebungen – Prototypen laufen nur als Testseiten auf GitHub Pages
+# (Umgebung «github-pages»), kein produktiver Betrieb (siehe Nichtziele in [agenten] regeln).
+umgebungen = []
+kanaele = ["entwicklung", "beta", "stabil"]
+
+[konformitaet]
+# Workflow «Konformität prüfen»: monatlich die Pflichtregeln prüfen und Abweichungen in einem Issue sammeln
+workflow = true
+label = "blueprint"
+# «Include in the home page» (Releases, Packages, Deployments) hat keine API: von Hand prüfen, dann true setzen
+startseite_geprueft = false
 
 [workflows]
 # Meilensteine per Kommentar /milestone … auf einem Admin-Issue verwalten
 milestone_admin = true
 # Nummer des Admin-Issues – wird beim Anwenden automatisch eingetragen (0 = noch nicht angelegt)
-admin_issue = 0
+admin_issue = 76
 # Wer darf Befehle geben? Die Eigentümerin bzw. der Eigentümer (bei Organisationen: deren Owner) immer; zusätzlich
 # diese Konten, sofern Mitglied bzw. Mitwirkende:r, z. B. ["anna-muster"]
 milestone_admins = []
