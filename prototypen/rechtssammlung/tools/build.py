@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.37.0 – Generator.
+"""EduKSX-Codex Prototyp 0.38.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1329,7 +1329,12 @@ def rechtsgrundlagen():
         if not abk and re.fullmatch(r"[A-ZÄÖÜ]{2,6}", kurz.strip()): abk = kurz.strip()
         if abk == "SV": abk, kurz = "SVO", kurz.replace("(SV)", "(SVO)")   # amtliche Abkürzung laut ZH-Lex
         if kurz.startswith("Verfassung des Kantons Zürich"): abk = "KV"
-        if re.match(r"BRB", e["stelle"]): ebene = "Bildungsrat"
+        # Ebene = staatliche Ebene (Entscheid 22.11.2026): International, Interkantonal, Bund, Kanton, Bezirk, Gemeinde.
+        # Bildungsrat, Volksschulamt und Gemeindeamt sind Behörden des Kantons – Feld «herausgeber» bzw. «behoerde», keine eigene Ebene.
+        e["brb"] = bool(re.match(r"BRB", e["stelle"]))
+        if e["brb"]: ebene = "Kanton"
+        elif fund.startswith("SR 0."): ebene = "International"
+        elif fund.startswith("LS 720.1 (Anhang)"): ebene = "Interkantonal"
         elif fund.startswith("SR") or re.match(r"^SR", fund): ebene = "Bund"
         elif fund.startswith("LS"): ebene = "Kanton"
         elif fund == "kommunal": ebene = "Gemeinde"
@@ -1340,9 +1345,9 @@ def rechtsgrundlagen():
         direkt = []
         for n in nummern:
             direkt.append({"text": "ZH-Lex LS " + n, "url": ZHLEX.format(n)})
-        if ebene == "Bund" and e["quelle_url"] and "fedlex" in e["quelle_url"]:
+        if ebene in ("Bund", "International") and e["quelle_url"] and "fedlex" in e["quelle_url"]:
             direkt.append({"text": "Fedlex " + fund, "url": e["quelle_url"]})
-        if ebene == "Bildungsrat" and e["quelle_url"]:
+        if e["brb"] and e["quelle_url"]:
             direkt.append({"text": e["stelle"], "url": e["quelle_url"]})
         u = e["quelle_url"] or ""
         herkunft = ("Fedlex" if "fedlex" in u else "Bildungsrat" if "/bildungsrat" in u else "Volksschulamt" if "informationen-volksschule" in u or "/volksschule" in u
@@ -1355,6 +1360,11 @@ def rechtsgrundlagen():
         rg_metadaten(e)
     # Kommunale Ebene: Platzhalter, wird durch die gewählte Schulgemeinde ersetzt (deren erfasste Rechtssammlung)
     d["publikationsquellen"].append({"ebene": "Kommunal", "name": "Rechtssammlung der Schule XYZ", "url": None, "platzhalter": True})
+    for q in d["publikationsquellen"]:
+        b = {"Gemeindeamt": "Gemeindeamt (Direktion der Justiz und des Innern) – Aufsicht und Vollzug", "Volksschulamt": "Volksschulamt (Bildungsdirektion) – Vollzug und Aufsicht",
+             "Bildungsrat": "Bildungsrat – Behörde mit eigener Rechtsetzung (BRB)", "Kanton Zürich": "Kantonsrat, Regierungsrat (ZH-Lex)"}.get(q["ebene"])
+        if b: q["behoerde"], q["ebene"] = b, "Kanton"
+        if q["ebene"] == "Kommunal": q["ebene"] = "Gemeinde"
     d["quellenkatalog"], d["quellenklassen"] = quellenkatalog(), [{"klasse": k, "titel": t, "aufnahme": a} for k, t, a in QUELLENKLASSEN]
     d["zhlex_abgerufen"] = "20.11.2026"
     d["erlasse"] = sorted({e["fundstelle"] for e in d["eintraege"] if e["fundstelle"] and e["fundstelle"] != "kommunal"} )
@@ -1448,14 +1458,14 @@ HERAUSGEBER_FIX = {"413.250.1": "Regierungsrat"}   # «Reglement», aber vom Reg
 def rg_metadaten(e):
     """Felder nach Entscheid 20.11.2026: Quellenklasse, herausgebende Behörde, massgebende Publikationsstelle, Downloadort, Versionen."""
     fund = e["fundstelle"]
-    if e["ebene"] == "Bildungsrat":
+    if e["brb"]:
         e.update(klasse="B", herausgeber="Bildungsrat", publikationsstelle="Bildungsratsbeschlüsse (zh.ch), Schulblatt", downloadort=e["quelle_url"],
                  veroeffentlicht=None, version=e["stelle"], versionen=[])
     elif e["ebene"] == "Gemeinde":
         e.update(klasse="A", herausgeber="Schulgemeinde (Schule XYZ)", publikationsstelle="Amtliches Publikationsorgan der Gemeinde",
                  downloadort="Rechtssammlung der Schule XYZ", veroeffentlicht=None, version=None, versionen=[])
-    elif e["ebene"] == "Bund":
-        her = "Bundesrat" if re.search(r"verordnung", e["titel"], re.I) else "UNO / Bundesversammlung" if "Konvention" in e["titel"] else "Bundesversammlung"
+    elif e["ebene"] in ("Bund", "International"):
+        her = "UNO (Genehmigung Bundesversammlung)" if e["ebene"] == "International" else "Bundesrat" if re.search(r"verordnung", e["titel"], re.I) else "Bundesversammlung"
         fv = fedlex_versionen(fund)
         akt = fv[0] if fv else None
         e.update(klasse="A", herausgeber=her, publikationsstelle="Fedlex SR (Erstpublikation AS)", downloadort=akt["url"] if akt else e["quelle_url"],
@@ -1623,7 +1633,7 @@ HIERARCHIEN = [
    {"von": "fin", "nach": "vsgfin", "art": "Mitteleinsatz", "beleg": ("412.100", "§ 66."), "beleg_unten": ("412.100", "§ 61.")},
    {"von": "geb", "nach": "vsgfin", "art": "Elternbeiträge", "beleg": ("412.100", "§ 11.")}]},
  {"id": "volksschule", "titel": "Volksschule",
-  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Bildungsrat", "Gemeinde / Schulgemeinde"],
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Kanton – Bildungsrat", "Gemeinde / Schulgemeinde"],
   "knoten": [
    {"id": "bv", "ebene": 0, "titel": "Bundesverfassung (BV)", "sr": "101", "art": "Verfassung", "url": "https://www.fedlex.admin.ch/eli/cc/1999/404/de",
     "hinweis": "Art. 19 Anspruch auf ausreichenden und unentgeltlichen Grundschulunterricht; Art. 62 Schulwesen ist Sache der Kantone"},
@@ -1778,7 +1788,7 @@ HIERARCHIEN = [
    {"von": "gs", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 74.")},
    {"von": "gs", "nach": "go", "art": "gestützt auf"}]},
  {"id": "unterricht", "titel": "Unterricht & Medien",
-  "ebenen": ["Bund", "Kanton – Gesetze", "Bildungsrat", "Gemeinde / Schulgemeinde"],
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Bildungsrat", "Gemeinde / Schulgemeinde"],
   "knoten": [
    {"id": "urg", "ebene": 0, "titel": "Urheberrechtsgesetz (URG)", "sr": "231.1", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/1993/1798_1798_1798/de",
     "hinweis": "Art. 19 Abs. 1 lit. b: Verwendung geschützter Werke durch Lehrpersonen für den Unterricht in der Klasse; Vergütung über Gemeinsame Tarife"},
@@ -1926,7 +1936,7 @@ HIERARCHIEN = [
    {"von": "sg", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 11.")},
    {"von": "sg", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 8."), "beleg_unten": ("412.101", "§ 11.")}]},
  {"id": "beurteilung", "titel": "Beurteilung & Schullaufbahn",
-  "ebenen": ["Kanton – Gesetze", "Kanton – Verordnungen", "Bildungsrat", "Gemeinde / Schulgemeinde"],
+  "ebenen": ["Kanton – Gesetze", "Kanton – Verordnungen", "Kanton – Bildungsrat", "Gemeinde / Schulgemeinde"],
   "knoten": [
    {"id": "vsg", "ebene": 0, "titel": "Volksschulgesetz (VSG) – Beurteilung, Promotion", "art": "Gesetz (Kantonsrat)", "ls": "412.100", "hinweis": "§ 31 Beurteilung, § 32 Promotion und Übertritte"},
    {"id": "msg", "ebene": 0, "titel": "Mittelschulgesetz (MSG)", "art": "Gesetz (Kantonsrat)", "ls": "413.21", "hinweis": "§ 14: Aufnahme in die Mittelschulen"},
@@ -1946,7 +1956,7 @@ HIERARCHIEN = [
    {"von": "kom", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 34.")},
    {"von": "kom", "nach": "zr", "art": "verweist auf"}]},
  {"id": "sprache", "titel": "Sprache & Integration",
-  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Bildungsrat", "Gemeinde / Schulgemeinde"],
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Kanton – Bildungsrat", "Gemeinde / Schulgemeinde"],
   "knoten": [
    {"id": "bv", "ebene": 0, "titel": "Bundesverfassung (BV) – Sprachen", "sr": "101", "art": "Verfassung", "url": "https://www.fedlex.admin.ch/eli/cc/1999/404/de", "hinweis": "Art. 70: Amtssprachen; die Kantone bestimmen ihre Amtssprachen"},
    {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Sprache, zusätzliche Angebote", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
@@ -2232,7 +2242,7 @@ def praxisthemen(texte): return wegweiser(PRAXISTHEMEN, texte)
 # Drei weitere Themen aus dem Volksschulgesetz (22.11.2026): Schulbetrieb, Disziplin, Privatschulen
 HIERARCHIEN += [
  {"id": "schulbetrieb", "titel": "Schulbetrieb: Klassen, Unterrichtszeit & Ferien",
-  "ebenen": ["Kanton – Gesetze", "Kanton – Verordnungen", "Bildungsrat", "Gemeinde / Schulgemeinde"],
+  "ebenen": ["Kanton – Gesetze", "Kanton – Verordnungen", "Kanton – Bildungsrat", "Gemeinde / Schulgemeinde"],
   "knoten": [
    {"id": "vsg", "ebene": 0, "titel": "Volksschulgesetz (VSG) – Schulbetrieb", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
     "hinweis": "§ 21 Abs. 2 Lektionentafeln, § 26 Klassen, § 27 Unterrichtszeit und Blockzeiten, § 29 Besuchstage, § 30 Ferien (höchstens 13 Wochen)"},
@@ -2299,7 +2309,7 @@ HIERARCHIEN += [
 # Zwei Themen mit neu aufgenommenen Erlassen (22.11.2026): Sport & Bewegung, Haftung & Versicherung
 HIERARCHIEN += [
  {"id": "sport", "titel": "Sport, Bewegung & Lager",
-  "ebenen": ["Bund – Gesetze", "Bund – Verordnungen", "Kanton – Gesetze", "Bildungsrat", "Gemeinde / Schulgemeinde"],
+  "ebenen": ["Bund – Gesetze", "Bund – Verordnungen", "Kanton – Gesetze", "Kanton – Bildungsrat", "Gemeinde / Schulgemeinde"],
   "knoten": [
    {"id": "spofoeg", "ebene": 0, "titel": "Sportförderungsgesetz (SpoFöG)", "sr": "415.0", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/2012/460/de",
     "hinweis": "Art. 12 Sportunterricht in der obligatorischen Schule obligatorisch, Kantone sorgen für Anlagen; Art. 6–8 «Jugend und Sport» (Kurse und Lager)"},
@@ -2768,7 +2778,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.37.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.38.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2776,7 +2786,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.37.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.38.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

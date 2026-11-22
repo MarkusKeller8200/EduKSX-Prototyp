@@ -163,7 +163,8 @@ CREATE TABLE publishers (
     id                      uuid PRIMARY KEY,
     owner_platform_id       uuid,                            -- Gepflegt von | Plattform-ID der Organisation mit eigener Redaktion | intern
     publisher_key           text NOT NULL UNIQUE,            -- Schlüssel | z. B. «ps-truellikon», «kanton-zh»
-    level                   text NOT NULL CHECK (level IN ('federal','intercantonal','cantonal','education_council','municipal')),   -- Ebene | Normenhierarchie | öffentlich | federal=Bund; intercantonal=Interkantonal; cantonal=Kanton; education_council=Bildungsrat; municipal=Gemeinde
+    level                   text NOT NULL CHECK (level IN ('international','federal','intercantonal','cantonal','district','municipal')),   -- Ebene | staatliche Ebene (Entscheid 22.11.2026) | öffentlich | international=International; federal=Bund; intercantonal=Interkantonal; cantonal=Kanton; district=Bezirk; municipal=Gemeinde
+    authority               text CHECK (authority IN ('parliament','government','education_council','education_department','school_office','municipal_office','district_council','municipal_body','other')),   -- Behörde | Erlassgeber bzw. Stelle innerhalb der Ebene | öffentlich | parliament=Parlament/Stimmberechtigte; government=Regierung; education_council=Bildungsrat; education_department=Bildungsdirektion; school_office=Volksschulamt; municipal_office=Gemeindeamt; district_council=Bezirksrat; municipal_body=Gemeindebehörde/Schulpflege; other=andere
     publisher_type          text NOT NULL,                   -- Art | z. B. «Primarschulgemeinde»
     name                    text NOT NULL,                   -- Herausgeber | Name
     short_name              text,                            -- Kurzname | Anzeige
@@ -386,7 +387,8 @@ CREATE TABLE source_classes (
 CREATE TABLE publication_sources (
     id                      uuid PRIMARY KEY,
     source_class_id         uuid REFERENCES source_classes(id),   -- Klasse | Verweis
-    level                   text NOT NULL,                   -- Ebene | Bund, Kanton …
+    level                   text NOT NULL,                   -- Ebene | staatliche Ebene: International, Bund, Interkantonal, Kanton, Bezirk, Gemeinde
+    authority               text,                            -- Behörde | z. B. Bildungsrat, Volksschulamt, Gemeindeamt (keine eigene Ebene)
     name                    text NOT NULL,                   -- Quelle | Name
     publisher_name          text,                            -- Herausgeber | Name
     content                 text,                            -- Inhalt | Beschreibung
@@ -926,7 +928,8 @@ COMMENT ON TABLE publishers IS 'Herausgeber mit eigener Rechtssammlung (Bund, Ka
 COMMENT ON COLUMN publishers.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN publishers.owner_platform_id IS 'Gepflegt von – Plattform-ID der Organisation mit eigener Redaktion';
 COMMENT ON COLUMN publishers.publisher_key IS 'Schlüssel – z. B. «ps-truellikon», «kanton-zh»';
-COMMENT ON COLUMN publishers.level IS 'Ebene – Normenhierarchie';
+COMMENT ON COLUMN publishers.level IS 'Ebene – staatliche Ebene (Entscheid 22.11.2026)';
+COMMENT ON COLUMN publishers.authority IS 'Behörde – Erlassgeber bzw. Stelle innerhalb der Ebene';
 COMMENT ON COLUMN publishers.publisher_type IS 'Art – z. B. «Primarschulgemeinde»';
 COMMENT ON COLUMN publishers.name IS 'Herausgeber – Name';
 COMMENT ON COLUMN publishers.short_name IS 'Kurzname – Anzeige';
@@ -1101,7 +1104,8 @@ COMMENT ON COLUMN source_classes.intake IS 'Aufnahme – z. B. «vollständig au
 COMMENT ON TABLE publication_sources IS 'Publikationsquelle (Fedlex, ZH-Lex, Gemeinde-Websites …) – Quellenkatalog; Ansicht «Herkunftsliste» und Importdienste';
 COMMENT ON COLUMN publication_sources.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN publication_sources.source_class_id IS 'Klasse – Verweis';
-COMMENT ON COLUMN publication_sources.level IS 'Ebene – Bund, Kanton …';
+COMMENT ON COLUMN publication_sources.level IS 'Ebene – staatliche Ebene: International, Bund, Interkantonal, Kanton, Bezirk, Gemeinde';
+COMMENT ON COLUMN publication_sources.authority IS 'Behörde – z. B. Bildungsrat, Volksschulamt, Gemeindeamt (keine eigene Ebene)';
 COMMENT ON COLUMN publication_sources.name IS 'Quelle – Name';
 COMMENT ON COLUMN publication_sources.publisher_name IS 'Herausgeber – Name';
 COMMENT ON COLUMN publication_sources.content IS 'Inhalt – Beschreibung';

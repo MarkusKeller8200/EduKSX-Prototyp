@@ -672,26 +672,28 @@
             "name": "level",
             "in": "query",
             "required": false,
-            "description": "Normenhierarchie",
+            "description": "staatliche Ebene (Entscheid 22.11.2026)",
             "schema": {
               "type": "string",
               "x-extensible-enum": [
+                "international",
                 "federal",
                 "intercantonal",
                 "cantonal",
-                "education_council",
+                "district",
                 "municipal"
               ],
               "x-eduksx-labels": {
+                "international": "International",
                 "federal": "Bund",
                 "intercantonal": "Interkantonal",
                 "cantonal": "Kanton",
-                "education_council": "Bildungsrat",
+                "district": "Bezirk",
                 "municipal": "Gemeinde"
               },
               "title": "Ebene"
             },
-            "example": "federal"
+            "example": "international"
           },
           {
             "name": "district",
@@ -774,7 +776,8 @@
               },
               "example": {
                 "publisher_key": "Beispiel",
-                "level": "federal",
+                "level": "international",
+                "authority": "parliament",
                 "publisher_type": "Beispiel",
                 "name": "Beispiel",
                 "short_name": "Beispiel",
@@ -943,7 +946,7 @@
               },
               "example": {
                 "publisher_key": "Beispiel",
-                "level": "federal"
+                "level": "international"
               }
             }
           }
@@ -2296,7 +2299,7 @@
             "name": "level",
             "in": "query",
             "required": false,
-            "description": "Bund, Kanton …",
+            "description": "staatliche Ebene: International, Bund, Interkantonal, Kanton, Bezirk, Gemeinde",
             "schema": {
               "type": "string",
               "title": "Ebene"
@@ -2395,6 +2398,7 @@
               "example": {
                 "source_class_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
                 "level": "Beispiel",
+                "authority": "Beispiel",
                 "name": "Beispiel",
                 "publisher_name": "Beispiel",
                 "content": "Beispiel",
@@ -7992,21 +7996,23 @@
           "level": {
             "type": "string",
             "x-extensible-enum": [
+              "international",
               "federal",
               "intercantonal",
               "cantonal",
-              "education_council",
+              "district",
               "municipal"
             ],
             "x-eduksx-labels": {
+              "international": "International",
               "federal": "Bund",
               "intercantonal": "Interkantonal",
               "cantonal": "Kanton",
-              "education_council": "Bildungsrat",
+              "district": "Bezirk",
               "municipal": "Gemeinde"
             },
             "title": "Ebene",
-            "description": "Normenhierarchie",
+            "description": "staatliche Ebene (Entscheid 22.11.2026)",
             "x-eduksx-data-class": "public"
           },
           "level_label": {
@@ -8014,6 +8020,43 @@
             "readOnly": true,
             "title": "Ebene (Text)",
             "description": "deutsches Label zu «level» in der gewählten Sprache"
+          },
+          "authority": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "parliament",
+              "government",
+              "education_council",
+              "education_department",
+              "school_office",
+              "municipal_office",
+              "district_council",
+              "municipal_body",
+              "other"
+            ],
+            "x-eduksx-labels": {
+              "parliament": "Parlament/Stimmberechtigte",
+              "government": "Regierung",
+              "education_council": "Bildungsrat",
+              "education_department": "Bildungsdirektion",
+              "school_office": "Volksschulamt",
+              "municipal_office": "Gemeindeamt",
+              "district_council": "Bezirksrat",
+              "municipal_body": "Gemeindebehörde/Schulpflege",
+              "other": "andere"
+            },
+            "title": "Behörde",
+            "description": "Erlassgeber bzw. Stelle innerhalb der Ebene",
+            "x-eduksx-data-class": "public"
+          },
+          "authority_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Behörde (Text)",
+            "description": "deutsches Label zu «authority» in der gewählten Sprache"
           },
           "publisher_type": {
             "type": "string",
@@ -8861,7 +8904,16 @@
           "level": {
             "type": "string",
             "title": "Ebene",
-            "description": "Bund, Kanton …",
+            "description": "staatliche Ebene: International, Bund, Interkantonal, Kanton, Bezirk, Gemeinde",
+            "x-eduksx-data-class": "public"
+          },
+          "authority": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Behörde",
+            "description": "z. B. Bildungsrat, Volksschulamt, Gemeindeamt (keine eigene Ebene)",
             "x-eduksx-data-class": "public"
           },
           "name": {

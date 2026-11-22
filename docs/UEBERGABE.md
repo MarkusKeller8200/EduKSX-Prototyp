@@ -36,6 +36,10 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Ebenen und Behörden getrennt
+
+Bildungsrat ist keine eigene Ebene mehr, sondern Erlassgeber im Kanton (Klasse B). Volksschulamt und Gemeindeamt: kantonale Vollzugs- und Aufsichtsstellen (Klasse C). Bezirksrat: Rekursinstanz (Klasse E). Neue Ebenen International und Interkantonal belegt.
+
 ### Sitzung 2026-11-20 – Mitteilungsempfänger und Abgleich Gemeindeart
 
 Empfänger je Organisation umgesetzt (DB, API, Prototyp, localStorage). Gemeindeart: 19 von 60 Schulgemeinden mit belegten Mitgliedern; Codex leitet 135 Gemeinden mit Schulaufgaben her, Gemeindeamt nennt 114 → ca. 21 Fehleinordnungen. Offen: Mitgliederliste beim Gemeindeamt anfordern und in die CSV übernehmen.

@@ -337,12 +337,18 @@
   function klasseBadge(k) { var x = KLASSEN[k] || ["neutral", k]; var t = (D.rechtsgrundlagen.quellenklassen.filter(function (q) { return q.klasse === k; })[0] || {}).titel || ""; return badge(x[0], x[1], t); }
 
   // ------------------------------------------------------------------ Gesetzestexte & Verordnungen
-  var EBENE_BADGE = { Bund: ["info", "CH"], Kanton: ["violett", "ZH"], Bildungsrat: ["neutral", "BR"], Gemeinde: ["warnung", "G"] };
-  // Ebenen immer von oben nach unten: Bund, (Interkantonal), Kanton, Bildungsrat, Volksschulamt, Gemeindeamt, Bezirk, Gemeinde
-  var RANG = [[/^(SR\b|Bund|Fedlex|Bundes)/, 0], [/^(Interkantonal|EDK)/, 1], [/^Bildungsrat|^BRB/, 3], [/^Volksschul|Volksschulamt/, 4], [/^Gemeindeamt/, 5],
+  // Staatliche Ebenen (Entscheid 22.11.2026); Bildungsrat, Volksschulamt und Gemeindeamt sind kantonale Behörden, keine Ebenen
+  var EBENEN = ["International", "Interkantonal", "Bund", "Kanton", "Bezirk", "Gemeinde"];
+  var EBENE_BADGE = { International: ["neutral", "INT"], Interkantonal: ["info", "IK"], Bund: ["info", "CH"], Kanton: ["violett", "ZH"], Bezirk: ["neutral", "BZ"], Gemeinde: ["warnung", "G"] };
+  // Reihenfolge immer von oben nach unten: International, Bund, Interkantonal, Kanton (Kantonsrat, Regierungsrat, Bildungsrat, Volksschulamt, Gemeindeamt), Bezirk, Gemeinde
+  var RANG = [[/^(International|UNO|SR 0\.)/, -1], [/^(SR\b|Bund|Fedlex|Bundes)/, 0], [/^(Interkantonal|EDK)/, 1], [/^Bildungsrat|^BRB/, 3], [/^Volksschul|Volksschulamt/, 4], [/^Gemeindeamt/, 5],
               [/^Bezirk/, 6], [/^(Gemeinde|Kommunal|kommunal|Schule|Rechtssammlung der|Amtliches Publikationsorgan)/, 7], [/^(LS\b|Kanton|ZH-Lex)/, 2]];
   function rang() { for (var a = 0; a < arguments.length; a++) { var t = String(arguments[a] || ""); for (var i = 0; i < RANG.length; i++) if (RANG[i][0].test(t)) return RANG[i][1]; } return 2; }
   function nachEbene(liste, wert) { return liste.map(function (x, i) { return [rang.apply(null, [].concat(wert(x))), i, x]; }).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; }).map(function (x) { return x[2]; }); }
+  var BEHOERDEN = ["Stimmberechtigte", "Kantonsrat", "Kantonsrat / Regierungsrat", "Regierungsrat", "Bildungsrat", "Bildungsdirektion", "Volksschulamt", "Gemeindeamt"];
+  function behRang(x) { var i = BEHOERDEN.indexOf(x); return i < 0 ? BEHOERDEN.length : i; }
+  function nachEbeneBehoerde(liste) { return liste.map(function (e, i) { return [rang(e.ebene), e.ebene === "Kanton" ? behRang(e.herausgeber) : 0, i, e]; })
+      .sort(function (a, b) { return a[0] - b[0] || a[1] - b[1] || a[2] - b[2]; }).map(function (x) { return x[3]; }); }
   function ebeneBadge(e) { var b = EBENE_BADGE[e] || ["neutral", ""]; return badge(b[0], b[1], e); }
   function rechtsgrundlagenAnsicht() {
     var R = D.rechtsgrundlagen, E = R.eintraege;
@@ -350,7 +356,8 @@
     var selSb = h("select", { "aria-label": "Sachbereich" }, h("option", { value: "", text: "Alle Sachbereiche" }),
       R.sachbereiche.map(function (s) { return h("option", { value: String(s.nr), text: s.nr + " " + s.titel }); }));
     var selEb = h("select", { "aria-label": "Ebene" }, h("option", { value: "", text: "Alle Ebenen" }),
-      ["Bund", "Kanton", "Bildungsrat", "Gemeinde"].map(function (e) { return h("option", { value: e, text: e }); }));
+      EBENEN.filter(function (x) { return E.some(function (e) { return e.ebene === x; }); }).map(function (e) { return h("option", { value: e, text: e }); }),
+      h("option", { value: "BR", text: "Kanton – nur Bildungsrat" }));
     var zaehler = h("p", { cls: "small muted" });
     var huelle = h("div");
     function zeile(e) {
@@ -360,7 +367,7 @@
         h("td", { cls: "nowrap" }, e.fundstelle || h("span", { cls: "muted", text: "–" }), e.geprueft ? h("span", { cls: "ok-mark", title: "Ordnungsnummer am 20.11.2026 in ZH-Lex geprüft", text: " ✓" }) : null),
         h("td", { text: e.stelle }),
         h("td", null, e.relevanz, e.themen && e.themen.length ? h("div", { cls: "small" }, h("span", { cls: "muted", text: "Normenhierarchie: " }), themenLinks(e.themen)) : null),
-        h("td", null, ebeneBadge(e.ebene), h("div", { style: "margin-top:.25rem" }, klasseBadge(e.klasse))),
+        h("td", null, ebeneBadge(e.ebene), e.ebene === "Kanton" ? h("div", { cls: "small muted", text: e.herausgeber }) : null, h("div", { style: "margin-top:.25rem" }, klasseBadge(e.klasse))),
         h("td", { cls: "nowrap", text: e.veroeffentlicht || "–" }),
         h("td", null, h("div", { cls: "nowrap", text: e.version || "–" }), e.anzahl_versionen ? versionKnopf(e.titel_amtlich || e.titel, e.versionen,
           [["Herausgebende Behörde", e.herausgeber], ["Massgebende Publikationsstelle", e.publikationsstelle], ["Downloadort", e.downloadort ? extern(e.downloadort, "aktuelle Fassung ↗") : null], ["Fundstelle", e.fundstelle]]) : (e.version_hinweis ? h("div", { cls: "small muted", text: e.version_hinweis }) : null)),
@@ -371,13 +378,13 @@
     function zeigen() {
       var f = such.value.trim().toLowerCase(), sb = selSb.value, eb = selEb.value;
       var treffer = E.filter(function (e) {
-        return (!sb || String(e.sachbereich) === sb) && (!eb || e.ebene === eb) &&
+        return (!sb || String(e.sachbereich) === sb) && (!eb || (eb === "BR" ? e.herausgeber === "Bildungsrat" : e.ebene === eb)) &&
           (!f || [e.titel, e.abk, e.fundstelle, e.stelle, e.relevanz].join(" ").toLowerCase().indexOf(f) >= 0);
       });
       zaehler.textContent = treffer.length + " von " + E.length + " Einträgen";
       huelle.textContent = "";
       R.sachbereiche.forEach(function (s) {
-        var t = nachEbene(treffer.filter(function (e) { return e.sachbereich === s.nr; }), function (e) { return e.ebene; });
+        var t = nachEbeneBehoerde(treffer.filter(function (e) { return e.sachbereich === s.nr; }));
         if (!t.length) return;
         huelle.appendChild(h("h2", { text: s.nr + ". " + s.titel + " (" + t.length + ")" }));
         huelle.appendChild(h("div", { cls: "tabelle-wrap" }, h("table", { cls: "rg" },
@@ -394,9 +401,19 @@
       h("div", { cls: "karten" },
         h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Einträge" }), h("div", { cls: "zahl", text: String(E.length) }), h("div", { cls: "small muted", text: "in " + R.sachbereiche.length + " Sachbereichen" })),
         h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Verschiedene Erlasse" }), h("div", { cls: "zahl", text: String(R.erlasse.length) }), h("div", { cls: "small muted", text: "mit LS- oder SR-Nummer" })),
-        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Nach Ebene" }), h("div", { cls: "small" }, ebeneBadge("Bund"), " " + n("Bund") + "  ", ebeneBadge("Kanton"), " " + n("Kanton")),
-          h("div", { cls: "small", style: "margin-top:.35rem" }, ebeneBadge("Bildungsrat"), " " + n("Bildungsrat") + "  ", ebeneBadge("Gemeinde"), " " + n("Gemeinde"))),
+        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Nach Ebene" }),
+          h("div", { cls: "small" }, EBENEN.filter(function (x) { return n(x); }).map(function (x) { return [ebeneBadge(x), " " + n(x) + "  "]; })),
+          h("div", { cls: "small muted", style: "margin-top:.35rem" }, "Kanton nach Erlassgeber: " + Object.keys(E.reduce(function (a, e) { if (e.ebene === "Kanton") a[e.herausgeber] = 1; return a; }, {})).sort(function (a, b) { return behRang(a) - behRang(b); })
+            .map(function (x) { return x + " " + E.filter(function (e) { return e.ebene === "Kanton" && e.herausgeber === x; }).length; }).join(" · "))),
         h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Fundstelle geprüft" }), h("div", { cls: "zahl", text: String(E.filter(function (e) { return e.geprueft; }).length) }), h("div", { cls: "small muted", text: "übrige noch zu prüfen" }))),
+      h("details", { cls: "karte" }, h("summary", null, h("strong", { text: "Ebenen und Behörden – was ist was?" })),
+        h("p", { cls: "small", text: "«Ebene» meint die staatliche Ebene, von der eine Regel stammt: International (Staatsverträge, SR 0.x), Bund, Interkantonal (Konkordate, z. B. IVöB, HarmoS), Kanton, Bezirk und Gemeinde (politische Gemeinde, Schulgemeinde). Innerhalb des Kantons wird nach Behörde unterschieden:" }),
+        h("ul", { cls: "small" },
+          h("li", null, h("strong", { text: "Kantonsrat, Regierungsrat" }), " – Gesetze und Verordnungen (ZH-Lex, Klasse A)."),
+          h("li", null, h("strong", { text: "Bildungsrat" }), " – kantonale Behörde mit eigener Rechtsetzung für die Volksschule: Lehrplan, Lektionentafel, Lehrmittel, Zeugnisreglement (BRB, Klasse B). Keine eigene Ebene, aber eigener Erlassgeber."),
+          h("li", null, h("strong", { text: "Volksschulamt" }), " (Bildungsdirektion) – Vollzug und Aufsicht: Weisungen, Merkblätter, Handreichungen (Klasse C, keine Rechtsetzung)."),
+          h("li", null, h("strong", { text: "Gemeindeamt" }), " (Direktion der Justiz und des Innern) – Aufsicht über Gemeinden und Schulgemeinden, Gemeindeart, Finanzhaushalt: Kreisschreiben, Handbücher (Klasse C)."),
+          h("li", null, h("strong", { text: "Bezirksrat" }), " – Rekursinstanz gegen Entscheide der Schulpflege und Aufsicht über die Gemeinden; erlässt keine Rechtsgrundlagen, seine Entscheide sind Rechtsprechung (Klasse E)."))),
       h("p", { cls: "meldung warnung" }, h("strong", { text: "Ausgangsliste, noch nicht juristisch validiert. " }),
         "Vor der Übernahme die konsolidierte Fassung, die genauen Paragrafen und die Anwendbarkeit auf die jeweilige Schulgemeinde prüfen. «Erlasstext» führt über den dauerhaften ZH-Lex-Link (Ordnungsnummer) bzw. Fedlex auf die aktuelle Fassung; «(allgemein)» heisst: die Quelle in der Ausgangsliste zeigt nur auf eine allgemeine Seite."),
       h("div", { cls: "filterzeile" }, such, selSb, selEb, zaehler),
@@ -441,9 +458,9 @@
       h("h2", { text: "Massgebende Publikationsquellen der Rechtsgrundlagen-Liste" }),
       h("div", { cls: "tabelle-wrap" }, h("table", null,
         h("thead", null, h("tr", null, ["Ebene", "Massgebende Quelle", "Was dort publiziert wird", "Einträge in der Liste"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
-        h("tbody", null, nachEbene(R.publikationsquellen, function (q) { return [q.ebene, q.name]; }).map(function (q) {
-          var key = q.ebene === "Kommunal" ? "Kommunal" : /Fedlex/.test(q.name) ? "Fedlex" : /ZH-Lex/.test(q.name) ? "ZH-Lex" : /Gemeindeamt/.test(q.name) ? "Gemeindeamt" : /Volksschule/.test(q.name) ? "Volksschulamt" : "Bildungsrat";
-          return h("tr", null, h("th", { scope: "row", text: q.ebene }), h("td", null, q.url ? extern(q.url, q.name + " ↗") : [h("span", { text: q.name }), h("div", { cls: "small" }, badge("warnung", "…", "Platzhalter"), " ", h("a", { href: link("schulgemeinden"), text: "erfasste Schulgemeinden →" }))]),
+        h("tbody", null, nachEbene(R.publikationsquellen, function (q) { return [q.behoerde || q.ebene, q.name]; }).map(function (q) {
+          var key = q.ebene === "Gemeinde" ? "Kommunal" : /Fedlex/.test(q.name) ? "Fedlex" : /ZH-Lex/.test(q.name) ? "ZH-Lex" : /Gemeindeamt/.test(q.name) ? "Gemeindeamt" : /Volksschule/.test(q.name) ? "Volksschulamt" : "Bildungsrat";
+          return h("tr", null, h("th", { scope: "row" }, ebeneBadge(q.ebene), q.behoerde ? h("div", { cls: "small muted", text: q.behoerde }) : null), h("td", null, q.url ? extern(q.url, q.name + " ↗") : [h("span", { text: q.name }), h("div", { cls: "small" }, badge("warnung", "…", "Platzhalter"), " ", h("a", { href: link("schulgemeinden"), text: "erfasste Schulgemeinden →" }))]),
             h("td", { text: beschreibung[key] || "" }),
             h("td", { cls: "zahlrechts", text: String(nach[key] || 0) }));
         })))),
@@ -743,7 +760,7 @@
     var orgs = D.organisationen;
     return [kopf("Versionen & Abgleich", "Wie EduKSX-Codex neue Fassungen findet und übernimmt. Alte Versionen bleiben erhalten; bei jedem Dokument zeigt «⟲ n» die Anzahl Versionen, ein Klick öffnet die Historik."),
       h("div", { cls: "karten" },
-        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Fedlex – Bundesrecht" }), h("div", { cls: "zahl", text: String(E.filter(function (e) { return e.ebene === "Bund"; }).length) }), h("div", { cls: "small muted", text: (function () { var b = E.filter(function (e) { return e.ebene === "Bund" && e.anzahl_versionen; }); return b.length ? b.reduce(function (n, e) { return n + e.anzahl_versionen; }, 0) + " Fassungen («Stand am») über den Fedlex-SPARQL-Endpunkt" : "Stand noch nicht abgefragt"; })() })),
+        h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Fedlex – Bundesrecht" }), h("div", { cls: "zahl", text: String(E.filter(function (e) { return e.ebene === "Bund" || e.ebene === "International"; }).length) }), h("div", { cls: "small muted", text: (function () { var b = E.filter(function (e) { return e.ebene === "Bund" && e.anzahl_versionen; }); return b.length ? b.reduce(function (n, e) { return n + e.anzahl_versionen; }, 0) + " Fassungen («Stand am») über den Fedlex-SPARQL-Endpunkt" : "Stand noch nicht abgefragt"; })() })),
         h("div", { cls: "karte" }, h("div", { cls: "titel", text: "ZH-Lex – kantonale Erlasse" }), h("div", { cls: "zahl", text: String(anzErl) }), h("div", { cls: "small muted", text: anzV + " Versionen (Nachträge), abgerufen " + R.zhlex_abgerufen })),
         h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Textfassungen (Markdown)" }), h("div", { cls: "zahl", text: String(Object.keys(D.texte.erlasse).length) }), h("div", { cls: "small muted" }, h("a", { href: link("texte"), text: "Erlasse aufbereitet →" }))),
         h("div", { cls: "karte" }, h("div", { cls: "titel", text: "Rechtssammlungen der Gemeinden" }), h("div", { cls: "zahl", text: String(orgs.length) }), h("div", { cls: "small muted", text: "Analyse v1, erfasst " + orgs[0].analysiert_am }))),
