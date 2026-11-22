@@ -6,6 +6,12 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ## [Unveröffentlicht]
 
+### Geändert
+
+- **Icons nur noch aus EduKSX-UI (22.11.2026):** keine eigenen Icon-Kopien mehr. Einstiegsseite und Prototypen
+  (Flow, Staffing, Sign, Time, Codex-Übersicht) nutzen das freigegebene Set aus EduKSX-UI; die vorläufigen, abweichenden
+  Motive für Codex, Sign und Time entfallen. Neu `tools/eduksx_icons.py`, Workflow `seite.yml` holt `EduKSX-UI/icons/svg`.
+
 ### Neu
 
 - **Umsetzungsgrundlagen nach DB-Standard 1.3 / API-Standard 1.2** von EduKSX-Architektur (#51): Datenbank und API

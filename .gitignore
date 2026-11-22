@@ -31,3 +31,4 @@ build/
 storage/*.key
 *.sqlite
 *.log
+_eduksx-ui/
