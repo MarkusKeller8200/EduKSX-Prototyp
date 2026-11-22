@@ -36,6 +36,10 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Karte lesbarer
+
+Markierungen mit Buchstaben und Kontrast, hellere Grundkarte, Grundkarte wählbar.
+
 ### Sitzung 2026-11-20 – Schulträgerkarte, Links und Beta-PIN
 
 Gemeindeart und Mitglieder jetzt aus der Schulträgerkarte. Zu prüfen: EG/EG-P bei Zweckverband und Anschlussvertrag (7 Gemeinden), Stand der Schulträgerkarte, Stufe einzelner Schulanlagen (über Beta-Rückmeldung), 12 Sonderschulen ohne Lage, Versandkanal und Gültigkeit der PIN.

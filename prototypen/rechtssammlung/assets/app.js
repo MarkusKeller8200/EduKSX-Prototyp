@@ -1009,8 +1009,8 @@
   var VW = {}; SV.verwaltungen.forEach(function (v) { VW[v.id] = v; });
   var GEM_BEZ = {}; D.gemeinden.forEach(function (g) { GEM_BEZ[g.gemeinde] = g.bezirk; });
   var SG_BEZ = {}; D.schulgemeinden.forEach(function (x) { SG_BEZ[x.name] = x.bezirk; });
-  var ST_KAT = [["Verwaltung", "Schulverwaltung / Schulbehörde", "--brand-violet", 7], ["Volksschule", "Schulhaus Volksschule", "--info", 5], ["Kindergarten", "Kindergarten (nur Stadt Zürich)", "--success", 4],
-    ["Volksschule (zu prüfen)", "Schulareal, Zuordnung zu prüfen", "--warning", 5], ["Sonderschule", "Sonderschule (Liste Volksschulamt)", "--destructive", 5], ["Sekundarstufe II / Tertiär", "Sekundarstufe II (Geodatensatz Kanton)", "--brand-neutral", 4]];
+  var ST_KAT = [["Verwaltung", "Schulverwaltung / Schulbehörde", "--brand-violet", 7, "V"], ["Volksschule", "Schulhaus Volksschule", "--info", 5, "S"], ["Kindergarten", "Kindergarten (nur Stadt Zürich)", "--success", 4, "K"],
+    ["Volksschule (zu prüfen)", "Schulareal, Zuordnung zu prüfen", "--warning", 5, "?"], ["Sonderschule", "Sonderschule (Liste Volksschulamt)", "--destructive", 5, "H"], ["Sekundarstufe II / Tertiär", "Sekundarstufe II (Geodatensatz Kanton)", "--brand-neutral", 4, "II"]];
   function cssVar(v) { try { return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || "#0272ad"; } catch (e) { return "#0272ad"; } }
   function vwBezirk(v) { var t = v.traeger || {}; return t.art === "SG" ? SG_BEZ[t.name] : GEM_BEZ[t.name] || GEM_BEZ[(t.gemeinden || [])[0]] || GEM_BEZ[v.gemeinde_adresse] || ""; }
   function vwTraegerLink(v) {
@@ -1033,8 +1033,10 @@
     if (typeof L === "undefined") { box.appendChild(h("p", { cls: "meldung warnung", text: "Kartenbibliothek nicht geladen – Standorte siehe Liste." })); return box; }
     setTimeout(function () {
       var map = L.map(box, { scrollWheelZoom: false, zoomSnap: 0.25 }).setView([47.42, 8.65], 10); box._karte = map;
-      L.tileLayer("https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg",
-        { maxZoom: 18, attribution: '© <a href="https://www.swisstopo.admin.ch/" target="_blank" rel="noopener">swisstopo</a> · Daten: Bildungsdirektion ZH, Stadt Zürich' }).addTo(map);
+      function wmts(layer, opt) { return L.tileLayer("https://wmts.geo.admin.ch/1.0.0/" + layer + "/default/current/3857/{z}/{x}/{y}.jpeg",
+        Object.assign({ maxZoom: 19, attribution: '© <a href="https://www.swisstopo.admin.ch/" target="_blank" rel="noopener">swisstopo</a> · Daten: Bildungsdirektion ZH, Gemeindeamt, Stadt Zürich' }, opt || {})); }
+      var grund = { "Landeskarte hell": wmts("ch.swisstopo.pixelkarte-grau", { opacity: 0.4, className: "kachel-hell" }), "Landeskarte farbig": wmts("ch.swisstopo.pixelkarte-farbe", { opacity: 0.6 }), "Luftbild": wmts("ch.swisstopo.swissimage") };
+      grund["Landeskarte hell"].addTo(map);
       var punkte = [], STK = SV.schultraegerkarte;
       if (STK && STK.flaechen) {
         var hl = (typeof standortKarte.markiert === "object" && standortKarte.markiert) || [];
@@ -1053,12 +1055,15 @@
           var eb = ebenen[zeigeStufe === "S" ? "Sekundarschulträger (Gebiete)" : "Primarschulträger (Gebiete)"].addTo(map);
           eb.eachLayer(function (lay) { if (hl.indexOf(lay.feature.properties.code) >= 0) { var b = lay.getBounds(); punkte.push([b.getSouth(), b.getWest()], [b.getNorth(), b.getEast()]); } });
         }
-        L.control.layers(null, ebenen, { collapsed: false }).addTo(map);
-      }
+        L.control.layers(grund, ebenen, { collapsed: false }).addTo(map);
+      } else L.control.layers(grund, null, { collapsed: false }).addTo(map);
       function marke(lat, lon, kat, inhalt) {
         var k = ST_KAT.filter(function (x) { return x[0] === kat; })[0] || ST_KAT[1];
-        var m = L.circleMarker([lat, lon], { radius: k[3], color: kat === "Verwaltung" ? "#ffffff" : cssVar(k[2]), weight: kat === "Verwaltung" ? 2 : 1, fillColor: cssVar(k[2]), fillOpacity: kat === "Verwaltung" ? 0.95 : 0.7 });
-        m.bindPopup(inhalt); m.bindTooltip(inhalt.getAttribute("data-titel")); m.addTo(map); punkte.push([lat, lon]);
+        var gr = kat === "Verwaltung" ? 26 : 20;
+        var m = L.marker([lat, lon], { riseOnHover: true, zIndexOffset: kat === "Verwaltung" ? 1000 : 0, keyboard: true, title: inhalt.getAttribute("data-titel"),
+          icon: L.divIcon({ className: "st-marke" + (kat === "Verwaltung" ? " st-verwaltung" : ""), iconSize: [gr, gr], iconAnchor: [gr / 2, gr / 2], popupAnchor: [0, -gr / 2],
+            html: '<span style="background:' + cssVar(k[2]) + '">' + k[4] + "</span>" }) });
+        m.bindPopup(inhalt); m.addTo(map); punkte.push([lat, lon]);
       }
       an.forEach(function (a) {
         if (!a.lat) return;
@@ -1077,7 +1082,9 @@
           v.websites && v.websites[0] ? h("div", { cls: "small" }, extern(v.websites[0], "Website ↗")) : null));
       });
       function rahmen() { map.invalidateSize(); if (punkte.length) map.fitBounds(punkte, { padding: [20, 20], maxZoom: 15 }); else map.setView([47.42, 8.65], 10); }
-      rahmen(); setTimeout(rahmen, 150);
+      function massstab() { box.classList.toggle("klein", map.getZoom() < 12); box.classList.toggle("mittel", map.getZoom() >= 12 && map.getZoom() < 14); }
+      map.on("zoomend", massstab);
+      rahmen(); setTimeout(function () { rahmen(); massstab(); }, 150);
     }, 0);
     return box;
   }
@@ -1095,7 +1102,7 @@
     var katBox = h("div", { cls: "filterzeile small" }, ST_KAT.map(function (k) {
       var cb = h("input", { type: "checkbox" }); cb.checked = kats[k[0]];
       cb.addEventListener("change", function () { kats[k[0]] = cb.checked; zeigen(); });
-      return h("label", { cls: "legende-punkt" }, cb, h("span", { cls: "punkt", style: "background:var(" + k[2] + ")", "aria-hidden": "true" }), " " + k[1] + " (" + (k[0] === "Verwaltung" ? SV.verwaltungen.length : SV.anlagen.filter(function (a) { return a.kategorie === k[0]; }).length) + ")");
+      return h("label", { cls: "legende-punkt" }, cb, h("span", { cls: "st-marke legende" + (k[0] === "Verwaltung" ? " st-verwaltung" : ""), "aria-hidden": "true" }, h("span", { style: "background:var(" + k[2] + ")", text: k[4] })), " " + k[1] + " (" + (k[0] === "Verwaltung" ? SV.verwaltungen.length : SV.anlagen.filter(function (a) { return a.kategorie === k[0]; }).length) + ")");
     }));
     var huelle = h("div");
     function passt(texte) { var f = Fsuche.value.trim().toLowerCase(); return !f || texte.join(" ").toLowerCase().indexOf(f) >= 0; }
