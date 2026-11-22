@@ -49,6 +49,7 @@ Geschäftsverwaltung/Beschlüsse, allgemeine Dokumentablage.
 | CDX-F-25 | KI-gestützte Aktualisierung nach der Anweisung [`KI-RECHERCHE.md`](KI-RECHERCHE.md): Abgleich mit ZH-Lex/Fedlex, Lieferung als Inhaltspaket, nie direkte Veröffentlichung. | SOLL | Recherchen im Chat |
 | CDX-F-26 | Dokumenttyp A/B/C je Pflichtdokument und je kommunalem Dokument: A Rechtserlass (gehört in die Rechtssammlung, § 7 Abs. 2 GG), B verbindliches Führungsdokument, C ergänzendes Dokument; A/B je nach Ausgestaltung. Vorschlag bis zur fachlichen Abnahme sichtbar als «zu prüfen». | SOLL | Pflichtkatalog, Struktur-Matrix, Dokumentlisten |
 | CDX-F-27 | Je Organisation und Pflichtdokument «keine Relevanz» setzen, mit Grund (gibt es nicht, muss nicht geregelt werden, anderswo geregelt, anderer Grund) und Bemerkung; nicht relevante Einträge zählen nicht zur Vollständigkeit und erscheinen in der Struktur-Matrix als «keine Relevanz». Recht: Redaktion der Organisation. | MUSS | Pflichtkatalog «Für Organisation erfassen» (im Prototyp nur im Browser gespeichert) |
+| CDX-F-28 | Rechtsänderungs-Monitoring: bei neuer Fassung die geänderten Stellen bestimmen (reine Umbrüche der Umwandlung ausgenommen), Verbindungen mit geänderter Belegstelle und Rechtsstellen im Elternwegweiser kennzeichnen und für die kommunalen Dokumente der betroffenen Knoten Prüfaufträge anlegen (zu prüfen bzw. zur Kenntnis); Status je Prüfauftrag (offen, keine Anpassung, Anpassung nötig, angepasst, nicht relevant); Mitteilung an die Organisation. | MUSS | Seite «Rechtsänderungen & Prüfliste» (Prüfstatus im Prototyp nur im Browser) |
 
 ### 2.2 Nicht fachliche Anforderungen
 
@@ -184,3 +185,4 @@ Zusätzlich zu den gemeinsamen Prüfpunkten in [`../README.md`](../README.md#4-g
 6. OFFEN: Wird eine Hierarchie beim Ersetzen versioniert (Historie der Fassungen der Hierarchie) oder genügt das Änderungsprotokoll `data_changes` (EMPFOHLEN für den Start)?
 7. ZU PRÜFEN: Rhythmus der KI-Recherche (EMPFOHLEN monatlich und nach Kantonsrats-Publikationen) und wer den Prüfbericht abnimmt.
 8. ZU PRÜFEN: Einstufung Dokumenttyp A/B/C (Vorschlag Codex 0.32.0: Pflichtkatalog 18 × A, 13 × A/B, 9 × B; kommunale Dokumente aus Dokumentart und Titel) – fachliche Abnahme und abnehmende Stelle offen.
+9. OFFEN: Monitoring – nur Belegstellen (EMPFOHLEN, wenig Fehlalarme) oder alle Stellen eines Erlasses als Prüfauftrag? Wer erhält die Mitteilung (Schulverwaltung, Schulpflege)? Rhythmus (bei jeder neuen Fassung, EMPFOHLEN)?

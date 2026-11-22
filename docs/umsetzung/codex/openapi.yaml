@@ -3827,6 +3827,298 @@
         }
       }
     },
+    "/api/v1/change-review-items": {
+      "get": {
+        "tags": [
+          "change-review-items"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "automatisch bei neuer Fassung (Unterschied → Belegstellen der Hierarchien → Beispiele der kommunalen Knoten); Prüfliste der Redaktion des Herausgebers",
+        "operationId": "listChangeReviewItems",
+        "summary": "Prüfaufträge auflisten",
+        "description": "Liste der Prüfaufträge (Cursor). automatisch bei neuer Fassung (Unterschied → Belegstellen der Hierarchien → Beispiele der kommunalen Knoten); Prüfliste der Redaktion des Herausgebers",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:change-review-items.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "change-review-items.read",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "name": "publisher_id",
+            "in": "query",
+            "required": false,
+            "description": "Organisation, die prüfen soll",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Herausgeber"
+            },
+            "example": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Ergebnis der Prüfung",
+            "schema": {
+              "type": "string",
+              "x-extensible-enum": [
+                "open",
+                "checked_no_change",
+                "adaptation_needed",
+                "adapted",
+                "not_relevant"
+              ],
+              "x-eduksx-labels": {
+                "open": "offen",
+                "checked_no_change": "geprüft, keine Anpassung",
+                "adaptation_needed": "Anpassung nötig",
+                "adapted": "angepasst",
+                "not_relevant": "nicht relevant"
+              },
+              "title": "Status"
+            },
+            "example": "open"
+          },
+          {
+            "name": "grade",
+            "in": "query",
+            "required": false,
+            "description": "Belegstelle oder nur Erlass geändert",
+            "schema": {
+              "type": "string",
+              "x-extensible-enum": [
+                "evidence_changed",
+                "act_changed"
+              ],
+              "x-eduksx-labels": {
+                "evidence_changed": "Belegstelle geändert (zu prüfen)",
+                "act_changed": "andere Stellen geändert (zur Kenntnis)"
+              },
+              "title": "Stufe"
+            },
+            "example": "evidence_changed"
+          },
+          {
+            "name": "difference_id",
+            "in": "query",
+            "required": false,
+            "description": "Unterschied zwischen zwei Fassungen",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Rechtsänderung"
+            },
+            "example": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prüfaufträge",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/ChangeReviewItem"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/change-review-items/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "change-review-items"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "automatisch bei neuer Fassung (Unterschied → Belegstellen der Hierarchien → Beispiele der kommunalen Knoten); Prüfliste der Redaktion des Herausgebers",
+        "operationId": "getChangeReviewItem",
+        "summary": "Prüfauftrag lesen",
+        "description": "Prüfauftrag mit allen Feldern der Positivliste.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:change-review-items.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "change-review-items.read",
+        "responses": {
+          "200": {
+            "description": "Prüfauftrag",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ChangeReviewItem"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "change-review-items"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "automatisch bei neuer Fassung (Unterschied → Belegstellen der Hierarchien → Beispiele der kommunalen Knoten); Prüfliste der Redaktion des Herausgebers",
+        "operationId": "updateChangeReviewItem",
+        "summary": "Prüfauftrag ändern",
+        "description": "JSON Merge Patch; fehlendes Feld = unverändert.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:change-review-items.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "change-review-items.write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeReviewItem"
+              },
+              "example": {
+                "difference_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "publisher_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ChangeReviewItem"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      }
+    },
     "/api/v1/mandatory-document-assessments": {
       "get": {
         "tags": [
@@ -6043,6 +6335,93 @@
         }
       }
     },
+    "/api/v1/legal-changes": {
+      "get": {
+        "tags": [
+          "change-review-items"
+        ],
+        "operationId": "listLegalChanges",
+        "summary": "Rechtsänderungen mit betroffenen Verbindungen und Dokumenten",
+        "description": "Je Erlass die geltenden Änderungen im Zeitraum: geänderte Stellen (ohne reine Umbrüche), Verbindungen mit geänderter Belegstelle, Rechtsstellen im Elternwegweiser, kommunale Dokumente zu prüfen bzw. zur Kenntnis.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:change-review-items.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "change-review-items.read",
+        "x-eduksx-data-classes": [
+          "public"
+        ],
+        "x-eduksx-purpose": "Rechtsänderungen mit betroffenen Verbindungen und Dokumenten",
+        "parameters": [
+          {
+            "name": "since",
+            "in": "query",
+            "required": false,
+            "description": "Veröffentlichung ab",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Seit"
+            },
+            "example": "2027-08-23"
+          },
+          {
+            "name": "publisher_id",
+            "in": "query",
+            "required": false,
+            "description": "nur Dokumente dieser Organisation",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Herausgeber"
+            },
+            "example": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/LegalChange"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
     "/api/v1/publishers/{publisher_key}/mandatory-documents/{document_key}/relevance": {
       "parameters": [
         {
@@ -6555,6 +6934,8 @@
               "codex:parent-guide-topics.read": "Elternwegweiser – lesen",
               "codex:parent-guide-topics.write": "Elternwegweiser – schreiben",
               "codex:parent-guide-topics.delete": "Elternwegweiser – löschen",
+              "codex:change-review-items.read": "change-review-items – lesen",
+              "codex:change-review-items.write": "change-review-items – schreiben",
               "codex:mandatory-document-assessments.read": "mandatory-document-assessments – lesen",
               "codex:content-imports.read": "Pflege und Import (API, CSV, Excel, KI-Recherche) – lesen",
               "codex:collection-analyses.read": "Evaluation und Leitfaden-Prüfung – lesen",
@@ -6602,6 +6983,8 @@
               "codex:parent-guide-topics.read": "Elternwegweiser – lesen",
               "codex:parent-guide-topics.write": "Elternwegweiser – schreiben",
               "codex:parent-guide-topics.delete": "Elternwegweiser – löschen",
+              "codex:change-review-items.read": "change-review-items – lesen",
+              "codex:change-review-items.write": "change-review-items – schreiben",
               "codex:mandatory-document-assessments.read": "mandatory-document-assessments – lesen",
               "codex:content-imports.read": "Pflege und Import (API, CSV, Excel, KI-Recherche) – lesen",
               "codex:collection-analyses.read": "Evaluation und Leitfaden-Prüfung – lesen",
@@ -9018,6 +9401,187 @@
           "title"
         ]
       },
+      "ChangeReviewItem": {
+        "type": "object",
+        "title": "Prüfauftrag",
+        "description": "Prüfauftrag nach einer Rechtsänderung: kommunales Dokument, dessen Belegstelle sich geändert hat. automatisch bei neuer Fassung (Unterschied → Belegstellen der Hierarchien → Beispiele der kommunalen Knoten); Prüfliste der Redaktion des Herausgebers",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "ID",
+            "description": "UUID v7, von der Anwendung vergeben",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "difference_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Rechtsänderung",
+            "description": "Unterschied zwischen zwei Fassungen",
+            "x-eduksx-data-class": "internal"
+          },
+          "publisher_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Herausgeber",
+            "description": "Organisation, die prüfen soll",
+            "x-eduksx-data-class": "internal"
+          },
+          "legal_act_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Dokument",
+            "description": "kommunaler Erlass, der zu prüfen ist",
+            "x-eduksx-data-class": "internal"
+          },
+          "hierarchy_edge_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Verbindung",
+            "description": "Grundlage der Zuordnung",
+            "x-eduksx-data-class": "internal"
+          },
+          "changed_locations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Geänderte Belegstellen",
+            "description": "z. B. {«§ 3.»}",
+            "x-eduksx-data-class": "internal"
+          },
+          "grade": {
+            "type": "string",
+            "x-extensible-enum": [
+              "evidence_changed",
+              "act_changed"
+            ],
+            "x-eduksx-labels": {
+              "evidence_changed": "Belegstelle geändert (zu prüfen)",
+              "act_changed": "andere Stellen geändert (zur Kenntnis)"
+            },
+            "title": "Stufe",
+            "description": "Belegstelle oder nur Erlass geändert",
+            "x-eduksx-data-class": "internal"
+          },
+          "grade_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Stufe (Text)",
+            "description": "deutsches Label zu «grade» in der gewählten Sprache"
+          },
+          "status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "open",
+              "checked_no_change",
+              "adaptation_needed",
+              "adapted",
+              "not_relevant"
+            ],
+            "x-eduksx-labels": {
+              "open": "offen",
+              "checked_no_change": "geprüft, keine Anpassung",
+              "adaptation_needed": "Anpassung nötig",
+              "adapted": "angepasst",
+              "not_relevant": "nicht relevant"
+            },
+            "title": "Status",
+            "description": "Ergebnis der Prüfung",
+            "x-eduksx-data-class": "internal"
+          },
+          "status_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Status (Text)",
+            "description": "deutsches Label zu «status» in der gewählten Sprache"
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "Ergebnis, Beschluss, Termin",
+            "x-eduksx-data-class": "internal"
+          },
+          "checked_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geprüft von",
+            "description": "Person (ohne Constraint)",
+            "x-eduksx-data-class": "internal"
+          },
+          "checked_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Geprüft am",
+            "description": "Zeitpunkt",
+            "x-eduksx-data-class": "internal"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erstellt am",
+            "description": "Zeitpunkt der Erfassung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erstellt von",
+            "description": "Person, die den Datensatz angelegt hat (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Geändert am",
+            "description": "Zeitpunkt der letzten Änderung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geändert von",
+            "description": "Person der letzten Änderung (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "lock_version": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Version",
+            "description": "optimistisches Sperren; ETag und If-Match",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          }
+        },
+        "required": [
+          "difference_id",
+          "publisher_id",
+          "legal_act_id"
+        ]
+      },
       "MandatoryDocumentAssessment": {
         "type": "object",
         "title": "Relevanzeinschätzung",
@@ -10683,6 +11247,74 @@
           }
         }
       },
+      "LegalChange": {
+        "type": "object",
+        "title": "Rechtsänderung",
+        "description": "Letzte geltende Änderung eines Erlasses mit Auswirkungen",
+        "properties": {
+          "citation": {
+            "type": "string",
+            "title": "Fundstelle",
+            "description": "z. B. «LS 412.311»"
+          },
+          "title": {
+            "type": "string",
+            "title": "Erlass",
+            "description": "Titel"
+          },
+          "old_version": {
+            "type": "string",
+            "title": "Von Fassung",
+            "description": "Nachtrag bzw. Stand"
+          },
+          "new_version": {
+            "type": "string",
+            "title": "Nach Fassung",
+            "description": "Nachtrag bzw. Stand"
+          },
+          "published_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Veröffentlicht",
+            "description": "Datum der neuen Fassung"
+          },
+          "changed_locations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Geänderte Stellen",
+            "description": "ohne reine Umbrüche"
+          },
+          "cosmetic_count": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Umbrüche",
+            "description": "ausgeblendet"
+          },
+          "affected_edges": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "title": "Verbindungen",
+            "description": "Belegstelle geändert"
+          },
+          "review_items": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ChangeReviewItem"
+                }
+              ]
+            },
+            "title": "Prüfaufträge",
+            "description": "kommunale Dokumente"
+          }
+        }
+      },
       "MandatoryDocumentRelevance": {
         "type": "object",
         "title": "Relevanz festlegen",
@@ -10983,6 +11615,34 @@
           }
         }
       },
+      "ChangeReviewEvent": {
+        "type": "object",
+        "title": "Ereignis Prüfaufträge",
+        "description": "Prüfaufträge zu einer Rechtsänderung angelegt",
+        "properties": {
+          "difference_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Rechtsänderung",
+            "description": "Unterschied"
+          },
+          "publisher_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "title": "Herausgeber",
+            "description": "betroffene Organisationen"
+          },
+          "count": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Anzahl",
+            "description": "Prüfaufträge"
+          }
+        }
+      },
       "ContentPublishedEvent": {
         "type": "object",
         "title": "Ereignis Freigabe",
@@ -11047,6 +11707,26 @@
     }
   },
   "webhooks": {
+    "codex.change_review.created": {
+      "post": {
+        "summary": "Neue Prüfaufträge nach einer Rechtsänderung (für Mitteilung an die Organisation)",
+        "description": "Ereignis «codex.change_review.created» an Abonnenten (B7).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeReviewEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Empfangen"
+          }
+        }
+      }
+    },
     "codex.act_version.created": {
       "post": {
         "summary": "Neue Fassung eines Erlasses (für die Hilfe in Staffing, Quellen in Flow)",

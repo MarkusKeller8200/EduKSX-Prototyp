@@ -205,4 +205,6 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Organisationen, Datenmodell (`document_class`), API und Importvorlage (#60).
 - EduKSX-Codex 0.33.0: Pflichtkatalog – je Organisation «keine Relevanz» mit Grund und Bemerkung setzen; zählt nicht zur
   Vollständigkeit, Anzeige in der Struktur-Matrix; Datenmodell `mandatory_document_assessments` und API (#61).
+- EduKSX-Codex 0.34.0: Rechtsänderungs-Monitoring – Seite «Rechtsänderungen & Prüfliste» mit geänderten Stellen je Erlass,
+  betroffenen Verbindungen, Elternwegweiser und kommunalen Dokumenten zu prüfen; Datenmodell `change_review_items`, API `/legal-changes` (#62).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

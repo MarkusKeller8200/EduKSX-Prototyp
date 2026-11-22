@@ -122,6 +122,7 @@
         h("li", null, eintrag(link("rechtsgrundlagen"), "Rechtsgrundlagen Volksschule", r.art === "rechtsgrundlagen", h("span", { cls: "anz", text: String(D.rechtsgrundlagen.eintraege.length) }))),
         h("li", null, eintrag(link("hierarchie"), "Normenhierarchien", r.art === "hierarchie", h("span", { cls: "anz", text: String(D.hierarchien.length) }), "Je Thema vom Bundesrecht bis zum Erlass der Gemeinde")),
         h("li", null, eintrag(link("texte"), "Textfassungen & Änderungen", r.art === "texte" || r.art === "text", h("span", { cls: "anz", text: String(Object.keys(D.texte.erlasse).length) }))),
+        h("li", null, eintrag(link("aenderungen"), "Rechtsänderungen & Prüfliste", r.art === "aenderungen", h("span", { cls: "anz", text: String(D.monitoring.aenderungen.length) }), "Was sich in den Erlassen geändert hat und welche kommunalen Dokumente zu prüfen sind")),
         h("li", null, eintrag(link("eltern"), "Elternwegweiser", r.art === "eltern", h("span", { cls: "anz", text: String(D.elternwegweiser.length) }))),
         h("li", { cls: "gruppe", "aria-hidden": "true", text: "Gemeinde-Sammlungen" }),
         h("li", null, eintrag(link("abgleich"), "Versionen & Abgleich", r.art === "abgleich")),
@@ -841,6 +842,8 @@
           })))),
         h("h3", { text: "Dokumentarten (Einordnung nach Leitfaden Ziff. 5–8)" }),
         h("ul", null, arten.map(function (a) { return h("li", null, h("strong", { text: String(o.arten[a]) }), " " + D.arten[a]); })),
+        (function () { var n = D.monitoring.aenderungen.reduce(function (s, a) { return s + a.dokumente.filter(function (d) { return d.org === o.id; }).length; }, 0);
+          return n ? h("p", null, h("a", { href: link("aenderungen", o.id, "0"), text: "Rechtsänderungen: " + n + " Dokument" + (n === 1 ? "" : "e") + " zu prüfen →" })) : null; })(),
         h("h3", { text: "Dokumenttyp A/B/C (Vorschlag, " + D.pflichtkatalog.doktyp_status + ")" }),
         h("p", { cls: "small" }, Object.keys(D.pflichtkatalog.doktypen).filter(function (t) { return (o.typen || {})[t]; }).map(function (t) { return [typBadge(t), " " + o.typen[t] + "  "]; }), " ", h("a", { href: link("pflicht"), text: "Erläuterung →" })))];
   }
@@ -1116,6 +1119,75 @@
           h("p", { cls: "small" }, h("span", { cls: "muted", text: "Normenhierarchie: " }), f.themen.map(function (t, i) { return [i ? ", " : "", h("a", { href: link("hierarchie", t, org ? org.id : null), text: titelH[t] || t })]; })));
       })];
   }
+  // ------------------------------------------------------------------ Rechtsänderungs-Monitoring
+  var PL_KEY = "eduksx-codex-pruefliste";   // im Prototyp: «geprüft» nur in diesem Browser
+  function plAlle() { try { return JSON.parse(localStorage.getItem(PL_KEY) || "{}") || {}; } catch (e) { return {}; } }
+  function plSetzen(k, wert) { var a = plAlle(); if (wert) a[k] = wert; else delete a[k]; try { localStorage.setItem(PL_KEY, JSON.stringify(a)); } catch (e) { /* Speicher nicht verfügbar */ } }
+  function datumWert(t) { var j = (t || "").split("."); return j.length === 3 ? new Date(+j[2], +j[1] - 1, +j[0]) : new Date(0); }
+  function aenderungenSeite(orgId, zeitraum) {
+    var MO = D.monitoring, org = orgId && orgId !== "alle" && ORG[orgId] ? ORG[orgId] : null, monate = zeitraum ? +zeitraum : 24;
+    var grenze = new Date(); grenze.setMonth(grenze.getMonth() - (monate || 1200));
+    var liste = MO.aenderungen.filter(function (a) { return !monate || datumWert(a.datum) >= grenze; });
+    function docsVon(a) { return a.dokumente.filter(function (d) { return !org || d.org === org.id; }); }
+    function kenntnisVon(a) { return org ? (a.kenntnis[org.id] || 0) : Object.keys(a.kenntnis).reduce(function (n, o) { return n + a.kenntnis[o]; }, 0); }
+    var pl = plAlle();
+    function schluessel(a, d) { return [a.nr, a.nach, d.org, d.titel].join("|"); }
+    var offen = 0, erledigt = 0, kenntnis = 0, kanten = 0, jeOrg = {};
+    liste.forEach(function (a) {
+      kanten += a.kanten.length; kenntnis += kenntnisVon(a);
+      docsVon(a).forEach(function (d) { var x = jeOrg[d.org] = jeOrg[d.org] || [0, 0, d.orgname]; if (pl[schluessel(a, d)]) { erledigt++; x[1]++; } else { offen++; x[0]++; } });
+      Object.keys(a.kenntnis).forEach(function (o) { if (!org || o === org.id) { var x = jeOrg[o] = jeOrg[o] || [0, 0, ORG[o] ? ORG[o].kurz : o]; x[3] = (x[3] || 0) + a.kenntnis[o]; } });
+    });
+    function wahl() {
+      var orgSel = h("select", { "aria-label": "Organisation", onchange: function () { location.hash = link("aenderungen", this.value || "alle", String(monate)); } },
+        [h("option", { value: "", text: "alle Organisationen" })].concat(D.organisationen.slice().sort(function (a, b) { return a.kurz.localeCompare(b.kurz, "de"); }).map(function (o) {
+          var op = h("option", { value: o.id, text: o.kurz }); if (org && org.id === o.id) op.selected = true; return op; })));
+      var zeitSel = h("select", { "aria-label": "Zeitraum", onchange: function () { location.hash = link("aenderungen", org ? org.id : "alle", this.value); } },
+        [["6", "letzte 6 Monate"], ["12", "letzte 12 Monate"], ["24", "letzte 24 Monate"], ["0", "alle"]].map(function (z) { var op = h("option", { value: z[0], text: z[1] }); if (+z[0] === monate) op.selected = true; return op; }));
+      return h("div", { cls: "filterzeile" }, h("label", { cls: "small", text: "Organisation " }), orgSel, h("label", { cls: "small", text: " Zeitraum " }), zeitSel);
+    }
+    var karten = h("div", { cls: "karten" }, [["Erlasse geändert", liste.length, "letzte geltende Änderung im Zeitraum"], ["Verbindungen betroffen", kanten, "Belegstelle in der Normenhierarchie geändert"],
+      ["Dokumente zu prüfen", offen, erledigt ? erledigt + " als geprüft markiert" : "Belegstelle geändert"], ["Zur Kenntnis", kenntnis, "gestützt auf den Erlass, andere Stellen geändert"]].map(function (k) {
+        return h("div", { cls: "karte" }, h("div", { cls: "titel", text: k[0] }), h("div", { cls: "zahl", text: String(k[1]) }), h("div", { cls: "small muted", text: k[2] })); }));
+    var orgs = Object.keys(jeOrg).sort(function (a, b) { return (jeOrg[b][0] - jeOrg[a][0]) || ((jeOrg[b][3] || 0) - (jeOrg[a][3] || 0)); });
+    var tabelleOrg = orgs.length ? h("section", { cls: "karte" }, h("h2", { text: "Prüfliste je Organisation" }),
+      h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+        h("thead", null, h("tr", null, ["Organisation", "Zu prüfen", "Geprüft", "Zur Kenntnis", ""].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+        h("tbody", null, orgs.map(function (o) { var x = jeOrg[o];
+          return h("tr", null, h("th", { scope: "row", text: x[2] }), h("td", { cls: "zahlrechts", text: String(x[0]) }), h("td", { cls: "zahlrechts", text: String(x[1]) }), h("td", { cls: "zahlrechts", text: String(x[3] || 0) }),
+            h("td", null, h("a", { cls: "btn klein", href: link("aenderungen", o, String(monate)), text: "Nur diese" })));
+        }))))) : null;
+    var karteJe = liste.map(function (a) {
+      var docs = docsVon(a), kn = kenntnisVon(a);
+      if (org && !docs.length && !kn) return null;
+      return h("section", { cls: "karte aenderung" },
+        h("h2", null, a.fundstelle + " – " + a.titel),
+        h("p", { cls: "small muted" }, "Fassung " + a.von + " → " + a.nach + ", veröffentlicht " + a.datum + " · " + a.stellen.length + (a.stellen.length === 1 ? " Stelle" : " Stellen") + " geändert" + (a.kosmetisch ? " (" + a.kosmetisch + " reine Umbrüche ausgeblendet)" : "") + " · ",
+          h("a", { href: link("text", a.nr, a.nach), text: "Änderungen im Text →" })),
+        h("div", { cls: "stellen" }, a.stellen.map(function (st) {
+          return h("details", { cls: "beleg-block" }, h("summary", null, h("strong", { text: st.stelle.replace(/\.$/, "") }), " – " + (function () { var z = {}; st.aenderungen.forEach(function (x) { z[x.op] = (z[x.op] || 0) + 1; }); return Object.keys(z).map(function (o) { return (z[o] > 1 ? z[o] + " × " : "") + o; }).join(", "); })()),
+            h("ul", { cls: "small" }, st.aenderungen.map(function (x) { return h("li", null, h("em", { text: x.op + ": " }), x.text); })));
+        })),
+        a.kanten.length ? [h("h3", { text: "Verbindungen mit geänderter Belegstelle" }), h("ul", null, a.kanten.map(function (k) {
+          return h("li", null, h("a", { href: link("hierarchie", k.thema, org ? org.id : null), text: k.thema_titel }), ": " + k.von + " → " + k.nach + " (" + k.art + ", " + k.stellen.join(", ") + ")"); }))] : null,
+        a.eltern.length ? [h("h3", { text: "Elternwegweiser" }), h("ul", null, a.eltern.map(function (e) { return h("li", null, h("a", { href: link("eltern", org ? org.id : null), text: e.titel }), " – " + e.stelle); }))] : null,
+        docs.length ? [h("h3", { text: "Kommunale Dokumente zu prüfen (" + docs.length + ")" }), h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+          h("thead", null, h("tr", null, ["Organisation", "Dokument", "Thema", "Geänderte Belegstelle", "Geprüft"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+          h("tbody", null, docs.map(function (d) {
+            var k = schluessel(a, d), cb = h("input", { type: "checkbox", "aria-label": "Geprüft: " + d.titel });
+            cb.checked = !!pl[k];
+            cb.addEventListener("change", function () { plSetzen(k, cb.checked ? new Date().toISOString().slice(0, 10) : null); });
+            return h("tr", null, h("td", null, h("a", { href: link("org", d.org), text: d.orgname })), h("td", null, d.url ? extern(d.url, d.titel) : d.titel),
+              h("td", null, h("a", { href: link("hierarchie", d.thema, d.org), text: d.thema_titel })), h("td", { text: d.stellen.join(", ") }), h("td", null, h("label", { cls: "small" }, cb, " geprüft")));
+          }))))] : null,
+        kn ? h("p", { cls: "small muted", text: "Zur Kenntnis: " + kn + " Dokument" + (kn === 1 ? "" : "e") + (org ? "" : " in " + Object.keys(a.kenntnis).length + (Object.keys(a.kenntnis).length === 1 ? " Organisation" : " Organisationen")) + " stützen sich auf diesen Erlass; geändert wurden andere Stellen." }) : null);
+    }).filter(Boolean);
+    return [kopf("Rechtsänderungen & Prüfliste" + (org ? " · " + org.kurz : ""), "Was sich in Bundes- und Kantonserlassen zuletzt geändert hat – und welche kommunalen Reglemente deshalb zu prüfen sind."),
+      h("p", { cls: "meldung info" }, MO.hinweis + " «Geprüft» wird im Prototyp nur in diesem Browser gespeichert; produktiv als Prüfliste in der Datenbank."),
+      wahl(), karten, tabelleOrg,
+      karteJe.length ? karteJe : h("p", { cls: "muted", text: "Keine Änderungen im gewählten Zeitraum." })];
+  }
+
   // «Keine Relevanz» je Organisation und Katalogeintrag – im Prototyp nur in diesem Browser gespeichert (produktiv: Datenbank)
   var NR_KEY = "eduksx-codex-keine-relevanz";
   var NR_GRUENDE = { gibt_es_nicht: "Gibt es bei uns nicht", nicht_zu_regeln: "Muss nicht geregelt werden", anderswo: "Anderswo geregelt", anderer: "Anderer Grund" };
@@ -1226,6 +1298,7 @@
     else if (r.art === "sg") inhalt = sgAnsicht(r.a);
     else if (r.art === "matrix") inhalt = matrix(r.a);
     else if (r.art === "pflicht") inhalt = pflichtSeite(r.a);
+    else if (r.art === "aenderungen") inhalt = aenderungenSeite(r.a, r.b);
     else if (r.art === "eltern") inhalt = elternSeite(r.a);
     else if (r.art === "grundlagen") inhalt = grundlagen();
     else if (r.art === "rechtsgrundlagen") inhalt = rechtsgrundlagenAnsicht();

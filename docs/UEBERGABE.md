@@ -36,6 +36,14 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Codex 0.34.0 – Rechtsänderungs-Monitoring, Phase 6 (#62)
+
+- Phase 6 des Plans. `rechtsaenderungen()` in build.py: je Erlass Unterschied der zwei jüngsten geltenden Fassungen (texte/<nr>/delta_*.json), Absätze den Paragrafen zugeordnet; reine Umbrüche der PDF-Umwandlung (gleiche Zeichen) ausgeblendet. 37 Erlasse mit inhaltlicher Änderung.
+- Auswirkungen: Verbindungen mit geänderter Belegstelle (9), Rechtsstellen im Elternwegweiser (2), kommunale Dokumente «zu prüfen» (22, Beispiele der kommunalen Knoten an diesen Verbindungen, z. B. LPVO § 3 → 7 Organisationsstatute/Funktionendiagramme) und «zur Kenntnis» (418, nur Zählung).
+- Seite `#/aenderungen/<org>/<monate>` mit Filter Organisation und Zeitraum (6/12/24 Monate, alle), Kennzahlen, Prüfliste je Organisation, Haken «geprüft» (im Prototyp nur im Browser); Link auf der Organisationsseite; Menü unter Gesetzestexte.
+- Datenmodell: `change_review_items` (Status offen, keine Anpassung, Anpassung nötig, angepasst, nicht relevant), `act_version_differences.changed_locations`/`cosmetic_count`; API `GET /legal-changes`, Ressource `/change-review-items`, Ereignis `codex.change_review.created`. Pflichtenheft CDX-F-28, offener Punkt 9.
+- Nächste Phase: 5 – Praxisthemen für Schulleitungen.
+
 ### Sitzung 2026-11-20 – Codex 0.33.0 – «keine Relevanz» im Pflichtkatalog (#61)
 
 - Pflichtkatalog: Auswahl «Für Organisation erfassen» (Route `#/pflicht/<org>`, Knopf «Erfassen» je Zeile). Spalte «Bei <Organisation>» mit Status (vorhanden, unsicher, fehlt) und bei fehlenden bzw. unsicheren Einträgen Haken «keine Relevanz» mit Grund (gibt es nicht, muss nicht geregelt werden, anderswo geregelt, anderer Grund) und Bemerkung. Vollständigkeit zählt nicht relevante Einträge nicht mit; neue Spalte «Keine Relevanz». Struktur-Matrix zeigt solche Zellen als «∅ keine Relevanz».

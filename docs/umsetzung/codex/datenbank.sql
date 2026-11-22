@@ -281,6 +281,8 @@ CREATE TABLE act_version_differences (
     old_version_id          uuid NOT NULL REFERENCES act_versions(id) ON DELETE CASCADE,   -- Ältere Fassung | Verweis
     new_version_id          uuid NOT NULL REFERENCES act_versions(id) ON DELETE CASCADE,   -- Neuere Fassung | Verweis
     changes                 jsonb NOT NULL,                  -- Änderungen | Liste mit Art, Stelle, alt, neu
+    changed_locations       text[] NOT NULL DEFAULT '{}',    -- Geänderte Stellen | z. B. {«§ 3.», «Art. 302»}; reine Umbrüche der Umwandlung ausgenommen
+    cosmetic_count          integer NOT NULL DEFAULT 0,      -- Umbrüche | ausgeblendete Änderungen ohne Inhalt (gleiche Zeichen)
     UNIQUE (old_version_id, new_version_id)
 );
 
@@ -521,6 +523,25 @@ CREATE TABLE mandatory_documents (
     created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid
 );
 
+-- Prüfauftrag nach einer Rechtsänderung: kommunales Dokument, dessen Belegstelle sich geändert hat
+-- Geltungsbereich: global · Datenklasse: intern
+-- Herkunft/Verwendung: automatisch bei neuer Fassung (Unterschied → Belegstellen der Hierarchien → Beispiele der kommunalen Knoten); Prüfliste der Redaktion des Herausgebers
+CREATE TABLE change_review_items (
+    id                      uuid PRIMARY KEY,
+    difference_id           uuid NOT NULL REFERENCES act_version_differences(id) ON DELETE CASCADE,   -- Rechtsänderung | Unterschied zwischen zwei Fassungen
+    publisher_id            uuid NOT NULL REFERENCES publishers(id) ON DELETE CASCADE,   -- Herausgeber | Organisation, die prüfen soll
+    legal_act_id            uuid NOT NULL REFERENCES legal_acts(id) ON DELETE CASCADE,   -- Dokument | kommunaler Erlass, der zu prüfen ist
+    hierarchy_edge_id       uuid REFERENCES hierarchy_edges(id) ON DELETE SET NULL,   -- Verbindung | Grundlage der Zuordnung
+    changed_locations       text[] NOT NULL DEFAULT '{}',    -- Geänderte Belegstellen | z. B. {«§ 3.»}
+    grade                   text NOT NULL DEFAULT 'evidence_changed' CHECK (grade IN ('evidence_changed','act_changed')),   -- Stufe | Belegstelle oder nur Erlass geändert | intern | evidence_changed=Belegstelle geändert (zu prüfen); act_changed=andere Stellen geändert (zur Kenntnis)
+    status                  text NOT NULL DEFAULT 'open' CHECK (status IN ('open','checked_no_change','adaptation_needed','adapted','not_relevant')),   -- Status | Ergebnis der Prüfung | intern | open=offen; checked_no_change=geprüft, keine Anpassung; adaptation_needed=Anpassung nötig; adapted=angepasst; not_relevant=nicht relevant
+    note                    text,                            -- Bemerkung | Ergebnis, Beschluss, Termin
+    checked_by_id           uuid,                            -- Geprüft von | Person (ohne Constraint)
+    checked_at              timestamptz,                     -- Geprüft am | Zeitpunkt
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid,
+    UNIQUE (difference_id, publisher_id, legal_act_id)
+);
+
 -- Relevanz eines Pflichtdokuments für eine Organisation («keine Relevanz», mit Grund)
 -- Geltungsbereich: global · Datenklasse: intern
 -- Herkunft/Verwendung: Pflichtkatalog «Für Organisation erfassen», gepflegt von der Redaktion des Herausgebers; Vollständigkeit zählt nur relevante Einträge
@@ -726,6 +747,9 @@ CREATE INDEX hierarchy_edge_evidences_hierarchy_edge_id_index ON hierarchy_edge_
 CREATE INDEX hierarchy_edge_evidences_legal_act_id_index ON hierarchy_edge_evidences (legal_act_id);
 CREATE INDEX mandatory_documents_category_id_index ON mandatory_documents (category_id);
 CREATE INDEX mandatory_documents_content_import_id_index ON mandatory_documents (content_import_id);
+CREATE INDEX change_review_items_publisher_id_index ON change_review_items (publisher_id);
+CREATE INDEX change_review_items_legal_act_id_index ON change_review_items (legal_act_id);
+CREATE INDEX change_review_items_hierarchy_edge_id_index ON change_review_items (hierarchy_edge_id);
 CREATE INDEX mandatory_document_assessments_mandatory_document_id_index ON mandatory_document_assessments (mandatory_document_id);
 CREATE INDEX matrix_rows_mandatory_document_id_index ON matrix_rows (mandatory_document_id);
 CREATE INDEX matrix_cells_publisher_id_index ON matrix_cells (publisher_id);
@@ -940,6 +964,8 @@ COMMENT ON COLUMN act_version_differences.id IS 'ID – UUID v7, von der Anwendu
 COMMENT ON COLUMN act_version_differences.old_version_id IS 'Ältere Fassung – Verweis';
 COMMENT ON COLUMN act_version_differences.new_version_id IS 'Neuere Fassung – Verweis';
 COMMENT ON COLUMN act_version_differences.changes IS 'Änderungen – Liste mit Art, Stelle, alt, neu';
+COMMENT ON COLUMN act_version_differences.changed_locations IS 'Geänderte Stellen – z. B. {«§ 3.», «Art. 302»}; reine Umbrüche der Umwandlung ausgenommen';
+COMMENT ON COLUMN act_version_differences.cosmetic_count IS 'Umbrüche – ausgeblendete Änderungen ohne Inhalt (gleiche Zeichen)';
 COMMENT ON TABLE act_references IS 'Verweis eines Erlasses auf einen anderen – aus Ingress, Fussnoten und Text; Grundlage für Hierarchie-Vorschläge';
 COMMENT ON COLUMN act_references.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN act_references.from_act_id IS 'Erlass – verweisender Erlass';
@@ -1124,6 +1150,25 @@ COMMENT ON COLUMN mandatory_documents.updated_by_id IS 'Geändert von – Person
 COMMENT ON COLUMN mandatory_documents.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
 COMMENT ON COLUMN mandatory_documents.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
 COMMENT ON COLUMN mandatory_documents.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
+COMMENT ON TABLE change_review_items IS 'Prüfauftrag nach einer Rechtsänderung: kommunales Dokument, dessen Belegstelle sich geändert hat – automatisch bei neuer Fassung (Unterschied → Belegstellen der Hierarchien → Beispiele der kommunalen Knoten); Prüfliste der Redaktion des Herausgebers';
+COMMENT ON COLUMN change_review_items.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN change_review_items.difference_id IS 'Rechtsänderung – Unterschied zwischen zwei Fassungen';
+COMMENT ON COLUMN change_review_items.publisher_id IS 'Herausgeber – Organisation, die prüfen soll';
+COMMENT ON COLUMN change_review_items.legal_act_id IS 'Dokument – kommunaler Erlass, der zu prüfen ist';
+COMMENT ON COLUMN change_review_items.hierarchy_edge_id IS 'Verbindung – Grundlage der Zuordnung';
+COMMENT ON COLUMN change_review_items.changed_locations IS 'Geänderte Belegstellen – z. B. {«§ 3.»}';
+COMMENT ON COLUMN change_review_items.grade IS 'Stufe – Belegstelle oder nur Erlass geändert';
+COMMENT ON COLUMN change_review_items.status IS 'Status – Ergebnis der Prüfung';
+COMMENT ON COLUMN change_review_items.note IS 'Bemerkung – Ergebnis, Beschluss, Termin';
+COMMENT ON COLUMN change_review_items.checked_by_id IS 'Geprüft von – Person (ohne Constraint)';
+COMMENT ON COLUMN change_review_items.checked_at IS 'Geprüft am – Zeitpunkt';
+COMMENT ON COLUMN change_review_items.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN change_review_items.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN change_review_items.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN change_review_items.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN change_review_items.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN change_review_items.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN change_review_items.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
 COMMENT ON TABLE mandatory_document_assessments IS 'Relevanz eines Pflichtdokuments für eine Organisation («keine Relevanz», mit Grund) – Pflichtkatalog «Für Organisation erfassen», gepflegt von der Redaktion des Herausgebers; Vollständigkeit zählt nur relevante Einträge';
 COMMENT ON COLUMN mandatory_document_assessments.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN mandatory_document_assessments.publisher_id IS 'Herausgeber – Organisation, für die die Einschätzung gilt';

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.33.0 – Generator.
+"""EduKSX-Codex Prototyp 0.34.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -2513,6 +2513,106 @@ ICON = ('<svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><rec
         '<rect x="13" y="3.5" width="7.5" height="7.5" rx="2" fill="none" stroke="var(--brand-neutral)" stroke-width="1.75"/>'
         '<rect x="3.5" y="13" width="7.5" height="7.5" rx="2" fill="var(--brand-orange)"/><rect x="13" y="13" width="7.5" height="7.5" rx="2" fill="var(--brand-blue)"/></svg>')
 
+# ---------------------------------------------------------------- Rechtsänderungs-Monitoring (Phase 6, 22.11.2026)
+# Je Erlass die letzte Änderung (Unterschied der zwei jüngsten geltenden Fassungen), den Paragrafen zugeordnet; reine
+# Umbrüche aus der PDF-Umwandlung (gleiche Zeichen, andere Trennung) gelten nicht als Änderung. Daraus: betroffene
+# Verbindungen der Normenhierarchien (Belegstelle geändert), Rechtsstellen im Elternwegweiser und kommunale Dokumente
+# (Beispiele der kommunalen Knoten), die zu prüfen sind. Anhaltspunkt für die Redaktion – keine Rechtsprüfung.
+MD_KOPF = re.compile(r"^### (§ \d+(?: [a-z])?\.|Art\. \d+[a-z]*)")
+
+def _absaetze(md):
+    kern = md.split("\n---\n", 1)[1] if md.startswith("---\n") else md
+    kern = kern.split("\n\n---\n\n")[0]
+    return [b for b in kern.strip().split("\n\n") if b.strip()]
+
+def _zeichen(t): return "".join(sorted(re.sub(r"[\s\-–]|\[\^\w+\]", "", t)))
+
+def _stelle_je_absatz(bloecke):
+    """Stelle (§ 12. bzw. Art. 3 bzw. Ingress) für jeden Absatz."""
+    aktuell, aus = "Ingress", []
+    for b in bloecke:
+        m = MD_KOPF.match(b)
+        if m: aktuell = m.group(1)
+        aus.append(aktuell)
+    return aus
+
+def _stelle_norm(nr, stelle, bloecke, stellen):
+    """Belegstelle wie in HIERARCHIEN («§ 28.», «Art. 15», «Ingress», «suche:…») auf die Überschrift abbilden."""
+    if not stelle: return None
+    if stelle.startswith("suche:"):
+        t = stelle[6:].strip()
+        for i, b in enumerate(bloecke):
+            if t[:40] in b: return stellen[i]
+        return None
+    return stelle
+
+def rechtsaenderungen(TX, hierarchien, eltern, orgs):
+    fund_nr = {e["fundstelle"]: nr for nr, e in TX["erlasse"].items()}
+    aus = []
+    for nr, e in TX["erlasse"].items():
+        f = e["fassungen"]
+        if len(f) < 2: continue
+        alt, neu = f[-2]["nachtrag"], f[-1]["nachtrag"]
+        dpfad = ROOT / "texte" / nr / f"delta_{alt}_{neu}.json"
+        mpfad = ROOT / "texte" / nr / f"{neu}.md"
+        if not dpfad.exists() or not mpfad.exists(): continue
+        d = json.loads(dpfad.read_text(encoding="utf-8"))
+        bloecke = _absaetze(mpfad.read_text(encoding="utf-8")); stellen = _stelle_je_absatz(bloecke)
+        plus = {x["i"]: bloecke[x["i"]] for x in d["aenderungen"] if x["op"] == "+" and x["i"] < len(bloecke)}
+        minus = [x for x in d["aenderungen"] if x["op"] == "-"]
+        # verschobene bzw. neu umbrochene Absätze (gleiche Zeichen) gegenseitig aufheben
+        sig_plus = {}
+        for i, t in plus.items(): sig_plus.setdefault(_zeichen(t), []).append(i)
+        weg_plus, weg_minus = set(), set()
+        for k, x in enumerate(minus):
+            l = sig_plus.get(_zeichen(x["text"]))
+            if l: weg_plus.add(l.pop()); weg_minus.add(k)
+        je, kosmetisch = {}, 0
+        def merk(st, art_, text):
+            je.setdefault(st, []).append({"op": art_, "text": re.sub(r"\[\^\w+\]", "", text)[:240]})
+        for x in d["aenderungen"]:
+            if x["op"] == "~":
+                weg = " ".join(t for o, t in x["teile"] if o == "-"); dazu = " ".join(t for o, t in x["teile"] if o == "+")
+                if _zeichen(weg) == _zeichen(dazu): kosmetisch += 1; continue
+                if x["i"] < len(stellen): merk(stellen[x["i"]], "geändert", (("neu: " + dazu) if dazu else "") + ((" · gestrichen: " + weg) if weg else ""))
+            elif x["op"] == "+":
+                if x["i"] in weg_plus: kosmetisch += 1; continue
+                if x["i"] < len(stellen): merk(stellen[x["i"]], "neu", plus[x["i"]])
+        for k, x in enumerate(minus):
+            if k in weg_minus: kosmetisch += 1; continue
+            i = max(0, min(x["vor"], len(stellen)) - 1)
+            merk(stellen[i] if stellen else "Ingress", "gestrichen", x["text"])
+        if not je: continue
+        fs = e["fundstelle"]
+        geaendert = set(je)
+        kanten, docs, gesehen, kenntnis = [], [], set(), {}
+        for H in hierarchien:
+            K = {k["id"]: k for k in H["knoten"]}
+            for x in H["kanten"]:
+                belege = ([x["beleg"]] if x.get("beleg") else []) + x.get("weitere_belege", [])
+                treffer = [b["stelle"] for b in belege if b["fundstelle"] == fs and _stelle_norm(nr, b["stelle"], bloecke, stellen) in geaendert]
+                ziel_ist_erlass = K.get(x["nach"], {}).get("fundstelle") == fs or K.get(x["von"], {}).get("fundstelle") == fs
+                if treffer:
+                    kanten.append({"thema": H["id"], "thema_titel": H["kurz"], "von": K[x["von"]]["titel"], "nach": K[x["nach"]]["titel"], "art": x["art"], "stellen": treffer})
+                von = K.get(x["von"], {})
+                if von.get("fundstelle") == "kommunal" and treffer:      # zu prüfen: Belegstelle geändert
+                    for b in von.get("beispiele", []):
+                        schl = (b["org"], b["titel"], H["id"])
+                        if schl in gesehen: continue
+                        gesehen.add(schl)
+                        docs.append({"org": b["org"], "orgname": b["orgname"], "titel": b["titel"], "url": b.get("url"), "thema": H["id"], "thema_titel": H["kurz"], "stellen": treffer})
+                elif von.get("fundstelle") == "kommunal" and ziel_ist_erlass:   # zur Kenntnis: gestützt auf den Erlass, andere Stellen geändert
+                    for b in von.get("beispiele", []): kenntnis.setdefault(b["org"], set()).add(b["titel"])
+        el = [{"id": t["id"], "titel": t["titel"], "stelle": st["stelle"]} for t in eltern for st in t["stellen"]
+              if st["fundstelle"] == fs and _stelle_norm(nr, st["stelle"], bloecke, stellen) in geaendert]
+        aus.append({"nr": nr, "fundstelle": fs, "titel": e["titel"], "von": alt, "nach": neu, "datum": f[-1]["veroeffentlicht"],
+                    "stellen": [{"stelle": k, "aenderungen": v} for k, v in je.items()], "kosmetisch": kosmetisch,
+                    "kanten": kanten, "eltern": el, "dokumente": docs, "kenntnis": {o: len(t) for o, t in kenntnis.items()}})
+    def iso(t): j = t.split("."); return j[2] + j[1] + j[0] if len(j) == 3 else ""
+    aus.sort(key=lambda a: iso(a["datum"]), reverse=True)
+    return {"hinweis": "Anhaltspunkt für die Redaktion: letzte Änderung je Erlass, reine Umbrüche aus der PDF-Umwandlung ausgeblendet. Keine Rechtsprüfung.",
+            "aenderungen": aus}
+
 def render_daten(gemeinden):
     bezirke = list(dict.fromkeys(g["bezirk"] for g in gemeinden))
     sgs = schulgemeinden()
@@ -2529,6 +2629,7 @@ def render_daten(gemeinden):
              "elternwegweiser": elternwegweiser(TX),
              "texte": TX, "hierarchien": querbezuege([abgleich_kanten(hierarchie(TX, sp), TX) for sp in HIERARCHIEN], TX),
              "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
+    daten["monitoring"] = rechtsaenderungen(TX, daten["hierarchien"], daten["elternwegweiser"], ORGS)
     for e in daten["rechtsgrundlagen"]["eintraege"]:
         t = []
         for nr in re.findall(r"\d+(?:\.\d+)*", e.get("fundstelle") or ""):
@@ -2563,7 +2664,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.33.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.34.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2571,7 +2672,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.33.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.34.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),
