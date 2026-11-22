@@ -234,7 +234,7 @@ kanaele = ["entwicklung", "beta", "stabil"]
 workflow = true
 label = "blueprint"
 # «Include in the home page» (Releases, Packages, Deployments) hat keine API: von Hand prüfen, dann true setzen
-startseite_geprueft = false
+startseite_geprueft = true
 
 [workflows]
 # Meilensteine per Kommentar /milestone … auf einem Admin-Issue verwalten
