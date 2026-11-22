@@ -18,6 +18,14 @@ schulpflicht;vsv;vsg;LS 412.101;§ 67.;from
 schulpflicht;sg;vsg;LS 412.100;§ 11.;to
 schulpflicht;sg;vsv;LS 412.101;§ 8.;to
 schulpflicht;sg;vsv;LS 412.101;§ 11.;to
+privatschulen;vsg;bv;LS 412.100;§ 68.;from
+privatschulen;vsg;bv;SR 101;Art. 62;to
+privatschulen;vsv;vsg;LS 412.101;§ 67.;from
+privatschulen;vsv;vsg;LS 412.100;§ 69.;to
+privatschulen;vsv;vsg;LS 412.101;§ 73.;from
+privatschulen;kom;vsg;LS 412.100;§ 69.;to
+privatschulen;kom;vsg;LS 412.100;§ 71.;to
+privatschulen;kom;vsv;LS 412.101;§ 73.;to
 tagesstrukturen;vsg;pavo;LS 412.100;§ 30 c.;from
 tagesstrukturen;vsg;pavo;SR 211.222.338;Art. 13;to
 tagesstrukturen;kjhg;pavo;LS 852.1;§ 18 b.;from
@@ -31,6 +39,12 @@ tagesstrukturen;ms;musg;LS 410.6;§ 2.;to
 tagesstrukturen;ms;musv;LS 410.61;§ 19.;to
 tagesstrukturen;kb;kjhg;LS 852.1;§ 18.;to
 tagesstrukturen;kb;pavo;SR 211.222.338;Art. 13;to
+schulbetrieb;vsv;vsg;LS 412.101;§ 21.;from
+schulbetrieb;vsv;vsg;LS 412.100;§ 26.;to
+schulbetrieb;lt;vsg;LS 412.100;§ 21.;to
+schulbetrieb;kom;vsv;LS 412.101;§ 32.;to
+schulbetrieb;kom;vsv;LS 412.101;§ 26.;to
+schulbetrieb;kom;vsg;LS 412.100;§ 27.;to
 sonderpaedagogik;vsg;behig;SR 151.3;Art. 20;to
 sonderpaedagogik;vsg;behig;LS 412.100;§ 33.;from
 sonderpaedagogik;vsm;vsg;LS 412.103;§ 1.;from
@@ -47,6 +61,17 @@ kindesschutz;vsg;ukrk;SR 0.107;Art. 12;to
 kindesschutz;vsg;stgb;SR 311.0;Art. 320;to
 kindesschutz;vsv;vsg;LS 412.101;§ 58.;from
 kindesschutz;kom;zgb;SR 210;Art. 314c;to
+disziplin;vsg;bv;LS 412.100;§ 52.;from
+disziplin;vsg;bv;SR 101;Art. 19;to
+disziplin;vsg;krk;LS 412.100;§ 50.;from
+disziplin;vsg;krk;SR 0.107;Art. 28;to
+disziplin;vsg;vrg;LS 412.100;§ 75.;from
+disziplin;vsg;vrg;LS 175.2;§ 19.;to
+disziplin;vsv;vsg;LS 412.101;§ 56.;from
+disziplin;vsv;vsg;LS 412.100;§ 52.;to
+disziplin;kom;vsv;LS 412.101;§ 56.;to
+disziplin;kom;vsv;LS 412.101;§ 58.;to
+disziplin;kom;vsg;LS 412.100;§ 52 a.;to
 gesundheit;gesg;epg;LS 810.1;§ 50.;from
 gesundheit;gesg;epg;SR 818.101;Art. 21;to
 gesundheit;vvepig;epg;LS 818.11;§ 6.;from

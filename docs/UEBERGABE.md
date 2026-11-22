@@ -36,6 +36,14 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Codex 0.27.0 – Schulbetrieb, Disziplin, Privatschulen (#55)
+
+- Neue Normenhierarchien (27 statt 24): **schulbetrieb** (Gruppe Schule; VSG §§ 21, 26, 27, 30 → VSV §§ 21, 26, 32 → Lektionentafel BRB 5/2017, 1/2019, 5/2021 → Ferienplan/Stundenplan), **disziplin** (Gruppe Kinder; KRK Art. 28, BV Art. 19 → VSG §§ 50, 52, 52 a, 75 → VRG § 19 → VSV §§ 56, 58 → Schul-/Hausordnung), **privatschulen** (Gruppe Schule; BV Art. 62 → VSG §§ 68, 69, 71 → VSV §§ 67, 73). Alle Belegstellen in der geltenden Fassung gefunden.
+- Kommunale Beispiele: Privatschulen 1 (Fehraltorf), Schulbetrieb und Disziplin 0 – Ferienpläne und Schulordnungen stehen meist nicht in der Rechtssammlung. Suchmuster bewusst eng (keine Hausordnungen von Sammelstellen o. Ä.).
+- Elternwegweiser: Disziplin → disziplin, Eintritt → privatschulen, Absenzen → schulbetrieb.
+- Inhaltspaket `data/inhalte/` neu exportiert (27 Hierarchien, 174 Knoten, 195 Verbindungen).
+- Als Nächstes (#55 folgt): Sport & Bewegung und Haftung & Versicherung – dafür neue Erlasse aufnehmen.
+
 ### Sitzung 2026-11-20 – Codex 0.26.0 – Menü und Ebenen-Reihenfolge (#54)
 
 - Menü: Gruppe «Gesetzestexte & Verordnungen» zuerst: Publikationsquellen (vorher Herkunftsliste), Rechtsgrundlagen Volksschule (vorher Rechtsgrundlagen Schule; Seitentitel vorher «Gesetzestexte & Verordnungen»), Normenhierarchien (24 Themen, vorher Einzahl), Textfassungen & Änderungen, Elternwegweiser. Gruppe «Gemeinde-Sammlungen»: Versionen & Abgleich, Übersicht, Vergleich, Gemeinden, Schulgemeinden, Struktur-Matrix, Pflichtkatalog, Leitfaden Rechtssammlung (Gemeindeamt). Zähler bei Hierarchien und Textfassungen.

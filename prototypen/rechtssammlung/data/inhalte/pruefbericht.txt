@@ -1,4 +1,5 @@
 WARNING hierarchy_edge     volksschule/so→vsv                       ohne Belegstelle
+WARNING hierarchy_edge     schulbetrieb/kom→lt                      ohne Belegstelle
 WARNING hierarchy_edge     gesundheit/vsvz→gesg                     ohne Belegstelle
 WARNING hierarchy_edge     personal/vvo→pg                          ohne Belegstelle
 WARNING hierarchy_edge     personal/lpvo→vvo                        ohne Belegstelle

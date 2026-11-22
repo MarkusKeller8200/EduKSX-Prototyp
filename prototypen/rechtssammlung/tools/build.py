@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.26.0 – Generator.
+"""EduKSX-Codex Prototyp 0.27.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -2045,10 +2045,10 @@ HIERARCHIEN = [
 # Normenhierarchie und Suchmuster für die Dokumente der gewählten Gemeinde. Kein Rechtsrat – massgebend sind die Erlasse.
 ELTERNFRAGEN = [
  {"id": "eintritt", "titel": "Schuleintritt & Schulweg", "fragen": ["Wann beginnt die Schulpflicht, kann der Eintritt verschoben werden?", "Welche Schule besucht mein Kind, wie ist der Schulweg geregelt?"],
-  "stellen": [("412.100", "§ 3."), ("412.100", "§ 10."), ("412.101", "§ 2."), ("412.101", "§ 3."), ("412.101", "§ 8.")], "themen": ["schulpflicht"],
+  "stellen": [("412.100", "§ 3."), ("412.100", "§ 10."), ("412.101", "§ 2."), ("412.101", "§ 3."), ("412.101", "§ 8.")], "themen": ["schulpflicht", "privatschulen"],
   "muster": r"schulweg|schulbus|zuteilung|einzugsgebiet|einschulung|schuleintritt|rueckstellung|schuelertransport", "ohne": r"beschluss|stellenbeschrieb"},
  {"id": "absenzen", "titel": "Absenzen, Urlaub, Jokertage", "fragen": ["Mein Kind ist krank – was muss ich melden?", "Wie beantrage ich Urlaub, eine Dispensation oder einen Jokertag?"],
-  "stellen": [("412.100", "§ 28."), ("412.101", "§ 28."), ("412.101", "§ 29."), ("412.101", "§ 30.")], "themen": ["absenzen", "eltern"],
+  "stellen": [("412.100", "§ 28."), ("412.101", "§ 28."), ("412.101", "§ 29."), ("412.101", "§ 30.")], "themen": ["absenzen", "schulbetrieb", "eltern"],
   "muster": r"absenz|jokertag|dispens|urlaub", "ohne": r"personal|mitarbeit|lehrperson"},
  {"id": "kosten", "titel": "Kosten für Eltern", "fragen": ["Was ist unentgeltlich, was bezahle ich (Lager, Verpflegung, Betreuung, Musikschule)?"],
   "stellen": [("sr-101", "Art. 19"), ("412.100", "§ 11."), ("412.101", "§ 11."), ("410.6", "§ 9.")], "themen": ["kosten", "tagesstrukturen"],
@@ -2062,7 +2062,7 @@ ELTERNFRAGEN = [
  {"id": "pflichten", "titel": "Pflichten der Eltern", "fragen": ["Welche Pflichten habe ich gegenüber der Schule?"],
   "stellen": [("412.100", "§ 57."), ("412.101", "§ 66."), ("sr-210", "Art. 302")], "themen": ["eltern"], "muster": None},
  {"id": "disziplin", "titel": "Verhalten, Disziplin, Auszeit", "fragen": ["Was darf die Schule bei Fehlverhalten tun?", "Was bedeutet eine Auszeit oder eine vorübergehende Wegweisung?"],
-  "stellen": [("412.100", "§ 52."), ("412.100", "§ 52 a."), ("412.101", "§ 54."), ("412.101", "§ 56."), ("412.101", "§ 57.")], "themen": ["eltern"],
+  "stellen": [("412.100", "§ 52."), ("412.100", "§ 52 a."), ("412.101", "§ 54."), ("412.101", "§ 56."), ("412.101", "§ 57.")], "themen": ["disziplin", "eltern"],
   "muster": r"disziplin|verhaltens|schulordnung|schulhausordnung", "ohne": r"sammelstelle|entsorg|friedhof|werkhof|personal|mitarbeit"},
  {"id": "foerderung", "titel": "Förderung & Sonderpädagogik", "fragen": ["Bekommt mein Kind Unterstützung (Integrative Förderung, Therapie, DaZ)?", "Wer entscheidet über sonderpädagogische Massnahmen?"],
   "stellen": [("412.100", "§ 33."), ("412.100", "§ 34."), ("412.100", "§ 37."), ("412.103", "§ 12.")], "themen": ["sonderpaedagogik", "sprache"],
@@ -2107,17 +2107,84 @@ def elternwegweiser(texte):
     return out
 
 # Reihenfolge nach Bezug zur Volksschule (Auftrag 20.11.2026): Schule → Kinder → Personal → Unterricht → Organisation und Ressourcen
-REIHENFOLGE = ["volksschule", "schulpflicht", "tagesstrukturen", "sonderpaedagogik", "kindesschutz", "gesundheit", "eltern", "absenzen", "kosten",
+# Drei weitere Themen aus dem Volksschulgesetz (22.11.2026): Schulbetrieb, Disziplin, Privatschulen
+HIERARCHIEN += [
+ {"id": "schulbetrieb", "titel": "Schulbetrieb: Klassen, Unterrichtszeit & Ferien",
+  "ebenen": ["Kanton – Gesetze", "Kanton – Verordnungen", "Bildungsrat", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "vsg", "ebene": 0, "titel": "Volksschulgesetz (VSG) – Schulbetrieb", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
+    "hinweis": "§ 21 Abs. 2 Lektionentafeln, § 26 Klassen, § 27 Unterrichtszeit und Blockzeiten, § 29 Besuchstage, § 30 Ferien (höchstens 13 Wochen)"},
+   {"id": "vsv", "ebene": 1, "titel": "Volksschulverordnung (VSV) – Klassen, Stundenplan, Ferien", "art": "Verordnung (Regierungsrat)", "ls": "412.101",
+    "hinweis": "§§ 21–25 Klassengrösse und Zusammensetzung, § 26 Stundenplan, § 31 Besuchstage und Samstagsanlässe, § 32 Ferien und schulfreie Tage"},
+   {"id": "lt", "ebene": 2, "titel": "Lektionentafel (Bildungsrat)", "fundstelle": "Bildungsratsbeschlüsse", "art": "Beschluss (Bildungsrat)",
+    "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-5-volksschule-lektionentafel-fuer-die-kindergarten-primar-und-sekundarstufe.html", "hinweis": "Unterrichtszeit je Fach und Stufe; Teil des Lehrplans",
+    "liste": [{"titel": "BRB 5/2017 – Lektionentafel Kindergarten-, Primar- und Sekundarstufe", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2017-brb-5-volksschule-lektionentafel-fuer-die-kindergarten-primar-und-sekundarstufe.html"},
+              {"titel": "BRB 1/2019 – Anpassung Lektionentafel Sekundarschule", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2019-brb-1-anpassung-lektionentafel-sekundarschule.html"},
+              {"titel": "BRB 5/2021 – Anpassung Sekundarstufe", "url": "https://www.zh.ch/de/bildungsdirektion/generalsekretariat-der-bildungsdirektion/bildungsrat/suche-bildungsratsbeschluesse/2021-brb-05.html"}]},
+   {"id": "kom", "ebene": 3, "titel": "Ferienplan, Stundenplan- und Schulordnung", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
+    "hinweis": "Ferien und schulfreie Tage, Blockzeiten, Klassenbildung",
+    "muster": r"ferienplan|schulferien|ferienordnung|stundenplan|blockzeit|schuljahr|klassenbildung|unterrichtszeit",
+    "ohne": r"personal|lehrperson|ferienpass|ferienhaus|ferienwohnung|ferienlager|anstellung|musikschul"}],
+  "kanten": [
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 21."), "beleg_oben": ("412.100", "§ 26.")},
+   {"von": "lt", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 21.")},
+   {"von": "kom", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 32."), "beleg_unten": ("412.101", "§ 26.")},
+   {"von": "kom", "nach": "vsg", "art": "gestützt auf", "beleg": ("412.100", "§ 27.")},
+   {"von": "kom", "nach": "lt", "art": "verweist auf"}]},
+ {"id": "disziplin", "titel": "Disziplin, Wegweisung & Auszeit",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "krk", "ebene": 0, "titel": "UN-Kinderrechtskonvention (KRK)", "sr": "0.107", "art": "Staatsvertrag", "url": "https://www.fedlex.admin.ch/eli/cc/1998/2055_2055_2055/de",
+    "hinweis": "Art. 28 Abs. 2: Schuldisziplin muss der Menschenwürde des Kindes entsprechen"},
+   {"id": "bv", "ebene": 0, "titel": "Bundesverfassung (BV) – Anspruch auf Grundschulunterricht", "sr": "101", "art": "Verfassung", "url": "https://www.fedlex.admin.ch/eli/cc/1999/404/de",
+    "hinweis": "Art. 19 Anspruch auf Grundschulunterricht – Ausschluss nur befristet; Art. 29 Verfahrensgarantien (rechtliches Gehör)"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Stellung der Schülerinnen und Schüler", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
+    "hinweis": "§ 50 Grundsätze, § 52 Disziplinarmassnahmen (Schulleitung, Schulpflege), § 52 a Auszeit bis zwölf Wochen, § 65 g Kosten der Auszeit, § 75 Rekurs an den Bezirksrat"},
+   {"id": "vrg", "ebene": 1, "titel": "Verwaltungsrechtspflegegesetz (VRG)", "art": "Gesetz (Kantonsrat)", "ls": "175.2",
+    "hinweis": "§ 10 Begründung und Rechtsmittelbelehrung, § 19 Rekurs gegen Anordnungen der Schulpflege"},
+   {"id": "vsv", "ebene": 2, "titel": "Volksschulverordnung (VSV) – Disziplinarmassnahmen", "art": "Verordnung (Regierungsrat)", "ls": "412.101",
+    "hinweis": "§ 55 Haltung der Lehrpersonen, § 56 Disziplinarmassnahmen der Lehrperson, § 57 vorübergehende Wegweisung, § 58 Betreuung und Beschäftigung"},
+   {"id": "kom", "ebene": 3, "titel": "Schul- und Hausordnung, Verhaltensregeln", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege) bzw. Regeln der Schule",
+    "hinweis": "Verhalten, Handy, Pausenplatz; Zuständigkeiten für Disziplinarmassnahmen und Auszeit",
+    "muster": r"schulordnung|schulhausordnung|hausordnung.*schul|schul.*hausordnung|disziplin|verhaltensregel|schulregel|auszeit|time.?out|handy|smartphone|pausenplatz",
+    "ohne": r"personal|lehrperson|anstellung|badi|friedhof|gemeindehaus|sammelstelle"}],
+  "kanten": [
+   {"von": "vsg", "nach": "bv", "art": "Umsetzung", "beleg": ("412.100", "§ 52."), "beleg_oben": ("sr-101", "Art. 19")},
+   {"von": "vsg", "nach": "krk", "art": "Umsetzung", "beleg": ("412.100", "§ 50."), "beleg_oben": ("sr-0.107", "Art. 28")},
+   {"von": "vsg", "nach": "vrg", "art": "Verfahren (Rekurs)", "beleg": ("412.100", "§ 75."), "beleg_oben": ("175.2", "§ 19.")},
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 56."), "beleg_oben": ("412.100", "§ 52.")},
+   {"von": "kom", "nach": "vsv", "art": "Grundlage", "beleg": ("412.101", "§ 56."), "beleg_unten": ("412.101", "§ 58.")},
+   {"von": "kom", "nach": "vsg", "art": "gestützt auf", "beleg": ("412.100", "§ 52 a.")}]},
+ {"id": "privatschulen", "titel": "Privatschulen & Privatunterricht",
+  "ebenen": ["Bund", "Kanton – Gesetze", "Kanton – Verordnungen", "Gemeinde / Schulgemeinde"],
+  "knoten": [
+   {"id": "bv", "ebene": 0, "titel": "Bundesverfassung (BV) – Schulwesen", "sr": "101", "art": "Verfassung", "url": "https://www.fedlex.admin.ch/eli/cc/1999/404/de",
+    "hinweis": "Art. 62 Abs. 2: Grundschulunterricht obligatorisch, unter staatlicher Leitung oder Aufsicht"},
+   {"id": "vsg", "ebene": 1, "titel": "Volksschulgesetz (VSG) – Privatschulen und Privatunterricht", "art": "Gesetz (Kantonsrat)", "ls": "412.100",
+    "hinweis": "§ 68 Bewilligung (Gleichwertigkeit), § 69 Privatunterricht (Meldung an Wohngemeinde und Direktion), § 70 Aufsicht, § 71 Leistungen der Wohngemeinde, § 72 Subventionen"},
+   {"id": "vsv", "ebene": 2, "titel": "Volksschulverordnung (VSV) – Privatschulen und Privatunterricht", "art": "Verordnung (Regierungsrat)", "ls": "412.101",
+    "hinweis": "§§ 67–72 Gleichwertigkeit, Bewilligung, Auflagen, Offenlegung, Meldepflicht, Aufsicht; §§ 73–74 Privatunterricht (Unterrichtsprogramm, Aufsicht durch das Volksschulamt)"},
+   {"id": "kom", "ebene": 3, "titel": "Regelungen der Wohngemeinde zu Privatschule und Privatunterricht", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
+    "hinweis": "Meldung des Privatunterrichts, Bezug von Lehrmitteln, Musikschule, freiwilliger Schulsport, Therapien (§ 71 VSG)",
+    "muster": r"privatschul|privatunterricht|homeschooling|hausunterricht", "ohne": r"personal|anstellung"}],
+  "kanten": [
+   {"von": "vsg", "nach": "bv", "art": "Umsetzung", "beleg": ("412.100", "§ 68."), "beleg_oben": ("sr-101", "Art. 62")},
+   {"von": "vsv", "nach": "vsg", "art": "Vollzug", "beleg": ("412.101", "§ 67."), "beleg_unten": ("412.101", "§ 73."), "beleg_oben": ("412.100", "§ 69.")},
+   {"von": "kom", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 69."), "beleg_unten": ("412.100", "§ 71.")},
+   {"von": "kom", "nach": "vsv", "art": "gestützt auf", "beleg": ("412.101", "§ 73.")}]},
+]
+
+REIHENFOLGE = ["volksschule", "schulpflicht", "privatschulen", "tagesstrukturen", "schulbetrieb", "sonderpaedagogik", "kindesschutz", "disziplin", "gesundheit", "eltern", "absenzen", "kosten",
                "personal", "unterricht", "beurteilung", "sprache",
                "gemeindeorganisation", "stimmberechtigte", "behoerden", "wahlen", "organisation", "kontrolle", "zusammenarbeit", "verfahren",
                "finanzen", "datenschutz", "beschaffung"]
 HIERARCHIEN.sort(key=lambda h: REIHENFOLGE.index(h["id"]))
-KURZTITEL = {"schulpflicht": "Schulpflicht & Schulort", "tagesstrukturen": "Tagesstrukturen & Angebote", "kindesschutz": "Kindesschutz",
+KURZTITEL = {"schulpflicht": "Schulpflicht & Schulort", "privatschulen": "Privatschulen & Privatunterricht", "schulbetrieb": "Klassen, Unterrichtszeit & Ferien", "disziplin": "Disziplin & Wegweisung", "tagesstrukturen": "Tagesstrukturen & Angebote", "kindesschutz": "Kindesschutz",
              "absenzen": "Absenzen & Urlaub", "unterricht": "Unterricht & Medien", "beurteilung": "Beurteilung & Laufbahn",
              "gemeindeorganisation": "Gemeinde & Information", "stimmberechtigte": "Versammlung & Parlament", "behoerden": "Behörden & Kommissionen",
              "wahlen": "Wahlen & Behördenmitglieder", "organisation": "Schulorganisation & Qualität", "kontrolle": "Prüfung & Aufsicht",
              "zusammenarbeit": "Zusammenarbeit & Strukturen", "verfahren": "Verfahren & Rechtsschutz", "beschaffung": "Beschaffung & Bau"}
-GRUPPEN = {"volksschule": "Schule", "schulpflicht": "Schule", "tagesstrukturen": "Schule",
+GRUPPEN = {"volksschule": "Schule", "schulpflicht": "Schule", "privatschulen": "Schule", "tagesstrukturen": "Schule", "schulbetrieb": "Schule", "disziplin": "Kinder",
            "sonderpaedagogik": "Kinder", "kindesschutz": "Kinder", "gesundheit": "Kinder", "eltern": "Eltern", "absenzen": "Eltern", "kosten": "Eltern",
            "personal": "Personal", "unterricht": "Unterricht", "beurteilung": "Unterricht", "sprache": "Unterricht",
            "gemeindeorganisation": "Behörden & Organisation", "stimmberechtigte": "Behörden & Organisation", "behoerden": "Behörden & Organisation",
@@ -2322,7 +2389,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.26.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.27.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2330,7 +2397,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.26.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.27.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

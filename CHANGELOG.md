@@ -191,4 +191,6 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 - EduKSX-Codex 0.26.0: Menü neu gegliedert – zuerst «Gesetzestexte & Verordnungen» (Publikationsquellen, Rechtsgrundlagen
   Volksschule, Normenhierarchien, Textfassungen, Elternwegweiser), dann «Gemeinde-Sammlungen» (Versionen & Abgleich, Übersicht,
   Vergleich, …); Listen und Tabellen immer von Bund über Kanton, Bildungsrat, Volksschulamt, Gemeindeamt bis Gemeinde (#54).
+- EduKSX-Codex 0.27.0: Normenhierarchie – drei Themen aus dem Volksschulgesetz: Klassen, Unterrichtszeit & Ferien; Disziplin,
+  Wegweisung & Auszeit; Privatschulen & Privatunterricht; im Elternwegweiser verknüpft (#55).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.
