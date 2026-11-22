@@ -8,6 +8,15 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Geändert
 
+- **Meilenstein je Prototyp (22.11.2026, #75):** Meilensteine für Staffing, Flow, Codex, Time, Sign und «Alle
+  Prototypen»; Labels `prototyp:<schlüssel>` an allen offenen Issues. Neue Issues ordnet `issue-milestone` über
+  `[meilensteine] zuordnung` nach Prototyp-Label zu, ohne Label nach Art in die Sammlungen.
+- **Blueprint-Regeln nachgeführt (22.11.2026):** Laufzeitdateien auf Blueprint 0.1.0 (70e4ce0), neuer Workflow
+  `konformitaet.yml`, `docs/PROJEKTSTAND-ARCHIV.md`; Sammlungen, Release-Meilenstein «0.1.0 – Grundgerüst», Label
+  `_1 bereit` und weitere Blueprint-Labels, Admin-Issue #76. In `blueprint.toml` ergänzt: Topics, Website «auto»,
+  `[betrieb] umgebungen = []` (bewusst keine Umgebungen, nur GitHub Pages), `[konformitaet]`. Projekteigenheiten
+  (Prototypen-Regeln, eigenes `seite.yml`) bleiben; Standard-Labels werden vorerst nicht entfernt.
+
 - **Branch nach Merge automatisch löschen (22.11.2026):** neue Action `branch-aufraeumen.yml` löscht nach einem Merge in
   main den Branch des PR. main, gh-pages, Fork-Branches, geschützte Branches und Branches mit neuen Commits bleiben.
 - **Icons nur noch aus EduKSX-UI (22.11.2026):** keine eigenen Icon-Kopien mehr. Einstiegsseite und Prototypen

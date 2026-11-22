@@ -1,7 +1,7 @@
 name: branch-aufraeumen
 
-# Löscht nach einem Merge in main den Branch des PR.
-# Ersetzt die Repo-Einstellung «Automatically delete head branches», solange diese aus ist.
+# GitHub-Blueprint: löscht nach einem Merge in main den Branch des PR. Doppelt die Repo-Einstellung
+# «Automatically delete head branches» (pr_profil, settings.py) ab, falls diese aus ist oder nicht gesetzt werden konnte.
 # Nie gelöscht: main, gh-pages, Branches aus Forks, geschützte Branches.
 on:
   pull_request:
