@@ -31,6 +31,8 @@ tagesstrukturen;ms;musg;Grundlage;basis;manual
 tagesstrukturen;ms;musv;Beiträge;reference;manual
 tagesstrukturen;kb;kjhg;Grundlage;basis;manual
 tagesstrukturen;kb;pavo;Bewilligung;reference;manual
+tagesstrukturen;ang;vsg;Grundlage;basis;manual
+tagesstrukturen;ang;vsv;Kurse HSK;reference;manual
 schulbetrieb;vsv;vsg;Vollzug;implementation;manual
 schulbetrieb;lt;vsg;Grundlage;basis;manual
 schulbetrieb;kom;vsv;Grundlage;basis;manual
@@ -77,6 +79,7 @@ eltern;abs;vsg;Disziplin;reference;manual
 absenzen;vsv;vsg;Vollzug;implementation;manual
 absenzen;abs;vsv;Grundlage;basis;manual
 absenzen;abs;vsg;Grundlage;basis;manual
+absenzen;vsv;bv;Religiöse Feiertage;reference;manual
 kosten;vsg;bv;Umsetzung;basis;manual
 kosten;vsv;vsg;Vollzug;implementation;manual
 kosten;musv;musg;Vollzug;implementation;manual
@@ -96,6 +99,9 @@ personal;gem;gg;Grundlage;basis;manual
 personal;gem;pg;subsidiär (§ 53 Abs. 2 GG);subsidiary;manual
 personal;gem;pvo;subsidiär (§ 53 Abs. 2 GG);subsidiary;manual
 personal;gem;vsg;Leitung Bildung;reference;manual
+personal;argv3;arg;Vollzug;implementation;manual
+personal;gem;arg;Gesundheitsschutz (Art. 3a ArG);reference;manual
+personal;gem;glg;Gleichstellung im Arbeitsverhältnis;reference;manual
 unterricht;lm;vsg;Grundlage;basis;manual
 unterricht;kom;urg;Eigengebrauch im Unterricht;reference;manual
 unterricht;kom;idg;Personendaten;reference;manual
@@ -108,6 +114,9 @@ beurteilung;aufn;msg;Grundlage;basis;manual
 beurteilung;aufn6;vsg;Übertritt (§ 32 VSG);reference;manual
 beurteilung;kom;vsv;Grundlage;basis;manual
 beurteilung;kom;zr;verweist auf;reference;manual
+beurteilung;egbbg;bbg;Umsetzung;basis;manual
+beurteilung;vsv;bbg;Berufsvorbereitung (Schnupperlehren);reference;manual
+beurteilung;kom;egbbg;Zusammenarbeit mit der Berufsberatung;reference;manual
 sprache;vsg;bv;Unterrichtssprache;reference;manual
 sprache;vsv;vsg;Vollzug;implementation;manual
 sprache;vsm;vsg;Vollzug;implementation;manual

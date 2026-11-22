@@ -629,7 +629,7 @@
      "citation": "LS 412.100",
      "title": "Volksschulgesetz (VSG) – Tagesstrukturen, ergänzende Angebote",
      "act_kind": "Gesetz (Kantonsrat)",
-     "note": "§§ 15–18 heimatliche Sprache, musikalische Grundbildung, Aufgabenhilfe, Schulsport; §§ 30 a–30 e Tagesstrukturen, Tagesschulen, Kinderhorte, Betreuungsschlüssel",
+     "note": "§ 15 Kurse in heimatlicher Sprache und Kultur, § 16 musikalische Grundbildung, § 17 Aufgabenhilfe, § 17 a Nachhilfeunterricht, § 18 freiwilliger Schulsport, §§ 30 a–30 e Tagesstrukturen und Horte",
      "position": 1
     },
     {
@@ -695,6 +695,17 @@
      "match_pattern": "familienergaenzend|kinderbetreuung|\\bkita|krippe|tagesfamil",
      "exclusion_pattern": "merkblatt",
      "position": 8
+    },
+    {
+     "node_key": "ang",
+     "level_index": 3,
+     "citation": "kommunal",
+     "title": "Aufgabenhilfe, Nachhilfe und Kurse HSK",
+     "act_kind": "Behördenerlass (Schulpflege)",
+     "note": "Betreute Aufgabenstunden, Nachhilfeunterricht für Zugezogene, Räume für Kurse in heimatlicher Sprache und Kultur",
+     "match_pattern": "aufgabenhilfe|aufgabenstunde|hausaufgabenhilfe|nachhilfe|heimatliche[nr]? sprache|\\bhsk\\b|ergaenzende angebote",
+     "exclusion_pattern": "personal|anstellung",
+     "position": 9
     }
    ],
    "edges": [
@@ -742,6 +753,11 @@
        "citation": "LS 412.101",
        "location": "§ 32 a.",
        "side": "from"
+      },
+      {
+       "citation": "LS 412.100",
+       "location": "§ 15.",
+       "side": "to"
       },
       {
        "citation": "LS 412.101",
@@ -849,6 +865,39 @@
       {
        "citation": "SR 211.222.338",
        "location": "Art. 13",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "ang",
+     "to_node_key": "vsg",
+     "relation": "Grundlage",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.100",
+       "location": "§ 17.",
+       "side": "to"
+      },
+      {
+       "citation": "LS 412.100",
+       "location": "§ 17 a.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "ang",
+     "to_node_key": "vsv",
+     "relation": "Kurse HSK",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 13.",
        "side": "to"
       }
      ]
@@ -1971,6 +2020,7 @@
    "short_title": "Absenzen & Urlaub",
    "hierarchy_group": "Eltern",
    "levels": [
+    "Bund",
     "Kanton – Gesetze",
     "Kanton – Verordnungen",
     "Gemeinde / Schulgemeinde"
@@ -1979,7 +2029,7 @@
    "nodes": [
     {
      "node_key": "vsg",
-     "level_index": 0,
+     "level_index": 1,
      "citation": "LS 412.100",
      "title": "Volksschulgesetz (VSG) – Absenzen und Dispensation",
      "act_kind": "Gesetz (Kantonsrat)",
@@ -1988,16 +2038,16 @@
     },
     {
      "node_key": "vsv",
-     "level_index": 1,
+     "level_index": 2,
      "citation": "LS 412.101",
      "title": "Volksschulverordnung (VSV) – Absenzen, Dispensation, Jokertage",
      "act_kind": "Verordnung (Regierungsrat)",
-     "note": "§ 28 Absenzen, § 29 Dispensation, § 30 Jokertage, § 66 Elternpflichten",
+     "note": "§ 28 Absenzen, § 29 Dispensation (Abs. 2 lit. c hohe religiöse Feiertage, lit. d–f Kultur, Sport, Schnupperlehren), § 29 a Dispensation von Fächern, § 30 Jokertage",
      "position": 1
     },
     {
      "node_key": "abs",
-     "level_index": 2,
+     "level_index": 3,
      "citation": "kommunal",
      "title": "Absenzen- und Urlaubsregelung der Schule",
      "act_kind": "Behördenerlass (Schulpflege)",
@@ -2005,6 +2055,15 @@
      "match_pattern": "absenz|jokertag|dispens|urlaub",
      "exclusion_pattern": "personal|mitarbeit|lehrperson",
      "position": 2
+    },
+    {
+     "node_key": "bv",
+     "level_index": 0,
+     "citation": "SR 101",
+     "title": "Bundesverfassung (BV) – Glaubens- und Gewissensfreiheit",
+     "act_kind": "Verfassung",
+     "note": "Art. 15 Glaubens- und Gewissensfreiheit – Grundlage für Dispensationen an hohen religiösen Feiertagen",
+     "position": 3
     }
    ],
    "edges": [
@@ -2056,6 +2115,25 @@
       {
        "citation": "LS 412.100",
        "location": "§ 28.",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "bv",
+     "relation": "Religiöse Feiertage",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 29.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 101",
+       "location": "Art. 15",
        "side": "to"
       }
      ]
@@ -2331,6 +2409,33 @@
      "match_pattern": "personalverordnung|personalreglement|anstellungs und besoldungsverordnung|\\bpevo\\b",
      "exclusion_pattern": "anhang|vollz|ausf",
      "position": 9
+    },
+    {
+     "node_key": "glg",
+     "level_index": 0,
+     "citation": "SR 151.1",
+     "title": "Gleichstellungsgesetz (GlG)",
+     "act_kind": "Bundesgesetz",
+     "note": "Art. 2 gilt für öffentlich-rechtliche Arbeitsverhältnisse der Gemeinden, Art. 3 Diskriminierungsverbot, Art. 4 sexuelle Belästigung, Art. 13a Lohngleichheitsanalyse",
+     "position": 10
+    },
+    {
+     "node_key": "arg",
+     "level_index": 0,
+     "citation": "SR 822.11",
+     "title": "Arbeitsgesetz (ArG) – Gesundheitsschutz",
+     "act_kind": "Bundesgesetz",
+     "note": "Für Gemeinden gelten nur die Bestimmungen zum Gesundheitsschutz (Art. 3a): Art. 6 Pflichten der Arbeitgeber, Schutz der persönlichen Integrität",
+     "position": 11
+    },
+    {
+     "node_key": "argv3",
+     "level_index": 0,
+     "citation": "SR 822.113",
+     "title": "Verordnung 3 zum Arbeitsgesetz (ArGV 3) – Gesundheitsschutz",
+     "act_kind": "Verordnung (Bundesrat)",
+     "note": "Art. 2 Grundsatz, Art. 3 besondere Pflichten, Art. 5 Information, Art. 6 Anhörung der Arbeitnehmenden",
+     "position": 12
     }
    ],
    "edges": [
@@ -2501,6 +2606,58 @@
        "side": "to"
       }
      ]
+    },
+    {
+     "from_node_key": "argv3",
+     "to_node_key": "arg",
+     "relation": "Vollzug",
+     "relation_type": "implementation",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 822.113",
+       "location": "Art. 1",
+       "side": "from"
+      },
+      {
+       "citation": "SR 822.11",
+       "location": "Art. 6",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gem",
+     "to_node_key": "arg",
+     "relation": "Gesundheitsschutz (Art. 3a ArG)",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 822.11",
+       "location": "Art. 3a",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "gem",
+     "to_node_key": "glg",
+     "relation": "Gleichstellung im Arbeitsverhältnis",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "SR 151.1",
+       "location": "Art. 2",
+       "side": "to"
+      },
+      {
+       "citation": "SR 151.1",
+       "location": "Art. 3",
+       "side": "to"
+      }
+     ]
     }
    ]
   },
@@ -2647,10 +2804,11 @@
   },
   {
    "hierarchy_key": "beurteilung",
-   "title": "Beurteilung & Schullaufbahn",
-   "short_title": "Beurteilung & Laufbahn",
+   "title": "Beurteilung, Laufbahn & Berufswahl",
+   "short_title": "Beurteilung & Berufswahl",
    "hierarchy_group": "Unterricht",
    "levels": [
+    "Bund",
     "Kanton – Gesetze",
     "Kanton – Verordnungen",
     "Bildungsrat",
@@ -2660,7 +2818,7 @@
    "nodes": [
     {
      "node_key": "vsg",
-     "level_index": 0,
+     "level_index": 1,
      "citation": "LS 412.100",
      "title": "Volksschulgesetz (VSG) – Beurteilung, Promotion",
      "act_kind": "Gesetz (Kantonsrat)",
@@ -2669,7 +2827,7 @@
     },
     {
      "node_key": "msg",
-     "level_index": 0,
+     "level_index": 1,
      "citation": "LS 413.21",
      "title": "Mittelschulgesetz (MSG)",
      "act_kind": "Gesetz (Kantonsrat)",
@@ -2678,16 +2836,16 @@
     },
     {
      "node_key": "vsv",
-     "level_index": 1,
+     "level_index": 2,
      "citation": "LS 412.101",
      "title": "Volksschulverordnung (VSV) – Schullaufbahn",
      "act_kind": "Verordnung (Regierungsrat)",
-     "note": "§§ 33–40 Schullaufbahnentscheide, Promotion, Repetition, Übertritt, Wechsel in der Sekundarstufe",
+     "note": "§ 33 Schullaufbahnentscheide, § 34 Zeitpunkt und Verfahren, §§ 36–38 Promotion, § 29 Abs. 2 lit. f Dispensation für Schnupperlehren",
      "position": 2
     },
     {
      "node_key": "aufn6",
-     "level_index": 1,
+     "level_index": 2,
      "citation": "LS 413.250.1",
      "title": "Aufnahme Gymnasium nach der 6. Klasse",
      "act_kind": "Reglement (Regierungsrat)",
@@ -2695,7 +2853,7 @@
     },
     {
      "node_key": "aufn",
-     "level_index": 1,
+     "level_index": 2,
      "citation": "LS 413.250.2",
      "title": "Aufnahme in die Maturitätsschulen nach der Sekundarstufe",
      "act_kind": "Verordnung (Regierungsrat)",
@@ -2703,7 +2861,7 @@
     },
     {
      "node_key": "zr",
-     "level_index": 2,
+     "level_index": 3,
      "citation": "LS 412.121.31",
      "title": "Zeugnisreglement",
      "act_kind": "Reglement (Bildungsrat)",
@@ -2718,7 +2876,7 @@
     },
     {
      "node_key": "kom",
-     "level_index": 3,
+     "level_index": 4,
      "citation": "kommunal",
      "title": "Beurteilung, Einstufung, Übertritt in der Schule",
      "act_kind": "Behördenerlass oder Richtlinie",
@@ -2726,6 +2884,24 @@
      "match_pattern": "zeugnis|promotion|uebertritt|einstufung|stufenwechsel|lernbericht|beurteilung",
      "exclusion_pattern": "mitarbeit|personal|schulbeurteilung|beurteilungsteam",
      "position": 6
+    },
+    {
+     "node_key": "bbg",
+     "level_index": 0,
+     "citation": "SR 412.10",
+     "title": "Berufsbildungsgesetz (BBG)",
+     "act_kind": "Bundesgesetz",
+     "note": "Art. 12 Vorbereitung auf die berufliche Grundbildung am Ende der obligatorischen Schulzeit, Art. 49–51 Berufs-, Studien- und Laufbahnberatung (Aufgabe der Kantone)",
+     "position": 7
+    },
+    {
+     "node_key": "egbbg",
+     "level_index": 1,
+     "citation": "LS 413.31",
+     "title": "Einführungsgesetz zum Berufsbildungsgesetz (EG BBG)",
+     "act_kind": "Gesetz (Kantonsrat)",
+     "note": "§ 34 Berufsberatung durch den Kanton (Berufsinformationszentren), regionales Angebot",
+     "position": 8
     }
    ],
    "edges": [
@@ -2835,6 +3011,58 @@
      "relation_type": "reference",
      "status": "manual",
      "evidences": []
+    },
+    {
+     "from_node_key": "egbbg",
+     "to_node_key": "bbg",
+     "relation": "Umsetzung",
+     "relation_type": "basis",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 413.31",
+       "location": "§ 34.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 412.10",
+       "location": "Art. 51",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "vsv",
+     "to_node_key": "bbg",
+     "relation": "Berufsvorbereitung (Schnupperlehren)",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 412.101",
+       "location": "§ 29.",
+       "side": "from"
+      },
+      {
+       "citation": "SR 412.10",
+       "location": "Art. 12",
+       "side": "to"
+      }
+     ]
+    },
+    {
+     "from_node_key": "kom",
+     "to_node_key": "egbbg",
+     "relation": "Zusammenarbeit mit der Berufsberatung",
+     "relation_type": "reference",
+     "status": "manual",
+     "evidences": [
+      {
+       "citation": "LS 413.31",
+       "location": "§ 34.",
+       "side": "to"
+      }
+     ]
     }
    ]
   },

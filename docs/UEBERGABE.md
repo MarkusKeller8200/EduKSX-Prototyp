@@ -36,6 +36,13 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Codex 0.29.0 – vier Ergänzungen, Phase 1 (#57)
+
+- Phase 1 des Plans (Whiteboard «EduKSX-Codex – Plan Ausbau Normenhierarchie», https://claude.ai/artifact/MvC5pVrPpdWuQ6fddfqUGK).
+- Neue Erlasse (62 Textfassungen): SR 412.10 BBG, SR 151.1 GlG, SR 822.11 ArG, SR 822.113 ArGV 3 (Fedlex), LS 413.31 EG BBG (ZH-Lex, 16 Fassungen). Arbeitsgesetz gilt für Gemeinden nur beim Gesundheitsschutz (Art. 3a).
+- Ergänzt über `_ergaenzen()` in `build.py`: **beurteilung** heisst jetzt «Beurteilung, Laufbahn & Berufswahl» (neue Ebene Bund; BBG Art. 12, 51 → EG BBG § 34; VSV § 29 lit. f Schnupperlehren); **tagesstrukturen** mit Knoten Aufgabenhilfe/Nachhilfe/HSK (VSG §§ 15, 17, 17 a; VSV § 13; 2 Beispiele); **absenzen** mit Ebene Bund (BV Art. 15 → VSV § 29 lit. c hohe religiöse Feiertage); **personal** mit GlG Art. 2/3, ArG Art. 3a/6 und ArGV 3.
+- Nächste Phase: 2 – Gruppe «Ressourcen» aufteilen.
+
 ### Sitzung 2026-11-20 – Codex 0.28.0 – Sport und Haftung mit neuen Erlassen (#56)
 
 - Neue Erlasse (57 statt 52 Textfassungen): SR 415.0 SpoFöG (ELI 2012/460), SR 415.01 SpoFöV (2012/461), SR 832.10 KVG und SR 832.20 UVG (je die zwei letzten geltenden Fassungen) über `tools/fedlex.py`; LS 170.1 Haftungsgesetz über `tools/zhlex_versionen.py` (13 Fassungen) und `tools/texte.py --nur-aktuell`. ELI über SPARQL nach SR-Nummer ermittelt.

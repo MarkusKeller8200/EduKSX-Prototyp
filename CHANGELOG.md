@@ -195,4 +195,6 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Wegweisung & Auszeit; Privatschulen & Privatunterricht; im Elternwegweiser verknüpft (#55).
 - EduKSX-Codex 0.28.0: Normenhierarchie – Sport, Bewegung & Lager und Haftung, Versicherung & Sicherheit; neue Erlasse SpoFöG,
   SpoFöV, KVG, UVG (Fedlex) und Haftungsgesetz LS 170.1 (ZH-Lex) als Textfassung (#56).
+- EduKSX-Codex 0.29.0: Normenhierarchie – Ergänzungen Berufswahl (BBG, EG BBG), ergänzende Angebote (Aufgabenhilfe, Nachhilfe,
+  HSK), religiöse Feiertage (BV Art. 15) und Gesundheitsschutz/Gleichstellung im Personalrecht (ArG, ArGV 3, GlG) (#57).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

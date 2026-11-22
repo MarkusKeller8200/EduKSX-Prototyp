@@ -39,6 +39,10 @@ ERLASSE = {
     "415.01": ("2012/461", "Sportförderungsverordnung (SpoFöV)", None),
     "832.10": ("1995/1328_1328_1328", "Krankenversicherungsgesetz (KVG)", 2),
     "832.20": ("1982/1676_1676_1676", "Unfallversicherungsgesetz (UVG)", 2),
+    "412.10": ("2003/674", "Berufsbildungsgesetz (BBG)", 2),
+    "151.1":  ("1996/1498_1498_1498", "Gleichstellungsgesetz (GlG)", None),
+    "822.11": ("1966/57_57_57", "Arbeitsgesetz (ArG)", 2),
+    "822.113": ("1993/2553_2553_2553", "Verordnung 3 zum Arbeitsgesetz (ArGV 3)", 2),
 }
 HEUTE = "20261120"   # Stichtag der Aufbereitung
 HOCH = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")

@@ -30,6 +30,7 @@ tagesstrukturen;vsg;pavo;LS 412.100;§ 30 c.;from
 tagesstrukturen;vsg;pavo;SR 211.222.338;Art. 13;to
 tagesstrukturen;kjhg;pavo;LS 852.1;§ 18 b.;from
 tagesstrukturen;vsv;vsg;LS 412.101;§ 32 a.;from
+tagesstrukturen;vsv;vsg;LS 412.100;§ 15.;to
 tagesstrukturen;vsv;vsg;LS 412.101;§ 32 g.;from
 tagesstrukturen;musv;musg;LS 410.61;§ 1.;from
 tagesstrukturen;ts;vsg;LS 412.100;§ 30 a.;to
@@ -39,6 +40,9 @@ tagesstrukturen;ms;musg;LS 410.6;§ 2.;to
 tagesstrukturen;ms;musv;LS 410.61;§ 19.;to
 tagesstrukturen;kb;kjhg;LS 852.1;§ 18.;to
 tagesstrukturen;kb;pavo;SR 211.222.338;Art. 13;to
+tagesstrukturen;ang;vsg;LS 412.100;§ 17.;to
+tagesstrukturen;ang;vsg;LS 412.100;§ 17 a.;to
+tagesstrukturen;ang;vsv;LS 412.101;§ 13.;to
 schulbetrieb;vsv;vsg;LS 412.101;§ 21.;from
 schulbetrieb;vsv;vsg;LS 412.100;§ 26.;to
 schulbetrieb;lt;vsg;LS 412.100;§ 21.;to
@@ -99,6 +103,8 @@ absenzen;vsv;vsg;LS 412.101;§ 29.;from
 absenzen;abs;vsv;LS 412.101;§ 30.;to
 absenzen;abs;vsv;LS 412.101;§ 29.;to
 absenzen;abs;vsg;LS 412.100;§ 28.;to
+absenzen;vsv;bv;LS 412.101;§ 29.;from
+absenzen;vsv;bv;SR 101;Art. 15;to
 kosten;vsg;bv;LS 412.100;§ 11.;from
 kosten;vsg;bv;SR 101;Art. 19;to
 kosten;vsv;vsg;LS 412.101;§ 11.;from
@@ -118,6 +124,11 @@ personal;anst;vsg;LS 412.100;§ 44.;to
 personal;anst;vsg;LS 412.100;§ 58.;to
 personal;gem;gg;LS 131.1;§ 53.;to
 personal;gem;vsg;LS 412.100;§ 43.;to
+personal;argv3;arg;SR 822.113;Art. 1;from
+personal;argv3;arg;SR 822.11;Art. 6;to
+personal;gem;arg;SR 822.11;Art. 3a;to
+personal;gem;glg;SR 151.1;Art. 2;to
+personal;gem;glg;SR 151.1;Art. 3;to
 unterricht;lm;vsg;LS 412.100;§ 22.;to
 unterricht;kom;urg;SR 231.1;Art. 19;to
 unterricht;kom;idg;LS 170.4;§ 3.;to
@@ -131,6 +142,11 @@ beurteilung;aufn6;msg;LS 413.21;§ 14.;to
 beurteilung;aufn;msg;LS 413.250.2;Ingress;from
 beurteilung;aufn6;vsg;LS 412.100;§ 32.;to
 beurteilung;kom;vsv;LS 412.101;§ 34.;to
+beurteilung;egbbg;bbg;LS 413.31;§ 34.;from
+beurteilung;egbbg;bbg;SR 412.10;Art. 51;to
+beurteilung;vsv;bbg;LS 412.101;§ 29.;from
+beurteilung;vsv;bbg;SR 412.10;Art. 12;to
+beurteilung;kom;egbbg;LS 413.31;§ 34.;to
 sprache;vsg;bv;LS 412.100;§ 24.;from
 sprache;vsg;bv;SR 101;Art. 70;to
 sprache;vsv;vsg;LS 412.101;§ 13.;from

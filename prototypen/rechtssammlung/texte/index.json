@@ -4406,6 +4406,143 @@
      "pdf_sha256": "04dadd7db7c45709cb1c72f382dc3c46ee5c78d84970a0b8bfeae9ec190b9b75"
     }
    ]
+  },
+  "sr-412.10": {
+   "ordnungsnummer": "SR 412.10",
+   "titel": "Berufsbildungsgesetz (BBG)",
+   "titel_amtlich": "Bundesgesetz über die Berufsbildung",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 8,
+   "fassungen": [
+    {
+     "nachtrag": "20250301",
+     "veroeffentlicht": "01.03.2025",
+     "in_kraft_bis": "01.10.2026",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2003/674/20250301/de",
+     "absaetze": 171,
+     "fussnoten": 40,
+     "artikel": 76,
+     "html_sha256": "736173f81f758ef48b280e30d4a2dd145307c8a3317d3ead488d9ffe1b1f3b72"
+    },
+    {
+     "nachtrag": "20261001",
+     "veroeffentlicht": "01.10.2026",
+     "in_kraft_bis": "01.01.2027",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/2003/674/20261001/de",
+     "absaetze": 176,
+     "fussnoten": 50,
+     "artikel": 80,
+     "html_sha256": "658c884d15a97de876110ef90c3a50f9558a0e4310040118352068138fa2c812",
+     "delta": {
+      "neu": 24,
+      "gestrichen": 5,
+      "geaendert": 4
+     }
+    }
+   ]
+  },
+  "sr-151.1": {
+   "ordnungsnummer": "SR 151.1",
+   "titel": "Gleichstellungsgesetz (GlG)",
+   "titel_amtlich": "Bundesgesetz über die Gleichstellung von Frau und Mann",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 2,
+   "fassungen": [
+    {
+     "nachtrag": "20200701",
+     "veroeffentlicht": "01.07.2020",
+     "in_kraft_bis": "01.07.2032",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1996/1498_1498_1498/20200701/de",
+     "absaetze": 45,
+     "fussnoten": 23,
+     "artikel": 28,
+     "html_sha256": "d42c071c5aba1a7698a5338a925ce66364e19c310d1a41ae58cd71b1b6366288"
+    }
+   ]
+  },
+  "sr-822.11": {
+   "ordnungsnummer": "SR 822.11",
+   "titel": "Arbeitsgesetz (ArG)",
+   "titel_amtlich": "Bundesgesetz über die Arbeit in Industrie, Gewerbe und Handel",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 2,
+   "fassungen": [
+    {
+     "nachtrag": "20210101",
+     "veroeffentlicht": "01.01.2021",
+     "in_kraft_bis": "01.09.2023",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1966/57_57_57/20210101/de",
+     "absaetze": 176,
+     "fussnoten": 123,
+     "artikel": 83,
+     "html_sha256": "344021edbdc165ae8432ab171f8004e5c56403896011ef36a4cab293d7999214"
+    },
+    {
+     "nachtrag": "20230901",
+     "veroeffentlicht": "01.09.2023",
+     "in_kraft_bis": "",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1966/57_57_57/20230901/de",
+     "absaetze": 177,
+     "fussnoten": 124,
+     "artikel": 83,
+     "html_sha256": "4e6b95295f7e1581139251612749890dcb887edd8a62090fa37b91c41c6713c9",
+     "delta": {
+      "neu": 1,
+      "gestrichen": 1,
+      "geaendert": 11
+     }
+    }
+   ]
+  },
+  "sr-822.113": {
+   "ordnungsnummer": "SR 822.113",
+   "titel": "Verordnung 3 zum Arbeitsgesetz (ArGV 3)",
+   "titel_amtlich": "Verordnung 3 zum Arbeitsgesetz (ArGV 3)",
+   "quelle": "Fedlex",
+   "fassungen_gesamt": 2,
+   "fassungen": [
+    {
+     "nachtrag": "20151001",
+     "veroeffentlicht": "01.10.2015",
+     "in_kraft_bis": "01.09.2024",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1993/2553_2553_2553/20151001/de",
+     "absaetze": 86,
+     "fussnoten": 32,
+     "artikel": 41,
+     "html_sha256": "690f53470ba74f746f6050264489d39a8c14e930a4d042f45fed8f7d38b524c9"
+    },
+    {
+     "nachtrag": "20240901",
+     "veroeffentlicht": "01.09.2024",
+     "in_kraft_bis": "",
+     "seite": "https://www.fedlex.admin.ch/eli/cc/1993/2553_2553_2553/20240901/de",
+     "absaetze": 88,
+     "fussnoten": 35,
+     "artikel": 42,
+     "html_sha256": "d0eb33d11b4c525eb41eb28098cc375f1f0360754da827b725401a55220e9286",
+     "delta": {
+      "neu": 8,
+      "gestrichen": 0,
+      "geaendert": 0
+     }
+    }
+   ]
+  },
+  "413.31": {
+   "ordnungsnummer": "413.31",
+   "titel": "Einführungsgesetz zum Berufsbildungsgesetz (EG BBG)",
+   "fassungen": [
+    {
+     "nachtrag": "132",
+     "veroeffentlicht": "01.04.2026",
+     "in_kraft_bis": "",
+     "seite": "https://www.zh.ch/de/politik-staat/gesetze-beschluesse/gesetzessammlung/zhlex-ls/erlass-413_31-2008_01_14-2011_01_01-132.html",
+     "seiten": 23,
+     "absaetze": 394,
+     "fussnoten": 35,
+     "pdf_sha256": "0ab4852b7c9b463ca8b1097c8d4485573edb75686833e4ae2407944d224c4c67"
+    }
+   ]
   }
  },
  "stand": "20.11.2026"

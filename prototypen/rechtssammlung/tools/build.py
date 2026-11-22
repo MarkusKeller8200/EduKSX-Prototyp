@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.28.0 – Generator.
+"""EduKSX-Codex Prototyp 0.29.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -2224,13 +2224,64 @@ HIERARCHIEN += [
    {"von": "kom", "nach": "vsv", "art": "Schulweg", "beleg": ("412.101", "§ 8."), "beleg_unten": ("412.101", "§ 32 m.")}]},
 ]
 
+# Ergänzungen bestehender Themen (22.11.2026): Berufswahl, ergänzende Angebote, religiöse Feiertage, Gesundheitsschutz und Gleichstellung
+def _ergaenzen(hid, oben=None, knoten=(), kanten=(), hinweise=None, belege=None, titel=None):
+    """Fügt einem Thema Knoten und Verbindungen hinzu. oben: neue oberste Ebene (bestehende rücken eine Ebene nach unten)."""
+    h = next(x for x in HIERARCHIEN if x["id"] == hid)
+    if oben:
+        h["ebenen"] = [oben] + h["ebenen"]
+        for k in h["knoten"]: k["ebene"] += 1
+    h["knoten"] += list(knoten)
+    h["kanten"] += list(kanten)
+    for kid, text in (hinweise or {}).items():
+        next(k for k in h["knoten"] if k["id"] == kid)["hinweis"] = text
+    for (von, nach), werte in (belege or {}).items():
+        next(x for x in h["kanten"] if x["von"] == von and x["nach"] == nach).update(werte)
+    if titel: h["titel"] = titel
+
+_ergaenzen("beurteilung", oben="Bund", titel="Beurteilung, Laufbahn & Berufswahl",
+  knoten=[{"id": "bbg", "ebene": 0, "titel": "Berufsbildungsgesetz (BBG)", "sr": "412.10", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/2003/674/de",
+           "hinweis": "Art. 12 Vorbereitung auf die berufliche Grundbildung am Ende der obligatorischen Schulzeit, Art. 49–51 Berufs-, Studien- und Laufbahnberatung (Aufgabe der Kantone)"},
+          {"id": "egbbg", "ebene": 1, "titel": "Einführungsgesetz zum Berufsbildungsgesetz (EG BBG)", "art": "Gesetz (Kantonsrat)", "ls": "413.31",
+           "hinweis": "§ 34 Berufsberatung durch den Kanton (Berufsinformationszentren), regionales Angebot"}],
+  kanten=[{"von": "egbbg", "nach": "bbg", "art": "Umsetzung", "beleg": ("413.31", "§ 34."), "beleg_oben": ("sr-412.10", "Art. 51")},
+          {"von": "vsv", "nach": "bbg", "art": "Berufsvorbereitung (Schnupperlehren)", "beleg": ("412.101", "§ 29."), "beleg_oben": ("sr-412.10", "Art. 12")},
+          {"von": "kom", "nach": "egbbg", "art": "Zusammenarbeit mit der Berufsberatung", "beleg": ("413.31", "§ 34.")}],
+  hinweise={"vsv": "§ 33 Schullaufbahnentscheide, § 34 Zeitpunkt und Verfahren, §§ 36–38 Promotion, § 29 Abs. 2 lit. f Dispensation für Schnupperlehren"})
+
+_ergaenzen("tagesstrukturen",
+  knoten=[{"id": "ang", "ebene": 3, "titel": "Aufgabenhilfe, Nachhilfe und Kurse HSK", "fundstelle": "kommunal", "art": "Behördenerlass (Schulpflege)",
+           "hinweis": "Betreute Aufgabenstunden, Nachhilfeunterricht für Zugezogene, Räume für Kurse in heimatlicher Sprache und Kultur",
+           "muster": r"aufgabenhilfe|aufgabenstunde|hausaufgabenhilfe|nachhilfe|heimatliche[nr]? sprache|\bhsk\b|ergaenzende angebote", "ohne": r"personal|anstellung"}],
+  kanten=[{"von": "ang", "nach": "vsg", "art": "Grundlage", "beleg": ("412.100", "§ 17."), "beleg_unten": ("412.100", "§ 17 a.")},
+          {"von": "ang", "nach": "vsv", "art": "Kurse HSK", "beleg": ("412.101", "§ 13.")}],
+  hinweise={"vsg": "§ 15 Kurse in heimatlicher Sprache und Kultur, § 16 musikalische Grundbildung, § 17 Aufgabenhilfe, § 17 a Nachhilfeunterricht, § 18 freiwilliger Schulsport, §§ 30 a–30 e Tagesstrukturen und Horte"},
+  belege={("vsv", "vsg"): {"beleg_oben": ("412.100", "§ 15.")}})
+
+_ergaenzen("absenzen", oben="Bund",
+  knoten=[{"id": "bv", "ebene": 0, "titel": "Bundesverfassung (BV) – Glaubens- und Gewissensfreiheit", "sr": "101", "art": "Verfassung", "url": "https://www.fedlex.admin.ch/eli/cc/1999/404/de",
+           "hinweis": "Art. 15 Glaubens- und Gewissensfreiheit – Grundlage für Dispensationen an hohen religiösen Feiertagen"}],
+  kanten=[{"von": "vsv", "nach": "bv", "art": "Religiöse Feiertage", "beleg": ("412.101", "§ 29."), "beleg_oben": ("sr-101", "Art. 15")}],
+  hinweise={"vsv": "§ 28 Absenzen, § 29 Dispensation (Abs. 2 lit. c hohe religiöse Feiertage, lit. d–f Kultur, Sport, Schnupperlehren), § 29 a Dispensation von Fächern, § 30 Jokertage"})
+
+_ergaenzen("personal",
+  knoten=[{"id": "glg", "ebene": 0, "titel": "Gleichstellungsgesetz (GlG)", "sr": "151.1", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/1996/1498_1498_1498/de",
+           "hinweis": "Art. 2 gilt für öffentlich-rechtliche Arbeitsverhältnisse der Gemeinden, Art. 3 Diskriminierungsverbot, Art. 4 sexuelle Belästigung, Art. 13a Lohngleichheitsanalyse"},
+          {"id": "arg", "ebene": 0, "titel": "Arbeitsgesetz (ArG) – Gesundheitsschutz", "sr": "822.11", "art": "Bundesgesetz", "url": "https://www.fedlex.admin.ch/eli/cc/1966/57_57_57/de",
+           "hinweis": "Für Gemeinden gelten nur die Bestimmungen zum Gesundheitsschutz (Art. 3a): Art. 6 Pflichten der Arbeitgeber, Schutz der persönlichen Integrität"},
+          {"id": "argv3", "ebene": 0, "titel": "Verordnung 3 zum Arbeitsgesetz (ArGV 3) – Gesundheitsschutz", "sr": "822.113", "art": "Verordnung (Bundesrat)", "url": "https://www.fedlex.admin.ch/eli/cc/1993/2553_2553_2553/de",
+           "hinweis": "Art. 2 Grundsatz, Art. 3 besondere Pflichten, Art. 5 Information, Art. 6 Anhörung der Arbeitnehmenden"}],
+  kanten=[{"von": "argv3", "nach": "arg", "art": "Vollzug", "beleg": ("sr-822.113", "Art. 1"), "beleg_oben": ("sr-822.11", "Art. 6")},
+          {"von": "gem", "nach": "arg", "art": "Gesundheitsschutz (Art. 3a ArG)", "beleg": ("sr-822.11", "Art. 3a")},
+          {"von": "gem", "nach": "glg", "art": "Gleichstellung im Arbeitsverhältnis", "beleg": ("sr-151.1", "Art. 2"), "beleg_oben": ("sr-151.1", "Art. 3")}])
+
 REIHENFOLGE = ["volksschule", "schulpflicht", "privatschulen", "tagesstrukturen", "schulbetrieb", "sonderpaedagogik", "kindesschutz", "disziplin", "gesundheit", "eltern", "absenzen", "kosten",
                "personal", "unterricht", "beurteilung", "sprache", "sport",
                "gemeindeorganisation", "stimmberechtigte", "behoerden", "wahlen", "organisation", "kontrolle", "zusammenarbeit", "verfahren",
                "finanzen", "datenschutz", "beschaffung", "haftung"]
 HIERARCHIEN.sort(key=lambda h: REIHENFOLGE.index(h["id"]))
 KURZTITEL = {"sport": "Sport & Lager", "haftung": "Haftung & Versicherung", "schulpflicht": "Schulpflicht & Schulort", "privatschulen": "Privatschulen & Privatunterricht", "schulbetrieb": "Klassen, Unterrichtszeit & Ferien", "disziplin": "Disziplin & Wegweisung", "tagesstrukturen": "Tagesstrukturen & Angebote", "kindesschutz": "Kindesschutz",
-             "absenzen": "Absenzen & Urlaub", "unterricht": "Unterricht & Medien", "beurteilung": "Beurteilung & Laufbahn",
+             "absenzen": "Absenzen & Urlaub", "unterricht": "Unterricht & Medien", "beurteilung": "Beurteilung & Berufswahl",
              "gemeindeorganisation": "Gemeinde & Information", "stimmberechtigte": "Versammlung & Parlament", "behoerden": "Behörden & Kommissionen",
              "wahlen": "Wahlen & Behördenmitglieder", "organisation": "Schulorganisation & Qualität", "kontrolle": "Prüfung & Aufsicht",
              "zusammenarbeit": "Zusammenarbeit & Strukturen", "verfahren": "Verfahren & Rechtsschutz", "beschaffung": "Beschaffung & Bau"}
@@ -2439,7 +2490,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.28.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.29.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2447,7 +2498,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.28.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.29.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),
