@@ -244,7 +244,7 @@
   const app = document.getElementById("app");
   const seite = () => (["verlauf", "mehr"].includes(location.hash.slice(1)) ? location.hash.slice(1) : "stempeln");
 
-  const ICON_EDUKSX = '<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5" stroke="var(--brand-neutral)"/><path d="M12 7.2V12h3.4" stroke="var(--brand-violet)"/></g><circle cx="12" cy="12" r="1.3" fill="var(--brand-orange)"/><circle cx="17.6" cy="17.6" r="1" fill="var(--brand-blue)"/></svg>';
+  const ICON_EDUKSX = '<!--eduksx-icon:time-->'; // Icon aus EduKSX-UI, beim Bauen eingesetzt
   const TAB_ICONS = {
     stempeln: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
     verlauf: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 9.5h16M8.5 3v4M15.5 3v4M8 13.5h3M8 16.5h6"/></svg>',

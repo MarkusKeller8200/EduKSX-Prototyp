@@ -123,7 +123,7 @@
   const WM_DEV = `<span class="wm" role="img" aria-label="MarKusSXCH"><span aria-hidden="true"><span class="v">M</span><span class="n">ar</span><span class="o">K</span><span class="n">us</span><span class="b">SXCH</span></span></span>`;
 
   // Icon EduKSX-Staffing (freigegebenes Icon-Set, Farben über Markenwerte)
-  const ICON_STAFFING = `<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="7.8" r="3" stroke="var(--brand-orange)"/><path d="M3 19.5c.6-3.4 2.8-5.4 5.5-5.4 1.4 0 2.6.5 3.6 1.5" stroke="var(--brand-orange)"/><rect x="13" y="12.5" width="8" height="8" rx="1.6" stroke="var(--brand-neutral)"/><path d="M13 15.5h8" stroke="var(--brand-neutral)"/></g><circle cx="17" cy="18" r="1" fill="var(--brand-blue)"/></svg>`;
+  const ICON_STAFFING = '<!--eduksx-icon:staffing-->'; // Icon aus EduKSX-UI, beim Bauen eingesetzt
   const ico = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const ICONS = {
     uebersicht: ico('<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'),

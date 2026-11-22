@@ -165,7 +165,7 @@ timeout_minuten = 60
 # release_nach den Namen «pruefungen» verwenden.
 aktiv = true
 befehl = ""                       # leer = projekt.pruefbefehl
-vorbereiten = ""                  # Prüfskript braucht nur Python; Prototypen bringen eigene Abhängigkeiten mit
+vorbereiten = "git clone --depth 1 --filter=blob:none --sparse https://github.com/MarkusKeller8200/EduKSX-UI.git _eduksx-ui && git -C _eduksx-ui sparse-checkout set icons/svg"  # Icons aus EduKSX-UI (tools/eduksx_icons.py)
 betriebssysteme = "auto"          # auto: web → ubuntu; desktop → windows + macos; beides → alle drei
 betriebssysteme_beta = []         # bei Vorabversionen nur diese, z. B. ["windows-latest"]; leer = wie oben
 # Sprachversionen (leer = nicht einrichten; Listen ergeben eine Matrix, z. B. python = ["3.12", "3.13"]).

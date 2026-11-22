@@ -291,7 +291,7 @@
   }
   const WM_DEV = `<span class="wm" role="img" aria-label="MarKusSXCH"><span aria-hidden="true"><span class="v">M</span><span class="n">ar</span><span class="o">K</span><span class="n">us</span><span class="b">SXCH</span></span></span>`;
   // Icon EduKSX-Flow: Flussdiagramm (Start – Entscheid – zwei Wege)
-  const ICON_FLOW = `<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2.5" width="8" height="5" rx="1.5" stroke="var(--brand-orange)"/><path d="M12 7.5v2.5" stroke="var(--brand-neutral)"/><path d="M12 10l3.2 3.2L12 16.4 8.8 13.2z" stroke="var(--brand-violet)"/><path d="M8.8 13.2H5.5v3.3M15.2 13.2h3.3v3.3" stroke="var(--brand-neutral)"/><rect x="2.5" y="16.5" width="6" height="5" rx="1.5" stroke="var(--brand-neutral)"/><rect x="15.5" y="16.5" width="6" height="5" rx="1.5" stroke="var(--brand-neutral)"/></g><circle cx="18.5" cy="19" r="1" fill="var(--brand-blue)"/></svg>`;
+  const ICON_FLOW = '<!--eduksx-icon:flow-->'; // Icon aus EduKSX-UI, beim Bauen eingesetzt
   const ico = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const ICONS = {
     uebersicht: ico('<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'),

@@ -32,6 +32,7 @@ seite/
   eduksx.css             Farbwerte nach CI MarKusSXCH für die Einstiegsseite
 tools/
   seite_bauen.py         Einstiegsseite (Menü) und Prototypen nach _site/ für GitHub Pages
+  eduksx_icons.py        EduKSX-Icons aus EduKSX-UI einsetzen (Platzhalter <!--eduksx-icon:NAME-->)
   neuer_prototyp.py      neuen Prototyp aus der Vorlage anlegen
   pruefen.py             alle Prüfungen (lokal und im Workflow «pruefungen»)
 ```
@@ -58,3 +59,9 @@ Sicherheitslücken bitte nicht öffentlich melden, sondern wie in [SECURITY.md](
 
 Änderungen stehen im [CHANGELOG.md](CHANGELOG.md). Releases entstehen nach Freigabe automatisch (`VERSION`,
 Workflow `release.yml`).
+
+## Icons
+
+Dieses Repo hält keine Kopien der EduKSX-Icons. Einzige Quelle ist EduKSX-UI (`icons/`). Prototypen enthalten nur den
+Platzhalter `<!--eduksx-icon:NAME-->`; `tools/seite_bauen.py` setzt beim Bauen das Icon aus EduKSX-UI ein (Workflow
+`seite.yml` holt es selbst, lokal EduKSX-UI neben dieses Repo klonen). Direkt geöffnete Prototypen zeigen kein Icon.

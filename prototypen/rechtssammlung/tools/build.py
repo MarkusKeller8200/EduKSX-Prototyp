@@ -2774,9 +2774,7 @@ def hierarchie(texte, spec):
 # ---------------------------------------------------------------- Übersicht
 WM = ('<span class="wm" role="img" aria-label="EduKSX-Codex"><span aria-hidden="true"><span class="v">E</span><span class="n">du</span>'
       '<span class="o">K</span><span class="b">SX</span><span class="n">-Codex</span></span></span>')
-ICON = ('<svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="2" fill="var(--brand-violet)"/>'
-        '<rect x="13" y="3.5" width="7.5" height="7.5" rx="2" fill="none" stroke="var(--brand-neutral)" stroke-width="1.75"/>'
-        '<rect x="3.5" y="13" width="7.5" height="7.5" rx="2" fill="var(--brand-orange)"/><rect x="13" y="13" width="7.5" height="7.5" rx="2" fill="var(--brand-blue)"/></svg>')
+ICON = '<!--eduksx-icon:eduksx:30-->'  # Icon aus EduKSX-UI, setzt tools/seite_bauen.py beim Bauen ein
 
 # ---------------------------------------------------------------- Rechtsänderungs-Monitoring (Phase 6, 22.11.2026)
 # Je Erlass die letzte Änderung (Unterschied der zwei jüngsten geltenden Fassungen), den Paragrafen zugeordnet; reine

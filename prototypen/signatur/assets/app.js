@@ -120,7 +120,7 @@
   }
   const WM_DEV = `<span class="wm" role="img" aria-label="MarKusSXCH"><span aria-hidden="true"><span class="v">M</span><span class="n">ar</span><span class="o">K</span><span class="n">us</span><span class="b">SXCH</span></span></span>`;
   // Icon EduKSX-Sign (vorläufig, nicht im freigegebenen Icon-Set): Füllfeder über Unterschriftslinie
-  const ICON_SIGN = `<svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5l6 6-8.2 8.2-4.6 1.4 1.4-4.6z" stroke="var(--brand-neutral)"/><path d="M12.5 5.5l6 6" stroke="var(--brand-neutral)"/><path d="M3 20.5c1.2-1.6 2.2-1.6 3 0s1.8 1.6 3 0" stroke="var(--brand-violet)"/></g><circle cx="9.6" cy="14.4" r="1.1" fill="var(--brand-orange)"/><circle cx="20" cy="20.5" r="1" fill="var(--brand-blue)"/></svg>`;
+  const ICON_SIGN = '<!--eduksx-icon:sign-->'; // Icon aus EduKSX-UI, beim Bauen eingesetzt
   const ico = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
   const ICONS = {
     uebersicht: ico('<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>'),
