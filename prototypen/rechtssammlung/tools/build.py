@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.38.0 – Generator.
+"""EduKSX-Codex Prototyp 0.39.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -926,6 +926,70 @@ def einheit(gemeinden, sgs):
         g["einheit_sicher"] = sicher
         g["schultraeger"] = {"primar": p[0], "sek": s[0]}
     return gemeinden
+
+# ---------------------------------------------------------------- Schulverzeichnis und Standorte (Auftrag 22.11.2026)
+# Quelle: Bildungsdirektion «Schule finden» (tools/schulverzeichnis.py) – amtliche Liste der Schulträger der Volksschule.
+# Gemeindeart je politische Gemeinde daraus abgeleitet: eigene Primar- bzw. Sekundarbehörde → EG/EG-P/EG-S, sonst PG.
+SV_JSON, SA_JSON = ROOT / "data" / "schulverzeichnis.json", ROOT / "data" / "schulanlagen.json"
+
+def _n(x): return re.sub(r"\s+", " ", re.sub(r"\s*-\s*", "-", x)).strip().lower().replace("kreis ", "")
+
+def schulverzeichnis(gem, sgs):
+    if not SV_JSON.exists(): return None
+    sv = json.loads(SV_JSON.read_text(encoding="utf-8")); sa = json.loads(SA_JSON.read_text(encoding="utf-8")) if SA_JSON.exists() else {"anlagen": [], "meta": {}}
+    GN = {g["gemeinde"]: g for g in gem}
+    def gname(t):
+        t = (t or "").strip()
+        return t if t in GN else t + " (ZH)" if t + " (ZH)" in GN else None
+    eintraege = sv["eintraege"]
+    for o in eintraege:
+        art, ort, stufe = o["behoerde_art"], o["ort"], o["stufe"]
+        teile = [x.strip() for x in re.split(r"\s*-\s*|\s+und\s+", ort) if x.strip()]
+        if art == "Kreisschulpflege": o["traeger"] = {"art": "EG", "name": "Zürich", "schulkreis": o.get("schulkreis")}
+        elif art == "Schulzweckverband": o["traeger"] = {"art": "ZV", "name": "Schulzweckverband " + ort}
+        elif gname(ort) and not [x for x in sgs if _n(x["kurz"]) == _n(ort)]: o["traeger"] = {"art": "EG", "name": gname(ort)}
+        else:
+            k = [x for x in sgs if (x["stufe"] == stufe or "V" in (stufe, x["stufe"])) and _n(x["kurz"]).split("-")[0] == _n(teile[0])]
+            g = [gname(x) for x in teile]
+            if k: o["traeger"] = {"art": "SG", "name": k[0]["name"]}
+            elif len(teile) > 1 and all(g): o["traeger"] = {"art": "Vertrag", "name": ort, "gemeinden": g}
+            elif g and g[0]: o["traeger"] = {"art": "EG", "name": g[0]}
+            else: o["traeger"] = {"art": "offen", "name": ort}
+    # Gemeindeart aus dem Verzeichnis
+    eigen = {}
+    for o in eintraege:
+        t = o["traeger"]
+        if t["art"] == "EG": eigen.setdefault(t["name"], set()).add(o["stufe"])
+        if t["art"] == "Vertrag": eigen.setdefault(t["gemeinden"][0], set()).add(o["stufe"])   # Sitzgemeinde führt die Stufe (Anschlussvertrag)
+    texte = {"EG": "Einheitsgemeinde", "EG-P": "Einheitsgemeinde Primarstufe", "EG-S": "Einheitsgemeinde Sekundarstufe", "PG": "keine Einheitsgemeinde"}
+    for g in gem:
+        st = eigen.get(g["gemeinde"], set()); p = bool(st & {"P", "V"}); se = bool(st & {"S", "V"})
+        k = "EG" if p and se else "EG-P" if p else "EG-S" if se else "PG"
+        if g["kuerzel"] != k and g["einheit_sicher"]: g["kuerzel_vorher"] = g["kuerzel"]
+        g["kuerzel"], g["einheit"], g["einheit_sicher"], g["einheit_quelle"] = k, texte[k], True, "Schulverzeichnis Bildungsdirektion, Stand " + sv["meta"]["stand"]
+        tr = g["schultraeger"]
+        if p: tr["primar"] = "Gemeinde"
+        elif tr["primar"] == "Gemeinde": tr["primar"] = "Schulgemeinde (Zuordnung offen)"
+        if se: tr["sek"] = "Gemeinde"
+        elif tr["sek"] == "Gemeinde": tr["sek"] = "Schulgemeinde (Zuordnung offen)"
+        g["verwaltungen"] = [o["id"] for o in eintraege if o["traeger"]["name"] == g["gemeinde"] or g["gemeinde"] in o["traeger"].get("gemeinden", [])]
+    for x in sgs:
+        x["verwaltungen"] = [o["id"] for o in eintraege if o["traeger"]["name"] == x["name"]]
+        x["vsa_nr"] = next((o["vsa_nr"] for o in eintraege if o["traeger"]["name"] == x["name"] and o["vsa_nr"]), None)
+    # Schulanlagen dem Schulträger zuordnen (Gemeinde + Stufe aus dem Namen) – hergeleitet
+    for a in sa["anlagen"]:
+        g = GN.get(a.get("gemeinde"))
+        if not g: a["traeger"] = None; continue
+        if a.get("schulkreis"): a["traeger"] = "Stadt Zürich – Schulkreis " + a["schulkreis"]; continue
+        nm = lambda tr: g["gemeinde"] if tr == "Gemeinde" else tr
+        p_, s_ = nm(g["schultraeger"]["primar"]), nm(g["schultraeger"]["sek"])
+        if a.get("stufe") == "S": a["traeger"] = s_
+        elif a.get("stufe") == "P" or p_ == s_: a["traeger"] = p_
+        else: a["traeger"], a["traeger_alt"] = p_, s_          # Stufe aus dem Namen nicht erkennbar
+        a["traeger_hergeleitet"] = True
+    zaehl = {}
+    for o in eintraege: zaehl[o["traeger"]["art"]] = zaehl.get(o["traeger"]["art"], 0) + 1
+    return {"meta": sv["meta"], "meta_anlagen": sa["meta"], "verwaltungen": eintraege, "anlagen": sa["anlagen"], "zuordnung": zaehl}
 
 # ---------------------------------------------------------------- Struktur-Matrix (Menü › Untermenü › Dokument × Organisation)
 def norm(t):
@@ -2724,6 +2788,7 @@ def render_daten(gemeinden):
     pg = {o["sitz"]: o["id"] for o in ORGS if o["typ"] == "Politische Gemeinde"}
     gem = [{**g, "org": pg.get(g["gemeinde"])} for g in gemeinden]
     einheit(gem, sgs)
+    standorte = schulverzeichnis(gem, sgs)
     for o in ORGS:
         if o["typ"] == "Politische Gemeinde":
             g = next((x for x in gem if x["gemeinde"] == o["sitz"]), None)
@@ -2740,7 +2805,7 @@ def render_daten(gemeinden):
     TX = texte_index()
     daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN, "rechtsgrundlagen": rechtsgrundlagen(), "pflichtkatalog": pflichtkatalog(),
              "elternwegweiser": elternwegweiser(TX), "praxisthemen": praxisthemen(TX),
-             "gemeindearten": GEMEINDEARTEN, "schulstufen": SCHULSTUFEN, "gemeindeamt_eckwerte": GEMEINDEAMT_ECKWERTE,
+             "gemeindearten": GEMEINDEARTEN, "schulstufen": SCHULSTUFEN, "gemeindeamt_eckwerte": GEMEINDEAMT_ECKWERTE, "standorte": standorte,
              "texte": TX, "hierarchien": querbezuege([abgleich_kanten(hierarchie(TX, sp), TX) for sp in HIERARCHIEN], TX),
              "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
     daten["monitoring"] = rechtsaenderungen(TX, daten["hierarchien"], daten["elternwegweiser"], ORGS)
@@ -2778,7 +2843,9 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.38.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.39.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <link rel="stylesheet" href="assets/lib/leaflet/leaflet.css">
+  <script src="assets/lib/leaflet/leaflet.js"></script>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2786,7 +2853,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.38.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.39.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

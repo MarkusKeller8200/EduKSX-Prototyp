@@ -36,6 +36,10 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Schulverzeichnis und Standorte
+
+Review-Felder ergänzt; Verwaltung und Schulhäuser getrennt (school_sites). Gemeindeart jetzt aus dem kantonalen Schulverzeichnis: 64 EG, 50 EG-P, 46 PG. Zu prüfen: Zumikon; Schulhäuser ohne Stufe im Namen (Primar oder Sek); Privatschulen, Sonderschulen und Sek II noch nicht vollständig.
+
 ### Sitzung 2026-11-20 – Ebenen und Behörden getrennt
 
 Bildungsrat ist keine eigene Ebene mehr, sondern Erlassgeber im Kanton (Klasse B). Volksschulamt und Gemeindeamt: kantonale Vollzugs- und Aufsichtsstellen (Klasse C). Bezirksrat: Rekursinstanz (Klasse E). Neue Ebenen International und Interkantonal belegt.

@@ -14,7 +14,7 @@ API = {
                     "Kantonsrecht mit Fassungen und Textfassung, Rechtsgrundlagen für Schulen, Normenhierarchien, Pflichtkatalog, "
                     "Vergleichsmatrix, Elternwegweiser und Leitfaden-Prüfung. Lesen ist öffentlich; massgeblich bleibt die amtliche Publikation.",
     "tags": {
-        "municipalities": "Gemeinden", "school-communities": "Schulgemeinden", "publishers": "Herausgeber und Rechtssammlungen",
+        "municipalities": "Gemeinden", "school-communities": "Schulgemeinden", "school-sites": "Schulstandorte", "publishers": "Herausgeber und Rechtssammlungen",
         "sections": "Rubriken", "legal-acts": "Erlasse und Fassungen", "search": "Suche und Fundstellen", "legal-bases": "Rechtsgrundlagen Volksschule",
         "publication-sources": "Publikationsquellen", "norm-hierarchies": "Normenhierarchien", "mandatory-documents": "Pflichtkatalog",
         "matrix": "Vergleichsmatrix", "parent-guide-topics": "Elternwegweiser",
@@ -24,6 +24,7 @@ API = {
         R("municipalities", "Municipality", "Municipality", "Municipalities", "Gemeinde", "Gemeinden", filter=["district", "capture_status", "q"], ops="lru", artikel="eine"),
         R("school_communities", "SchoolCommunity", "SchoolCommunity", "SchoolCommunities", "Schulgemeinde", "Schulgemeinden", filter=["district", "community_type"], ops="lru", artikel="eine",
           berechnet={"member_municipality_ids": ("list:uuid", "Mitgliedgemeinden", "aus dem Verzeichnis")}),
+        R("school_sites", "SchoolSite", "SchoolSite", "SchoolSites", "Schulstandort", "Schulstandorte", filter=["school_community_id", "municipality_id", "site_type", "vsa_code", "q"], ops="lru", artikel="einen"),
         R("publishers", "Publisher", "Publisher", "Publishers", "Herausgeber", "Herausgeber", filter=["level", "district"], artikel="einen", nur_lesen=["owner_platform_id"],
           berechnet={"document_count": ("int", "Dokumente", "Anzahl Erlasse"), "section_count": ("int", "Rubriken", "Anzahl"), "findings": ("list:text", "Befunde", "letzte Analyse")}),
         R("sections", "Section", "Section", "Sections", "Rubrik", "Rubriken", filter=["publisher_id", "parent_id"], artikel="eine"),

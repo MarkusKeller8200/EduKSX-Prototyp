@@ -122,6 +122,9 @@ CREATE TABLE municipalities (
     cms                     text,                            -- CMS | erkanntes System der Website (intern) | intern
     legal_collection_url    text,                            -- Rechtssammlung (Adresse) | Einstieg auf der Website
     capture_status          text NOT NULL DEFAULT 'open' CHECK (capture_status IN ('open','captured','verified')),   -- Erfassung | Stand der Evaluation | intern | open=offen; captured=erfasst; verified=geprüft
+    canton                  char(2) NOT NULL DEFAULT 'ZH',   -- Kanton | Kürzel
+    vsa_code                text,                            -- VSA-Nr. | Nummer der Schulbehörde, wenn die Gemeinde Schulträger ist (Einheitsgemeinde)
+    municipality_kind_source text,                           -- Herkunft Gemeindeart | z. B. «Schulverzeichnis Bildungsdirektion, Stand 22.11.2026»
     primary_school_provider text,                            -- Schulträger Primar | Schulgemeinde bzw. Einheitsgemeinde
     secondary_school_provider text,                          -- Schulträger Sek | Schulgemeinde bzw. Einheitsgemeinde
     created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1
@@ -140,6 +143,13 @@ CREATE TABLE school_communities (
     district                text NOT NULL,                   -- Bezirk | Gliederung im Menü
     seat                    text,                            -- Sitz | Sitzgemeinde
     is_membership_confirmed boolean NOT NULL DEFAULT false,  -- Mitglieder gesichert | sonst «?»
+    canton                  char(2) NOT NULL DEFAULT 'ZH',   -- Kanton | Kürzel
+    vsa_code                text,                            -- VSA-Nr. | Nummer der Schulbehörde im Schulverzeichnis der Bildungsdirektion («Gde-Nr.», z. B. L04)
+    provider_type           text NOT NULL DEFAULT 'public' CHECK (provider_type IN ('public','private')),   -- Trägerschaft | öffentlich oder privat | öffentlich | public=öffentlich; private=privat
+    website_url             text,                            -- Website | offizielle Website der Schule
+    email                   text,                            -- E-Mail | zentrale Funktionsadresse (keine persönlichen Adressen)
+    phone                   text,                            -- Telefon | zentrale Nummer
+    last_checked_on         date,                            -- Letzte Prüfung | Abgleich mit dem Schulverzeichnis
     source                  text,                            -- Quelle | z. B. «Verzeichnis der Gemeinden, Stand 1.7.2026»
     created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), lock_version integer NOT NULL DEFAULT 1
 );
@@ -153,6 +163,51 @@ CREATE TABLE school_community_members (
     is_confirmed            boolean NOT NULL DEFAULT true,   -- Gesichert | Zugehörigkeit belegt
     PRIMARY KEY (school_community_id, municipality_id)
 );
+
+-- Standort einer Schulbehörde oder Schule: Verwaltung, Sekretariat, Schulhaus, Kindergarten – mit Lage (Auftrag 22.11.2026)
+-- Geltungsbereich: global · Datenklasse: öffentlich
+-- Herkunft/Verwendung: Schulverzeichnis der Bildungsdirektion, Gebäudeadressverzeichnis und swissNAMES3D (swisstopo), Open Data Stadt Zürich; Karte «Schulstandorte»
+-- Eine Schulgemeinde bzw. Einheitsgemeinde hat einen Hauptstandort der Verwaltung (is_main_administration) und beliebig viele weitere Standorte;
+-- weicht der Verwaltungsstandort vom Schulhaus ab, sind es zwei Datensätze. Keine Personendaten (Namen, Wohnadressen, persönliche E-Mail).
+CREATE TABLE school_sites (
+    id                      uuid PRIMARY KEY,
+    site_key                text NOT NULL UNIQUE,            -- Schlüssel | eindeutige Standort-ID, z. B. «vsa-L04-104», «sn3d-210928», «stzh-vo203»
+    site_type               text NOT NULL CHECK (site_type IN ('administration','secretariat','municipal_office','school_building','kindergarten','special_school','private_school','upper_secondary','contact_person','other')),   -- Art | Standortart | öffentlich | administration=Schulverwaltung; secretariat=Sekretariat; municipal_office=Gemeindeverwaltung; school_building=Schulhaus; kindergarten=Kindergarten; special_school=Sonderschule; private_school=Privatschule; upper_secondary=Sekundarstufe II; contact_person=Kontakt über Person (ohne Adresse); other=andere
+    name                    text NOT NULL,                   -- Name | Standort bzw. Schulanlage
+    authority_name          text,                            -- Behörde | z. B. «Sekundarschulpflege Embrach»
+    vsa_code                text,                            -- VSA-Nr. | Nummer der Schulbehörde («Gde-Nr.»)
+    school_community_id     uuid REFERENCES school_communities(id),   -- Schulträger (Schulgemeinde) | Verweis
+    provider_municipality_id uuid REFERENCES municipalities(id),      -- Schulträger (Einheitsgemeinde) | Verweis
+    provider_note           text,                            -- Schulträger (Hinweis) | z. B. Anschlussvertrag, Zweckverband
+    is_provider_derived     boolean NOT NULL DEFAULT false,  -- Schulträger hergeleitet | über Gemeinde und Stufe, nicht belegt
+    municipality_id         uuid REFERENCES municipalities(id),       -- Gemeinde | politische Gemeinde der Lage
+    school_level            char(1) CHECK (school_level IN ('P','S','V')),   -- Stufe | Kürzel | öffentlich | P=Primarstufe; S=Sekundarstufe; V=Volksschule
+    school_district         text,                            -- Schulkreis | in Städten, z. B. «Waidberg»
+    is_main_administration  boolean NOT NULL DEFAULT false,  -- Hauptstandort Verwaltung | Kontaktadresse der Schulbehörde
+    provider_type           text NOT NULL DEFAULT 'public' CHECK (provider_type IN ('public','private')),   -- Trägerschaft | öffentlich oder privat | öffentlich | public=öffentlich; private=privat
+    street                  text,                            -- Strasse | mit Hausnummer
+    postal_code             text,                            -- PLZ | Postleitzahl
+    locality                text,                            -- Ort | Ortsbezeichnung
+    canton                  char(2) NOT NULL DEFAULT 'ZH',   -- Kanton | Kürzel
+    egid                    bigint,                          -- EGID | eidg. Gebäudeidentifikator (Gebäude- und Wohnungsregister)
+    bfs_number              integer,                         -- BFS-Nr. | Gemeindenummer der Lage
+    latitude                numeric(9,6),                    -- Breite | WGS84
+    longitude               numeric(9,6),                    -- Länge | WGS84
+    coordinate_source       text CHECK (coordinate_source IN ('building_address_register','canton_directory','swissnames3d','city_open_data','manual')),   -- Herkunft der Lage | Quelle der Koordinaten | öffentlich | building_address_register=Gebäudeadressverzeichnis; canton_directory=Schulverzeichnis Kanton; swissnames3d=swissNAMES3D; city_open_data=Open Data Stadt; manual=von Hand
+    position_accuracy_m     integer,                         -- Lagegenauigkeit | in Metern, soweit bekannt
+    phone                   text,                            -- Telefon | Funktionsnummer
+    email                   text,                            -- E-Mail | Funktionsadresse (keine persönlichen Adressen)
+    website_url             text,                            -- Website | Adresse
+    source                  text NOT NULL,                   -- Quelle | Datensatz bzw. Verzeichnis
+    source_url              text,                            -- Quelle (Adresse) | Link
+    last_checked_on         date,                            -- Letzte Prüfung | Abgleich mit der Quelle
+    personal_data_removed   boolean NOT NULL DEFAULT false,  -- Personendaten entfernt | beim Import Namen, Wohnadresse oder persönliche E-Mail weggelassen
+    is_active               boolean NOT NULL DEFAULT true,   -- Aktiv | Standort in Betrieb
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid,
+    CHECK (latitude IS NULL OR latitude BETWEEN 45.8 AND 47.9), CHECK (longitude IS NULL OR longitude BETWEEN 5.9 AND 10.5)
+);
+CREATE INDEX school_sites_community_idx ON school_sites (school_community_id);
+CREATE INDEX school_sites_municipality_idx ON school_sites (municipality_id);
 
 -- ------------------------------------------------------------------ Herausgeber und Rechtssammlung
 
@@ -781,6 +836,9 @@ CREATE INDEX organizations_parent_id_index ON organizations (parent_id);
 CREATE INDEX users_organization_id_index ON users (organization_id);
 CREATE INDEX school_holidays_organization_id_index ON school_holidays (organization_id);
 CREATE INDEX school_holidays_school_year_id_index ON school_holidays (school_year_id);
+CREATE INDEX school_sites_school_community_id_index ON school_sites (school_community_id);
+CREATE INDEX school_sites_provider_municipality_id_index ON school_sites (provider_municipality_id);
+CREATE INDEX school_sites_municipality_id_index ON school_sites (municipality_id);
 CREATE INDEX publishers_municipality_id_index ON publishers (municipality_id);
 CREATE INDEX publishers_school_community_id_index ON publishers (school_community_id);
 CREATE INDEX sections_publisher_id_index ON sections (publisher_id);
@@ -900,6 +958,9 @@ COMMENT ON COLUMN municipalities.website_source IS 'Herkunft der Website – Bel
 COMMENT ON COLUMN municipalities.cms IS 'CMS – erkanntes System der Website (intern)';
 COMMENT ON COLUMN municipalities.legal_collection_url IS 'Rechtssammlung (Adresse) – Einstieg auf der Website';
 COMMENT ON COLUMN municipalities.capture_status IS 'Erfassung – Stand der Evaluation';
+COMMENT ON COLUMN municipalities.canton IS 'Kanton – Kürzel';
+COMMENT ON COLUMN municipalities.vsa_code IS 'VSA-Nr. – Nummer der Schulbehörde, wenn die Gemeinde Schulträger ist (Einheitsgemeinde)';
+COMMENT ON COLUMN municipalities.municipality_kind_source IS 'Herkunft Gemeindeart – z. B. «Schulverzeichnis Bildungsdirektion, Stand 22.11.2026»';
 COMMENT ON COLUMN municipalities.primary_school_provider IS 'Schulträger Primar – Schulgemeinde bzw. Einheitsgemeinde';
 COMMENT ON COLUMN municipalities.secondary_school_provider IS 'Schulträger Sek – Schulgemeinde bzw. Einheitsgemeinde';
 COMMENT ON COLUMN municipalities.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
@@ -916,6 +977,13 @@ COMMENT ON COLUMN school_communities.short_name IS 'Kurzname – Anzeige';
 COMMENT ON COLUMN school_communities.district IS 'Bezirk – Gliederung im Menü';
 COMMENT ON COLUMN school_communities.seat IS 'Sitz – Sitzgemeinde';
 COMMENT ON COLUMN school_communities.is_membership_confirmed IS 'Mitglieder gesichert – sonst «?»';
+COMMENT ON COLUMN school_communities.canton IS 'Kanton – Kürzel';
+COMMENT ON COLUMN school_communities.vsa_code IS 'VSA-Nr. – Nummer der Schulbehörde im Schulverzeichnis der Bildungsdirektion («Gde-Nr.», z. B. L04)';
+COMMENT ON COLUMN school_communities.provider_type IS 'Trägerschaft – öffentlich oder privat';
+COMMENT ON COLUMN school_communities.website_url IS 'Website – offizielle Website der Schule';
+COMMENT ON COLUMN school_communities.email IS 'E-Mail – zentrale Funktionsadresse (keine persönlichen Adressen)';
+COMMENT ON COLUMN school_communities.phone IS 'Telefon – zentrale Nummer';
+COMMENT ON COLUMN school_communities.last_checked_on IS 'Letzte Prüfung – Abgleich mit dem Schulverzeichnis';
 COMMENT ON COLUMN school_communities.source IS 'Quelle – z. B. «Verzeichnis der Gemeinden, Stand 1.7.2026»';
 COMMENT ON COLUMN school_communities.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
 COMMENT ON COLUMN school_communities.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
@@ -924,6 +992,47 @@ COMMENT ON TABLE school_community_members IS 'Mitgliedgemeinde einer Schulgemein
 COMMENT ON COLUMN school_community_members.school_community_id IS 'Schulgemeinde – Verweis';
 COMMENT ON COLUMN school_community_members.municipality_id IS 'Gemeinde – Verweis';
 COMMENT ON COLUMN school_community_members.is_confirmed IS 'Gesichert – Zugehörigkeit belegt';
+COMMENT ON TABLE school_sites IS 'Standort einer Schulbehörde oder Schule: Verwaltung, Sekretariat, Schulhaus, Kindergarten – mit Lage (Auftrag 22.11.2026) – Schulverzeichnis der Bildungsdirektion, Gebäudeadressverzeichnis und swissNAMES3D (swisstopo), Open Data Stadt Zürich; Karte «Schulstandorte»';
+COMMENT ON COLUMN school_sites.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN school_sites.site_key IS 'Schlüssel – eindeutige Standort-ID, z. B. «vsa-L04-104», «sn3d-210928», «stzh-vo203»';
+COMMENT ON COLUMN school_sites.site_type IS 'Art – Standortart';
+COMMENT ON COLUMN school_sites.name IS 'Name – Standort bzw. Schulanlage';
+COMMENT ON COLUMN school_sites.authority_name IS 'Behörde – z. B. «Sekundarschulpflege Embrach»';
+COMMENT ON COLUMN school_sites.vsa_code IS 'VSA-Nr. – Nummer der Schulbehörde («Gde-Nr.»)';
+COMMENT ON COLUMN school_sites.school_community_id IS 'Schulträger (Schulgemeinde) – Verweis';
+COMMENT ON COLUMN school_sites.provider_municipality_id IS 'Schulträger (Einheitsgemeinde) – Verweis';
+COMMENT ON COLUMN school_sites.provider_note IS 'Schulträger (Hinweis) – z. B. Anschlussvertrag, Zweckverband';
+COMMENT ON COLUMN school_sites.is_provider_derived IS 'Schulträger hergeleitet – über Gemeinde und Stufe, nicht belegt';
+COMMENT ON COLUMN school_sites.municipality_id IS 'Gemeinde – politische Gemeinde der Lage';
+COMMENT ON COLUMN school_sites.school_level IS 'Stufe – Kürzel';
+COMMENT ON COLUMN school_sites.school_district IS 'Schulkreis – in Städten, z. B. «Waidberg»';
+COMMENT ON COLUMN school_sites.is_main_administration IS 'Hauptstandort Verwaltung – Kontaktadresse der Schulbehörde';
+COMMENT ON COLUMN school_sites.provider_type IS 'Trägerschaft – öffentlich oder privat';
+COMMENT ON COLUMN school_sites.street IS 'Strasse – mit Hausnummer';
+COMMENT ON COLUMN school_sites.postal_code IS 'PLZ – Postleitzahl';
+COMMENT ON COLUMN school_sites.locality IS 'Ort – Ortsbezeichnung';
+COMMENT ON COLUMN school_sites.canton IS 'Kanton – Kürzel';
+COMMENT ON COLUMN school_sites.egid IS 'EGID – eidg. Gebäudeidentifikator (Gebäude- und Wohnungsregister)';
+COMMENT ON COLUMN school_sites.bfs_number IS 'BFS-Nr. – Gemeindenummer der Lage';
+COMMENT ON COLUMN school_sites.latitude IS 'Breite – WGS84';
+COMMENT ON COLUMN school_sites.longitude IS 'Länge – WGS84';
+COMMENT ON COLUMN school_sites.coordinate_source IS 'Herkunft der Lage – Quelle der Koordinaten';
+COMMENT ON COLUMN school_sites.position_accuracy_m IS 'Lagegenauigkeit – in Metern, soweit bekannt';
+COMMENT ON COLUMN school_sites.phone IS 'Telefon – Funktionsnummer';
+COMMENT ON COLUMN school_sites.email IS 'E-Mail – Funktionsadresse (keine persönlichen Adressen)';
+COMMENT ON COLUMN school_sites.website_url IS 'Website – Adresse';
+COMMENT ON COLUMN school_sites.source IS 'Quelle – Datensatz bzw. Verzeichnis';
+COMMENT ON COLUMN school_sites.source_url IS 'Quelle (Adresse) – Link';
+COMMENT ON COLUMN school_sites.last_checked_on IS 'Letzte Prüfung – Abgleich mit der Quelle';
+COMMENT ON COLUMN school_sites.personal_data_removed IS 'Personendaten entfernt – beim Import Namen, Wohnadresse oder persönliche E-Mail weggelassen';
+COMMENT ON COLUMN school_sites.is_active IS 'Aktiv – Standort in Betrieb';
+COMMENT ON COLUMN school_sites.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN school_sites.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN school_sites.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN school_sites.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN school_sites.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN school_sites.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN school_sites.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
 COMMENT ON TABLE publishers IS 'Herausgeber mit eigener Rechtssammlung (Bund, Kanton, Bildungsrat, Gemeinde, Schulgemeinde) – Erfassung in der Evaluation bzw. Redaktion; Steckbrief einer Organisation';
 COMMENT ON COLUMN publishers.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN publishers.owner_platform_id IS 'Gepflegt von – Plattform-ID der Organisation mit eigener Redaktion';

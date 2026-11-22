@@ -208,3 +208,9 @@ td.mz-nr { background: var(--muted); }
 /* Praxisthemen: Hinweise kantonaler Stellen */
 ul.hinweise { list-style: none; padding: 0; margin: .3rem 0 .8rem; }
 ul.hinweise li { padding: .45rem .6rem; border-left: 3px solid var(--border); margin-bottom: .45rem; background: var(--muted); border-radius: 4px; }
+
+/* Karte Schulstandorte */
+.karte-map { width: 100%; border: 1px solid var(--border); border-radius: 8px; margin: .5rem 0 1rem; background: var(--muted); }
+.legende-punkt { display: inline-flex; align-items: center; gap: .3rem; margin-right: 1rem; cursor: pointer; }
+.legende-punkt .punkt { display: inline-block; width: .8rem; height: .8rem; border-radius: 50%; border: 1px solid var(--border); }
+.leaflet-container { font: inherit; }

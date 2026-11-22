@@ -1,6 +1,6 @@
 # EduKSX-Codex – Evaluation systematischer Rechtssammlungen
 
-Prototyp 0.38.0 · Stand 17.11.2026
+Prototyp 0.39.0 · Stand 17.11.2026
 
 ## Vergleich
 

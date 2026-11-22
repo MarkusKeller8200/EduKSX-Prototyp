@@ -64,7 +64,7 @@
           zeile("davon mit Schulaufgaben (EG, EG-P, EG-S)", E.mit_schulaufgaben, mitSchule.length + " (" + gesichert + " gesichert, " + (mitSchule.length - gesichert) + " hergeleitet)", mitSchule.length === E.mit_schulaufgaben),
           zeile("Schulgemeinden", E.schulgemeinden, S.length + " (Mitglieder belegt: " + sgSicher + ")", S.length === E.schulgemeinden),
           zeile("davon Volksschulgemeinden (alle Aufgaben)", E.volksschulgemeinden, String(vsg), vsg === E.volksschulgemeinden)))),
-      h("p", { cls: "small" }, "Die übrigen «?» lassen sich erst auflösen, wenn die Mitglieder aller Schulgemeinden belegt sind – Quelle dafür ist die Schulträgerkarte des Gemeindeamts bzw. eine Liste der Schulgemeinden mit ihren Gemeinden (beim Gemeindeamt anfragen)."));
+      h("p", { cls: "small" }, "Gemeindeart seit 22.11.2026 aus dem ", h("a", { href: link("standorte"), text: "Schulverzeichnis der Bildungsdirektion" }), " abgeleitet: eigene Primar- bzw. Sekundarbehörde → EG, EG-P; sonst PG. Offen bleibt bei einzelnen Schulgemeinden die vollständige Liste der Mitgliedgemeinden."));
   }
   function artLegende() {
     return h("ul", { cls: "small" }, Object.keys(D.gemeindearten).map(function (k) { return h("li", null, h("strong", { text: k }), " – " + D.gemeindearten[k][0] + ": " + D.gemeindearten[k][1]); }),
@@ -155,6 +155,7 @@
         h("li", null, eintrag(link("vergleich"), "Vergleich", r.art === "vergleich")),
         h("li", null, eintrag(link("gemeinden"), "Alle 160 Gemeinden", r.art === "gemeinden")),
         h("li", null, eintrag(link("schulgemeinden"), "Alle " + D.schulgemeinden.length + " Schulgemeinden", r.art === "schulgemeinden")),
+        h("li", null, eintrag(link("standorte"), "Schulstandorte (Karte)", r.art === "standorte", h("span", { cls: "anz", text: String(SV.verwaltungen.length) }), "Schulträger, Verwaltungen und Schulanlagen mit Lage")),
         h("li", null, eintrag(link("matrix"), "Struktur-Matrix", r.art === "matrix")),
         h("li", null, eintrag(link("pflicht"), "Pflichtkatalog Schulgemeinde", r.art === "pflicht", h("span", { cls: "anz", text: String(D.pflichtkatalog.kategorien.reduce(function (n, k) { return n + k.eintraege.length; }, 0)) }))),
         h("li", null, eintrag(link("grundlagen"), "Leitfaden Rechtssammlung (Gemeindeamt)", r.art === "grundlagen")),
@@ -828,7 +829,9 @@
       h("p", { cls: "meldung info" }, "Die Rechtssammlung von ", name, " ist noch nicht erfasst. Nächster Schritt: Website und CMS ermitteln, dann Menüpfad, Rubriken und Dateien aufnehmen."),
       fakten([["Status", status(false)], ["Website", g.website ? extern(g.website, g.website) : "noch nicht ermittelt"],
         ["Schulträger Primarstufe", g.schultraeger ? g.schultraeger.primar : ""], ["Schulträger Sekundarstufe", g.schultraeger ? g.schultraeger.sek : ""],
-        ["Vermerk", (g.einheit || "") + (g.einheit_sicher ? "" : " – hergeleitet, Mitglieder der Schulgemeinden noch zu prüfen")]]),
+        ["Vermerk", (g.einheit || "") + (g.einheit_sicher ? "" : " – hergeleitet, Mitglieder der Schulgemeinden noch zu prüfen") + (g.einheit_quelle ? " (Quelle: " + g.einheit_quelle + ")" : "") + (g.kuerzel_vorher ? " – früher erfasst als " + g.kuerzel_vorher + ", zu prüfen" : "")],
+        ["Schulverwaltung", (g.verwaltungen || []).length ? g.verwaltungen.map(function (id) { var v = VW[id]; return v ? h("div", { text: [v.behoerde, v.kontaktstelle, (v.adresse || []).join(", "), v.telefon].filter(Boolean).join(" · ") }) : null; }) : "über die Schulgemeinde"]]),
+      h("p", null, h("a", { cls: "btn", href: link("standorte", name), text: "Schulstandorte auf der Karte" })),
       schulen.length ? [h("h2", { text: "Erfasste Schulgemeinden mit " + name }),
         h("ul", null, schulen.map(function (o) { return h("li", null, h("a", { href: link("org", o.id), text: o.name })); }))] : null];
   }
@@ -848,7 +851,8 @@
   }
   function kopfOrg(o, aktiv) {
     return [kopf(o.name + (o.kuerzel ? " (" + o.kuerzel + (o.kuerzel_sicher === false ? " ?" : "") + ")" : o.einheit ? " (" + egKurz(o.einheit) + ")" : ""), o.typ + (o.einheit ? " · " + egTitel(o.einheit) : "") + " · Bezirk " + o.bezirk + (o.sitz ? " · Sitz " + o.sitz : ""),
-        [h("a", { cls: "btn", href: "demo/" + o.id + ".html", target: "_blank", rel: "noopener", text: "Demoseite ↗" }), " ", extern(o.rs_url, "Original ↗")]), reiter(o, aktiv)];
+        [h("a", { cls: "btn", href: "demo/" + o.id + ".html", target: "_blank", rel: "noopener", text: "Demoseite ↗" }), " ", extern(o.rs_url, "Original ↗"),
+          orgTraeger(o) ? [" ", h("a", { cls: "btn", href: link("standorte", orgTraeger(o)), text: "Standorte" })] : null]), reiter(o, aktiv)];
   }
   function organisation(o) {
     return [kopfOrg(o, ""),
@@ -977,12 +981,13 @@
   // ------------------------------------------------------------------ Schulgemeinden
   function sgTabelle(liste) {
     return h("div", { cls: "tabelle-wrap" }, h("table", null,
-      h("thead", null, h("tr", null, ["Schulgemeinde", "Art", "Bezirk", "Sitz", "Mitglieder (bekannt)", "Status"].map(function (t) { return h("th", { text: t }); }))),
+      h("thead", null, h("tr", null, ["Schulgemeinde", "Art", "Bezirk", "Sitz", "Mitglieder (bekannt)", "Schulverwaltung", "Status"].map(function (t) { return h("th", { text: t }); }))),
       h("tbody", null, liste.map(function (s) {
         var o = s.org ? ORG[s.org] : null;
         return h("tr", null, h("td", null, h("a", { href: o ? link("org", o.id) : link("sg", s.name), text: s.name })),
           h("td", null, artBadge(s.kuerzel + (s.mitglieder_sicher ? "" : " ?"))), h("td", { text: s.bezirk }), h("td", { text: s.sitz }),
           h("td", { title: s.mitglieder_quelle ? "Quelle: " + s.mitglieder_quelle : null, text: s.mitglieder.join(", ") + (s.mitglieder_sicher ? "" : " (nur Sitz bekannt)") + (s.mitglieder_unsicher.length ? "; vermutet: " + s.mitglieder_unsicher.join(", ") : "") }),
+          h("td", { cls: "small" }, (s.verwaltungen || []).slice(0, 1).map(function (id) { var v = VW[id]; return v ? [h("div", { text: (v.adresse || []).join(", ") }), h("a", { href: link("standorte", s.name), text: "Karte" })] : null; })),
           h("td", null, status(!!o)));
       }))));
   }
@@ -996,13 +1001,135 @@
         return [h("h2", { text: t + "n (" + l.length + ")" }), sgTabelle(l)];
       })];
   }
+  // ------------------------------------------------------------------ Schulstandorte (Verzeichnis Bildungsdirektion, swisstopo, Stadt Zürich)
+  var SV = D.standorte || { verwaltungen: [], anlagen: [], meta: {}, meta_anlagen: {} };
+  var VW = {}; SV.verwaltungen.forEach(function (v) { VW[v.id] = v; });
+  var GEM_BEZ = {}; D.gemeinden.forEach(function (g) { GEM_BEZ[g.gemeinde] = g.bezirk; });
+  var SG_BEZ = {}; D.schulgemeinden.forEach(function (x) { SG_BEZ[x.name] = x.bezirk; });
+  var ST_KAT = [["Verwaltung", "Schulverwaltung / Schulbehörde", "--brand-violet", 7], ["Volksschule", "Schulhaus Volksschule", "--info", 5], ["Kindergarten", "Kindergarten (nur Stadt Zürich)", "--success", 4],
+    ["Volksschule (zu prüfen)", "Schulareal, Zuordnung zu prüfen", "--warning", 5], ["Sonderschule", "Sonderschule / Heilpädagogische Schule", "--destructive", 5], ["Privatschule", "Privatschule (Name)", "--muted-foreground", 5],
+    ["Sekundarstufe II / Tertiär", "Sekundarstufe II / Tertiär (zur Orientierung)", "--brand-neutral", 4]];
+  function cssVar(v) { try { return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || "#0272ad"; } catch (e) { return "#0272ad"; } }
+  function vwBezirk(v) { var t = v.traeger || {}; return t.art === "SG" ? SG_BEZ[t.name] : GEM_BEZ[t.name] || GEM_BEZ[(t.gemeinden || [])[0]] || GEM_BEZ[v.gemeinde_adresse] || ""; }
+  function vwTraegerLink(v) {
+    var t = v.traeger || {};
+    if (t.art === "SG") return h("a", { href: link("sg", t.name), text: t.name });
+    if (t.art === "EG") return [h("a", { href: link("gemeinde", GEM_BEZ[t.name] || "", t.name), text: "Gemeinde " + t.name }), t.schulkreis ? h("span", { cls: "muted", text: " · Schulkreis " + t.schulkreis }) : null];
+    return h("span", { text: (t.art === "Vertrag" ? "Anschlussvertrag " : "") + t.name });
+  }
+  function traegerText(a) { return !a.traeger ? "–" : a.traeger_alt ? a.traeger + " oder " + a.traeger_alt + " (Stufe zu prüfen)" : a.traeger + (a.traeger_hergeleitet ? " (hergeleitet)" : ""); }
+  function orgTraeger(o) {
+    var sg = D.schulgemeinden.filter(function (x) { return x.org === o.id; })[0];
+    if (sg) return sg.name;
+    var g = D.gemeinden.filter(function (x) { return x.gemeinde === o.sitz || x.gemeinde === o.sitz + " (ZH)"; })[0];
+    return g ? g.gemeinde : null;
+  }
+  function geoAdminLink(lat, lon) { return "https://map.geo.admin.ch/#/map?lang=de&center=" + lon + "," + lat + "&z=11&crosshair=marker&swisssearch=" + lat + "," + lon; }
+  function stufeText(x) { return { P: "Primarstufe", S: "Sekundarstufe", V: "Volksschule" }[x] || ""; }
+  function standortKarte(vw, an, hoehe) {
+    var box = h("div", { cls: "karte-map", style: "height:" + (hoehe || 600) + "px", role: "region", "aria-label": "Karte der Schulstandorte" });
+    if (typeof L === "undefined") { box.appendChild(h("p", { cls: "meldung warnung", text: "Kartenbibliothek nicht geladen – Standorte siehe Liste." })); return box; }
+    setTimeout(function () {
+      var map = L.map(box, { scrollWheelZoom: false, zoomSnap: 0.25 }); box._karte = map;
+      L.tileLayer("https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg",
+        { maxZoom: 18, attribution: '© <a href="https://www.swisstopo.admin.ch/" target="_blank" rel="noopener">swisstopo</a> · Daten: Bildungsdirektion ZH, Stadt Zürich' }).addTo(map);
+      var punkte = [];
+      function marke(lat, lon, kat, inhalt) {
+        var k = ST_KAT.filter(function (x) { return x[0] === kat; })[0] || ST_KAT[1];
+        var m = L.circleMarker([lat, lon], { radius: k[3], color: kat === "Verwaltung" ? "#ffffff" : cssVar(k[2]), weight: kat === "Verwaltung" ? 2 : 1, fillColor: cssVar(k[2]), fillOpacity: kat === "Verwaltung" ? 0.95 : 0.7 });
+        m.bindPopup(inhalt); m.bindTooltip(inhalt.getAttribute("data-titel")); m.addTo(map); punkte.push([lat, lon]);
+      }
+      an.forEach(function (a) {
+        marke(a.lat, a.lon, a.kategorie, h("div", { "data-titel": a.name }, h("strong", { text: a.name }), h("div", { cls: "small", text: a.kategorie + (a.einheit ? " · " + a.einheit : "") }),
+          a.adresse && a.adresse.length ? h("div", { cls: "small", text: a.adresse.join(", ") }) : null,
+          h("div", { cls: "small muted", text: "Schulträger: " + traegerText(a) }),
+          h("div", { cls: "small muted", text: "Quelle: " + a.quelle }), a.website ? h("div", { cls: "small" }, extern(a.website, "Website ↗")) : null));
+      });
+      vw.forEach(function (v) {
+        if (!v.lat) return;
+        marke(v.lat, v.lon, "Verwaltung", h("div", { "data-titel": v.behoerde + (v.kontaktstelle ? " – " + v.kontaktstelle : "") }, h("strong", { text: v.behoerde }), v.vsa_nr ? h("span", { cls: "small muted", text: " (VSA-Nr. " + v.vsa_nr + ")" }) : null,
+          h("div", { cls: "small", text: [v.kontaktstelle, v.adresse.join(", ")].filter(Boolean).join(" · ") }),
+          h("div", { cls: "small" }, v.telefon ? "☎ " + v.telefon + "  " : "", v.email ? h("a", { href: "mailto:" + v.email, text: v.email }) : null),
+          v.websites && v.websites[0] ? h("div", { cls: "small" }, extern(v.websites[0], "Website ↗")) : null));
+      });
+      function rahmen() { map.invalidateSize(); if (punkte.length) map.fitBounds(punkte, { padding: [20, 20], maxZoom: 15 }); else map.setView([47.42, 8.65], 10); }
+      rahmen(); setTimeout(rahmen, 150);
+    }, 0);
+    return box;
+  }
+  function standorteSeite(filter) {
+    var Fsuche = h("input", { type: "search", placeholder: "Gemeinde, Schule, Adresse oder VSA-Nr.", "aria-label": "Standorte durchsuchen" });
+    var Fbez = h("select", { "aria-label": "Bezirk" }, h("option", { value: "", text: "Alle Bezirke" }), D.bezirke.map(function (b) { return h("option", { value: b, text: b }); }));
+    var kats = {}; ST_KAT.forEach(function (k) { kats[k[0]] = k[0] !== "Sekundarstufe II / Tertiär" && k[0] !== "Kindergarten"; });
+    var katBox = h("div", { cls: "filterzeile small" }, ST_KAT.map(function (k) {
+      var cb = h("input", { type: "checkbox" }); cb.checked = kats[k[0]];
+      cb.addEventListener("change", function () { kats[k[0]] = cb.checked; zeigen(); });
+      return h("label", { cls: "legende-punkt" }, cb, h("span", { cls: "punkt", style: "background:var(" + k[2] + ")", "aria-hidden": "true" }), " " + k[1] + " (" + (k[0] === "Verwaltung" ? SV.verwaltungen.length : SV.anlagen.filter(function (a) { return a.kategorie === k[0]; }).length) + ")");
+    }));
+    var huelle = h("div");
+    function passt(texte) { var f = Fsuche.value.trim().toLowerCase(); return !f || texte.join(" ").toLowerCase().indexOf(f) >= 0; }
+    function zeigen() {
+      var b = Fbez.value;
+      var vw = SV.verwaltungen.filter(function (v) {
+        var t = v.traeger || {};
+        if (filter && t.name !== filter && (t.gemeinden || []).indexOf(filter) < 0) return false;
+        return kats.Verwaltung && (!b || vwBezirk(v) === b) && passt([v.titel, v.behoerde, (v.adresse || []).join(" "), v.vsa_nr || "", t.name || ""]);
+      });
+      var an = SV.anlagen.filter(function (a) {
+        if (filter && a.traeger !== filter && a.traeger_alt !== filter && a.gemeinde !== filter && a.gemeinde !== filter + " (ZH)") return false;
+        return kats[a.kategorie] && (!b || GEM_BEZ[a.gemeinde] === b) && passt([a.name, a.gemeinde || "", (a.adresse || []).join(" "), a.traeger || "", a.einheit || ""]);
+      });
+      huelle.textContent = "";
+      huelle.appendChild(h("p", { cls: "small muted", text: vw.length + " Verwaltungen/Behörden · " + an.length + " Schulanlagen" }));
+      huelle.appendChild(standortKarte(vw, an));
+      huelle.appendChild(h("h2", { text: "Schulträger und Verwaltungsstandorte (" + vw.length + ")" }));
+      huelle.appendChild(h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+        h("thead", null, h("tr", null, ["VSA-Nr.", "Behörde / Kontaktstelle", "Schulträger", "Stufe", "Adresse", "Kontakt", "Lage"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+        h("tbody", null, vw.map(function (v) {
+          return h("tr", null, h("td", { cls: "nowrap", text: v.vsa_nr || "–" }),
+            h("td", null, h("strong", { text: v.behoerde }), v.kontaktstelle ? h("div", { cls: "small muted", text: v.kontaktstelle + " · " + v.standort_art }) : h("div", { cls: "small muted", text: v.standort_art })),
+            h("td", null, vwTraegerLink(v)), h("td", { text: stufeText(v.stufe) }),
+            h("td", null, (v.adresse || []).join(", "), v.adresse_hinweis ? h("div", { cls: "small muted", text: v.adresse_hinweis }) : null),
+            h("td", { cls: "small" }, v.telefon ? h("div", { text: v.telefon }) : null, v.email ? h("div", null, h("a", { href: "mailto:" + v.email, text: v.email })) : null,
+              (v.websites || []).slice(0, 2).map(function (w) { return h("div", null, extern(w, w.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "") + " ↗")); })),
+            h("td", { cls: "small" }, v.lat ? [extern(geoAdminLink(v.lat, v.lon), "Karte ↗"), h("div", { cls: "muted", text: v.koordinaten_quelle + (v.egid ? " · EGID " + v.egid : "") + (v.abweichung_m > 200 ? " · Verzeichnis-Punkt " + v.abweichung_m + " m daneben" : "") })] : "–"));
+        })))));
+      huelle.appendChild(h("details", { cls: "karte" }, h("summary", null, h("strong", { text: "Schulanlagen (" + an.length + ")" })),
+        h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+          h("thead", null, h("tr", null, ["Schulanlage", "Art", "Gemeinde", "Schulträger (hergeleitet)", "Quelle", "Lage"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+          h("tbody", null, an.map(function (a) {
+            return h("tr", null, h("td", null, h("strong", { text: a.name }), a.adresse && a.adresse.length ? h("div", { cls: "small muted", text: a.adresse.join(", ") }) : null),
+              h("td", { text: a.kategorie }), h("td", { text: a.gemeinde || "–" }), h("td", { text: traegerText(a) }), h("td", { cls: "small muted", text: a.quelle }),
+              h("td", { cls: "small" }, extern(geoAdminLink(a.lat, a.lon), "Karte ↗")));
+          }))))));
+    }
+    [Fsuche, Fbez].forEach(function (el) { el.addEventListener("input", zeigen); });
+    zeigen();
+    var M = SV.meta, MA = SV.meta_anlagen, z = SV.zuordnung || {};
+    return [kopf(filter ? "Schulstandorte – " + filter : "Schulstandorte Volksschule", "Schulträger mit Verwaltungsstandort, Kontakt und Lage sowie die Schulanlagen – Kanton Zürich. Stand " + (M.stand || "–") + ".",
+        filter ? h("a", { cls: "btn", href: link("standorte"), text: "Alle Standorte" }) : null),
+      h("details", { cls: "karte" }, h("summary", null, h("strong", { text: "Quellen, Felder und Grenzen" })),
+        h("ul", { cls: "small" },
+          h("li", null, h("strong", { text: "Schulträger und Verwaltung: " }), extern(M.quelle, "Bildungsdirektion, «Schule finden» ↗"), " – " + SV.verwaltungen.length + " Einträge mit VSA-Nummer, Behörde, Kontaktstelle, Adresse, Telefon, E-Mail, Website. Zuordnung: " +
+            (z.EG || 0) + " Einheitsgemeinden, " + (z.SG || 0) + " Schulgemeinden, " + (z.Vertrag || 0) + " Anschlussverträge, " + (z.ZV || 0) + " Zweckverbände."),
+          h("li", null, h("strong", { text: "Lage: " }), "Adresse im amtlichen Gebäudeadressverzeichnis (swisstopo) gesucht → gebäudegenaue Koordinaten, EGID und BFS-Nummer; sonst die Koordinaten des Verzeichnisses."),
+          h("li", null, h("strong", { text: "Schulanlagen: " }), (MA.quellen || []).join("; ") + ". " + (MA.hinweis || "")),
+          h("li", null, h("strong", { text: "Abweichender Verwaltungsstandort: " }), "Jede Behörde kann mehrere Standorte haben (Verwaltung, Sekretariat, Schulhaus). Die Kontaktstelle zeigt, ob die Adresse eine Schulverwaltung, ein Schulhaus oder die Gemeindeverwaltung ist."),
+          h("li", null, h("strong", { text: "Personendaten: " }), "Namen, persönliche E-Mail-Adressen und Wohnadressen von Kontaktpersonen sind nicht übernommen."),
+          h("li", null, h("strong", { text: "Noch nicht enthalten: " }), "Privatschulen (öffentliches Register, PDF), Sonderschulen ausserhalb der Stadt Zürich vollständig, Schulen der Sekundarstufe II (Geodatensatz Schulen SekII)."))),
+      h("div", { cls: "filterzeile" }, Fsuche, Fbez), katBox, huelle];
+  }
+
   function sgAnsicht(name) {
     var s = D.schulgemeinden.filter(function (x) { return x.name === name; })[0];
     if (!s) return nichtGefunden();
     if (s.org && ORG[s.org]) { location.replace(link("org", s.org)); return []; }
     return [kopf(s.name, s.typ + " · Bezirk " + s.bezirk + " · Sitz " + s.sitz, h("a", { cls: "btn", href: link("bezirk", s.bezirk), text: "← Bezirk " + s.bezirk })),
       h("p", { cls: "meldung info", text: "Die Rechtssammlung dieser Schulgemeinde ist noch nicht erfasst." }),
-      fakten([["Mitglieder", s.mitglieder.join(", ") + (s.mitglieder_sicher ? "" : " (nur Sitz bekannt – weitere Gemeinden zu prüfen)")], ["Quelle", D.quelle_sg]])];
+      fakten([["Mitglieder", s.mitglieder.join(", ") + (s.mitglieder_sicher ? "" : " (nur Sitz bekannt – weitere Gemeinden zu prüfen)")], ["VSA-Nr.", s.vsa_nr || "–"],
+        ["Schulverwaltung", (s.verwaltungen || []).map(function (id) { var v = VW[id]; return v ? h("div", { text: [v.kontaktstelle, (v.adresse || []).join(", "), v.telefon, v.email].filter(Boolean).join(" · ") }) : null; })],
+        ["Quelle", D.quelle_sg]]),
+      h("p", null, h("a", { cls: "btn", href: link("standorte", s.name), text: "Standorte auf der Karte" }))];
   }
 
   // ------------------------------------------------------------------ Ansichten einer Organisation
@@ -1405,6 +1532,7 @@
     else if (r.art === "gemeinde") inhalt = gemeinde(r.a, r.b);
     else if (r.art === "schulgemeinden") inhalt = alleSchulgemeinden();
     else if (r.art === "sg") inhalt = sgAnsicht(r.a);
+    else if (r.art === "standorte") inhalt = standorteSeite(r.a);
     else if (r.art === "matrix") inhalt = matrix(r.a);
     else if (r.art === "pflicht") inhalt = pflichtSeite(r.a);
     else if (r.art === "aenderungen") inhalt = aenderungenSeite(r.a, r.b);

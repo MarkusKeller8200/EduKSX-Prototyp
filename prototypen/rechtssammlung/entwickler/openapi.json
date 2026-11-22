@@ -35,6 +35,11 @@
       "description": "Schulgemeinden"
     },
     {
+      "name": "school-sites",
+      "x-displayName": "Schulstandorte",
+      "description": "Schulstandorte"
+    },
+    {
       "name": "publishers",
       "x-displayName": "Herausgeber und Rechtssammlungen",
       "description": "Herausgeber und Rechtssammlungen"
@@ -604,6 +609,314 @@
                   "properties": {
                     "data": {
                       "$ref": "#/components/schemas/SchoolCommunity"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      }
+    },
+    "/api/v1/school-sites": {
+      "get": {
+        "tags": [
+          "school-sites"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "public"
+        ],
+        "x-eduksx-purpose": "Schulverzeichnis der Bildungsdirektion, Gebäudeadressverzeichnis und swissNAMES3D (swisstopo), Open Data Stadt Zürich; Karte «Schulstandorte»",
+        "operationId": "listSchoolSites",
+        "summary": "Schulstandorte auflisten",
+        "description": "Liste der Schulstandorte (Cursor). Schulverzeichnis der Bildungsdirektion, Gebäudeadressverzeichnis und swissNAMES3D (swisstopo), Open Data Stadt Zürich; Karte «Schulstandorte»",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:school-sites.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "school-sites.read",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "name": "school_community_id",
+            "in": "query",
+            "required": false,
+            "description": "Verweis",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Schulträger (Schulgemeinde)"
+            },
+            "example": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+          },
+          {
+            "name": "municipality_id",
+            "in": "query",
+            "required": false,
+            "description": "politische Gemeinde der Lage",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Gemeinde"
+            },
+            "example": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+          },
+          {
+            "name": "site_type",
+            "in": "query",
+            "required": false,
+            "description": "Standortart",
+            "schema": {
+              "type": "string",
+              "x-extensible-enum": [
+                "administration",
+                "secretariat",
+                "municipal_office",
+                "school_building",
+                "kindergarten",
+                "special_school",
+                "private_school",
+                "upper_secondary",
+                "contact_person",
+                "other"
+              ],
+              "x-eduksx-labels": {
+                "administration": "Schulverwaltung",
+                "secretariat": "Sekretariat",
+                "municipal_office": "Gemeindeverwaltung",
+                "school_building": "Schulhaus",
+                "kindergarten": "Kindergarten",
+                "special_school": "Sonderschule",
+                "private_school": "Privatschule",
+                "upper_secondary": "Sekundarstufe II",
+                "contact_person": "Kontakt über Person (ohne Adresse)",
+                "other": "andere"
+              },
+              "title": "Art"
+            },
+            "example": "administration"
+          },
+          {
+            "name": "vsa_code",
+            "in": "query",
+            "required": false,
+            "description": "Nummer der Schulbehörde («Gde-Nr.»)",
+            "schema": {
+              "type": "string",
+              "title": "VSA-Nr."
+            },
+            "example": "Beispiel"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Volltext in der normalisierten Suchspalte",
+            "schema": {
+              "type": "string",
+              "title": "Suche"
+            },
+            "example": "Muster"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Schulstandorte",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SchoolSite"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/school-sites/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "school-sites"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "public"
+        ],
+        "x-eduksx-purpose": "Schulverzeichnis der Bildungsdirektion, Gebäudeadressverzeichnis und swissNAMES3D (swisstopo), Open Data Stadt Zürich; Karte «Schulstandorte»",
+        "operationId": "getSchoolSite",
+        "summary": "Schulstandort lesen",
+        "description": "Schulstandort mit allen Feldern der Positivliste.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:school-sites.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "school-sites.read",
+        "responses": {
+          "200": {
+            "description": "Schulstandort",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SchoolSite"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "school-sites"
+        ],
+        "x-eduksx-data-classes": [
+          "internal",
+          "public"
+        ],
+        "x-eduksx-purpose": "Schulverzeichnis der Bildungsdirektion, Gebäudeadressverzeichnis und swissNAMES3D (swisstopo), Open Data Stadt Zürich; Karte «Schulstandorte»",
+        "operationId": "updateSchoolSite",
+        "summary": "Schulstandort ändern",
+        "description": "JSON Merge Patch; fehlendes Feld = unverändert.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:school-sites.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "school-sites.write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SchoolSite"
+              },
+              "example": {
+                "site_key": "Beispiel",
+                "site_type": "administration"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SchoolSite"
                     }
                   },
                   "required": [
@@ -7224,6 +7537,8 @@
               "codex:municipalities.write": "Gemeinden – schreiben",
               "codex:school-communities.read": "Schulgemeinden – lesen",
               "codex:school-communities.write": "Schulgemeinden – schreiben",
+              "codex:school-sites.read": "Schulstandorte – lesen",
+              "codex:school-sites.write": "Schulstandorte – schreiben",
               "codex:publishers.read": "Herausgeber und Rechtssammlungen – lesen",
               "codex:publishers.write": "Herausgeber und Rechtssammlungen – schreiben",
               "codex:publishers.delete": "Herausgeber und Rechtssammlungen – löschen",
@@ -7272,6 +7587,8 @@
               "codex:municipalities.write": "Gemeinden – schreiben",
               "codex:school-communities.read": "Schulgemeinden – lesen",
               "codex:school-communities.write": "Schulgemeinden – schreiben",
+              "codex:school-sites.read": "Schulstandorte – lesen",
+              "codex:school-sites.write": "Schulstandorte – schreiben",
               "codex:publishers.read": "Herausgeber und Rechtssammlungen – lesen",
               "codex:publishers.write": "Herausgeber und Rechtssammlungen – schreiben",
               "codex:publishers.delete": "Herausgeber und Rechtssammlungen – löschen",
@@ -7733,6 +8050,30 @@
             "title": "Erfassung (Text)",
             "description": "deutsches Label zu «capture_status» in der gewählten Sprache"
           },
+          "canton": {
+            "type": "string",
+            "title": "Kanton",
+            "description": "Kürzel",
+            "x-eduksx-data-class": "public"
+          },
+          "vsa_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "VSA-Nr.",
+            "description": "Nummer der Schulbehörde, wenn die Gemeinde Schulträger ist (Einheitsgemeinde)",
+            "x-eduksx-data-class": "public"
+          },
+          "municipality_kind_source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Herkunft Gemeindeart",
+            "description": "z. B. «Schulverzeichnis Bildungsdirektion, Stand 22.11.2026»",
+            "x-eduksx-data-class": "public"
+          },
           "primary_school_provider": {
             "type": [
               "string",
@@ -7913,6 +8254,78 @@
             "description": "sonst «?»",
             "x-eduksx-data-class": "public"
           },
+          "canton": {
+            "type": "string",
+            "title": "Kanton",
+            "description": "Kürzel",
+            "x-eduksx-data-class": "public"
+          },
+          "vsa_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "VSA-Nr.",
+            "description": "Nummer der Schulbehörde im Schulverzeichnis der Bildungsdirektion («Gde-Nr.», z. B. L04)",
+            "x-eduksx-data-class": "public"
+          },
+          "provider_type": {
+            "type": "string",
+            "x-extensible-enum": [
+              "public",
+              "private"
+            ],
+            "x-eduksx-labels": {
+              "public": "öffentlich",
+              "private": "privat"
+            },
+            "title": "Trägerschaft",
+            "description": "öffentlich oder privat",
+            "x-eduksx-data-class": "public"
+          },
+          "provider_type_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Trägerschaft (Text)",
+            "description": "deutsches Label zu «provider_type» in der gewählten Sprache"
+          },
+          "website_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Website",
+            "description": "offizielle Website der Schule",
+            "x-eduksx-data-class": "public"
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "E-Mail",
+            "description": "zentrale Funktionsadresse (keine persönlichen Adressen)",
+            "x-eduksx-data-class": "public"
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Telefon",
+            "description": "zentrale Nummer",
+            "x-eduksx-data-class": "public"
+          },
+          "last_checked_on": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "title": "Letzte Prüfung",
+            "description": "Abgleich mit dem Schulverzeichnis",
+            "x-eduksx-data-class": "public"
+          },
           "source": {
             "type": [
               "string",
@@ -7961,6 +8374,422 @@
           "community_type",
           "name",
           "district"
+        ]
+      },
+      "SchoolSite": {
+        "type": "object",
+        "title": "Schulstandort",
+        "description": "Standort einer Schulbehörde oder Schule: Verwaltung, Sekretariat, Schulhaus, Kindergarten – mit Lage (Auftrag 22.11.2026). Schulverzeichnis der Bildungsdirektion, Gebäudeadressverzeichnis und swissNAMES3D (swisstopo), Open Data Stadt Zürich; Karte «Schulstandorte»",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "ID",
+            "description": "UUID v7, von der Anwendung vergeben",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "site_key": {
+            "type": "string",
+            "title": "Schlüssel",
+            "description": "eindeutige Standort-ID, z. B. «vsa-L04-104», «sn3d-210928», «stzh-vo203»",
+            "x-eduksx-data-class": "public"
+          },
+          "site_type": {
+            "type": "string",
+            "x-extensible-enum": [
+              "administration",
+              "secretariat",
+              "municipal_office",
+              "school_building",
+              "kindergarten",
+              "special_school",
+              "private_school",
+              "upper_secondary",
+              "contact_person",
+              "other"
+            ],
+            "x-eduksx-labels": {
+              "administration": "Schulverwaltung",
+              "secretariat": "Sekretariat",
+              "municipal_office": "Gemeindeverwaltung",
+              "school_building": "Schulhaus",
+              "kindergarten": "Kindergarten",
+              "special_school": "Sonderschule",
+              "private_school": "Privatschule",
+              "upper_secondary": "Sekundarstufe II",
+              "contact_person": "Kontakt über Person (ohne Adresse)",
+              "other": "andere"
+            },
+            "title": "Art",
+            "description": "Standortart",
+            "x-eduksx-data-class": "public"
+          },
+          "site_type_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Art (Text)",
+            "description": "deutsches Label zu «site_type» in der gewählten Sprache"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Standort bzw. Schulanlage",
+            "x-eduksx-data-class": "public"
+          },
+          "authority_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Behörde",
+            "description": "z. B. «Sekundarschulpflege Embrach»",
+            "x-eduksx-data-class": "public"
+          },
+          "vsa_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "VSA-Nr.",
+            "description": "Nummer der Schulbehörde («Gde-Nr.»)",
+            "x-eduksx-data-class": "public"
+          },
+          "school_community_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Schulträger (Schulgemeinde)",
+            "description": "Verweis",
+            "x-eduksx-data-class": "public"
+          },
+          "provider_municipality_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Schulträger (Einheitsgemeinde)",
+            "description": "Verweis",
+            "x-eduksx-data-class": "public"
+          },
+          "provider_note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Schulträger (Hinweis)",
+            "description": "z. B. Anschlussvertrag, Zweckverband",
+            "x-eduksx-data-class": "public"
+          },
+          "is_provider_derived": {
+            "type": "boolean",
+            "title": "Schulträger hergeleitet",
+            "description": "über Gemeinde und Stufe, nicht belegt",
+            "x-eduksx-data-class": "public"
+          },
+          "municipality_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Gemeinde",
+            "description": "politische Gemeinde der Lage",
+            "x-eduksx-data-class": "public"
+          },
+          "school_level": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "P",
+              "S",
+              "V"
+            ],
+            "x-eduksx-labels": {
+              "P": "Primarstufe",
+              "S": "Sekundarstufe",
+              "V": "Volksschule"
+            },
+            "title": "Stufe",
+            "description": "Kürzel",
+            "x-eduksx-data-class": "public"
+          },
+          "school_level_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Stufe (Text)",
+            "description": "deutsches Label zu «school_level» in der gewählten Sprache"
+          },
+          "school_district": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Schulkreis",
+            "description": "in Städten, z. B. «Waidberg»",
+            "x-eduksx-data-class": "public"
+          },
+          "is_main_administration": {
+            "type": "boolean",
+            "title": "Hauptstandort Verwaltung",
+            "description": "Kontaktadresse der Schulbehörde",
+            "x-eduksx-data-class": "public"
+          },
+          "provider_type": {
+            "type": "string",
+            "x-extensible-enum": [
+              "public",
+              "private"
+            ],
+            "x-eduksx-labels": {
+              "public": "öffentlich",
+              "private": "privat"
+            },
+            "title": "Trägerschaft",
+            "description": "öffentlich oder privat",
+            "x-eduksx-data-class": "public"
+          },
+          "provider_type_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Trägerschaft (Text)",
+            "description": "deutsches Label zu «provider_type» in der gewählten Sprache"
+          },
+          "street": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Strasse",
+            "description": "mit Hausnummer",
+            "x-eduksx-data-class": "public"
+          },
+          "postal_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "PLZ",
+            "description": "Postleitzahl",
+            "x-eduksx-data-class": "public"
+          },
+          "locality": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Ort",
+            "description": "Ortsbezeichnung",
+            "x-eduksx-data-class": "public"
+          },
+          "canton": {
+            "type": "string",
+            "title": "Kanton",
+            "description": "Kürzel",
+            "x-eduksx-data-class": "public"
+          },
+          "egid": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64",
+            "title": "EGID",
+            "description": "eidg. Gebäudeidentifikator (Gebäude- und Wohnungsregister)",
+            "x-eduksx-data-class": "public"
+          },
+          "bfs_number": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "title": "BFS-Nr.",
+            "description": "Gemeindenummer der Lage",
+            "x-eduksx-data-class": "public"
+          },
+          "latitude": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "decimal",
+            "pattern": "^-?\\d+(\\.\\d{1,4})?$",
+            "title": "Breite",
+            "description": "WGS84",
+            "x-eduksx-data-class": "public"
+          },
+          "longitude": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "decimal",
+            "pattern": "^-?\\d+(\\.\\d{1,4})?$",
+            "title": "Länge",
+            "description": "WGS84",
+            "x-eduksx-data-class": "public"
+          },
+          "coordinate_source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "building_address_register",
+              "canton_directory",
+              "swissnames3d",
+              "city_open_data",
+              "manual"
+            ],
+            "x-eduksx-labels": {
+              "building_address_register": "Gebäudeadressverzeichnis",
+              "canton_directory": "Schulverzeichnis Kanton",
+              "swissnames3d": "swissNAMES3D",
+              "city_open_data": "Open Data Stadt",
+              "manual": "von Hand"
+            },
+            "title": "Herkunft der Lage",
+            "description": "Quelle der Koordinaten",
+            "x-eduksx-data-class": "public"
+          },
+          "coordinate_source_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Herkunft der Lage (Text)",
+            "description": "deutsches Label zu «coordinate_source» in der gewählten Sprache"
+          },
+          "position_accuracy_m": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "title": "Lagegenauigkeit",
+            "description": "in Metern, soweit bekannt",
+            "x-eduksx-data-class": "public"
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Telefon",
+            "description": "Funktionsnummer",
+            "x-eduksx-data-class": "public"
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "E-Mail",
+            "description": "Funktionsadresse (keine persönlichen Adressen)",
+            "x-eduksx-data-class": "public"
+          },
+          "website_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Website",
+            "description": "Adresse",
+            "x-eduksx-data-class": "public"
+          },
+          "source": {
+            "type": "string",
+            "title": "Quelle",
+            "description": "Datensatz bzw. Verzeichnis",
+            "x-eduksx-data-class": "public"
+          },
+          "source_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Quelle (Adresse)",
+            "description": "Link",
+            "x-eduksx-data-class": "public"
+          },
+          "last_checked_on": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "title": "Letzte Prüfung",
+            "description": "Abgleich mit der Quelle",
+            "x-eduksx-data-class": "public"
+          },
+          "personal_data_removed": {
+            "type": "boolean",
+            "title": "Personendaten entfernt",
+            "description": "beim Import Namen, Wohnadresse oder persönliche E-Mail weggelassen",
+            "x-eduksx-data-class": "public"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Aktiv",
+            "description": "Standort in Betrieb",
+            "x-eduksx-data-class": "public"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erstellt am",
+            "description": "Zeitpunkt der Erfassung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erstellt von",
+            "description": "Person, die den Datensatz angelegt hat (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Geändert am",
+            "description": "Zeitpunkt der letzten Änderung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geändert von",
+            "description": "Person der letzten Änderung (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "lock_version": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Version",
+            "description": "optimistisches Sperren; ETag und If-Match",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          }
+        },
+        "required": [
+          "site_key",
+          "site_type",
+          "name",
+          "source"
         ]
       },
       "Publisher": {
