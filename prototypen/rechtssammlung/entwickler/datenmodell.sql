@@ -229,6 +229,8 @@ CREATE TABLE legal_acts (
     order_number            text,                            -- Ordnungsnummer | Systematik
     act_type                text NOT NULL DEFAULT 'unclear' CHECK (act_type IN ('constitution','statute','ordinance','municipal_act','authority_act','contract','zoning_plan','non_legislative','not_in_collection','unclear')),   -- Art | Einteilung nach dem Leitfaden | öffentlich | constitution=Verfassung; statute=Gesetz; ordinance=Verordnung; municipal_act=Gemeindeerlass; authority_act=Behördenerlass; contract=rechtsetzender Vertrag; zoning_plan=Raumplan; non_legislative=nicht rechtsetzend; not_in_collection=gehört nicht in die Sammlung; unclear=unklar
     source_class            char(1),                         -- Quellenklasse | A Rechtsnorm, B …
+    document_class          text CHECK (document_class IN ('A','A/B','B','C','none','unclear')),   -- Dokumenttyp | A Rechtserlass, B verbindliches Führungsdokument, C ergänzendes Dokument | öffentlich | A=Rechtserlass; A/B=je nach Ausgestaltung; B=verbindliches Führungsdokument; C=ergänzendes Dokument; none=gehört nicht in die Sammlung; unclear=unklar
+    document_class_reviewed boolean NOT NULL DEFAULT false,  -- Dokumenttyp geprüft | Einstufung fachlich abgenommen (sonst Vorschlag «zu prüfen») | intern
     issuer                  text,                            -- Erlassen von | z. B. «Kantonsrat»
     publication_place       text,                            -- Publikationsstelle | z. B. «ZH-Lex»
     bindingness             text,                            -- Verbindlichkeit | z. B. «rechtsverbindlich»
@@ -502,6 +504,8 @@ CREATE TABLE mandatory_documents (
     document                text NOT NULL,                   -- Dokument | z. B. «Gemeindeordnung»
     obligation              char(1) NOT NULL CHECK (obligation IN ('P','B','O')),   -- Stufe | Pflicht nach Rechtsgrundlage | öffentlich | P=Pflicht; B=bedingte Pflicht; O=optional
     intake                  text NOT NULL,                   -- Aufnahme | in die Rechtssammlung aufnehmen?
+    document_class          text CHECK (document_class IN ('A','A/B','B','C','none','unclear')),   -- Dokumenttyp | A Rechtserlass, B verbindliches Führungsdokument, C ergänzendes Dokument | öffentlich | A=Rechtserlass; A/B=je nach Ausgestaltung; B=verbindliches Führungsdokument; C=ergänzendes Dokument; none=gehört nicht in die Sammlung; unclear=unklar
+    document_class_reviewed boolean NOT NULL DEFAULT false,  -- Dokumenttyp geprüft | Einstufung fachlich abgenommen (sonst Vorschlag «zu prüfen») | intern
     source                  text,                            -- Quelle | Rechtsgrundlage bzw. Merkblatt
     source_url              text,                            -- Quelle (Adresse) | Link
     match_pattern           text,                            -- Suchmuster | regulärer Ausdruck für die Zuordnung
@@ -878,6 +882,8 @@ COMMENT ON COLUMN legal_acts.citation IS 'Fundstelle – z. B. «LS 412.100», �
 COMMENT ON COLUMN legal_acts.order_number IS 'Ordnungsnummer – Systematik';
 COMMENT ON COLUMN legal_acts.act_type IS 'Art – Einteilung nach dem Leitfaden';
 COMMENT ON COLUMN legal_acts.source_class IS 'Quellenklasse – A Rechtsnorm, B …';
+COMMENT ON COLUMN legal_acts.document_class IS 'Dokumenttyp – A Rechtserlass, B verbindliches Führungsdokument, C ergänzendes Dokument';
+COMMENT ON COLUMN legal_acts.document_class_reviewed IS 'Dokumenttyp geprüft – Einstufung fachlich abgenommen (sonst Vorschlag «zu prüfen»)';
 COMMENT ON COLUMN legal_acts.issuer IS 'Erlassen von – z. B. «Kantonsrat»';
 COMMENT ON COLUMN legal_acts.publication_place IS 'Publikationsstelle – z. B. «ZH-Lex»';
 COMMENT ON COLUMN legal_acts.bindingness IS 'Verbindlichkeit – z. B. «rechtsverbindlich»';
@@ -1079,6 +1085,8 @@ COMMENT ON COLUMN mandatory_documents.category_id IS 'Kategorie – Verweis';
 COMMENT ON COLUMN mandatory_documents.document IS 'Dokument – z. B. «Gemeindeordnung»';
 COMMENT ON COLUMN mandatory_documents.obligation IS 'Stufe – Pflicht nach Rechtsgrundlage';
 COMMENT ON COLUMN mandatory_documents.intake IS 'Aufnahme – in die Rechtssammlung aufnehmen?';
+COMMENT ON COLUMN mandatory_documents.document_class IS 'Dokumenttyp – A Rechtserlass, B verbindliches Führungsdokument, C ergänzendes Dokument';
+COMMENT ON COLUMN mandatory_documents.document_class_reviewed IS 'Dokumenttyp geprüft – Einstufung fachlich abgenommen (sonst Vorschlag «zu prüfen»)';
 COMMENT ON COLUMN mandatory_documents.source IS 'Quelle – Rechtsgrundlage bzw. Merkblatt';
 COMMENT ON COLUMN mandatory_documents.source_url IS 'Quelle (Adresse) – Link';
 COMMENT ON COLUMN mandatory_documents.match_pattern IS 'Suchmuster – regulärer Ausdruck für die Zuordnung';

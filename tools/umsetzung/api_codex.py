@@ -102,7 +102,7 @@ API = {
         "MandatoryDocumentEntry": {"title": "Pflichtdokument (Import)", "description": "Eintrag des Pflichtkatalogs mit Kategorie als Nummer",
                                    "felder": {"document_key": ("text", "Schlüssel", "z. B. «p1»"), "category_number": ("int", "Kategorie", "Nummer"), "category_title": ("text?", "Kategorie (Titel)", "neue Kategorie anlegen"),
                                               "document": ("text", "Dokument", "z. B. «Gemeindeordnung»"), "obligation": ("enum:P=Pflicht;B=bedingte Pflicht;O=optional", "Stufe", "P/B/O"),
-                                              "intake": ("text", "Aufnahme", "in die Rechtssammlung?"), "source": ("text?", "Quelle", "Rechtsgrundlage"), "source_url": ("url?", "Quelle (Adresse)", "Link"),
+                                              "intake": ("text", "Aufnahme", "in die Rechtssammlung?"), "document_class": ("enum:A=Rechtserlass;A/B=je nach Ausgestaltung;B=verbindliches Führungsdokument;C=ergänzendes Dokument;none=gehört nicht in die Sammlung;unclear=unklar?", "Dokumenttyp", "Vorschlag bis zur fachlichen Prüfung"), "source": ("text?", "Quelle", "Rechtsgrundlage"), "source_url": ("url?", "Quelle (Adresse)", "Link"),
                                               "match_pattern": ("text?", "Suchmuster", "regulärer Ausdruck"), "uncertain_pattern": ("text?", "Suchmuster unsicher", "nur «unsicher»"),
                                               "exclusion_pattern": ("text?", "Ausschlussmuster", "Treffer, die nicht passen"), "remark": ("text?", "Bemerkung", "Freitext")},
                                    "pflicht": ["document_key", "category_number", "document", "obligation", "intake"]},

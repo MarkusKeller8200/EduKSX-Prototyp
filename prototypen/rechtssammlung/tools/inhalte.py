@@ -32,7 +32,7 @@ BLAETTER = {
     "belege":           ["hierarchy_key", "from_node_key", "to_node_key", "citation", "location", "side"],
     "elternthemen":     ["topic_key", "title", "position", "questions", "hierarchy_keys", "match_pattern", "exclusion_pattern", "research_note"],
     "elternstellen":    ["topic_key", "citation", "location"],
-    "pflichtdokumente": ["document_key", "category_number", "category_title", "document", "obligation", "intake", "source", "source_url",
+    "pflichtdokumente": ["document_key", "category_number", "category_title", "document", "obligation", "intake", "document_class", "source", "source_url",
                          "match_pattern", "uncertain_pattern", "exclusion_pattern", "remark"],
     "rechtsgrundlagen": ["number", "legal_area_number", "citation", "title", "location", "relevance", "source_url"],
     "loeschen":         ["content_type", "content_key"],
@@ -46,7 +46,7 @@ BESCHREIBUNG = {
     "belege": "Belegstellen einer Verbindung: Erlass (citation) und Stelle (z. B. «§ 41 a.», «Art. 62», «Ingress», «suche:Art. 4 ¹ Im …»); side: from, to, other",
     "elternthemen": "Je Thema des Elternwegweisers eine Zeile; Fragen und Hierarchie-Schlüssel getrennt mit « | »",
     "elternstellen": "Rechtsstellen zu einem Elternthema (Erlass und Stelle)",
-    "pflichtdokumente": "Pflichtkatalog Schulgemeinde; obligation P (Pflicht), B (bedingt), O (optional)",
+    "pflichtdokumente": "Pflichtkatalog Schulgemeinde; obligation P (Pflicht), B (bedingt), O (optional); document_class A, A/B, B, C (Dokumenttyp, Vorschlag ZU PRÜFEN)",
     "rechtsgrundlagen": "Verzeichnis «Rechtsgrundlagen Volksschule»; number ist der Schlüssel",
     "loeschen": "Zu löschende Einträge: content_type (norm_hierarchies, parent_guide_topics, mandatory_documents, legal_bases) und Schlüssel",
 }
@@ -104,7 +104,7 @@ def export_prototyp():
         for e in kat["eintraege"]:
             paket["mandatory_documents"].append({k: v for k, v in {
                 "document_key": e["id"], "category_number": kat["nr"], "category_title": kat["titel"], "document": e["dokument"], "obligation": e["stufe"],
-                "intake": e["aufnahme"], "source": e["quelle"], "source_url": e["quelle_url"], "match_pattern": e.get("muster"),
+                "intake": e["aufnahme"], "document_class": e.get("typ"), "source": e["quelle"], "source_url": e["quelle_url"], "match_pattern": e.get("muster"),
                 "uncertain_pattern": e.get("muster_unsicher"), "exclusion_pattern": e.get("ohne"), "remark": e.get("bemerkung") or None}.items() if v not in (None, "")})
     for e in B.rechtsgrundlagen()["eintraege"]:   # Fundstelle wie im Prototyp ergänzt (Alias-Tabelle, Bildungsrat, kommunal)
         fund = e.get("fundstelle") or ("Bildungsratsbeschlüsse" if e.get("ebene") == "Bildungsrat" else "kommunal")
@@ -358,6 +358,7 @@ def pruefen(p, mit_texten=True):
         if s in dk: meld("mandatory_document", s, "Schlüssel doppelt")
         dk.add(s)
         if d.get("obligation") not in ("P", "B", "O"): meld("mandatory_document", s, f"Stufe «{d.get('obligation')}» – erlaubt P, B, O")
+        if d.get("document_class") not in (None, "A", "A/B", "B", "C", "none", "unclear"): meld("mandatory_document", s, f"Dokumenttyp «{d.get('document_class')}» – erlaubt A, A/B, B, C")
         for f in ("document", "intake", "category_number"):
             if leer(d.get(f)): meld("mandatory_document", s, f"Pflichtfeld «{f}» fehlt")
         for f in ("match_pattern", "uncertain_pattern", "exclusion_pattern"): regex("mandatory_document", s, f, d.get(f))
@@ -445,7 +446,8 @@ def als_sql(p):
             K[d["category_number"]] = U(); L.append(ins("mandatory_document_categories", {"id": K[d["category_number"]], "number": d["category_number"], "title": d.get("category_title") or str(d["category_number"])}))
         L.append(ins("mandatory_documents", {"id": U(), "document_key": d["document_key"], "category_id": K[d["category_number"]], "document": d["document"], "obligation": d["obligation"],
                                              "intake": d["intake"], "source": d.get("source"), "source_url": d.get("source_url"), "match_pattern": d.get("match_pattern"),
-                                             "uncertain_pattern": d.get("uncertain_pattern"), "exclusion_pattern": d.get("exclusion_pattern"), "remark": d.get("remark"), "position": i, **red}))
+                                             "uncertain_pattern": d.get("uncertain_pattern"), "exclusion_pattern": d.get("exclusion_pattern"), "remark": d.get("remark"), "position": i,
+                                             "document_class": d.get("document_class"), **red}))
     A = {}
     for r in p.get("legal_bases", []):
         if r["legal_area_number"] not in A:

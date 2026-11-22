@@ -47,6 +47,7 @@ Geschäftsverwaltung/Beschlüsse, allgemeine Dokumentablage.
 | CDX-F-23 | Freigabe: Importe und Änderungen über die API sind Entwürfe; öffentlich erst nach fachlicher Prüfung und Freigabe durch die zentrale Redaktion (`…/publication`), mit Ereignis `codex.content.published`. | MUSS | – |
 | CDX-F-24 | Nachvollziehbarkeit: jeder Importlauf mit Herkunft (API, CSV, Excel, KI-Recherche), Recherchevermerk, Quellen, Prüfsumme der Datei und Protokoll je Datensatz; Datensätze verweisen auf den letzten Importlauf. | MUSS | – |
 | CDX-F-25 | KI-gestützte Aktualisierung nach der Anweisung [`KI-RECHERCHE.md`](KI-RECHERCHE.md): Abgleich mit ZH-Lex/Fedlex, Lieferung als Inhaltspaket, nie direkte Veröffentlichung. | SOLL | Recherchen im Chat |
+| CDX-F-26 | Dokumenttyp A/B/C je Pflichtdokument und je kommunalem Dokument: A Rechtserlass (gehört in die Rechtssammlung, § 7 Abs. 2 GG), B verbindliches Führungsdokument, C ergänzendes Dokument; A/B je nach Ausgestaltung. Vorschlag bis zur fachlichen Abnahme sichtbar als «zu prüfen». | SOLL | Pflichtkatalog, Struktur-Matrix, Dokumentlisten |
 
 ### 2.2 Nicht fachliche Anforderungen
 
@@ -181,3 +182,4 @@ Zusätzlich zu den gemeinsamen Prüfpunkten in [`../README.md`](../README.md#4-g
 5. OFFEN: Darf ein technischer Client (KI-Recherche) Probeläufe nur einreichen (EMPFOHLEN) oder auch übernehmen? Freigabe bleibt in jedem Fall beim Menschen.
 6. OFFEN: Wird eine Hierarchie beim Ersetzen versioniert (Historie der Fassungen der Hierarchie) oder genügt das Änderungsprotokoll `data_changes` (EMPFOHLEN für den Start)?
 7. ZU PRÜFEN: Rhythmus der KI-Recherche (EMPFOHLEN monatlich und nach Kantonsrats-Publikationen) und wer den Prüfbericht abnimmt.
+8. ZU PRÜFEN: Einstufung Dokumenttyp A/B/C (Vorschlag Codex 0.32.0: Pflichtkatalog 18 × A, 13 × A/B, 9 × B; kommunale Dokumente aus Dokumentart und Titel) – fachliche Abnahme und abnehmende Stelle offen.

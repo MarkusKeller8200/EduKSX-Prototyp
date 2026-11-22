@@ -840,7 +840,9 @@
             return h("tr", null, h("td", { text: p.ziffer }), h("td", { text: p.titel }), h("td", null, lfBadge(p.status)), h("td", { text: p.text }));
           })))),
         h("h3", { text: "Dokumentarten (Einordnung nach Leitfaden Ziff. 5–8)" }),
-        h("ul", null, arten.map(function (a) { return h("li", null, h("strong", { text: String(o.arten[a]) }), " " + D.arten[a]); })))];
+        h("ul", null, arten.map(function (a) { return h("li", null, h("strong", { text: String(o.arten[a]) }), " " + D.arten[a]); })),
+        h("h3", { text: "Dokumenttyp A/B/C (Vorschlag, " + D.pflichtkatalog.doktyp_status + ")" }),
+        h("p", { cls: "small" }, Object.keys(D.pflichtkatalog.doktypen).filter(function (t) { return (o.typen || {})[t]; }).map(function (t) { return [typBadge(t), " " + o.typen[t] + "  "]; }), " ", h("a", { href: link("pflicht"), text: "Erläuterung →" })))];
   }
   function grundlagen() {
     var L = D.leitfaden;
@@ -901,9 +903,10 @@
     function tabelle(docs) {
       var gs = docs.some(function (d) { return d.gueltig_seit; });
       return h("div", { cls: "tabelle-wrap" }, h("table", null,
-        h("thead", null, h("tr", null, h("th", { text: "Dokument" }), gs ? h("th", { text: "Gültig seit" }) : null, h("th", { text: "Veröffentlicht" }), h("th", { text: "Version" }), h("th", { text: "Grösse" }))),
+        h("thead", null, h("tr", null, h("th", { text: "Dokument" }), h("th", { text: "Typ", title: "Dokumenttyp A/B/C – Vorschlag, " + D.pflichtkatalog.doktyp_status }), gs ? h("th", { text: "Gültig seit" }) : null, h("th", { text: "Veröffentlicht" }), h("th", { text: "Version" }), h("th", { text: "Grösse" }))),
         h("tbody", null, docs.map(function (d) {
           return h("tr", null, h("td", null, d.url ? [extern(d.url, d.titel), " ", h("button", { type: "button", cls: "btn klein", onclick: function () { pdfVorschau(o, d); }, text: "Vorschau" })] : h("span", null, d.titel, " ", badge("warnung", "!", "kein Link"))),
+            h("td", null, d.typ ? typBadge(d.typ) : null),
             gs ? h("td", { cls: "nowrap", text: d.gueltig_seit || "–" }) : null,
             h("td", { cls: "nowrap" }, d.veroeffentlicht || "–", d.datum_herkunft ? h("div", { cls: "small muted", text: d.datum_herkunft === "Datei" ? "aus Datei" : "laut Website" }) : null),
             h("td", null, h("div", { cls: "nowrap", text: d.version || "–" }), versionKnopf(d.titel, d.versionen)),
@@ -1030,7 +1033,7 @@
       zeilen.forEach(function (z) {
         if (z.menu !== letzt) { letzt = z.menu; body.appendChild(h("tr", { cls: "mz-menu" }, h("th", { colspan: String(3 + orgs.length), scope: "colgroup", text: z.menu }))); }
         body.appendChild(h("tr", null, h("td", { cls: "muted small", text: z.menu.replace(/^(\d) .*/, "$1") }), h("td", { text: z.unter }),
-          h("th", { scope: "row" }, z.stufe ? [stufeBadge(z.stufe), " "] : null, z.dok + (z.sammel ? " (Sammelzeile)" : ""), z.aufnahme ? h("div", { cls: "small muted", text: "Rechtssammlung: " + z.aufnahme }) : null), orgs.map(function (o) { return zelle(z, o); })));
+          h("th", { scope: "row" }, z.stufe ? [stufeBadge(z.stufe), " ", typBadge(z.typ), " "] : null, z.dok + (z.sammel ? " (Sammelzeile)" : ""), z.aufnahme ? h("div", { cls: "small muted", text: "Rechtssammlung: " + z.aufnahme }) : null), orgs.map(function (o) { return zelle(z, o); })));
       });
       huelle.appendChild(h("div", { cls: "tabelle-wrap matrix-wrap" }, h("table", { cls: "matrix" },
         h("thead", null, h("tr", null, h("th", { text: "Menü" }), h("th", { text: "Untermenü" }), h("th", { text: "Dokument" }),
@@ -1069,6 +1072,13 @@
     return [kopf("Struktur-Matrix", "Je Zeile ein Dokument – oben der Pflichtkatalog für Schulgemeinden, darunter die Codex-Struktur (Menü › Untermenü › Dokument) –, je Spalte eine Organisation. Bis zu drei Organisationen nebeneinander vergleichen."),
       h("div", { cls: "filterzeile" }, h("span", { cls: "small", text: "Vergleichen: " }), wahl, h("a", { cls: "small", href: link("pflicht"), text: "Vollständigkeit aller Organisationen →" })),
       matrixAnsicht(ids)];
+  }
+  function typBadge(t) { var T = D.pflichtkatalog.doktypen[t] || ["", ""]; return h("span", { cls: "badge doktyp doktyp-" + (t === "A/B" ? "AB" : t === "–" ? "x" : t === "?" ? "q" : t), title: "Typ " + t + ": " + T[0] + " – " + T[1] + " (Vorschlag, " + D.pflichtkatalog.doktyp_status + ")", text: "Typ " + t }); }
+  function typLegende() {
+    var PK = D.pflichtkatalog;
+    return h("section", { cls: "karte" }, h("h2", { text: "Dokumenttyp A/B/C" }),
+      h("p", { cls: "meldung warnung" }, h("strong", { text: "Vorschlag – " + PK.doktyp_status + ". " }), "Die Einstufung ist aus Stufe, Aufnahmeregel und Titel abgeleitet und noch nicht fachlich abgenommen. Massgebend ist, ob ein Dokument rechtsetzend ist (generell-abstrakt, allgemein verbindlich)."),
+      h("ul", { cls: "small" }, Object.keys(PK.doktypen).map(function (t) { return h("li", null, typBadge(t), " ", h("strong", { text: PK.doktypen[t][0] }), " – " + PK.doktypen[t][1]); })));
   }
   function stufeBadge(st) { return h("span", { cls: "badge stufe stufe-" + st, title: D.pflichtkatalog.stufen[st], text: st }); }
   function pflichtKurz(o) {
@@ -1115,6 +1125,7 @@
         h("ul", { cls: "small" }, ["P", "B", "O"].map(function (st) { return h("li", null, stufeBadge(st), " " + PK.stufen[st]); })),
         h("ul", { cls: "small" }, PK.hinweise.map(function (x) { return h("li", { text: x }); })),
         h("p", { cls: "small" }, extern(PK.vsa_pdf, "Volksschulamt – Rechtsgrundlagen für Schulbehörden (PDF) ↗"))),
+      typLegende(),
       h("section", { cls: "karte" }, h("h2", { text: "Vollständigkeit je Organisation" }),
         h("p", { cls: "small muted", text: "Gezählt sind Dokumente, deren Titel eindeutig zum Katalogeintrag passt (✓). Bedingte und optionale Dokumente fehlen oft zu Recht – massgebend ist, ob die Gemeinde die Aufgabe wahrnimmt." }),
         h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
@@ -1129,10 +1140,10 @@
       PK.kategorien.map(function (k) {
         return h("section", { cls: "karte" }, h("h2", { text: k.nr + ". " + k.titel }),
           h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
-            h("thead", null, h("tr", null, ["Dokument", "Einstufung", "Aufnahme in die Rechtssammlung", "Grundlage / Quelle", "Vorhanden"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+            h("thead", null, h("tr", null, ["Dokument", "Einstufung", "Typ (Vorschlag)", "Aufnahme in die Rechtssammlung", "Grundlage / Quelle", "Vorhanden"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
             h("tbody", null, k.eintraege.map(function (e) {
               var c = M.zellen[e.id] || {}, n = rel.filter(function (o) { return c[o.id] && c[o.id].status === "ja"; }).length;
-              return h("tr", null, h("th", { scope: "row", text: e.dokument }), h("td", null, stufeBadge(e.stufe)), h("td", { text: e.aufnahme }),
+              return h("tr", null, h("th", { scope: "row", text: e.dokument }), h("td", null, stufeBadge(e.stufe)), h("td", null, typBadge(e.typ)), h("td", { text: e.aufnahme }),
                 h("td", null, extern(e.quelle_url, e.quelle + " ↗"), e.bemerkung ? h("div", { cls: "small muted", text: e.bemerkung }) : null),
                 h("td", { cls: "nowrap" }, balken(n, rel.length), " " + n + " / " + rel.length));
             })))));

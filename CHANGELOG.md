@@ -201,4 +201,6 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Infrastruktur & Sicherheit (#58).
 - EduKSX-Codex 0.31.0: Normenhierarchie – Schulsozialarbeit & Jugendhilfe (Gruppe Kinder) und Schulanlagen & Raumnutzung
   (Gruppe Infrastruktur & Sicherheit) (#59).
+- EduKSX-Codex 0.32.0: Dokumenttyp A/B/C als Vorschlag (zu prüfen) – Pflichtkatalog, Struktur-Matrix, Dokumentlisten der
+  Organisationen, Datenmodell (`document_class`), API und Importvorlage (#60).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.31.0 – Generator.
+"""EduKSX-Codex Prototyp 0.32.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -1040,8 +1040,33 @@ def matrix():
 # ---------------------------------------------------------------- Pflichtkatalog Schulgemeinde (Auftrag 20.11.2026)
 # Quelle: Recherche des Auftraggebers (data/pflichtkatalog.json, Original in quellen/). Einstufung P/B/O, fachlich zu prüfen.
 PFLICHT_MENU = "0 Pflichtkatalog Schulgemeinde (Recherche, zu prüfen)"
+# Dokumenttyp A/B/C (Phase 4, 22.11.2026) – Vorschlag, Status ZU PRÜFEN (fachliche Abnahme offen)
+DOKTYPEN = {"A": ["Rechtserlass", "Rechtsetzend (generell-abstrakt, allgemein verbindlich) – gehört in die systematische Rechtssammlung (§ 7 Abs. 2 GG)"],
+            "A/B": ["Je nach Ausgestaltung", "Typ A, soweit rechtsetzend; sonst internes Führungsdokument (Typ B)"],
+            "B": ["Verbindliches Führungsdokument", "Für Schule oder Behörde verbindlich, aber nicht rechtsetzend – nicht zwingend in der Rechtssammlung (z. B. Schulprogramm, Aktenplan, Konzept)"],
+            "C": ["Ergänzendes Dokument", "Hilfsmittel, Empfehlung, Information oder Formular – nicht in die Rechtssammlung"],
+            "–": ["Gehört nicht in die Sammlung", "Beschluss, Budget, Rechnung, Protokoll"],
+            "?": ["Unklar", "Einordnung anhand des Titels nicht möglich – prüfen"]}
+DOKTYP_STATUS = "ZU PRÜFEN"
+PFLICHT_TYP = {  # Vorschlag je Katalogeintrag, aus Einstufung und Spalte «Aufnahme» abgeleitet
+    "A": ["p1", "p2", "p3", "p4", "p5", "p7", "p9", "p10", "p11", "p12", "p13", "p26", "p27", "p28", "p29", "p30", "p31", "p40"],
+    "A/B": ["p8", "p14", "p15", "p18", "p19", "p21", "p24", "p25", "p32", "p34", "p35", "p37", "p39"],
+    "B": ["p6", "p16", "p17", "p20", "p22", "p23", "p33", "p36", "p38"]}
+TYP_B = r"konzept|richtlinie|weisung|leistungsvereinbarung|funktionendiagramm|organigramm|leitbild|schulprogramm|aktenplan|ordnungssystem|verzeichnis der informationsbestaende|konstituierung|pflichtenheft|stellenbeschrieb|kompetenzregelung|leitlinie"
+ART_TYP = {"gemeindeerlass": "A", "behoerdenerlass": "A", "vertrag": "A", "raumplan": "A", "nicht_sr": "–", "unklar": "?"}
+
+def doktyp(d, art_):
+    """Vorschlag Dokumenttyp für ein kommunales Dokument – aus der Dokumentart nach Leitfaden und dem Titel."""
+    if art_ == "nicht_rechtsetzend": return "B" if re.search(TYP_B, norm(d["titel"])) else "C"
+    return ART_TYP.get(art_, "?")
+
 def pflichtkatalog():
-    return json.loads((ROOT / "data" / "pflichtkatalog.json").read_text(encoding="utf-8"))
+    pk = json.loads((ROOT / "data" / "pflichtkatalog.json").read_text(encoding="utf-8"))
+    typ = {i: t for t, ids in PFLICHT_TYP.items() for i in ids}
+    for k in pk["kategorien"]:
+        for e in k["eintraege"]: e["typ"] = typ.get(e["id"], "?")
+    pk["doktypen"], pk["doktyp_status"] = DOKTYPEN, DOKTYP_STATUS
+    return pk
 
 def pflicht_relevanz(o):
     """Gilt der Katalog für die Rechtssammlung dieser Organisation?"""
@@ -1057,7 +1082,7 @@ def pflicht_matrix():
     for kat in PK["kategorien"]:
         for e in kat["eintraege"]:
             zeilen.append({"menu": PFLICHT_MENU, "unter": f"{kat['nr']} {kat['titel']}", "dok": e["dokument"], "key": e["id"], "sammel": False,
-                           "stufe": e["stufe"], "pflicht": True, "aufnahme": e["aufnahme"]})
+                           "stufe": e["stufe"], "pflicht": True, "aufnahme": e["aufnahme"], "typ": e["typ"]})
     for o in ORGS:
         rel, grund = pflicht_relevanz(o)
         z = {"relevanz": rel, "grund": grund, "stufen": {st: [0, 0] for st in "PBO"}}
@@ -1157,9 +1182,10 @@ def leitfaden_pruefung(o):
     ist_pg = o["typ"] == "Politische Gemeinde"
     docs = [(d, s["titel"] + " " + pfad) for s in o["sections"] for d, pfad in _alle(s, "")]
     n = len(docs) or 1
-    arten = {}
+    arten, typen = {}, {}
     for d, pf in docs:
         a = art(d, pf); d["art"] = a; arten[a] = arten.get(a, 0) + 1
+        d["typ"] = doktyp(d, a); typen[d["typ"]] = typen.get(d["typ"], 0) + 1
     P = []
     def p(ziffer, titel, status, text): P.append({"ziffer": ziffer, "titel": titel, "status": status, "text": text})
     # Ziff. 3 – Gliederung nach Sachgebieten
@@ -1232,6 +1258,7 @@ def leitfaden_pruefung(o):
             p("Anhang 1", "Sachgebiet 4 «Schule» in der politischen Gemeinde", "ja" if s4 else "unsicher", "Sachgebiet 4 vorhanden (auch ohne Schulaufgaben zu führen)." if s4 else "Kein Sachgebiet 4.")
     o["leitfaden"] = P
     o["arten"] = arten
+    o["typen"] = typen
     return P
 
 def _alle(n, pfad):
@@ -2536,7 +2563,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.31.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.32.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2544,7 +2571,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.31.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.32.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

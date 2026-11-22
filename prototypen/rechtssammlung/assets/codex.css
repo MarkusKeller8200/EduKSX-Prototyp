@@ -164,6 +164,8 @@ ins { background: var(--success-soft); } del { background: var(--destructive-sof
 
 /* Pflichtkatalog */
 .badge.stufe { font-weight: 700; min-width: 1.6em; justify-content: center; }
+.badge.doktyp { font-weight: 600; white-space: nowrap; border: 1px solid currentColor; background: transparent; }
+.doktyp-A { color: #1d4ed8; } .doktyp-AB { color: #6d28d9; } .doktyp-B { color: #047857; } .doktyp-C { color: var(--muted-foreground); } .doktyp-x, .doktyp-q { color: #9a3412; }
 .stufe-P { background: #fde2e1; color: #8a1c17; } .stufe-B { background: #fff1d6; color: #7a4a00; } .stufe-O { background: var(--muted); color: var(--muted-foreground); }
 .mz-pflicht { font-weight: 400; margin-top: .2rem; }
 .balken.klein { display: inline-block; width: 60px; height: 6px; background: var(--muted); border-radius: 3px; vertical-align: middle; overflow: hidden; }

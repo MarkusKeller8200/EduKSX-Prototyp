@@ -36,6 +36,14 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Codex 0.32.0 – Dokumenttyp A/B/C, Phase 4 (#60)
+
+- Phase 4 des Plans. Typen: A Rechtserlass (gehört in die Rechtssammlung, § 7 Abs. 2 GG), A/B je nach Ausgestaltung, B verbindliches Führungsdokument, C ergänzendes Dokument, – gehört nicht in die Sammlung, ? unklar. Überall als Vorschlag mit Status ZU PRÜFEN gekennzeichnet.
+- Pflichtkatalog (`PFLICHT_TYP` in build.py): 18 × A, 13 × A/B, 9 × B. Kommunale Dokumente (`doktyp()`): aus Dokumentart nach Leitfaden (Gemeinde-/Behördenerlass, Vertrag, Raumplan → A; nicht rechtsetzend → B bei Konzept/Richtlinie/Funktionendiagramm …, sonst C; Beschluss/Budget → –): 585 A, 57 B, 23 C, 208 –, 62 unklar.
+- Anzeige: Spalte «Typ (Vorschlag)» und Erläuterung im Pflichtkatalog, Typ in der Struktur-Matrix (Pflichtzeilen), Spalte «Typ» in den Dokumentlisten, Zählung je Organisation.
+- Datenmodell: `document_class` und `document_class_reviewed` auf `mandatory_documents` und `legal_acts`; API-Schema MandatoryDocumentEntry; Importblatt «pflichtdokumente» mit `document_class`; Ladetest PostgreSQL ok. Pflichtenheft CDX-F-26, offener Punkt 8 (fachliche Abnahme).
+- Nächste Phase: 6 – Rechtsänderungs-Monitoring.
+
 ### Sitzung 2026-11-20 – Codex 0.31.0 – Schulsozialarbeit, Schulanlagen, Phase 3 (#59)
 
 - Phase 3 des Plans, 31 Themen. **schulsozialarbeit**: ZGB Art. 314c/314d, StGB Art. 320 → KJHG §§ 6 c, 12, 19, VSG § 51, IDG §§ 16–17 → Konzept/Leistungsvereinbarung (keine Beispiele in den erfassten Sammlungen). **schulanlagen**: BehiG Art. 3 → PBG §§ 60, 239 a, VSG § 41 → VSV § 3 a → Benützungs- und Gebührenreglemente (9 Beispiele: SKM, Sek Bülach, Meilen, Hochfelden, Dübendorf, Sek Dübendorf-Schwerzenbach, Fehraltorf; Schiessanlagen, Veloabstellplätze, Statuten, Clubs ausgeschlossen).

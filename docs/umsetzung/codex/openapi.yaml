@@ -1621,6 +1621,8 @@
                 "order_number": "Beispiel",
                 "act_type": "constitution",
                 "source_class": "Beispiel",
+                "document_class": "A",
+                "document_class_reviewed": false,
                 "issuer": "Beispiel",
                 "publication_place": "Beispiel",
                 "bindingness": "Beispiel",
@@ -3179,6 +3181,8 @@
                 "document": "Beispiel",
                 "obligation": "P",
                 "intake": "Beispiel",
+                "document_class": "A",
+                "document_class_reviewed": false,
                 "source": "Beispiel",
                 "source_url": "Beispiel",
                 "match_pattern": "Beispiel",
@@ -5817,6 +5821,7 @@
                 "document": "Beispiel",
                 "obligation": "P",
                 "intake": "Beispiel",
+                "document_class": "A",
                 "source": "Beispiel",
                 "source_url": "https://example.org/dokument.pdf",
                 "match_pattern": "Beispiel",
@@ -7400,6 +7405,43 @@
             "description": "A Rechtsnorm, B …",
             "x-eduksx-data-class": "public"
           },
+          "document_class": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "A",
+              "A/B",
+              "B",
+              "C",
+              "none",
+              "unclear"
+            ],
+            "x-eduksx-labels": {
+              "A": "Rechtserlass",
+              "A/B": "je nach Ausgestaltung",
+              "B": "verbindliches Führungsdokument",
+              "C": "ergänzendes Dokument",
+              "none": "gehört nicht in die Sammlung",
+              "unclear": "unklar"
+            },
+            "title": "Dokumenttyp",
+            "description": "A Rechtserlass, B verbindliches Führungsdokument, C ergänzendes Dokument",
+            "x-eduksx-data-class": "public"
+          },
+          "document_class_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Dokumenttyp (Text)",
+            "description": "deutsches Label zu «document_class» in der gewählten Sprache"
+          },
+          "document_class_reviewed": {
+            "type": "boolean",
+            "title": "Dokumenttyp geprüft",
+            "description": "Einstufung fachlich abgenommen (sonst Vorschlag «zu prüfen»)",
+            "x-eduksx-data-class": "internal"
+          },
           "issuer": {
             "type": [
               "string",
@@ -8209,6 +8251,43 @@
             "title": "Aufnahme",
             "description": "in die Rechtssammlung aufnehmen?",
             "x-eduksx-data-class": "public"
+          },
+          "document_class": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "A",
+              "A/B",
+              "B",
+              "C",
+              "none",
+              "unclear"
+            ],
+            "x-eduksx-labels": {
+              "A": "Rechtserlass",
+              "A/B": "je nach Ausgestaltung",
+              "B": "verbindliches Führungsdokument",
+              "C": "ergänzendes Dokument",
+              "none": "gehört nicht in die Sammlung",
+              "unclear": "unklar"
+            },
+            "title": "Dokumenttyp",
+            "description": "A Rechtserlass, B verbindliches Führungsdokument, C ergänzendes Dokument",
+            "x-eduksx-data-class": "public"
+          },
+          "document_class_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Dokumenttyp (Text)",
+            "description": "deutsches Label zu «document_class» in der gewählten Sprache"
+          },
+          "document_class_reviewed": {
+            "type": "boolean",
+            "title": "Dokumenttyp geprüft",
+            "description": "Einstufung fachlich abgenommen (sonst Vorschlag «zu prüfen»)",
+            "x-eduksx-data-class": "internal"
           },
           "source": {
             "type": [
@@ -9867,6 +9946,30 @@
             "type": "string",
             "title": "Aufnahme",
             "description": "in die Rechtssammlung?"
+          },
+          "document_class": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "A",
+              "A/B",
+              "B",
+              "C",
+              "none",
+              "unclear"
+            ],
+            "x-eduksx-labels": {
+              "A": "Rechtserlass",
+              "A/B": "je nach Ausgestaltung",
+              "B": "verbindliches Führungsdokument",
+              "C": "ergänzendes Dokument",
+              "none": "gehört nicht in die Sammlung",
+              "unclear": "unklar"
+            },
+            "title": "Dokumenttyp",
+            "description": "Vorschlag bis zur fachlichen Prüfung"
           },
           "source": {
             "type": [
