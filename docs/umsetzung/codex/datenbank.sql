@@ -111,6 +111,7 @@ CREATE TABLE municipalities (
     name                    text NOT NULL,                   -- Gemeinde | Name
     district                text NOT NULL,                   -- Bezirk | Gliederung im Menü
     municipality_type       text NOT NULL DEFAULT 'political' CHECK (municipality_type IN ('political')),   -- Art | heute nur politische Gemeinden | öffentlich | political=Politische Gemeinde
+    municipality_kind       text CHECK (municipality_kind IN ('PG','EG','EG-P','EG-S')),   -- Gemeindeart | Kürzel | öffentlich | PG=politische Gemeinde ohne Schulaufgaben; EG=Einheitsgemeinde; EG-P=Einheitsgemeinde Primarstufe; EG-S=Einheitsgemeinde Sekundarstufe
     is_unified_municipality boolean,                         -- Einheitsgemeinde | Vermerk «EG»
     is_unified_confirmed    boolean NOT NULL DEFAULT false,  -- Einheitsgemeinde gesichert | sonst «EG ?»
     website_url             text,                            -- Website | aus der Verwaltungs-E-Mail
@@ -129,6 +130,8 @@ CREATE TABLE municipalities (
 CREATE TABLE school_communities (
     id                      uuid PRIMARY KEY,
     community_type          text NOT NULL CHECK (community_type IN ('unified_school','primary_school','secondary_school','association')),   -- Art | Typ der Schulgemeinde | öffentlich | unified_school=Volksschulgemeinde; primary_school=Primarschulgemeinde; secondary_school=Sekundarschulgemeinde; association=Zweckverband
+    community_kind          text CHECK (community_kind IN ('SG','KSG')),   -- Gemeindeart | Kürzel | öffentlich | SG=Schulgemeinde (Gebiet einer politischen Gemeinde); KSG=Kreisschulgemeinde (Gebiet mehrerer politischer Gemeinden)
+    school_level            char(1) CHECK (school_level IN ('P','S','V')),   -- Stufe | Kürzel | öffentlich | P=Primarstufe; S=Sekundarstufe; V=Volksschule
     name                    text NOT NULL UNIQUE,            -- Schulgemeinde | Name
     short_name              text,                            -- Kurzname | Anzeige
     district                text NOT NULL,                   -- Bezirk | Gliederung im Menü
@@ -406,6 +409,7 @@ CREATE TABLE norm_hierarchies (
     levels                  text[] NOT NULL,                 -- Ebenen | von oben nach unten, z. B. Bund bis Gemeinde
     note                    text,                            -- Hinweis | Erläuterung zur Hierarchie
     position                integer NOT NULL DEFAULT 0,      -- Reihenfolge | nach Bezug zur Volksschule
+    current_version_number  integer,                         -- Geltende Fassung | Nummer der zuletzt veröffentlichten Fassung (norm_hierarchy_versions)
     content_status          text NOT NULL DEFAULT 'draft' CHECK (content_status IN ('draft','published','archived')),   -- Redaktionsstatus | Entwurf erst nach Freigabe öffentlich | öffentlich | draft=Entwurf; published=veröffentlicht; archived=archiviert
     review_status           text NOT NULL DEFAULT 'to_review' CHECK (review_status IN ('to_review','reviewed')),   -- Prüfstatus | fachliche Prüfung | intern | to_review=zu prüfen; reviewed=geprüft
     research_note           text,                            -- Recherche | Quellen und Vorgehen der Recherche (Mensch oder KI) | intern
@@ -415,6 +419,24 @@ CREATE TABLE norm_hierarchies (
     reviewed_at             timestamptz,                     -- Geprüft am | Redaktion | intern
     published_at            timestamptz,                     -- Veröffentlicht am | Freigabe | intern
     created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid
+);
+
+-- Veröffentlichte Fassung einer Normenhierarchie (volle Versionierung, Entscheid 22.11.2026)
+-- Geltungsbereich: global · Datenklasse: öffentlich
+-- Herkunft/Verwendung: bei jeder Freigabe als unveränderlicher Stand gespeichert (Knoten, Verbindungen, Belegstellen mit Auszügen); Abruf früherer Fassungen und Vergleich
+CREATE TABLE norm_hierarchy_versions (
+    id                      uuid PRIMARY KEY,
+    norm_hierarchy_id       uuid NOT NULL REFERENCES norm_hierarchies(id) ON DELETE CASCADE,   -- Normenhierarchie | Verweis
+    version_number          integer NOT NULL,                -- Fassung | laufende Nummer ab 1
+    valid_from              timestamptz NOT NULL,            -- Gültig ab | Zeitpunkt der Freigabe
+    valid_until             timestamptz,                     -- Gültig bis | Freigabe der nächsten Fassung (leer = geltend)
+    snapshot                jsonb NOT NULL,                  -- Stand | vollständige Hierarchie wie NormHierarchyDocument, inkl. Auszüge der Belegstellen und Fassung der Erlasse
+    change_summary          jsonb,                           -- Änderungen | Knoten und Verbindungen neu, geändert, entfernt gegenüber der vorherigen Fassung
+    change_note             text,                            -- Bemerkung | Grund der Änderung
+    content_import_id       uuid REFERENCES content_imports(id) ON DELETE SET NULL,   -- Importlauf | Herkunft der Änderung | intern
+    published_by_id         uuid,                            -- Freigegeben von | Redaktion (ohne Constraint) | intern
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid,
+    UNIQUE (norm_hierarchy_id, version_number)
 );
 
 -- Knoten einer Hierarchie (ein Erlass oder ein kommunaler Platzhalter auf einer Ebene)
@@ -756,6 +778,7 @@ CREATE INDEX legal_bases_legal_act_id_index ON legal_bases (legal_act_id);
 CREATE INDEX legal_bases_content_import_id_index ON legal_bases (content_import_id);
 CREATE INDEX publication_sources_source_class_id_index ON publication_sources (source_class_id);
 CREATE INDEX norm_hierarchies_content_import_id_index ON norm_hierarchies (content_import_id);
+CREATE INDEX norm_hierarchy_versions_content_import_id_index ON norm_hierarchy_versions (content_import_id);
 CREATE INDEX hierarchy_nodes_legal_act_id_index ON hierarchy_nodes (legal_act_id);
 CREATE INDEX hierarchy_node_links_hierarchy_node_id_index ON hierarchy_node_links (hierarchy_node_id);
 CREATE INDEX hierarchy_edges_from_node_id_index ON hierarchy_edges (from_node_id);
@@ -849,6 +872,7 @@ COMMENT ON COLUMN municipalities.bfs_number IS 'BFS-Nummer – Gebietsstammdaten
 COMMENT ON COLUMN municipalities.name IS 'Gemeinde – Name';
 COMMENT ON COLUMN municipalities.district IS 'Bezirk – Gliederung im Menü';
 COMMENT ON COLUMN municipalities.municipality_type IS 'Art – heute nur politische Gemeinden';
+COMMENT ON COLUMN municipalities.municipality_kind IS 'Gemeindeart – Kürzel';
 COMMENT ON COLUMN municipalities.is_unified_municipality IS 'Einheitsgemeinde – Vermerk «EG»';
 COMMENT ON COLUMN municipalities.is_unified_confirmed IS 'Einheitsgemeinde gesichert – sonst «EG ?»';
 COMMENT ON COLUMN municipalities.website_url IS 'Website – aus der Verwaltungs-E-Mail';
@@ -865,6 +889,8 @@ COMMENT ON COLUMN municipalities.lock_version IS 'Version – optimistisches Spe
 COMMENT ON TABLE school_communities IS 'Schulgemeinde (Volks-, Primar-, Sekundarschulgemeinde) – Verzeichnis der Gemeinden des Gemeindeamts; Menü «Schulgemeinden»';
 COMMENT ON COLUMN school_communities.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN school_communities.community_type IS 'Art – Typ der Schulgemeinde';
+COMMENT ON COLUMN school_communities.community_kind IS 'Gemeindeart – Kürzel';
+COMMENT ON COLUMN school_communities.school_level IS 'Stufe – Kürzel';
 COMMENT ON COLUMN school_communities.name IS 'Schulgemeinde – Name';
 COMMENT ON COLUMN school_communities.short_name IS 'Kurzname – Anzeige';
 COMMENT ON COLUMN school_communities.district IS 'Bezirk – Gliederung im Menü';
@@ -1076,6 +1102,7 @@ COMMENT ON COLUMN norm_hierarchies.hierarchy_group IS 'Gruppe – z. B. «Schule
 COMMENT ON COLUMN norm_hierarchies.levels IS 'Ebenen – von oben nach unten, z. B. Bund bis Gemeinde';
 COMMENT ON COLUMN norm_hierarchies.note IS 'Hinweis – Erläuterung zur Hierarchie';
 COMMENT ON COLUMN norm_hierarchies.position IS 'Reihenfolge – nach Bezug zur Volksschule';
+COMMENT ON COLUMN norm_hierarchies.current_version_number IS 'Geltende Fassung – Nummer der zuletzt veröffentlichten Fassung (norm_hierarchy_versions)';
 COMMENT ON COLUMN norm_hierarchies.content_status IS 'Redaktionsstatus – Entwurf erst nach Freigabe öffentlich';
 COMMENT ON COLUMN norm_hierarchies.review_status IS 'Prüfstatus – fachliche Prüfung';
 COMMENT ON COLUMN norm_hierarchies.research_note IS 'Recherche – Quellen und Vorgehen der Recherche (Mensch oder KI)';
@@ -1091,6 +1118,19 @@ COMMENT ON COLUMN norm_hierarchies.updated_by_id IS 'Geändert von – Person de
 COMMENT ON COLUMN norm_hierarchies.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
 COMMENT ON COLUMN norm_hierarchies.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
 COMMENT ON COLUMN norm_hierarchies.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
+COMMENT ON TABLE norm_hierarchy_versions IS 'Veröffentlichte Fassung einer Normenhierarchie (volle Versionierung, Entscheid 22.11.2026) – bei jeder Freigabe als unveränderlicher Stand gespeichert (Knoten, Verbindungen, Belegstellen mit Auszügen); Abruf früherer Fassungen und Vergleich';
+COMMENT ON COLUMN norm_hierarchy_versions.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN norm_hierarchy_versions.norm_hierarchy_id IS 'Normenhierarchie – Verweis';
+COMMENT ON COLUMN norm_hierarchy_versions.version_number IS 'Fassung – laufende Nummer ab 1';
+COMMENT ON COLUMN norm_hierarchy_versions.valid_from IS 'Gültig ab – Zeitpunkt der Freigabe';
+COMMENT ON COLUMN norm_hierarchy_versions.valid_until IS 'Gültig bis';
+COMMENT ON COLUMN norm_hierarchy_versions.snapshot IS 'Stand – vollständige Hierarchie wie NormHierarchyDocument, inkl. Auszüge der Belegstellen und Fassung der Erlasse';
+COMMENT ON COLUMN norm_hierarchy_versions.change_summary IS 'Änderungen – Knoten und Verbindungen neu, geändert, entfernt gegenüber der vorherigen Fassung';
+COMMENT ON COLUMN norm_hierarchy_versions.change_note IS 'Bemerkung – Grund der Änderung';
+COMMENT ON COLUMN norm_hierarchy_versions.content_import_id IS 'Importlauf – Herkunft der Änderung';
+COMMENT ON COLUMN norm_hierarchy_versions.published_by_id IS 'Freigegeben von – Redaktion (ohne Constraint)';
+COMMENT ON COLUMN norm_hierarchy_versions.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN norm_hierarchy_versions.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
 COMMENT ON TABLE hierarchy_nodes IS 'Knoten einer Hierarchie (ein Erlass oder ein kommunaler Platzhalter auf einer Ebene) – Redaktion bzw. Import; Kasten im Hierarchiebild';
 COMMENT ON COLUMN hierarchy_nodes.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN hierarchy_nodes.norm_hierarchy_id IS 'Hierarchie – Verweis';

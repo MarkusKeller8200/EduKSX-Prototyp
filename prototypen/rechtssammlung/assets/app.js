@@ -41,13 +41,20 @@
   function sgIn(b) { return D.schulgemeinden.filter(function (s) { return s.bezirk === b; }); }
   function eschulen(b) { return D.organisationen.filter(function (o) { return o.bezirk === b && o.typ === "Schule der Einheitsgemeinde"; }); }
   // Kurzform im Menü: EG = Einheitsgemeinde (Schule ganz oder für eine Stufe bei der Gemeinde), «?» = nicht gesichert
-  function egKurz(e) {
-    if (!e) return "";
-    if (/^keine/.test(e)) return "keine EG";
-    return "EG" + (/\?\s*$/.test(e) ? " ?" : "");
+  function egKurz(e, k) {   // Kürzel der Gemeindeart (PG, EG, EG-P, EG-S, SG-…, KSG-…); «?» = hergeleitet, nicht gesichert
+    if (!e && !k) return "";
+    return (k || (/^keine/.test(e) ? "PG" : "EG")) + (e && /\?\s*$/.test(e) ? " ?" : "");
   }
   function egTitel(e) { return e ? e.replace(/\s*\?\s*$/, " (nicht gesichert)") : ""; }
-  function vermerk(g) { return g.einheit ? " (" + egKurz(g.einheit) + ")" : ""; }
+  function vermerk(g) { return g.einheit ? " (" + egKurz(g.einheit, g.kuerzel) + ")" : ""; }
+  function artTitel(k) { var b = (k || "").replace(/\s*\?$/, "").split("-"), a = D.gemeindearten[b[0]] || D.gemeindearten[(k || "").replace(/\s*\?$/, "")];
+    return a ? a[0] + (b[1] && D.schulstufen[b[1]] && b[0] !== "EG" ? ", " + D.schulstufen[b[1]] : "") + " – " + a[1] : ""; }
+  function artBadge(k) { return k ? h("span", { cls: "badge neutral", title: artTitel(k), text: k }) : null; }
+  function artLegende() {
+    return h("ul", { cls: "small" }, Object.keys(D.gemeindearten).map(function (k) { return h("li", null, h("strong", { text: k }), " – " + D.gemeindearten[k][0] + ": " + D.gemeindearten[k][1]); }),
+      h("li", null, "Stufe bei Schulgemeinden: ", Object.keys(D.schulstufen).map(function (s, i) { return [i ? ", " : "", h("strong", { text: "-" + s }), " " + D.schulstufen[s]]; }), " – z. B. ", h("strong", { text: "KSG-S" }), " = Kreissekundarschule"),
+      h("li", null, h("strong", { text: "?" }), " = aus dem Gemeindeverzeichnis hergeleitet, Zugehörigkeit nicht gesichert"));
+  }
   var SYM = { ja: ["✓", "erfolg", "vorhanden"], unsicher: ["?", "warnung", "unsicher"], nein: ["–", "neutral", "fehlt"] };
   function orgZuGemeinde(g) { return g.org ? ORG[g.org] : null; }
 
@@ -92,11 +99,12 @@
           }),
           h("li", { cls: "zweig", "aria-hidden": "true", text: "Schulgemeinden" }),
           sgIn(b).length ? sgIn(b).map(function (s) {
-            if (s.org && ORG[s.org]) return orgEintrag(ORG[s.org], s.name);
-            return h("li", { "data-name": s.name }, eintrag(link("sg", s.name), s.name, r.art === "sg" && r.a === s.name));
+            var k = s.kuerzel + (s.mitglieder_sicher ? "" : " ?");
+            if (s.org && ORG[s.org]) return orgEintrag(ORG[s.org], s.name + " (" + k + ")", artTitel(s.kuerzel));
+            return h("li", { "data-name": s.name }, eintrag(link("sg", s.name), s.name + " (" + k + ")", r.art === "sg" && r.a === s.name, null, artTitel(s.kuerzel)));
           }) : h("li", { cls: "leer", text: "keine Schulgemeinden (alle Einheitsgemeinden)" }),
           eschulen(b).length ? [h("li", { cls: "zweig", "aria-hidden": "true", text: "Schulen der Einheitsgemeinden" }),
-            eschulen(b).map(function (o) { return orgEintrag(o, o.kurz + " (EG)", "Schule der Einheitsgemeinde"); })] : null));
+            eschulen(b).map(function (o) { return orgEintrag(o, o.kurz + " (" + (o.kuerzel || "EG") + ")", "Schule der Einheitsgemeinde – " + artTitel(o.kuerzel || "EG")); })] : null));
       liste.appendChild(h("li", null, det));
     });
     var such = h("input", { type: "text", id: "suche", placeholder: "Gemeinde suchen", "aria-label": "Gemeinde im Menü suchen" });
@@ -748,13 +756,14 @@
       var o = orgZuGemeinde(g);
       return h("tr", null, h("td", null, h("a", { href: link("bezirk", g.bezirk), text: g.bezirk })),
         h("td", null, h("a", { href: o ? link("org", o.id) : link("gemeinde", g.bezirk, g.gemeinde), text: g.gemeinde })),
-        h("td", { text: g.einheit || "" }), h("td", { text: g.cms || "" }), h("td", null, status(!!o)));
+        h("td", null, artBadge(g.kuerzel + (g.einheit_sicher ? "" : " ?")), " ", h("span", { cls: "small muted", text: g.einheit || "" })), h("td", { text: g.cms || "" }), h("td", null, status(!!o)));
     }));
     such.addEventListener("input", function () {
       var f = such.value.toLowerCase();
       Array.prototype.forEach.call(body.rows, function (tr) { tr.style.display = tr.textContent.toLowerCase().indexOf(f) >= 0 ? "" : "none"; });
     });
     return [kopf("Alle 160 politischen Gemeinden", "Stand gemäss Gemeindeverzeichnis Kanton Zürich."),
+      h("details", { cls: "karte" }, h("summary", null, h("strong", { text: "Gemeindeart – Erläuterung der Kürzel" })), artLegende()),
       h("div", { cls: "formzeile" }, h("label", { cls: "feld" }, "Filtern ", such)),
       h("div", { cls: "tabelle-wrap" }, h("table", null,
         h("thead", null, h("tr", null, ["Bezirk", "Gemeinde", "Schulträger", "CMS", "Status"].map(function (t) { return h("th", { text: t }); }))), body))];
@@ -804,7 +813,7 @@
     }));
   }
   function kopfOrg(o, aktiv) {
-    return [kopf(o.name + (o.einheit ? " (" + egKurz(o.einheit) + ")" : ""), o.typ + (o.einheit ? " · " + egTitel(o.einheit) : "") + " · Bezirk " + o.bezirk + (o.sitz ? " · Sitz " + o.sitz : ""),
+    return [kopf(o.name + (o.kuerzel ? " (" + o.kuerzel + (o.kuerzel_sicher === false ? " ?" : "") + ")" : o.einheit ? " (" + egKurz(o.einheit) + ")" : ""), o.typ + (o.einheit ? " · " + egTitel(o.einheit) : "") + " · Bezirk " + o.bezirk + (o.sitz ? " · Sitz " + o.sitz : ""),
         [h("a", { cls: "btn", href: "demo/" + o.id + ".html", target: "_blank", rel: "noopener", text: "Demoseite ↗" }), " ", extern(o.rs_url, "Original ↗")]), reiter(o, aktiv)];
   }
   function organisation(o) {
@@ -934,11 +943,11 @@
   // ------------------------------------------------------------------ Schulgemeinden
   function sgTabelle(liste) {
     return h("div", { cls: "tabelle-wrap" }, h("table", null,
-      h("thead", null, h("tr", null, ["Schulgemeinde", "Bezirk", "Sitz", "Mitglieder (bekannt)", "Status"].map(function (t) { return h("th", { text: t }); }))),
+      h("thead", null, h("tr", null, ["Schulgemeinde", "Art", "Bezirk", "Sitz", "Mitglieder (bekannt)", "Status"].map(function (t) { return h("th", { text: t }); }))),
       h("tbody", null, liste.map(function (s) {
         var o = s.org ? ORG[s.org] : null;
         return h("tr", null, h("td", null, h("a", { href: o ? link("org", o.id) : link("sg", s.name), text: s.name })),
-          h("td", { text: s.bezirk }), h("td", { text: s.sitz }),
+          h("td", null, artBadge(s.kuerzel + (s.mitglieder_sicher ? "" : " ?"))), h("td", { text: s.bezirk }), h("td", { text: s.sitz }),
           h("td", { text: s.mitglieder.join(", ") + (s.mitglieder_sicher ? "" : " (nur Sitz bekannt)") + (s.mitglieder_unsicher.length ? "; vermutet: " + s.mitglieder_unsicher.join(", ") : "") }),
           h("td", null, status(!!o)));
       }))));
@@ -946,7 +955,7 @@
   function alleSchulgemeinden() {
     var typen = ["Volksschulgemeinde", "Primarschulgemeinde", "Sekundarschulgemeinde"];
     return [kopf("Alle " + D.schulgemeinden.length + " Schulgemeinden", D.quelle_sg),
-      h("p", { cls: "meldung info", text: "In Klammer beim Gemeindenamen im Menü: «EG» = Einheitsgemeinde (Schule ganz oder für eine Stufe bei der Gemeinde), «keine EG» = Schule bei Schulgemeinden. «?» = nicht gesichert, hergeleitet, weil die Mitglieder einer Schulgemeinde im Bezirk noch nicht bekannt sind. Die Langform steht im Tooltip und auf der Gemeindeseite." }),
+      h("section", { cls: "karte" }, h("h2", { text: "Gemeindeart – Kürzel in Klammer im Menü" }), artLegende()),
       typen.map(function (t) {
         var l = D.schulgemeinden.filter(function (s) { return s.typ === t; });
         return [h("h2", { text: t + "n (" + l.length + ")" }), sgTabelle(l)];

@@ -6,7 +6,7 @@ Format: Schema `ContentBundle` in [`openapi.json`](openapi.json) · Werkzeug: [`
 Diese Anweisung wird einer KI (z. B. Claude im Chat, als geplanter Auftrag oder über die API) **wörtlich** mitgegeben.
 Sie beschreibt, wie neue oder geänderte Inhalte für Normenhierarchien, Elternwegweiser, Pflichtkatalog und
 Rechtsgrundlagen recherchiert und als **Inhaltspaket** geliefert werden. Die KI veröffentlicht nie selbst:
-Sie liefert einen Probelauf, ein Mensch prüft und gibt frei.
+Sie liefert einen Probelauf und darf ihn als Entwurf übernehmen; ein Mensch prüft und gibt frei (neue Fassung).
 
 ---
 
@@ -59,8 +59,9 @@ Sie liefert einen Probelauf, ein Mensch prüft und gibt frei.
 >   allem, was ein Mensch prüfen muss;
 > - `sources`: alle verwendeten Adressen;
 > - `researched_at`: Zeitpunkt der Recherche.
-> Reiche das Paket mit `POST /api/v1/content-imports/bundle?mode=dry_run` ein (nie `apply`). Lies den Prüfbericht;
-> behebe Fehler und erkläre Warnungen. Ohne API-Zugang: Paket als Datei liefern; geprüft wird mit
+> Reiche das Paket mit `POST /api/v1/content-imports/bundle?mode=dry_run` ein. Lies den Prüfbericht; behebe Fehler
+> und erkläre Warnungen. Ist der Probelauf fehlerfrei, darfst du ihn mit `POST /api/v1/content-imports/{id}/application`
+> als Entwurf übernehmen. Veröffentlichen (`…/publication`) darfst du nie – das macht die Redaktion. Ohne API-Zugang: Paket als Datei liefern; geprüft wird mit
 > `python3 tools/inhalte.py pruefen <datei>`.
 >
 > **7. Bericht an den Menschen.** Kurz: was neu, was geändert, was gelöscht (je mit Fundstelle), welche Warnungen
@@ -84,13 +85,13 @@ Sie liefert einen Probelauf, ein Mensch prüft und gibt frei.
 
 ```
 Export (JSON/Excel) → Recherche (KI oder Mensch) → Inhaltspaket → Probelauf (dry_run, Prüfbericht)
-   → Korrektur → Übernahme als Entwurf (Redaktion) → fachliche Prüfung → Freigabe (veröffentlicht, Ereignis)
+   → Korrektur → Übernahme als Entwurf (KI oder Redaktion) → fachliche Prüfung → Freigabe (neue Fassung, Ereignis)
 ```
 
 | Schritt | Wer | Recht |
 |---|---|---|
-| Probelauf einreichen | KI (technischer Client) oder Redaktion | `codex:content-imports.create` |
-| Übernahme als Entwurf | Redaktion EduKSX-Codex | `codex:content-imports.admin` |
+| Probelauf einreichen | KI (technischer Zugang) oder Redaktion | `codex:content-imports.create` |
+| Übernahme als Entwurf (nur fehlerfreier Probelauf) | KI (technischer Zugang) oder Redaktion | `codex:content-imports.create` |
 | Freigabe | Redaktion EduKSX-Codex (Vier-Augen-Prinzip EMPFOHLEN) | `codex:norm-hierarchies.admin` usw. |
 
 ## Was die Prüfung (Probelauf) kontrolliert

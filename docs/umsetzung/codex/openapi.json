@@ -581,7 +581,7 @@
               },
               "example": {
                 "community_type": "unified_school",
-                "name": "Beispiel"
+                "community_kind": "SG"
               }
             }
           }
@@ -2776,6 +2776,7 @@
                 ],
                 "note": "Beispiel",
                 "position": 1,
+                "current_version_number": 1,
                 "content_status": "draft",
                 "review_status": "to_review",
                 "research_note": "Beispiel",
@@ -5727,7 +5728,7 @@
         ],
         "operationId": "getNormHierarchyByKey",
         "summary": "Normenhierarchie über den Schlüssel lesen",
-        "description": "Normenhierarchie über den Schlüssel lesen.",
+        "description": "Ohne Parameter die geltende Fassung; mit «as_of» die Fassung, die zu diesem Zeitpunkt galt.",
         "security": [
           {
             "eduksx_ident": [
@@ -5740,6 +5741,20 @@
           "public"
         ],
         "x-eduksx-purpose": "Normenhierarchie über den Schlüssel lesen",
+        "parameters": [
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "description": "Fassung an diesem Tag",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Stichtag"
+            },
+            "example": "2027-08-23"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Ergebnis",
@@ -5907,6 +5922,143 @@
         }
       }
     },
+    "/api/v1/norm-hierarchies/by-key/{hierarchy_key}/versions": {
+      "parameters": [
+        {
+          "name": "hierarchy_key",
+          "in": "path",
+          "required": true,
+          "description": "Schlüssel der Hierarchie",
+          "schema": {
+            "type": "string",
+            "title": "Schlüssel"
+          },
+          "example": "volksschule"
+        }
+      ],
+      "get": {
+        "tags": [
+          "norm-hierarchies"
+        ],
+        "operationId": "listNormHierarchyVersions",
+        "summary": "Fassungen einer Normenhierarchie",
+        "description": "Alle veröffentlichten Fassungen mit Gültigkeit und Änderungsübersicht (ohne vollständigen Stand).",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:norm-hierarchies.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "norm-hierarchies.read",
+        "x-eduksx-data-classes": [
+          "public"
+        ],
+        "x-eduksx-purpose": "Fassungen einer Normenhierarchie",
+        "responses": {
+          "200": {
+            "description": "Liste",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/NormHierarchyVersion"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/api/v1/norm-hierarchies/by-key/{hierarchy_key}/versions/{version_number}": {
+      "parameters": [
+        {
+          "name": "hierarchy_key",
+          "in": "path",
+          "required": true,
+          "description": "Schlüssel der Hierarchie",
+          "schema": {
+            "type": "string",
+            "title": "Schlüssel"
+          },
+          "example": "volksschule"
+        },
+        {
+          "name": "version_number",
+          "in": "path",
+          "required": true,
+          "description": "Nummer der Fassung",
+          "schema": {
+            "type": "string",
+            "title": "Fassung"
+          },
+          "example": "3"
+        }
+      ],
+      "get": {
+        "tags": [
+          "norm-hierarchies"
+        ],
+        "operationId": "getNormHierarchyVersion",
+        "summary": "Bestimmte Fassung einer Normenhierarchie",
+        "description": "Bestimmte Fassung einer Normenhierarchie.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:norm-hierarchies.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "norm-hierarchies.read",
+        "x-eduksx-data-classes": [
+          "public"
+        ],
+        "x-eduksx-purpose": "Bestimmte Fassung einer Normenhierarchie",
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/NormHierarchyDocument"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
     "/api/v1/norm-hierarchies/{id}/publication": {
       "parameters": [
         {
@@ -5919,7 +6071,7 @@
         ],
         "operationId": "publishNormHierarchy",
         "summary": "Normenhierarchie freigeben (veröffentlichen)",
-        "description": "Normenhierarchie freigeben (veröffentlichen).",
+        "description": "Speichert den Entwurf als neue, unveränderliche Fassung (norm_hierarchy_versions) und schliesst die bisherige ab. Nur Menschen (Redaktion).",
         "security": [
           {
             "eduksx_ident": [
@@ -6749,20 +6901,20 @@
           "content-imports"
         ],
         "operationId": "applyContentImport",
-        "summary": "Geprüften Probelauf übernehmen",
-        "description": "Übernimmt einen Probelauf ohne Fehler; die Inhalte werden als Entwurf gespeichert und müssen freigegeben werden.",
+        "summary": "Geprüften Probelauf übernehmen (als Entwurf)",
+        "description": "Übernimmt einen Probelauf ohne Fehler; die Inhalte werden als Entwurf gespeichert und müssen von der Redaktion freigegeben werden. Erlaubt auch dem technischen Zugang der KI-Recherche (Entscheid 22.11.2026).",
         "security": [
           {
             "eduksx_ident": [
-              "codex:content-imports.admin"
+              "codex:content-imports.write"
             ]
           }
         ],
-        "x-eduksx-ability": "content-imports.admin",
+        "x-eduksx-ability": "content-imports.write",
         "x-eduksx-data-classes": [
           "internal"
         ],
-        "x-eduksx-purpose": "Geprüften Probelauf übernehmen",
+        "x-eduksx-purpose": "Geprüften Probelauf übernehmen (als Entwurf)",
         "responses": {
           "201": {
             "description": "Ergebnis",
@@ -6952,7 +7104,6 @@
               "codex:parent-guide-topics.admin": "Elternwegweiser – verwalten",
               "codex:mandatory-document-assessments.write": "mandatory-document-assessments – schreiben",
               "codex:content-imports.write": "Pflege und Import (API, CSV, Excel, KI-Recherche) – schreiben",
-              "codex:content-imports.admin": "Pflege und Import (API, CSV, Excel, KI-Recherche) – verwalten",
               "codex:content-exports.read": "Export der redaktionellen Inhalte – lesen"
             }
           },
@@ -7001,7 +7152,6 @@
               "codex:parent-guide-topics.admin": "Elternwegweiser – verwalten",
               "codex:mandatory-document-assessments.write": "mandatory-document-assessments – schreiben",
               "codex:content-imports.write": "Pflege und Import (API, CSV, Excel, KI-Recherche) – schreiben",
-              "codex:content-imports.admin": "Pflege und Import (API, CSV, Excel, KI-Recherche) – verwalten",
               "codex:content-exports.read": "Export der redaktionellen Inhalte – lesen"
             }
           }
@@ -7325,6 +7475,33 @@
             "title": "Art (Text)",
             "description": "deutsches Label zu «municipality_type» in der gewählten Sprache"
           },
+          "municipality_kind": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "PG",
+              "EG",
+              "EG-P",
+              "EG-S"
+            ],
+            "x-eduksx-labels": {
+              "PG": "politische Gemeinde ohne Schulaufgaben",
+              "EG": "Einheitsgemeinde",
+              "EG-P": "Einheitsgemeinde Primarstufe",
+              "EG-S": "Einheitsgemeinde Sekundarstufe"
+            },
+            "title": "Gemeindeart",
+            "description": "Kürzel",
+            "x-eduksx-data-class": "public"
+          },
+          "municipality_kind_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Gemeindeart (Text)",
+            "description": "deutsches Label zu «municipality_kind» in der gewählten Sprache"
+          },
           "is_unified_municipality": {
             "type": [
               "boolean",
@@ -7493,6 +7670,54 @@
             "readOnly": true,
             "title": "Art (Text)",
             "description": "deutsches Label zu «community_type» in der gewählten Sprache"
+          },
+          "community_kind": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "SG",
+              "KSG"
+            ],
+            "x-eduksx-labels": {
+              "SG": "Schulgemeinde (Gebiet einer politischen Gemeinde)",
+              "KSG": "Kreisschulgemeinde (Gebiet mehrerer politischer Gemeinden)"
+            },
+            "title": "Gemeindeart",
+            "description": "Kürzel",
+            "x-eduksx-data-class": "public"
+          },
+          "community_kind_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Gemeindeart (Text)",
+            "description": "deutsches Label zu «community_kind» in der gewählten Sprache"
+          },
+          "school_level": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "P",
+              "S",
+              "V"
+            ],
+            "x-eduksx-labels": {
+              "P": "Primarstufe",
+              "S": "Sekundarstufe",
+              "V": "Volksschule"
+            },
+            "title": "Stufe",
+            "description": "Kürzel",
+            "x-eduksx-data-class": "public"
+          },
+          "school_level_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Stufe (Text)",
+            "description": "deutsches Label zu «school_level» in der gewählten Sprache"
           },
           "name": {
             "type": "string",
@@ -8669,6 +8894,16 @@
             "format": "int32",
             "title": "Reihenfolge",
             "description": "nach Bezug zur Volksschule",
+            "x-eduksx-data-class": "public"
+          },
+          "current_version_number": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "title": "Geltende Fassung",
+            "description": "Nummer der zuletzt veröffentlichten Fassung (norm_hierarchy_versions)",
             "x-eduksx-data-class": "public"
           },
           "content_status": {
@@ -10637,6 +10872,56 @@
           "to_node_key",
           "relation"
         ]
+      },
+      "NormHierarchyVersion": {
+        "type": "object",
+        "title": "Fassung einer Normenhierarchie",
+        "description": "Veröffentlichter Stand mit Gültigkeit",
+        "properties": {
+          "version_number": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Fassung",
+            "description": "ab 1",
+            "readOnly": true
+          },
+          "valid_from": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Gültig ab",
+            "description": "Freigabe",
+            "readOnly": true
+          },
+          "valid_until": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Gültig bis",
+            "description": "leer = geltend",
+            "readOnly": true
+          },
+          "change_summary": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true,
+            "title": "Änderungen",
+            "description": "Knoten/Verbindungen neu, geändert, entfernt",
+            "readOnly": true
+          },
+          "change_note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "Grund",
+            "readOnly": true
+          }
+        }
       },
       "NormHierarchyDocument": {
         "type": "object",

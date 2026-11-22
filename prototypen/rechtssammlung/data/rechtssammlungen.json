@@ -1143,7 +1143,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "PG",
+   "kuerzel_sicher": true
   },
   {
    "id": "ps-truellikon",
@@ -5678,7 +5680,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "SG-P",
+   "kuerzel_sicher": true
   },
   {
    "id": "skm-marthalen",
@@ -7037,7 +7041,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "KSG-S",
+   "kuerzel_sicher": true
   },
   {
    "id": "sek-buelach",
@@ -7489,7 +7495,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "KSG-S",
+   "kuerzel_sicher": true
   },
   {
    "id": "pg-meilen",
@@ -11853,7 +11861,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "EG",
+   "kuerzel_sicher": true
   },
   {
    "id": "pg-bachenbuelach",
@@ -11897,7 +11907,7 @@
     "Freizeit / Kultur",
     "Schule"
    ],
-   "einheit": "Einheitsgemeinde Primarstufe ?",
+   "einheit": "Einheitsgemeinde Primarstufe",
    "befunde": [
     "Keine Schul-Erlasse in der Rechtssammlung: Organisationsreglement Schule, Elternbeitrags- und Hortreglemente liegen nur in der Schul-Ablage.",
     "Fehleinordnung: Geschäftsreglement Kinder-/Jugendkommission und Rabattreglement unter «02 Zivilrecht».",
@@ -12721,7 +12731,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "EG-P",
+   "kuerzel_sicher": true
   },
   {
    "id": "schule-bachenbuelach",
@@ -13536,7 +13548,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "EG-P",
+   "kuerzel_sicher": true
   },
   {
    "id": "pg-hoeri",
@@ -14862,7 +14876,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "PG",
+   "kuerzel_sicher": true
   },
   {
    "id": "ps-hoeri",
@@ -15103,7 +15119,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "SG-P",
+   "kuerzel_sicher": true
   },
   {
    "id": "pg-winkel",
@@ -15147,7 +15165,7 @@
     "Bildung",
     "Freizeit"
    ],
-   "einheit": "Einheitsgemeinde Primarstufe ?",
+   "einheit": "Einheitsgemeinde Primarstufe",
    "befunde": [
     "Einheitsgemeinde Primarstufe, aber keine Schul-Erlasse in der Rechtssammlung (Sachgebiet 4 enthält nur Betreuung, Bibliothek, Vereine).",
     "Schul-Reglemente (z. B. Reglement Ferienbetreuung) liegen auf der Website der Schule.",
@@ -16601,7 +16619,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "EG-P",
+   "kuerzel_sicher": true
   },
   {
    "id": "schule-winkel",
@@ -16912,7 +16932,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "EG-P",
+   "kuerzel_sicher": true
   },
   {
    "id": "pg-hochfelden",
@@ -19144,7 +19166,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "EG-P",
+   "kuerzel_sicher": true
   },
   {
    "id": "pg-duebendorf",
@@ -21813,7 +21837,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "EG-P",
+   "kuerzel_sicher": true
   },
   {
    "id": "schule-duebendorf",
@@ -22186,7 +22212,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "EG-P",
+   "kuerzel_sicher": true
   },
   {
    "id": "ssg-duebendorf-schwerzenbach",
@@ -22991,7 +23019,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "KSG-S",
+   "kuerzel_sicher": true
   },
   {
    "id": "pg-fehraltorf",
@@ -26310,7 +26340,9 @@
     }
    ],
    "analyse_version": 1,
-   "analysiert_am": "17.11.2026"
+   "analysiert_am": "17.11.2026",
+   "kuerzel": "EG",
+   "kuerzel_sicher": true
   }
  ]
 }

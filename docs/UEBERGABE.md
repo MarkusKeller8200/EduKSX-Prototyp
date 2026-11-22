@@ -36,6 +36,13 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Codex 0.36.0 – Gemeindeart, Versionierung, Entscheide (#64)
+
+- Gemeindeart (CDX-F-31): `GEMEINDEARTEN`/`SCHULSTUFEN` in build.py; Kürzel je Gemeinde (PG, EG, EG-P, EG-S), je Schulgemeinde (SG bzw. KSG bei mehreren politischen Gemeinden, § 3 Abs. 1 GG, mit Stufe -P/-S/-V) und je erfasster Organisation; «?» bei hergeleiteter Einordnung. Anzeige im Menü (Gemeinden, Schulgemeinden, Schulen der Einheitsgemeinden), Spalte «Art» bei den Schulgemeinden, Legende. Verteilung: 49 PG/EG gesichert, 103 mit «?»; Schulgemeinden 22 SG-P, 16 SG-S, 12 KSG-S, 6 SG-V, 2 KSG-V, 2 KSG-P.
+- Sek Bülach (Auskunft 22.11.2026): Kreissekundarschule KSG-S für Bülach, Bachenbülach, Winkel, Höri, Hochfelden; Bachenbülach und Winkel jetzt gesichert EG-P. Bülach bleibt «EG-P ?» (Träger Primarstufe offen).
+- Datenmodell: `municipalities.municipality_kind`, `school_communities.community_kind`/`school_level`; Versionierung (CDX-F-30): `norm_hierarchy_versions` (Fassung, gültig ab/bis, Stand als JSON, Änderungsübersicht), `norm_hierarchies.current_version_number`; API `…/by-key/{key}/versions`, `…/versions/{n}`, Stichtag `as_of`; Freigabe erzeugt neue Fassung. SQL-Test ok, OpenAPI validiert.
+- Entscheide (Pflichtenheft 3–6): BRB Quellenklasse B, VSA-Merkblätter Klasse C; KI-Zugang darf Probeläufe einreichen und als Entwurf übernehmen (`/content-imports/{id}/application` ohne admin), Freigabe nur Redaktion; KI-RECHERCHE.md und Rollen angepasst.
+
 ### Sitzung 2026-11-20 – Codex 0.35.0 – Praxisthemen, Phase 5 und Abschluss des Plans (#63)
 
 - Phase 5 des Plans, damit sind alle Phasen umgesetzt (Whiteboard «EduKSX-Codex – Plan Ausbau Normenhierarchie»).

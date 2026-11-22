@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.35.0 – Generator.
+"""EduKSX-Codex Prototyp 0.36.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -843,7 +843,7 @@ SG = [
  ("Sekundarschulgemeinde", "Andelfingen", "Andelfingen", "Andelfingen", None), ("Sekundarschulgemeinde", "Kreis Uhwiesen", "Andelfingen", "Laufen-Uhwiesen", None),
  ("Sekundarschulgemeinde", "Kreis Marthalen", "Andelfingen", "Marthalen", ["Benken", "Marthalen", "Rheinau", "Trüllikon"]),
  ("Sekundarschulgemeinde", "Ossingen - Truttikon", "Andelfingen", "Ossingen", ["Ossingen", "Truttikon"]),
- ("Sekundarschulgemeinde", "Bülach", "Bülach", "Bülach", ["Bülach", "Höri", "Hochfelden"]), ("Sekundarschulgemeinde", "Embrach", "Bülach", "Embrach", None),
+ ("Sekundarschulgemeinde", "Bülach", "Bülach", "Bülach", ["Bülach", "Bachenbülach", "Winkel", "Höri", "Hochfelden"]), ("Sekundarschulgemeinde", "Embrach", "Bülach", "Embrach", None),
  ("Sekundarschulgemeinde", "Dielsdorf", "Dielsdorf", "Dielsdorf", None), ("Sekundarschulgemeinde", "Niederhasli - Niederglatt", "Dielsdorf", "Niederhasli", ["Niederhasli", "Niederglatt"]),
  ("Sekundarschulgemeinde", "Unteres Furttal", "Dielsdorf", "Otelfingen", None),
  ("Sekundarschulgemeinde", "Regensdorf - Buchs - Dällikon", "Dielsdorf", "Regensdorf", ["Regensdorf", "Buchs", "Dällikon"]),
@@ -854,7 +854,18 @@ ORG_SG = {("Primarschulgemeinde", "Trüllikon"): "ps-truellikon", ("Sekundarschu
           ("Sekundarschulgemeinde", "Bülach"): "sek-buelach", ("Primarschulgemeinde", "Höri"): "ps-hoeri",
           ("Sekundarschulgemeinde", "Dübendorf - Schwerzenbach"): "ssg-duebendorf-schwerzenbach"}
 # Ergebnisse der Recherche vom 17.11.2026 (sicher), Rest wird hergeleitet
-UNSICHER_MITGLIED = {("Sekundarschulgemeinde", "Bülach"): ["Bachenbülach", "Winkel"]}
+UNSICHER_MITGLIED = {}   # Sek Bülach: Kreissekundarschule für Bülach, Bachenbülach, Winkel, Höri, Hochfelden (Auskunft 22.11.2026)
+# Gemeindeart (22.11.2026): politische Gemeinde ohne Schulaufgaben, Einheitsgemeinde (ganz oder je Stufe), Schulgemeinde
+# (Gebiet einer politischen Gemeinde) oder Kreisschulgemeinde (Gebiet mehrerer politischer Gemeinden, § 3 Abs. 1 GG)
+GEMEINDEARTEN = {
+    "PG": ["Politische Gemeinde", "ohne Schulaufgaben – die Volksschule führen Schulgemeinden"],
+    "EG": ["Einheitsgemeinde", "die politische Gemeinde führt die ganze Volksschule"],
+    "EG-P": ["Einheitsgemeinde Primarstufe", "die politische Gemeinde führt die Primarstufe; die Sekundarstufe führt eine Schulgemeinde"],
+    "EG-S": ["Einheitsgemeinde Sekundarstufe", "die politische Gemeinde führt die Sekundarstufe; die Primarstufe führt eine Schulgemeinde"],
+    "SG": ["Schulgemeinde", "Gebiet einer politischen Gemeinde"],
+    "KSG": ["Kreisschulgemeinde", "Gebiet mehrerer politischer Gemeinden (§ 3 Abs. 1 GG), z. B. Kreissekundarschule"]}
+SCHULSTUFEN = {"P": "Primarstufe (mit Kindergarten)", "S": "Sekundarstufe", "V": "Volksschule (Kindergarten bis Sekundarstufe)"}
+STUFE_JE_TYP = {"Primarschulgemeinde": "P", "Sekundarschulgemeinde": "S", "Volksschulgemeinde": "V"}
 STUFE_FIX = {"Bachenbülach": ("Gemeinde", None), "Winkel": ("Gemeinde", None), "Hochfelden": ("Gemeinde", "Sekundarschulgemeinde Bülach"),
              "Meilen": ("Gemeinde", "Gemeinde"), "Fehraltorf": ("Gemeinde", "Gemeinde"),
              "Dübendorf": ("Gemeinde", "Sekundarschulgemeinde Dübendorf - Schwerzenbach")}
@@ -862,7 +873,9 @@ STUFE_FIX = {"Bachenbülach": ("Gemeinde", None), "Winkel": ("Gemeinde", None), 
 def schulgemeinden():
     out = []
     for typ, name, bez, sitz, mit in SG:
+        art_ = "KSG" if mit and len(mit) > 1 else "SG"
         out.append({"typ": typ, "name": f"{typ} {lang(name)}", "kurz": lang(name), "bezirk": bez, "sitz": sitz,
+                    "art": art_, "stufe": STUFE_JE_TYP[typ], "kuerzel": f"{art_}-{STUFE_JE_TYP[typ]}",
                     "mitglieder": mit or [sitz], "mitglieder_sicher": mit is not None,
                     "mitglieder_unsicher": UNSICHER_MITGLIED.get((typ, name), []), "org": ORG_SG.get((typ, name))})
     return out
@@ -891,6 +904,7 @@ def einheit(gemeinden, sgs):
         else: text = "keine Einheitsgemeinde"
         sicher = p[1] and s[1]
         g["einheit"] = text if sicher else text + " ?"
+        g["kuerzel"] = {"Einheitsgemeinde": "EG", "Einheitsgemeinde Primarstufe": "EG-P", "Einheitsgemeinde Sekundarstufe": "EG-S"}.get(text, "PG")
         g["einheit_sicher"] = sicher
         g["schultraeger"] = {"primar": p[0], "sek": s[0]}
     return gemeinden
@@ -2687,9 +2701,18 @@ def render_daten(gemeinden):
             g = next((x for x in gem if x["gemeinde"] == o["sitz"]), None)
             if g: o["einheit"] = g["einheit"]
     for o in ORGS: leitfaden_pruefung(o); doc_datum_version(o); analyse_info(o)
+    # Kürzel der Gemeindeart je Organisation
+    gk = {g["gemeinde"]: g for g in gem}
+    for o in ORGS:
+        sg = next((x for x in sgs if x.get("org") == o["id"]), None)
+        g = gk.get(o.get("sitz")) or gk.get(o.get("sitz", "") + " (ZH)")
+        if sg: o["kuerzel"], o["kuerzel_sicher"] = sg["kuerzel"], sg["mitglieder_sicher"]
+        elif o["typ"] == "Politische Gemeinde" and g: o["kuerzel"], o["kuerzel_sicher"] = g["kuerzel"], g["einheit_sicher"]
+        elif o["typ"] == "Schule der Einheitsgemeinde" and g: o["kuerzel"], o["kuerzel_sicher"] = g["kuerzel"], g["einheit_sicher"]
     TX = texte_index()
     daten = {"stand": STAND, "bezirke": bezirke, "gemeinden": gem, "schulgemeinden": sgs, "organisationen": ORGS, "matrix": matrix(), "leitfaden": LEITFADEN, "arten": ARTEN, "rechtsgrundlagen": rechtsgrundlagen(), "pflichtkatalog": pflichtkatalog(),
              "elternwegweiser": elternwegweiser(TX), "praxisthemen": praxisthemen(TX),
+             "gemeindearten": GEMEINDEARTEN, "schulstufen": SCHULSTUFEN,
              "texte": TX, "hierarchien": querbezuege([abgleich_kanten(hierarchie(TX, sp), TX) for sp in HIERARCHIEN], TX),
              "quelle_sg": "Gemeindeamt Kanton Zürich, Verzeichnis der Gemeinden, Stand 1. Juli 2026"}
     daten["monitoring"] = rechtsaenderungen(TX, daten["hierarchien"], daten["elternwegweiser"], ORGS)
@@ -2727,7 +2750,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.35.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.36.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <script src="assets/daten.js"></script>
   <script src="assets/app.js"></script>
 </body>
@@ -2735,7 +2758,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.35.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.36.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

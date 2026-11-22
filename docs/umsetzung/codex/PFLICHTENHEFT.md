@@ -51,6 +51,8 @@ Geschäftsverwaltung/Beschlüsse, allgemeine Dokumentablage.
 | CDX-F-27 | Je Organisation und Pflichtdokument «keine Relevanz» setzen, mit Grund (gibt es nicht, muss nicht geregelt werden, anderswo geregelt, anderer Grund) und Bemerkung; nicht relevante Einträge zählen nicht zur Vollständigkeit und erscheinen in der Struktur-Matrix als «keine Relevanz». Recht: Redaktion der Organisation. | MUSS | Pflichtkatalog «Für Organisation erfassen» (im Prototyp nur im Browser gespeichert) |
 | CDX-F-28 | Rechtsänderungs-Monitoring: bei neuer Fassung die geänderten Stellen bestimmen (reine Umbrüche der Umwandlung ausgenommen), Verbindungen mit geänderter Belegstelle und Rechtsstellen im Elternwegweiser kennzeichnen und für die kommunalen Dokumente der betroffenen Knoten Prüfaufträge anlegen (zu prüfen bzw. zur Kenntnis); Status je Prüfauftrag (offen, keine Anpassung, Anpassung nötig, angepasst, nicht relevant); Mitteilung an die Organisation. | MUSS | Seite «Rechtsänderungen & Prüfliste» (Prüfstatus im Prototyp nur im Browser) |
 | CDX-F-29 | Praxisthemen für Schulleitungen (KI, Prävention, Notfall, Kommunikation, Partizipation): Fragen, Rechtsstellen, Normenhierarchien, Regelungen der Gemeinde und Hinweise kantonaler Stellen mit Quelle, als ergänzende Quelle (Klasse C) getrennt von den Rechtsstellen. | SOLL | Seite «Praxisthemen Schulleitung» |
+| CDX-F-30 | Versionierung der Normenhierarchien: jede Freigabe speichert eine unveränderliche Fassung mit Gültigkeit (ab/bis), vollständigem Stand und Änderungsübersicht; Abruf der geltenden Fassung, einer bestimmten Fassung und der Fassung an einem Stichtag. | MUSS | – (Datenmodell, API) |
+| CDX-F-31 | Gemeindeart je Gemeinde und Schulgemeinde mit Kürzel: PG (politische Gemeinde ohne Schulaufgaben), EG / EG-P / EG-S (Einheitsgemeinde ganz bzw. je Stufe), SG (Schulgemeinde, eine politische Gemeinde), KSG (Kreisschulgemeinde, mehrere politische Gemeinden, § 3 Abs. 1 GG), bei Schulgemeinden mit Stufe -P, -S, -V; «?» bei hergeleiteter Einordnung. | SOLL | Menü, Gemeinden, Schulgemeinden |
 
 ### 2.2 Nicht fachliche Anforderungen
 
@@ -111,8 +113,8 @@ aus der geltenden Fassung (nie aus der Lieferung).
 | Lesen – `codex:*.read` | ✓ (anonym) | ✓ | ✓ | ✓ |
 | Redaktion – `codex:{publishers,sections,legal-acts,legal-bases}.write` | – | – | eigene Sammlung | ✓ |
 | Zentrale Redaktion – `codex:{municipalities,school-communities,publication-sources,mandatory-documents,matrix,parent-guide-topics}.write`, `codex:norm-hierarchies.admin` | – | – | – | ✓ |
-| Import einreichen (Probelauf, Entwurf) – `codex:content-imports.create`; auch technischer Client einer KI-Recherche | – | – | – | ✓ |
-| Übernahme und Freigabe – `codex:content-imports.admin`, `codex:*.admin` | – | – | – | ✓ (nur Menschen) |
+| Import einreichen (Probelauf) und als Entwurf übernehmen – `codex:content-imports.create`; auch technischer Zugang der KI-Recherche | – | – | – | ✓ |
+| Freigabe (Veröffentlichung, neue Fassung) – `codex:*.admin` | – | – | – | ✓ (nur Menschen) |
 | Evaluation – `codex:collection-analyses.admin` | – | – | eigene Organisation | ✓ |
 
 ### 3.5 Schnittstellen
@@ -180,10 +182,10 @@ Zusätzlich zu den gemeinsamen Prüfpunkten in [`../README.md`](../README.md#4-g
 
 1. ENTSCHIEDEN (22.11.2026): Codex bleibt vorerst Spiegel/Hilfsmittel neben der amtlichen Sammlung. Entscheidet sich eine Gemeinde, Codex als Publikationsorgan für ihre systematische Rechtssammlung zu nutzen, erhält sie ein Login (Redaktion der eigenen Sammlung, CDX-F-16).
 2. ANGENOMMEN (Empfehlung, 22.11.2026 nicht beantwortet): Import und Textaufbereitung als eigener Python-Dienst neben dem Laravel-Modul (bestehende Werkzeuge weiterführen).
-3. ZU PRÜFEN: Zugehörigkeit Bachenbülach/Winkel zur Sek Bülach; weitere «EG ?»-Vermerke.
-4. ANGENOMMEN (Empfehlung, 22.11.2026 nicht beantwortet): Bildungsratsbeschlüsse als verbindliche Erlasse mit Fassungen; Merkblätter des Volksschulamts als Hinweise der Klasse C (wie in den Praxisthemen).
-5. ANGENOMMEN (Empfehlung, 22.11.2026 nicht beantwortet): Ein technischer Client der KI-Recherche darf nur Probeläufe einreichen; Übernahme und Freigabe nur durch Menschen.
-6. ENTSCHIEDEN (22.11.2026): Volle Versionierung – jede veröffentlichte Fassung einer Normenhierarchie bleibt abrufbar (Datenmodell: Fassungstabelle der Hierarchie, Umsetzung offen).
+3. ENTSCHIEDEN (22.11.2026): Die Sekundarschule Bülach ist eine Kreissekundarschule (KSG-S) für Bülach, Bachenbülach, Winkel, Höri und Hochfelden; Bachenbülach, Winkel und Hochfelden führen die Primarstufe selbst (EG-P). Neue Gemeindeart mit Kürzeln: PG, EG, EG-P, EG-S, SG-P/S/V, KSG-P/S/V (CDX-F-31). Übrige «?»-Vermerke bleiben hergeleitet, bis die Mitglieder der Schulgemeinden erfasst sind.
+4. ENTSCHIEDEN (22.11.2026): Bildungsratsbeschlüsse als Quellenklasse B (verbindliche Beschlüsse, Fundstelle «BRB Nr./Jahr», als Knoten in Hierarchien, mit Datum statt Fassungen); Merkblätter des Volksschulamts als Klasse C (weitergehende Quellen, nur als Hinweis mit Link).
+5. ENTSCHIEDEN (22.11.2026): Der technische Zugang der KI-Recherche darf Probeläufe einreichen und fehlerfreie Probeläufe als Entwurf übernehmen (Schritte 1 und 2); die Freigabe (Veröffentlichung) bleibt bei der Redaktion.
+6. ENTSCHIEDEN (22.11.2026): Volle Versionierung – jede Freigabe speichert eine unveränderliche Fassung der Normenhierarchie (Tabelle `norm_hierarchy_versions`, API `…/versions`, Stichtag `as_of`; CDX-F-30).
 7. ENTSCHIEDEN (22.11.2026): KI-Recherche monatlich und auf Anlass, auch ausgelöst von einer Gemeinde; den Prüfbericht nimmt die Redaktion EduKSX-Codex ab.
 8. ENTSCHIEDEN (22.11.2026): Einstufung Dokumenttyp A/B/C bleibt Vorschlag (Codex 0.32.0: Pflichtkatalog 18 × A, 13 × A/B, 9 × B; kommunale Dokumente aus Dokumentart und Titel) und wird beim Review fachlich geprüft; bis dahin sichtbar als «zu prüfen».
 9. ENTSCHIEDEN (22.11.2026): Monitoring wie im Prototyp – geänderte Belegstelle = Prüfauftrag, andere Änderungen «zur Kenntnis». Mitteilung an Schulverwaltung, Schulpflege, Schulleitung und Gemeindeschreiber/in (Empfänger je Organisation einstellbar).
