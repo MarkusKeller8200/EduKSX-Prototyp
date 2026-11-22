@@ -8,6 +8,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Geändert
 
+- **Branch nach Merge automatisch löschen (22.11.2026):** neue Action `branch-aufraeumen.yml` löscht nach einem Merge in
+  main den Branch des PR. main, gh-pages, Fork-Branches, geschützte Branches und Branches mit neuen Commits bleiben.
 - **Icons nur noch aus EduKSX-UI (22.11.2026):** keine eigenen Icon-Kopien mehr. Einstiegsseite und Prototypen
   (Flow, Staffing, Sign, Time, Codex-Übersicht) nutzen das freigegebene Set aus EduKSX-UI; die vorläufigen, abweichenden
   Motive für Codex, Sign und Time entfallen. Neu `tools/eduksx_icons.py`, Workflow `seite.yml` holt `EduKSX-UI/icons/svg`.
