@@ -8,6 +8,9 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Geändert
 
+- **Einstellungen per Action (23.11.2026):** Blueprint 62cb40d mit Workflow «Einstellungen anwenden»
+  (`einstellungen.yml`): Repository-Einstellungen aus `.github/blueprint.toml` werden nach dem Merge auf main gesetzt;
+  braucht das Secret `BLUEPRINT_ADMIN_TOKEN`. Blueprint-Skripte lesen `gh`-Ausgaben immer als UTF-8.
 - **Meilenstein je Prototyp (22.11.2026, #75):** Meilensteine für Staffing, Flow, Codex, Time, Sign und «Alle
   Prototypen»; Labels `prototyp:<schlüssel>` an allen offenen Issues. Neue Issues ordnet `issue-milestone` über
   `[meilensteine] zuordnung` nach Prototyp-Label zu, ohne Label nach Art in die Sammlungen.
