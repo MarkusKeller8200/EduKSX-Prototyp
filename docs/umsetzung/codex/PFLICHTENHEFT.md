@@ -59,6 +59,10 @@ Geschäftsverwaltung/Beschlüsse, allgemeine Dokumentablage.
 | CDX-F-35 | Schulstammdaten je Schulträger nach Review 22.11.2026: Kanton, Bezirk, politische Gemeinde, Schulorganisation, Organisationstyp, Stufe, VSA-Nr., Adresse, Website, E-Mail (Funktionsadresse), Telefon, Trägerschaft (öffentlich/privat), Quelle, letzte Prüfung, eindeutige ID. Import aus dem Schulverzeichnis der Bildungsdirektion (`tools/schulverzeichnis.py`); keine Personendaten. | MUSS | Schulstandorte, Schulgemeinden, Gemeinden |
 | CDX-F-36 | Standorte getrennt vom Schulträger (`school_sites`): Verwaltung, Sekretariat, Gemeindeverwaltung, Schulhaus, Kindergarten – ein Hauptstandort der Verwaltung, weitere Standorte beliebig (abweichender Verwaltungsstandort). Lage gebäudegenau aus dem amtlichen Gebäudeadressverzeichnis (EGID, BFS-Nr.), Schulhäuser aus swissNAMES3D bzw. Open Data der Stadt Zürich; Karte mit Filter nach Bezirk, Art und Schulträger. | MUSS | Schulstandorte (Karte) |
 | CDX-F-37 | Gemeindeart aus dem Schulverzeichnis ableiten (eigene Primar- bzw. Sekundarbehörde → EG, EG-P, EG-S; sonst PG) und mit den Eckwerten des Gemeindeamts abgleichen; Abweichungen zu früheren Erfassungen anzeigen. | SOLL | Gemeinden, Schulgemeinden |
+| CDX-F-38 | Schulträgerkarte des Gemeindeamts übernehmen: Primar- und Sekundarschulträger je Gemeinde mit Code, Schulgebiet, Anschlussvertrag, Zweckverband und Gebietsgeometrie; massgebend für Gemeindeart und Mitgliedgemeinden. Abweichungen zum Schulverzeichnis anzeigen. | MUSS | Gemeinden, Schulgemeinden, Karte |
+| CDX-F-39 | Links je Schulträger erzeugen und beim Schulträger speichern (`links`): Codex-Karte mit Schulträgergebiet (stabil), Schulträgerkarte, Schulverzeichnis, Website, map.geo.admin.ch (LV95). | SOLL | Schulgemeinde, Gemeinde |
+| CDX-F-40 | Beta-Release: je Schulträger ein einmaliger PIN (zufällig, nur Hash, Ablauf, Sperre nach 5 Fehlversuchen) an die Funktionsadresse; Prüfsitzung nur für diesen Schulträger; Bestätigen oder Korrekturen je Feld einreichen (Verwaltung, Kontakt, Schulanlagen mit Stufe, Mitgliedgemeinden); Redaktion übernimmt oder lehnt ab. Tabellen `data_review_campaigns`, `data_review_invitations`, `data_corrections`, API `/data-review/…`. | MUSS | Angaben prüfen (Beta) |
+| CDX-F-41 | Weitere amtliche Standortlisten: Sonderschulen (Volksschulamt, nach Bezirk und Typ), Sekundarstufe II (Geodatensatz GIS-ZH 600); Privatschulen (Register Volksschulamt) importiert, aber ausgeblendet. | KANN | Schulstandorte (Karte) |
 
 ### 2.2 Nicht fachliche Anforderungen
 
@@ -197,3 +201,12 @@ Zusätzlich zu den gemeinsamen Prüfpunkten in [`../README.md`](../README.md#4-g
 9. ENTSCHIEDEN (22.11.2026): Monitoring wie im Prototyp – geänderte Belegstelle = Prüfauftrag, andere Änderungen «zur Kenntnis». Mitteilung an Schulverwaltung, Schulpflege, Schulleitung und Gemeindeschreiber/in (Empfänger je Organisation einstellbar, CDX-F-32: Tabelle `change_notification_recipients`, API `notification-recipients`, im Prototyp auf der Seite «Rechtsänderungen» je Organisation).
 10. ENTSCHIEDEN (22.11.2026): Gruppennamen der Normenhierarchie (neun Gruppen, Codex 0.30.0) vorerst bestätigt.
 11. ENTSCHIEDEN (22.11.2026): Praxisthemen nehmen Hinweise kantonaler Stellen auf – mit Quelle, als Klasse C (Erläuterung, keine Rechtsgrundlage).
+
+### Offene Punkte Schulstandorte und Beta (Stand 22.11.2026)
+
+- ZU PRÜFEN: Gemeindeart bei Zweckverband bzw. Anschlussvertrag für die Sekundarstufe (Kilchberg, Rüschlikon, Erlenbach, Herrliberg; Brütten, Seegräben, Zumikon) – heute EG-P mit Vermerk; Alternative: EG mit Vermerk.
+- ZU PRÜFEN: Stand der Schulträgerkarte (Daten ohne Datum, Geometrie 1.1.2023); Abgleich mit dem Verzeichnis der Gemeinden 1.7.2026 ergab dieselben 60 Schulgemeinden.
+- ZU PRÜFEN: Stufe der Schulanlagen ohne Hinweis im Namen und 36 Schulareale «Zuordnung zu prüfen» – wird mit der Beta-Rückmeldung der Verwaltungen geklärt.
+- ZU PRÜFEN: 12 Sonderschulen ohne gefundene Lage (Liste des Volksschulamts ohne Adressen).
+- ZU PRÜFEN: Versandkanal der PIN (E-Mail an Funktionsadresse oder Brief), Gültigkeit (Vorschlag 30 Tage), wer bei Verwaltungen ohne Funktionsadresse angeschrieben wird.
+- ENTSCHIEDEN (22.11.2026): Privatschulen ausblenden; Entfernung voraussichtlich später.

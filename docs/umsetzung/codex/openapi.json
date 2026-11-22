@@ -40,6 +40,11 @@
       "description": "Schulstandorte"
     },
     {
+      "name": "data-review",
+      "x-displayName": "Beta: Angaben prüfen (PIN)",
+      "description": "Beta: Angaben prüfen (PIN)"
+    },
+    {
       "name": "publishers",
       "x-displayName": "Herausgeber und Rechtssammlungen",
       "description": "Herausgeber und Rechtssammlungen"
@@ -917,6 +922,553 @@
                   "properties": {
                     "data": {
                       "$ref": "#/components/schemas/SchoolSite"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      }
+    },
+    "/api/v1/data-review/invitations": {
+      "get": {
+        "tags": [
+          "invitations"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Versand an die Funktionsadresse aus dem Schulverzeichnis; der PIN eröffnet einmalig eine Prüfsitzung für genau diesen Schulträger",
+        "operationId": "listDataReviewInvitations",
+        "summary": "Einladungen auflisten",
+        "description": "Liste der Einladungen (Cursor). Versand an die Funktionsadresse aus dem Schulverzeichnis; der PIN eröffnet einmalig eine Prüfsitzung für genau diesen Schulträger",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:invitations.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "invitations.read",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "name": "campaign_id",
+            "in": "query",
+            "required": false,
+            "description": "Verweis",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Kampagne"
+            },
+            "example": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Stand der Prüfung",
+            "schema": {
+              "type": "string",
+              "x-extensible-enum": [
+                "prepared",
+                "sent",
+                "redeemed",
+                "confirmed",
+                "corrected",
+                "expired",
+                "revoked",
+                "locked"
+              ],
+              "x-eduksx-labels": {
+                "prepared": "vorbereitet",
+                "sent": "versendet",
+                "redeemed": "geöffnet",
+                "confirmed": "bestätigt",
+                "corrected": "Korrekturen eingereicht",
+                "expired": "verfallen",
+                "revoked": "widerrufen",
+                "locked": "gesperrt"
+              },
+              "title": "Status"
+            },
+            "example": "prepared"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Einladungen",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DataReviewInvitation"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/data-review/invitations/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "invitations"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Versand an die Funktionsadresse aus dem Schulverzeichnis; der PIN eröffnet einmalig eine Prüfsitzung für genau diesen Schulträger",
+        "operationId": "getDataReviewInvitation",
+        "summary": "Einladung lesen",
+        "description": "Einladung mit allen Feldern der Positivliste.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:invitations.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "invitations.read",
+        "responses": {
+          "200": {
+            "description": "Einladung",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/DataReviewInvitation"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "invitations"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Versand an die Funktionsadresse aus dem Schulverzeichnis; der PIN eröffnet einmalig eine Prüfsitzung für genau diesen Schulträger",
+        "operationId": "updateDataReviewInvitation",
+        "summary": "Einladung ändern",
+        "description": "JSON Merge Patch; fehlendes Feld = unverändert.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:invitations.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "invitations.write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataReviewInvitation"
+              },
+              "example": {
+                "campaign_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "school_community_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/DataReviewInvitation"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          }
+        }
+      }
+    },
+    "/api/v1/data-review/corrections": {
+      "get": {
+        "tags": [
+          "corrections"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Eingabe in der Prüfsitzung; Übernahme in school_communities, municipalities oder school_sites",
+        "operationId": "listDataCorrections",
+        "summary": "Korrekturvorschläge auflisten",
+        "description": "Liste der Korrekturvorschläge (Cursor). Eingabe in der Prüfsitzung; Übernahme in school_communities, municipalities oder school_sites",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:corrections.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "corrections.read",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "name": "invitation_id",
+            "in": "query",
+            "required": false,
+            "description": "Verweis",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Einladung"
+            },
+            "example": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Entscheid Redaktion",
+            "schema": {
+              "type": "string",
+              "x-extensible-enum": [
+                "proposed",
+                "accepted",
+                "rejected"
+              ],
+              "x-eduksx-labels": {
+                "proposed": "vorgeschlagen",
+                "accepted": "übernommen",
+                "rejected": "abgelehnt"
+              },
+              "title": "Status"
+            },
+            "example": "proposed"
+          },
+          {
+            "name": "target_table",
+            "in": "query",
+            "required": false,
+            "description": "betroffene Tabelle",
+            "schema": {
+              "type": "string",
+              "x-extensible-enum": [
+                "school_communities",
+                "municipalities",
+                "school_sites",
+                "school_community_members"
+              ],
+              "x-eduksx-labels": {
+                "school_communities": "Schulgemeinde",
+                "municipalities": "Gemeinde",
+                "school_sites": "Standort",
+                "school_community_members": "Mitgliedgemeinde"
+              },
+              "title": "Datensatzart"
+            },
+            "example": "school_communities"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Korrekturvorschläge",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DataCorrection"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/data-review/corrections/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "corrections"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Eingabe in der Prüfsitzung; Übernahme in school_communities, municipalities oder school_sites",
+        "operationId": "getDataCorrection",
+        "summary": "Korrekturvorschlag lesen",
+        "description": "Korrekturvorschlag mit allen Feldern der Positivliste.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:corrections.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "corrections.read",
+        "responses": {
+          "200": {
+            "description": "Korrekturvorschlag",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/DataCorrection"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "corrections"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Eingabe in der Prüfsitzung; Übernahme in school_communities, municipalities oder school_sites",
+        "operationId": "updateDataCorrection",
+        "summary": "Korrekturvorschlag ändern",
+        "description": "JSON Merge Patch; fehlendes Feld = unverändert.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:corrections.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "corrections.write",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/merge-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataCorrection"
+              },
+              "example": {
+                "invitation_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "target_table": "school_communities"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Geändert",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/DataCorrection"
                     }
                   },
                   "required": [
@@ -7049,6 +7601,208 @@
         }
       }
     },
+    "/api/v1/data-review/sessions": {
+      "post": {
+        "tags": [
+          "data-review-invitations"
+        ],
+        "operationId": "redeemReviewPin",
+        "summary": "PIN einlösen – Prüfsitzung für einen Schulträger eröffnen",
+        "description": "Einmaliger PIN aus dem Versand an die Funktionsadresse. Nach dem Einlösen ist der PIN verbraucht; die Sitzung gilt nur für diesen Schulträger. Nach 5 Fehlversuchen gesperrt.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:data-review-invitations.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "data-review-invitations.write",
+        "x-eduksx-data-classes": [
+          "public"
+        ],
+        "x-eduksx-purpose": "PIN einlösen – Prüfsitzung für einen Schulträger eröffnen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewPinRequest"
+              },
+              "example": {
+                "pin": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ReviewSession"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/data-review/session/master-data": {
+      "get": {
+        "tags": [
+          "data-review-invitations"
+        ],
+        "operationId": "getReviewMasterData",
+        "summary": "Angaben des eigenen Schulträgers (Stammdaten, Standorte, Mitglieder)",
+        "description": "Angaben des eigenen Schulträgers (Stammdaten, Standorte, Mitglieder).",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:data-review-invitations.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "data-review-invitations.read",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Angaben des eigenen Schulträgers (Stammdaten, Standorte, Mitglieder)",
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ReviewMasterData"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/api/v1/data-review/session/corrections": {
+      "post": {
+        "tags": [
+          "data-review-invitations"
+        ],
+        "operationId": "submitReviewCorrections",
+        "summary": "Korrekturen einreichen oder Angaben bestätigen",
+        "description": "Korrekturen einreichen oder Angaben bestätigen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:data-review-invitations.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "data-review-invitations.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Korrekturen einreichen oder Angaben bestätigen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewSubmission"
+              },
+              "example": {
+                "confirmed_all": false,
+                "corrections": [
+                  "Beispiel"
+                ],
+                "comment": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Liste",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DataCorrection"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
     "/api/v1/publishers/{publisher_key}/mandatory-documents/{document_key}/relevance": {
       "parameters": [
         {
@@ -7539,6 +8293,10 @@
               "codex:school-communities.write": "Schulgemeinden – schreiben",
               "codex:school-sites.read": "Schulstandorte – lesen",
               "codex:school-sites.write": "Schulstandorte – schreiben",
+              "codex:invitations.read": "invitations – lesen",
+              "codex:invitations.write": "invitations – schreiben",
+              "codex:corrections.read": "corrections – lesen",
+              "codex:corrections.write": "corrections – schreiben",
               "codex:publishers.read": "Herausgeber und Rechtssammlungen – lesen",
               "codex:publishers.write": "Herausgeber und Rechtssammlungen – schreiben",
               "codex:publishers.delete": "Herausgeber und Rechtssammlungen – löschen",
@@ -7575,6 +8333,8 @@
               "codex:collection-analyses.admin": "Evaluation und Leitfaden-Prüfung – verwalten",
               "codex:embed.read": "Widget für Websites – lesen",
               "codex:parent-guide-topics.admin": "Elternwegweiser – verwalten",
+              "codex:data-review-invitations.write": "data-review-invitations – schreiben",
+              "codex:data-review-invitations.read": "data-review-invitations – lesen",
               "codex:mandatory-document-assessments.write": "mandatory-document-assessments – schreiben",
               "codex:content-imports.write": "Pflege und Import (API, CSV, Excel, KI-Recherche) – schreiben",
               "codex:content-exports.read": "Export der redaktionellen Inhalte – lesen"
@@ -7589,6 +8349,10 @@
               "codex:school-communities.write": "Schulgemeinden – schreiben",
               "codex:school-sites.read": "Schulstandorte – lesen",
               "codex:school-sites.write": "Schulstandorte – schreiben",
+              "codex:invitations.read": "invitations – lesen",
+              "codex:invitations.write": "invitations – schreiben",
+              "codex:corrections.read": "corrections – lesen",
+              "codex:corrections.write": "corrections – schreiben",
               "codex:publishers.read": "Herausgeber und Rechtssammlungen – lesen",
               "codex:publishers.write": "Herausgeber und Rechtssammlungen – schreiben",
               "codex:publishers.delete": "Herausgeber und Rechtssammlungen – löschen",
@@ -7625,6 +8389,8 @@
               "codex:collection-analyses.admin": "Evaluation und Leitfaden-Prüfung – verwalten",
               "codex:embed.read": "Widget für Websites – lesen",
               "codex:parent-guide-topics.admin": "Elternwegweiser – verwalten",
+              "codex:data-review-invitations.write": "data-review-invitations – schreiben",
+              "codex:data-review-invitations.read": "data-review-invitations – lesen",
               "codex:mandatory-document-assessments.write": "mandatory-document-assessments – schreiben",
               "codex:content-imports.write": "Pflege und Import (API, CSV, Excel, KI-Recherche) – schreiben",
               "codex:content-exports.read": "Export der redaktionellen Inhalte – lesen"
@@ -8071,7 +8837,59 @@
               "null"
             ],
             "title": "Herkunft Gemeindeart",
-            "description": "z. B. «Schulverzeichnis Bildungsdirektion, Stand 22.11.2026»",
+            "description": "z. B. «Schulträgerkarte Gemeindeamt»",
+            "x-eduksx-data-class": "public"
+          },
+          "primary_provider_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Code Primarschulträger",
+            "description": "Schulträgerkarte Gemeindeamt",
+            "x-eduksx-data-class": "public"
+          },
+          "secondary_provider_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Code Sekundarschulträger",
+            "description": "Schulträgerkarte Gemeindeamt",
+            "x-eduksx-data-class": "public"
+          },
+          "secondary_form": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "own",
+              "school_community",
+              "association",
+              "connection_contract"
+            ],
+            "x-eduksx-labels": {
+              "own": "selbst",
+              "school_community": "Schulgemeinde",
+              "association": "Zweckverband",
+              "connection_contract": "Anschlussvertrag"
+            },
+            "title": "Form Sekundarstufe",
+            "description": "wie die Sekundarstufe erfüllt wird",
+            "x-eduksx-data-class": "public"
+          },
+          "secondary_form_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Form Sekundarstufe (Text)",
+            "description": "deutsches Label zu «secondary_form» in der gewählten Sprache"
+          },
+          "links": {
+            "type": "object",
+            "additionalProperties": true,
+            "title": "Links",
+            "description": "je Schulträger gespeichert (Einheitsgemeinde)",
             "x-eduksx-data-class": "public"
           },
           "primary_school_provider": {
@@ -8324,6 +9142,31 @@
             "format": "date",
             "title": "Letzte Prüfung",
             "description": "Abgleich mit dem Schulverzeichnis",
+            "x-eduksx-data-class": "public"
+          },
+          "provider_codes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Schulträger-Code",
+            "description": "Code(s) der Schulträgerkarte des Gemeindeamts, z. B. «L041»",
+            "x-eduksx-data-class": "public"
+          },
+          "school_area_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Schulgebiet",
+            "description": "Text der Schulträgerkarte",
+            "x-eduksx-data-class": "public"
+          },
+          "links": {
+            "type": "object",
+            "additionalProperties": true,
+            "title": "Links",
+            "description": "je Schulträger gespeichert: codex_karte, schultraegerkarte, schulverzeichnis, website, map_geo_admin",
             "x-eduksx-data-class": "public"
           },
           "source": {
@@ -8790,6 +9633,382 @@
           "site_type",
           "name",
           "source"
+        ]
+      },
+      "DataReviewInvitation": {
+        "type": "object",
+        "title": "Einladung",
+        "description": "Einladung je Schulträger mit einmaligem PIN (nur als Hash gespeichert). Versand an die Funktionsadresse aus dem Schulverzeichnis; der PIN eröffnet einmalig eine Prüfsitzung für genau diesen Schulträger",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "ID",
+            "description": "UUID v7, von der Anwendung vergeben",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "campaign_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Kampagne",
+            "description": "Verweis",
+            "x-eduksx-data-class": "internal"
+          },
+          "school_community_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Schulgemeinde",
+            "description": "Verweis (oder Einheitsgemeinde)",
+            "x-eduksx-data-class": "internal"
+          },
+          "municipality_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Einheitsgemeinde",
+            "description": "Verweis",
+            "x-eduksx-data-class": "internal"
+          },
+          "recipient_email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Empfänger",
+            "description": "Funktionsadresse der Schulverwaltung",
+            "x-eduksx-data-class": "internal"
+          },
+          "channel": {
+            "type": "string",
+            "x-extensible-enum": [
+              "email",
+              "letter"
+            ],
+            "x-eduksx-labels": {
+              "email": "E-Mail",
+              "letter": "Brief"
+            },
+            "title": "Versand",
+            "description": "Kanal",
+            "x-eduksx-data-class": "internal"
+          },
+          "channel_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Versand (Text)",
+            "description": "deutsches Label zu «channel» in der gewählten Sprache"
+          },
+          "pin_hash": {
+            "type": "string",
+            "title": "PIN (Hash)",
+            "description": "Argon2id; der PIN selbst wird nie gespeichert",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "pin_expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "PIN gültig bis",
+            "description": "danach verfallen",
+            "x-eduksx-data-class": "internal"
+          },
+          "failed_attempts": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Fehlversuche",
+            "description": "Sperre nach 5",
+            "x-eduksx-data-class": "internal"
+          },
+          "sent_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Versendet",
+            "description": "Zeitpunkt",
+            "x-eduksx-data-class": "internal"
+          },
+          "redeemed_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Eingelöst",
+            "description": "PIN einmalig verwendet",
+            "x-eduksx-data-class": "internal"
+          },
+          "status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "prepared",
+              "sent",
+              "redeemed",
+              "confirmed",
+              "corrected",
+              "expired",
+              "revoked",
+              "locked"
+            ],
+            "x-eduksx-labels": {
+              "prepared": "vorbereitet",
+              "sent": "versendet",
+              "redeemed": "geöffnet",
+              "confirmed": "bestätigt",
+              "corrected": "Korrekturen eingereicht",
+              "expired": "verfallen",
+              "revoked": "widerrufen",
+              "locked": "gesperrt"
+            },
+            "title": "Status",
+            "description": "Stand der Prüfung",
+            "x-eduksx-data-class": "internal"
+          },
+          "status_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Status (Text)",
+            "description": "deutsches Label zu «status» in der gewählten Sprache"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erstellt am",
+            "description": "Zeitpunkt der Erfassung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erstellt von",
+            "description": "Person, die den Datensatz angelegt hat (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Geändert am",
+            "description": "Zeitpunkt der letzten Änderung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geändert von",
+            "description": "Person der letzten Änderung (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "lock_version": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Version",
+            "description": "optimistisches Sperren; ETag und If-Match",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          }
+        },
+        "required": [
+          "campaign_id",
+          "pin_expires_at"
+        ]
+      },
+      "DataCorrection": {
+        "type": "object",
+        "title": "Korrekturvorschlag",
+        "description": "Korrekturvorschlag einer Verwaltung je Feld; die Redaktion übernimmt oder lehnt ab. Eingabe in der Prüfsitzung; Übernahme in school_communities, municipalities oder school_sites",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "ID",
+            "description": "UUID v7, von der Anwendung vergeben",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "invitation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Einladung",
+            "description": "Verweis",
+            "x-eduksx-data-class": "internal"
+          },
+          "target_table": {
+            "type": "string",
+            "x-extensible-enum": [
+              "school_communities",
+              "municipalities",
+              "school_sites",
+              "school_community_members"
+            ],
+            "x-eduksx-labels": {
+              "school_communities": "Schulgemeinde",
+              "municipalities": "Gemeinde",
+              "school_sites": "Standort",
+              "school_community_members": "Mitgliedgemeinde"
+            },
+            "title": "Datensatzart",
+            "description": "betroffene Tabelle",
+            "x-eduksx-data-class": "internal"
+          },
+          "target_table_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Datensatzart (Text)",
+            "description": "deutsches Label zu «target_table» in der gewählten Sprache"
+          },
+          "target_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Datensatz",
+            "description": "Eingabe in der Prüfsitzung; Übernahme in school_communities, municipalities oder school_sites",
+            "x-eduksx-data-class": "internal"
+          },
+          "field_name": {
+            "type": "string",
+            "title": "Feld",
+            "description": "z. B. «street», «school_level», «is_active»",
+            "x-eduksx-data-class": "internal"
+          },
+          "old_value": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bisher",
+            "description": "Wert zum Zeitpunkt der Prüfung",
+            "x-eduksx-data-class": "internal"
+          },
+          "new_value": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Neu",
+            "description": "Vorschlag der Verwaltung",
+            "x-eduksx-data-class": "internal"
+          },
+          "comment": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "der Verwaltung",
+            "x-eduksx-data-class": "internal"
+          },
+          "status": {
+            "type": "string",
+            "x-extensible-enum": [
+              "proposed",
+              "accepted",
+              "rejected"
+            ],
+            "x-eduksx-labels": {
+              "proposed": "vorgeschlagen",
+              "accepted": "übernommen",
+              "rejected": "abgelehnt"
+            },
+            "title": "Status",
+            "description": "Entscheid Redaktion",
+            "x-eduksx-data-class": "internal"
+          },
+          "status_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Status (Text)",
+            "description": "deutsches Label zu «status» in der gewählten Sprache"
+          },
+          "reviewed_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Geprüft am",
+            "description": "Redaktion",
+            "x-eduksx-data-class": "internal"
+          },
+          "reviewed_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geprüft von",
+            "description": "Redaktion",
+            "x-eduksx-data-class": "internal"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erstellt am",
+            "description": "Zeitpunkt der Erfassung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erstellt von",
+            "description": "Person, die den Datensatz angelegt hat (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Geändert am",
+            "description": "Zeitpunkt der letzten Änderung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geändert von",
+            "description": "Person der letzten Änderung (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "lock_version": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Version",
+            "description": "optimistisches Sperren; ETag und If-Match",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          }
+        },
+        "required": [
+          "invitation_id",
+          "target_table",
+          "field_name"
         ]
       },
       "Publisher": {
@@ -12729,6 +13948,131 @@
             "description": "kommunale Dokumente"
           }
         }
+      },
+      "ReviewPinRequest": {
+        "type": "object",
+        "title": "PIN",
+        "description": "Einmaliger PIN aus dem Versand",
+        "properties": {
+          "pin": {
+            "type": "string",
+            "title": "PIN",
+            "description": "12 Zeichen, ohne Leerzeichen"
+          }
+        },
+        "required": [
+          "pin"
+        ]
+      },
+      "ReviewSession": {
+        "type": "object",
+        "title": "Prüfsitzung",
+        "description": "Sitzung für genau einen Schulträger",
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Sitzung",
+            "description": "kurzlebiges Token (Cookie)"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Gültig bis",
+            "description": "Sitzungsende"
+          },
+          "provider_name": {
+            "type": "string",
+            "title": "Schulträger",
+            "description": "Name"
+          },
+          "provider_kind": {
+            "type": "string",
+            "title": "Art",
+            "description": "Schulgemeinde oder Einheitsgemeinde"
+          }
+        },
+        "required": [
+          "token",
+          "expires_at",
+          "provider_name"
+        ]
+      },
+      "ReviewMasterData": {
+        "type": "object",
+        "title": "Angaben zur Prüfung",
+        "description": "Stammdaten, Verwaltungsstandorte, Schulanlagen und Mitgliedgemeinden des Schulträgers",
+        "properties": {
+          "provider_name": {
+            "type": "string",
+            "title": "Schulträger",
+            "description": "Name"
+          },
+          "sites": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/SchoolSite"
+                }
+              ]
+            },
+            "title": "Standorte",
+            "description": "Verwaltung und Schulanlagen"
+          },
+          "member_municipalities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Mitgliedgemeinden",
+            "description": "laut Schulträgerkarte"
+          },
+          "links": {
+            "type": "string",
+            "title": "Links",
+            "description": "gespeicherte Links"
+          }
+        },
+        "required": [
+          "provider_name",
+          "sites"
+        ]
+      },
+      "ReviewSubmission": {
+        "type": "object",
+        "title": "Einreichung",
+        "description": "Bestätigung oder Korrekturen",
+        "properties": {
+          "confirmed_all": {
+            "type": "boolean",
+            "title": "Alles stimmt",
+            "description": "ohne Korrekturen"
+          },
+          "corrections": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/DataCorrection"
+                }
+              ]
+            },
+            "title": "Korrekturen",
+            "description": "je Feld"
+          },
+          "comment": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "allgemein"
+          }
+        },
+        "required": [
+          "confirmed_all",
+          "corrections"
+        ]
       },
       "NotificationRecipient": {
         "type": "object",

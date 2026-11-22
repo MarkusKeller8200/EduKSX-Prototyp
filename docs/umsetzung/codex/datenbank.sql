@@ -121,7 +121,11 @@ CREATE TABLE municipalities (
     capture_status          text NOT NULL DEFAULT 'open' CHECK (capture_status IN ('open','captured','verified')),   -- Erfassung | Stand der Evaluation | intern | open=offen; captured=erfasst; verified=geprüft
     canton                  char(2) NOT NULL DEFAULT 'ZH',   -- Kanton | Kürzel
     vsa_code                text,                            -- VSA-Nr. | Nummer der Schulbehörde, wenn die Gemeinde Schulträger ist (Einheitsgemeinde)
-    municipality_kind_source text,                           -- Herkunft Gemeindeart | z. B. «Schulverzeichnis Bildungsdirektion, Stand 22.11.2026»
+    municipality_kind_source text,                           -- Herkunft Gemeindeart | z. B. «Schulträgerkarte Gemeindeamt»
+    primary_provider_code   text,                            -- Code Primarschulträger | Schulträgerkarte Gemeindeamt
+    secondary_provider_code text,                            -- Code Sekundarschulträger | Schulträgerkarte Gemeindeamt
+    secondary_form          text CHECK (secondary_form IN ('own','school_community','association','connection_contract')),   -- Form Sekundarstufe | wie die Sekundarstufe erfüllt wird | öffentlich | own=selbst; school_community=Schulgemeinde; association=Zweckverband; connection_contract=Anschlussvertrag
+    links                   jsonb NOT NULL DEFAULT '{}',     -- Links | je Schulträger gespeichert (Einheitsgemeinde)
     primary_school_provider text,                            -- Schulträger Primar | Schulgemeinde bzw. Einheitsgemeinde
     secondary_school_provider text,                          -- Schulträger Sek | Schulgemeinde bzw. Einheitsgemeinde
     created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1
@@ -147,6 +151,9 @@ CREATE TABLE school_communities (
     email                   text,                            -- E-Mail | zentrale Funktionsadresse (keine persönlichen Adressen)
     phone                   text,                            -- Telefon | zentrale Nummer
     last_checked_on         date,                            -- Letzte Prüfung | Abgleich mit dem Schulverzeichnis
+    provider_codes          text[] NOT NULL DEFAULT '{}',    -- Schulträger-Code | Code(s) der Schulträgerkarte des Gemeindeamts, z. B. «L041»
+    school_area_text        text,                            -- Schulgebiet | Text der Schulträgerkarte
+    links                   jsonb NOT NULL DEFAULT '{}',     -- Links | je Schulträger gespeichert: codex_karte, schultraegerkarte, schulverzeichnis, website, map_geo_admin
     source                  text,                            -- Quelle | z. B. «Verzeichnis der Gemeinden, Stand 1.7.2026»
     created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), lock_version integer NOT NULL DEFAULT 1
 );
@@ -205,6 +212,56 @@ CREATE TABLE school_sites (
 );
 CREATE INDEX school_sites_community_idx ON school_sites (school_community_id);
 CREATE INDEX school_sites_municipality_idx ON school_sites (municipality_id);
+
+-- Beta: Prüfung der Angaben durch die Verwaltungen mit einmaligem PIN (Auftrag 22.11.2026)
+-- Geltungsbereich: global · Datenklasse: intern
+-- Herkunft/Verwendung: Redaktion erstellt die Kampagne zum offiziellen Beta-Release; jede Schulverwaltung erhält einen PIN an die Funktionsadresse
+CREATE TABLE data_review_campaigns (
+    id                      uuid PRIMARY KEY,
+    name                    text NOT NULL,                   -- Kampagne | z. B. «Beta-Release – Angaben prüfen»
+    starts_on               date NOT NULL,                   -- Beginn | Versand der PIN
+    ends_on                 date NOT NULL,                   -- Ende | danach verfallen offene PIN
+    status                  text NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','sending','open','closed')),   -- Status | Stand der Kampagne | intern | draft=Entwurf; sending=Versand läuft; open=offen; closed=abgeschlossen
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid
+);
+
+-- Einladung je Schulträger mit einmaligem PIN (nur als Hash gespeichert)
+-- Geltungsbereich: global · Datenklasse: intern
+-- Herkunft/Verwendung: Versand an die Funktionsadresse aus dem Schulverzeichnis; der PIN eröffnet einmalig eine Prüfsitzung für genau diesen Schulträger
+CREATE TABLE data_review_invitations (
+    id                      uuid PRIMARY KEY,
+    campaign_id             uuid NOT NULL REFERENCES data_review_campaigns(id) ON DELETE CASCADE,   -- Kampagne | Verweis
+    school_community_id     uuid REFERENCES school_communities(id),   -- Schulgemeinde | Verweis (oder Einheitsgemeinde)
+    municipality_id         uuid REFERENCES municipalities(id),       -- Einheitsgemeinde | Verweis
+    recipient_email         text,                            -- Empfänger | Funktionsadresse der Schulverwaltung | intern
+    channel                 text NOT NULL DEFAULT 'email' CHECK (channel IN ('email','letter')),   -- Versand | Kanal | intern | email=E-Mail; letter=Brief
+    pin_hash                text NOT NULL,                   -- PIN (Hash) | Argon2id; der PIN selbst wird nie gespeichert | intern
+    pin_expires_at          timestamptz NOT NULL,            -- PIN gültig bis | danach verfallen
+    failed_attempts         integer NOT NULL DEFAULT 0,      -- Fehlversuche | Sperre nach 5
+    sent_at                 timestamptz,                     -- Versendet | Zeitpunkt
+    redeemed_at             timestamptz,                     -- Eingelöst | PIN einmalig verwendet
+    status                  text NOT NULL DEFAULT 'prepared' CHECK (status IN ('prepared','sent','redeemed','confirmed','corrected','expired','revoked','locked')),   -- Status | Stand der Prüfung | intern | prepared=vorbereitet; sent=versendet; redeemed=geöffnet; confirmed=bestätigt; corrected=Korrekturen eingereicht; expired=verfallen; revoked=widerrufen; locked=gesperrt
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid,
+    CHECK (school_community_id IS NOT NULL OR municipality_id IS NOT NULL)
+);
+
+-- Korrekturvorschlag einer Verwaltung je Feld; die Redaktion übernimmt oder lehnt ab
+-- Geltungsbereich: global · Datenklasse: intern
+-- Herkunft/Verwendung: Eingabe in der Prüfsitzung; Übernahme in school_communities, municipalities oder school_sites
+CREATE TABLE data_corrections (
+    id                      uuid PRIMARY KEY,
+    invitation_id           uuid NOT NULL REFERENCES data_review_invitations(id) ON DELETE CASCADE,   -- Einladung | Verweis
+    target_table            text NOT NULL CHECK (target_table IN ('school_communities','municipalities','school_sites','school_community_members')),   -- Datensatzart | betroffene Tabelle | intern | school_communities=Schulgemeinde; municipalities=Gemeinde; school_sites=Standort; school_community_members=Mitgliedgemeinde
+    target_id               uuid,                            -- Datensatz | leer = neuer Standort
+    field_name              text NOT NULL,                   -- Feld | z. B. «street», «school_level», «is_active»
+    old_value               text,                            -- Bisher | Wert zum Zeitpunkt der Prüfung
+    new_value               text,                            -- Neu | Vorschlag der Verwaltung
+    comment                 text,                            -- Bemerkung | der Verwaltung
+    status                  text NOT NULL DEFAULT 'proposed' CHECK (status IN ('proposed','accepted','rejected')),   -- Status | Entscheid Redaktion | intern | proposed=vorgeschlagen; accepted=übernommen; rejected=abgelehnt
+    reviewed_at             timestamptz,                     -- Geprüft am | Redaktion
+    reviewed_by_id          uuid,                            -- Geprüft von | Redaktion
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid
+);
 
 -- ------------------------------------------------------------------ Herausgeber und Rechtssammlung
 
@@ -836,6 +893,10 @@ CREATE INDEX school_holidays_school_year_id_index ON school_holidays (school_yea
 CREATE INDEX school_sites_school_community_id_index ON school_sites (school_community_id);
 CREATE INDEX school_sites_provider_municipality_id_index ON school_sites (provider_municipality_id);
 CREATE INDEX school_sites_municipality_id_index ON school_sites (municipality_id);
+CREATE INDEX data_review_invitations_campaign_id_index ON data_review_invitations (campaign_id);
+CREATE INDEX data_review_invitations_school_community_id_index ON data_review_invitations (school_community_id);
+CREATE INDEX data_review_invitations_municipality_id_index ON data_review_invitations (municipality_id);
+CREATE INDEX data_corrections_invitation_id_index ON data_corrections (invitation_id);
 CREATE INDEX publishers_municipality_id_index ON publishers (municipality_id);
 CREATE INDEX publishers_school_community_id_index ON publishers (school_community_id);
 CREATE INDEX sections_publisher_id_index ON sections (publisher_id);
@@ -957,7 +1018,11 @@ COMMENT ON COLUMN municipalities.legal_collection_url IS 'Rechtssammlung (Adress
 COMMENT ON COLUMN municipalities.capture_status IS 'Erfassung – Stand der Evaluation';
 COMMENT ON COLUMN municipalities.canton IS 'Kanton – Kürzel';
 COMMENT ON COLUMN municipalities.vsa_code IS 'VSA-Nr. – Nummer der Schulbehörde, wenn die Gemeinde Schulträger ist (Einheitsgemeinde)';
-COMMENT ON COLUMN municipalities.municipality_kind_source IS 'Herkunft Gemeindeart – z. B. «Schulverzeichnis Bildungsdirektion, Stand 22.11.2026»';
+COMMENT ON COLUMN municipalities.municipality_kind_source IS 'Herkunft Gemeindeart – z. B. «Schulträgerkarte Gemeindeamt»';
+COMMENT ON COLUMN municipalities.primary_provider_code IS 'Code Primarschulträger – Schulträgerkarte Gemeindeamt';
+COMMENT ON COLUMN municipalities.secondary_provider_code IS 'Code Sekundarschulträger – Schulträgerkarte Gemeindeamt';
+COMMENT ON COLUMN municipalities.secondary_form IS 'Form Sekundarstufe – wie die Sekundarstufe erfüllt wird';
+COMMENT ON COLUMN municipalities.links IS 'Links – je Schulträger gespeichert (Einheitsgemeinde)';
 COMMENT ON COLUMN municipalities.primary_school_provider IS 'Schulträger Primar – Schulgemeinde bzw. Einheitsgemeinde';
 COMMENT ON COLUMN municipalities.secondary_school_provider IS 'Schulträger Sek – Schulgemeinde bzw. Einheitsgemeinde';
 COMMENT ON COLUMN municipalities.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
@@ -981,6 +1046,9 @@ COMMENT ON COLUMN school_communities.website_url IS 'Website – offizielle Webs
 COMMENT ON COLUMN school_communities.email IS 'E-Mail – zentrale Funktionsadresse (keine persönlichen Adressen)';
 COMMENT ON COLUMN school_communities.phone IS 'Telefon – zentrale Nummer';
 COMMENT ON COLUMN school_communities.last_checked_on IS 'Letzte Prüfung – Abgleich mit dem Schulverzeichnis';
+COMMENT ON COLUMN school_communities.provider_codes IS 'Schulträger-Code – Code(s) der Schulträgerkarte des Gemeindeamts, z. B. «L041»';
+COMMENT ON COLUMN school_communities.school_area_text IS 'Schulgebiet – Text der Schulträgerkarte';
+COMMENT ON COLUMN school_communities.links IS 'Links – je Schulträger gespeichert: codex_karte, schultraegerkarte, schulverzeichnis, website, map_geo_admin';
 COMMENT ON COLUMN school_communities.source IS 'Quelle – z. B. «Verzeichnis der Gemeinden, Stand 1.7.2026»';
 COMMENT ON COLUMN school_communities.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
 COMMENT ON COLUMN school_communities.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
@@ -1030,6 +1098,58 @@ COMMENT ON COLUMN school_sites.updated_by_id IS 'Geändert von – Person der le
 COMMENT ON COLUMN school_sites.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
 COMMENT ON COLUMN school_sites.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
 COMMENT ON COLUMN school_sites.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
+COMMENT ON TABLE data_review_campaigns IS 'Beta: Prüfung der Angaben durch die Verwaltungen mit einmaligem PIN (Auftrag 22.11.2026) – Redaktion erstellt die Kampagne zum offiziellen Beta-Release; jede Schulverwaltung erhält einen PIN an die Funktionsadresse';
+COMMENT ON COLUMN data_review_campaigns.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN data_review_campaigns.name IS 'Kampagne – z. B. «Beta-Release – Angaben prüfen»';
+COMMENT ON COLUMN data_review_campaigns.starts_on IS 'Beginn – Versand der PIN';
+COMMENT ON COLUMN data_review_campaigns.ends_on IS 'Ende – danach verfallen offene PIN';
+COMMENT ON COLUMN data_review_campaigns.status IS 'Status – Stand der Kampagne';
+COMMENT ON COLUMN data_review_campaigns.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN data_review_campaigns.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN data_review_campaigns.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN data_review_campaigns.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN data_review_campaigns.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN data_review_campaigns.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN data_review_campaigns.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
+COMMENT ON TABLE data_review_invitations IS 'Einladung je Schulträger mit einmaligem PIN (nur als Hash gespeichert) – Versand an die Funktionsadresse aus dem Schulverzeichnis; der PIN eröffnet einmalig eine Prüfsitzung für genau diesen Schulträger';
+COMMENT ON COLUMN data_review_invitations.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN data_review_invitations.campaign_id IS 'Kampagne – Verweis';
+COMMENT ON COLUMN data_review_invitations.school_community_id IS 'Schulgemeinde – Verweis (oder Einheitsgemeinde)';
+COMMENT ON COLUMN data_review_invitations.municipality_id IS 'Einheitsgemeinde – Verweis';
+COMMENT ON COLUMN data_review_invitations.recipient_email IS 'Empfänger – Funktionsadresse der Schulverwaltung';
+COMMENT ON COLUMN data_review_invitations.channel IS 'Versand – Kanal';
+COMMENT ON COLUMN data_review_invitations.pin_hash IS 'PIN (Hash) – Argon2id; der PIN selbst wird nie gespeichert';
+COMMENT ON COLUMN data_review_invitations.pin_expires_at IS 'PIN gültig bis – danach verfallen';
+COMMENT ON COLUMN data_review_invitations.failed_attempts IS 'Fehlversuche – Sperre nach 5';
+COMMENT ON COLUMN data_review_invitations.sent_at IS 'Versendet – Zeitpunkt';
+COMMENT ON COLUMN data_review_invitations.redeemed_at IS 'Eingelöst – PIN einmalig verwendet';
+COMMENT ON COLUMN data_review_invitations.status IS 'Status – Stand der Prüfung';
+COMMENT ON COLUMN data_review_invitations.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN data_review_invitations.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN data_review_invitations.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN data_review_invitations.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN data_review_invitations.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN data_review_invitations.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN data_review_invitations.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
+COMMENT ON TABLE data_corrections IS 'Korrekturvorschlag einer Verwaltung je Feld; die Redaktion übernimmt oder lehnt ab – Eingabe in der Prüfsitzung; Übernahme in school_communities, municipalities oder school_sites';
+COMMENT ON COLUMN data_corrections.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN data_corrections.invitation_id IS 'Einladung – Verweis';
+COMMENT ON COLUMN data_corrections.target_table IS 'Datensatzart – betroffene Tabelle';
+COMMENT ON COLUMN data_corrections.target_id IS 'Datensatz';
+COMMENT ON COLUMN data_corrections.field_name IS 'Feld – z. B. «street», «school_level», «is_active»';
+COMMENT ON COLUMN data_corrections.old_value IS 'Bisher – Wert zum Zeitpunkt der Prüfung';
+COMMENT ON COLUMN data_corrections.new_value IS 'Neu – Vorschlag der Verwaltung';
+COMMENT ON COLUMN data_corrections.comment IS 'Bemerkung – der Verwaltung';
+COMMENT ON COLUMN data_corrections.status IS 'Status – Entscheid Redaktion';
+COMMENT ON COLUMN data_corrections.reviewed_at IS 'Geprüft am – Redaktion';
+COMMENT ON COLUMN data_corrections.reviewed_by_id IS 'Geprüft von – Redaktion';
+COMMENT ON COLUMN data_corrections.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN data_corrections.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN data_corrections.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN data_corrections.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN data_corrections.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN data_corrections.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN data_corrections.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
 COMMENT ON TABLE publishers IS 'Herausgeber mit eigener Rechtssammlung (Bund, Kanton, Bildungsrat, Gemeinde, Schulgemeinde) – Erfassung in der Evaluation bzw. Redaktion; Steckbrief einer Organisation';
 COMMENT ON COLUMN publishers.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN publishers.owner_platform_id IS 'Gepflegt von – Plattform-ID der Organisation mit eigener Redaktion';

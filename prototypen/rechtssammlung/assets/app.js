@@ -156,6 +156,7 @@
         h("li", null, eintrag(link("gemeinden"), "Alle 160 Gemeinden", r.art === "gemeinden")),
         h("li", null, eintrag(link("schulgemeinden"), "Alle " + D.schulgemeinden.length + " Schulgemeinden", r.art === "schulgemeinden")),
         h("li", null, eintrag(link("standorte"), "Schulstandorte (Karte)", r.art === "standorte", h("span", { cls: "anz", text: String(SV.verwaltungen.length) }), "Schulträger, Verwaltungen und Schulanlagen mit Lage")),
+        h("li", null, eintrag(link("beta"), "Angaben prüfen (Beta, PIN)", r.art === "beta", null, "Verwaltungen bestätigen oder korrigieren ihre Angaben mit einmaligem PIN – Simulation")),
         h("li", null, eintrag(link("matrix"), "Struktur-Matrix", r.art === "matrix")),
         h("li", null, eintrag(link("pflicht"), "Pflichtkatalog Schulgemeinde", r.art === "pflicht", h("span", { cls: "anz", text: String(D.pflichtkatalog.kategorien.reduce(function (n, k) { return n + k.eintraege.length; }, 0)) }))),
         h("li", null, eintrag(link("grundlagen"), "Leitfaden Rechtssammlung (Gemeindeamt)", r.art === "grundlagen")),
@@ -829,9 +830,11 @@
       h("p", { cls: "meldung info" }, "Die Rechtssammlung von ", name, " ist noch nicht erfasst. Nächster Schritt: Website und CMS ermitteln, dann Menüpfad, Rubriken und Dateien aufnehmen."),
       fakten([["Status", status(false)], ["Website", g.website ? extern(g.website, g.website) : "noch nicht ermittelt"],
         ["Schulträger Primarstufe", g.schultraeger ? g.schultraeger.primar : ""], ["Schulträger Sekundarstufe", g.schultraeger ? g.schultraeger.sek : ""],
-        ["Vermerk", (g.einheit || "") + (g.einheit_sicher ? "" : " – hergeleitet, Mitglieder der Schulgemeinden noch zu prüfen") + (g.einheit_quelle ? " (Quelle: " + g.einheit_quelle + ")" : "") + (g.kuerzel_vorher ? " – früher erfasst als " + g.kuerzel_vorher + ", zu prüfen" : "")],
+        ["Vermerk", (g.einheit || "") + (g.einheit_sicher ? "" : " – hergeleitet, Mitglieder der Schulgemeinden noch zu prüfen") + (g.einheit_quelle ? " (Quelle: " + g.einheit_quelle + ")" : "") + (g.kuerzel_verzeichnis ? " – Schulverzeichnis ergibt " + g.kuerzel_verzeichnis + ", zu prüfen" : "")],
         ["Schulverwaltung", (g.verwaltungen || []).length ? g.verwaltungen.map(function (id) { var v = VW[id]; return v ? h("div", { text: [v.behoerde, v.kontaktstelle, (v.adresse || []).join(", "), v.telefon].filter(Boolean).join(" · ") }) : null; }) : "über die Schulgemeinde"]]),
       h("p", null, h("a", { cls: "btn", href: link("standorte", name), text: "Schulstandorte auf der Karte" })),
+      g.traeger_karte ? [h("h2", { text: "Schulträger laut Schulträgerkarte" }), traegerKarte(g.traeger_karte)] : null,
+      g.kuerzel !== "PG" ? linksKarte("Links zum Schulträger", g.links) : null,
       schulen.length ? [h("h2", { text: "Erfasste Schulgemeinden mit " + name }),
         h("ul", null, schulen.map(function (o) { return h("li", null, h("a", { href: link("org", o.id), text: o.name })); }))] : null];
   }
@@ -1007,8 +1010,7 @@
   var GEM_BEZ = {}; D.gemeinden.forEach(function (g) { GEM_BEZ[g.gemeinde] = g.bezirk; });
   var SG_BEZ = {}; D.schulgemeinden.forEach(function (x) { SG_BEZ[x.name] = x.bezirk; });
   var ST_KAT = [["Verwaltung", "Schulverwaltung / Schulbehörde", "--brand-violet", 7], ["Volksschule", "Schulhaus Volksschule", "--info", 5], ["Kindergarten", "Kindergarten (nur Stadt Zürich)", "--success", 4],
-    ["Volksschule (zu prüfen)", "Schulareal, Zuordnung zu prüfen", "--warning", 5], ["Sonderschule", "Sonderschule / Heilpädagogische Schule", "--destructive", 5], ["Privatschule", "Privatschule (Name)", "--muted-foreground", 5],
-    ["Sekundarstufe II / Tertiär", "Sekundarstufe II / Tertiär (zur Orientierung)", "--brand-neutral", 4]];
+    ["Volksschule (zu prüfen)", "Schulareal, Zuordnung zu prüfen", "--warning", 5], ["Sonderschule", "Sonderschule (Liste Volksschulamt)", "--destructive", 5], ["Sekundarstufe II / Tertiär", "Sekundarstufe II (Geodatensatz Kanton)", "--brand-neutral", 4]];
   function cssVar(v) { try { return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || "#0272ad"; } catch (e) { return "#0272ad"; } }
   function vwBezirk(v) { var t = v.traeger || {}; return t.art === "SG" ? SG_BEZ[t.name] : GEM_BEZ[t.name] || GEM_BEZ[(t.gemeinden || [])[0]] || GEM_BEZ[v.gemeinde_adresse] || ""; }
   function vwTraegerLink(v) {
@@ -1024,25 +1026,47 @@
     var g = D.gemeinden.filter(function (x) { return x.gemeinde === o.sitz || x.gemeinde === o.sitz + " (ZH)"; })[0];
     return g ? g.gemeinde : null;
   }
-  function geoAdminLink(lat, lon) { return "https://map.geo.admin.ch/#/map?lang=de&center=" + lon + "," + lat + "&z=11&crosshair=marker&swisssearch=" + lat + "," + lon; }
+  function geoAdminLink(x) { return x.map_geo_admin || null; }   // LV95-Koordinaten, im Build berechnet
   function stufeText(x) { return { P: "Primarstufe", S: "Sekundarstufe", V: "Volksschule" }[x] || ""; }
   function standortKarte(vw, an, hoehe) {
     var box = h("div", { cls: "karte-map", style: "height:" + (hoehe || 600) + "px", role: "region", "aria-label": "Karte der Schulstandorte" });
     if (typeof L === "undefined") { box.appendChild(h("p", { cls: "meldung warnung", text: "Kartenbibliothek nicht geladen – Standorte siehe Liste." })); return box; }
     setTimeout(function () {
-      var map = L.map(box, { scrollWheelZoom: false, zoomSnap: 0.25 }); box._karte = map;
+      var map = L.map(box, { scrollWheelZoom: false, zoomSnap: 0.25 }).setView([47.42, 8.65], 10); box._karte = map;
       L.tileLayer("https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-grau/default/current/3857/{z}/{x}/{y}.jpeg",
         { maxZoom: 18, attribution: '© <a href="https://www.swisstopo.admin.ch/" target="_blank" rel="noopener">swisstopo</a> · Daten: Bildungsdirektion ZH, Stadt Zürich' }).addTo(map);
-      var punkte = [];
+      var punkte = [], STK = SV.schultraegerkarte;
+      if (STK && STK.flaechen) {
+        var hl = (typeof standortKarte.markiert === "object" && standortKarte.markiert) || [];
+        var ebenen = {};
+        [["P", "Primarschulträger (Gebiete)", "--info"], ["S", "Sekundarschulträger (Gebiete)", "--brand-violet"]].forEach(function (z) {
+          var fc = { type: "FeatureCollection", features: STK.flaechen[z[0]].map(function (f) { return { type: "Feature", properties: { code: f.code, name: f.name }, geometry: { type: f.typ, coordinates: f.koord } }; }) };
+          var t = {}; (STK.traeger || []).forEach(function (x) { if (x.stufe === z[0]) t[x.code] = x; });
+          ebenen[z[1]] = L.geoJSON(fc, {
+            style: function (f) { var an = hl.indexOf(f.properties.code) >= 0; return { color: cssVar(z[2]), weight: an ? 3 : 1, fillOpacity: an ? 0.25 : 0.04, opacity: an ? 1 : 0.6 }; },
+            onEachFeature: function (f, lay) { var x = t[f.properties.code] || {}; lay.bindTooltip((x.bezeichnung || f.properties.name) + " · Code " + f.properties.code + (x.anschlussvertrag ? " · " + x.anschlussvertrag : ""), { sticky: true }); }
+          });
+        });
+        var stufen = (STK.traeger || []).filter(function (x) { return hl.indexOf(x.code) >= 0; }).map(function (x) { return x.stufe; });
+        var zeigeStufe = !hl.length ? null : stufen.indexOf("P") >= 0 ? "P" : stufen.length ? "S" : null;
+        if (zeigeStufe) {
+          var eb = ebenen[zeigeStufe === "S" ? "Sekundarschulträger (Gebiete)" : "Primarschulträger (Gebiete)"].addTo(map);
+          eb.eachLayer(function (lay) { if (hl.indexOf(lay.feature.properties.code) >= 0) { var b = lay.getBounds(); punkte.push([b.getSouth(), b.getWest()], [b.getNorth(), b.getEast()]); } });
+        }
+        L.control.layers(null, ebenen, { collapsed: false }).addTo(map);
+      }
       function marke(lat, lon, kat, inhalt) {
         var k = ST_KAT.filter(function (x) { return x[0] === kat; })[0] || ST_KAT[1];
         var m = L.circleMarker([lat, lon], { radius: k[3], color: kat === "Verwaltung" ? "#ffffff" : cssVar(k[2]), weight: kat === "Verwaltung" ? 2 : 1, fillColor: cssVar(k[2]), fillOpacity: kat === "Verwaltung" ? 0.95 : 0.7 });
         m.bindPopup(inhalt); m.bindTooltip(inhalt.getAttribute("data-titel")); m.addTo(map); punkte.push([lat, lon]);
       }
       an.forEach(function (a) {
-        marke(a.lat, a.lon, a.kategorie, h("div", { "data-titel": a.name }, h("strong", { text: a.name }), h("div", { cls: "small", text: a.kategorie + (a.einheit ? " · " + a.einheit : "") }),
+        if (!a.lat) return;
+        marke(a.lat, a.lon, a.kategorie, h("div", { "data-titel": a.name }, h("strong", { text: a.name }), h("div", { cls: "small", text: a.kategorie + (a.einheit ? " · " + a.einheit : "") + (a.sonderschultyp ? " · " + a.sonderschultyp : "") + (a.schultyp ? " · " + a.schultyp + (a.standort_typ ? " (" + a.standort_typ + ")" : "") : "") }),
+          a.stufen_text ? h("div", { cls: "small", text: "Stufen: " + a.stufen_text }) : null,
+          a.lage_zu_pruefen ? h("div", { cls: "small", text: "Lage zu prüfen (" + (a.koordinaten_quelle || "keine Adresse") + ")" }) : null,
           a.adresse && a.adresse.length ? h("div", { cls: "small", text: a.adresse.join(", ") }) : null,
-          h("div", { cls: "small muted", text: "Schulträger: " + traegerText(a) }),
+          a.traeger ? h("div", { cls: "small muted", text: "Schulträger: " + traegerText(a) }) : null,
           h("div", { cls: "small muted", text: "Quelle: " + a.quelle }), a.website ? h("div", { cls: "small" }, extern(a.website, "Website ↗")) : null));
       });
       vw.forEach(function (v) {
@@ -1056,6 +1080,13 @@
       rahmen(); setTimeout(rahmen, 150);
     }, 0);
     return box;
+  }
+  function abweichungenKarte() {
+    var S = SV.schultraegerkarte; if (!S || !S.abweichungen.length) return null;
+    return h("details", { cls: "karte" }, h("summary", null, h("strong", { text: "Abgleich Schulträgerkarte ↔ Schulverzeichnis: " + S.abweichungen.length + " Abweichungen – zu prüfen" })),
+      h("p", { cls: "small", text: "Massgebend für die Gemeindeart ist die Schulträgerkarte des Gemeindeamts. Bei Zweckverband und Anschlussvertrag führt die Gemeinde die Sekundarstufe nicht selbst; ob sie trotzdem als Einheitsgemeinde (EG) gelten soll, ist zu prüfen." }),
+      h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" }, h("thead", null, h("tr", null, ["Gemeinde", "Schulverzeichnis", "Schulträgerkarte", "Grund"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+        h("tbody", null, S.abweichungen.map(function (a) { return h("tr", null, h("td", { text: a.gemeinde }), h("td", null, artBadge(a.verzeichnis)), h("td", null, artBadge(a.karte)), h("td", { text: a.grund })); })))));
   }
   function standorteSeite(filter) {
     var Fsuche = h("input", { type: "search", placeholder: "Gemeinde, Schule, Adresse oder VSA-Nr.", "aria-label": "Standorte durchsuchen" });
@@ -1092,7 +1123,7 @@
             h("td", null, (v.adresse || []).join(", "), v.adresse_hinweis ? h("div", { cls: "small muted", text: v.adresse_hinweis }) : null),
             h("td", { cls: "small" }, v.telefon ? h("div", { text: v.telefon }) : null, v.email ? h("div", null, h("a", { href: "mailto:" + v.email, text: v.email })) : null,
               (v.websites || []).slice(0, 2).map(function (w) { return h("div", null, extern(w, w.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "") + " ↗")); })),
-            h("td", { cls: "small" }, v.lat ? [extern(geoAdminLink(v.lat, v.lon), "Karte ↗"), h("div", { cls: "muted", text: v.koordinaten_quelle + (v.egid ? " · EGID " + v.egid : "") + (v.abweichung_m > 200 ? " · Verzeichnis-Punkt " + v.abweichung_m + " m daneben" : "") })] : "–"));
+            h("td", { cls: "small" }, v.lat ? [extern(geoAdminLink(v), "map.geo.admin ↗"), h("div", { cls: "muted", text: v.koordinaten_quelle + (v.egid ? " · EGID " + v.egid : "") + (v.abweichung_m > 200 ? " · Verzeichnis-Punkt " + v.abweichung_m + " m daneben" : "") })] : "–"));
         })))));
       huelle.appendChild(h("details", { cls: "karte" }, h("summary", null, h("strong", { text: "Schulanlagen (" + an.length + ")" })),
         h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
@@ -1100,9 +1131,11 @@
           h("tbody", null, an.map(function (a) {
             return h("tr", null, h("td", null, h("strong", { text: a.name }), a.adresse && a.adresse.length ? h("div", { cls: "small muted", text: a.adresse.join(", ") }) : null),
               h("td", { text: a.kategorie }), h("td", { text: a.gemeinde || "–" }), h("td", { text: traegerText(a) }), h("td", { cls: "small muted", text: a.quelle }),
-              h("td", { cls: "small" }, extern(geoAdminLink(a.lat, a.lon), "Karte ↗")));
+              h("td", { cls: "small" }, a.lat ? extern(geoAdminLink(a), "map.geo.admin ↗") : h("span", { cls: "muted", text: "Lage zu prüfen" })));
           }))))));
     }
+    var sgF = D.schulgemeinden.filter(function (x) { return x.name === filter; })[0], gF = D.gemeinden.filter(function (x) { return x.gemeinde === filter; })[0];
+    standortKarte.markiert = sgF ? (sgF.traeger_codes || []) : gF && gF.traeger_karte ? [].concat((gF.traeger_karte.P || []).concat(gF.traeger_karte.S || []).map(function (t) { return t.code; })) : [];
     [Fsuche, Fbez].forEach(function (el) { el.addEventListener("input", zeigen); });
     zeigen();
     var M = SV.meta, MA = SV.meta_anlagen, z = SV.zuordnung || {};
@@ -1116,8 +1149,142 @@
           h("li", null, h("strong", { text: "Schulanlagen: " }), (MA.quellen || []).join("; ") + ". " + (MA.hinweis || "")),
           h("li", null, h("strong", { text: "Abweichender Verwaltungsstandort: " }), "Jede Behörde kann mehrere Standorte haben (Verwaltung, Sekretariat, Schulhaus). Die Kontaktstelle zeigt, ob die Adresse eine Schulverwaltung, ein Schulhaus oder die Gemeindeverwaltung ist."),
           h("li", null, h("strong", { text: "Personendaten: " }), "Namen, persönliche E-Mail-Adressen und Wohnadressen von Kontaktpersonen sind nicht übernommen."),
-          h("li", null, h("strong", { text: "Noch nicht enthalten: " }), "Privatschulen (öffentliches Register, PDF), Sonderschulen ausserhalb der Stadt Zürich vollständig, Schulen der Sekundarstufe II (Geodatensatz Schulen SekII)."))),
-      h("div", { cls: "filterzeile" }, Fsuche, Fbez), katBox, huelle];
+          h("li", null, h("strong", { text: "Schulträgergebiete: " }), extern(SV.schultraegerkarte ? SV.schultraegerkarte.meta.quelle : "#", "Schulträgerkarte Gemeindeamt ↗"), " – Primar- und Sekundarschulträger mit Code, Schulgebiet, Anschlussverträgen und Zweckverbänden; Gebiete als Ebene zuschaltbar (Geometrie Stand 1.1.2023)."),
+          h("li", null, h("strong", { text: "Ausgeblendet: " }), "Privatschulen (Entscheid 22.11.2026). Sonderschulen ohne Adresse in der Liste des Volksschulamts sind über den Namen verortet – sonst «Lage zu prüfen»."))),
+      abweichungenKarte(), h("div", { cls: "filterzeile" }, Fsuche, Fbez), katBox, huelle];
+  }
+
+  function linksKarte(titel, l) {
+    if (!l) return null;
+    var namen = { codex_karte: "Codex: Standorte und Schulträgergebiet (stabiler Link)", schultraegerkarte: "Schulträgerkarte Gemeindeamt (ohne Direktauswahl)", schulverzeichnis: "Schulverzeichnis Bildungsdirektion", website: "Website", map_geo_admin: "Verwaltung auf map.geo.admin.ch" };
+    return h("section", { cls: "karte" }, h("h2", { text: titel }),
+      h("ul", { cls: "small" }, Object.keys(namen).filter(function (k) { return l[k]; }).map(function (k) {
+        var btn = h("button", { type: "button", cls: "btn klein", text: "Kopieren" });
+        btn.addEventListener("click", function () { try { navigator.clipboard.writeText(l[k]); btn.textContent = "Kopiert"; } catch (e) { btn.textContent = "nicht möglich"; } });
+        return h("li", null, extern(l[k], namen[k] + " ↗"), " ", btn);
+      })),
+      h("p", { cls: "small muted", text: "Die Schulträgerkarte des Gemeindeamts kennt keine Direktlinks je Schulträger; der Codex-Link zeigt das Gebiet aus derselben Quelle. Links sind beim Schulträger gespeichert (API-Feld links)." }));
+  }
+  function traegerKarte(info) {
+    if (!info || (!info.P && !info.S)) return null;
+    function zeile(st, t) { return h("tr", null, h("th", { scope: "row", text: st }), h("td", { text: t.code }), h("td", { text: t.name }), h("td", { text: t.typ + (t.anschlussvertrag ? " · " + t.anschlussvertrag : "") }), h("td", { cls: "small", text: t.schulgebiet })); }
+    return h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" }, h("thead", null, h("tr", null, ["Stufe", "Code", "Schulträger", "Art", "Schulgebiet"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+      h("tbody", null, (info.P || []).map(function (t) { return zeile("Primar", t); }), (info.S || []).map(function (t) { return zeile("Sekundar", t); }))));
+  }
+  // ------------------------------------------------------------------ Beta: Angaben prüfen mit einmaligem PIN (Simulation, nur in diesem Browser)
+  var BETA_KEY = "eduksx-codex-beta";
+  function betaLesen() { try { return JSON.parse(localStorage.getItem(BETA_KEY) || "{}") || {}; } catch (e) { return {}; } }
+  function betaSchreiben(d) { try { localStorage.setItem(BETA_KEY, JSON.stringify(d)); } catch (e) { /* Speicher nicht verfügbar */ } }
+  function betaTraeger() {
+    var l = D.schulgemeinden.map(function (x) { return { key: "sg:" + x.name, name: x.name, art: x.kuerzel, verw: x.verwaltungen || [], mitglieder: x.mitglieder, links: x.links }; });
+    D.gemeinden.filter(function (g) { return g.kuerzel !== "PG"; }).forEach(function (g) { l.push({ key: "eg:" + g.gemeinde, name: g.gemeinde, art: g.kuerzel, verw: g.verwaltungen || [], mitglieder: null, links: g.links }); });
+    l.forEach(function (t) { var v = t.verw.map(function (id) { return VW[id]; }).filter(Boolean); t.email = (v.filter(function (x) { return x.email; })[0] || {}).email || null; t.vw = v; });
+    return l.sort(function (a, b) { return a.name.localeCompare(b.name, "de"); });
+  }
+  function demoPin(key) {   // nur Prototyp: abgeleiteter Demo-PIN; produktiv zufällig, nur als Hash gespeichert
+    var hsh = 2166136261; for (var i = 0; i < key.length; i++) { hsh ^= key.charCodeAt(i); hsh = Math.imul(hsh, 16777619) >>> 0; }
+    var z = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", out = "", x = hsh;
+    for (var j = 0; j < 12; j++) { out += z[x % z.length]; x = Math.imul(x ^ (x >>> 13), 2654435761) >>> 0; if (j === 3 || j === 7) out += "-"; }
+    return out;
+  }
+  function betaSeite() {
+    var T = betaTraeger(), PIN = {}; T.forEach(function (t) { PIN[demoPin(t.key)] = t; });
+    var pinFeld = h("input", { type: "text", placeholder: "z. B. ABCD-EFGH-JKLM", "aria-label": "PIN", autocomplete: "one-time-code", style: "max-width:16rem" });
+    var meld = h("p", { cls: "small", role: "status" }), formular = h("div");
+    var knopf = h("button", { type: "button", cls: "btn primaer", text: "PIN einlösen" });
+    knopf.addEventListener("click", function () {
+      var pin = pinFeld.value.trim().toUpperCase(), t = PIN[pin], st = betaLesen();
+      formular.textContent = "";
+      if (!t) { meld.textContent = "PIN unbekannt. Bitte Eingabe prüfen (Gross-/Kleinschreibung egal)."; return; }
+      if (st[t.key] && st[t.key].eingereicht) { meld.textContent = "Dieser PIN wurde bereits eingelöst (" + st[t.key].eingereicht + "). Für eine weitere Prüfung bitte die Redaktion kontaktieren."; return; }
+      meld.textContent = "PIN gültig – Angaben von " + t.name + ". Der PIN ist nach dem Einreichen verbraucht.";
+      formular.appendChild(betaFormular(t, function () { tabelle(); }));
+    });
+    var hulle = h("div");
+    function tabelle() {
+      var st = betaLesen(); hulle.textContent = "";
+      var offen = T.filter(function (t) { return !st[t.key]; }).length;
+      hulle.appendChild(h("p", { cls: "small", text: T.length + " Schulträger · " + T.filter(function (t) { return !t.email; }).length + " ohne Funktionsadresse (zu prüfen) · " + (T.length - offen) + " eingereicht" }));
+      var csvBtn = h("button", { type: "button", cls: "btn", text: "Versandliste als CSV (ohne PIN)" });
+      csvBtn.addEventListener("click", function () {
+        var z = [["schultraeger", "art", "funktionsadresse", "status"]].concat(T.map(function (t) { return [t.name, t.art, t.email || "", st[t.key] ? (st[t.key].bestaetigt ? "bestätigt" : "Korrekturen") : "offen"]; }));
+        var a = h("a", { href: "data:text/csv;charset=utf-8," + encodeURIComponent("\ufeff" + z.map(function (r) { return r.map(function (x) { return '"' + String(x).replace(/"/g, '""') + '"'; }).join(";"); }).join("\n")), download: "versandliste-beta.csv" });
+        document.body.appendChild(a); a.click(); a.remove();
+      });
+      var reset = h("button", { type: "button", cls: "btn", text: "Demo zurücksetzen" });
+      reset.addEventListener("click", function () { betaSchreiben({}); tabelle(); });
+      hulle.appendChild(h("p", null, csvBtn, " ", reset));
+      hulle.appendChild(h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+        h("thead", null, h("tr", null, ["Schulträger", "Art", "Funktionsadresse", "Status", "Demo-PIN"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+        h("tbody", null, T.map(function (t) {
+          var e = st[t.key], pinZelle = h("td", { cls: "nowrap small" });
+          var zeig = h("button", { type: "button", cls: "btn klein", text: "anzeigen" });
+          zeig.addEventListener("click", function () { pinZelle.textContent = demoPin(t.key); });
+          pinZelle.appendChild(zeig);
+          return h("tr", null, h("td", null, h("a", { href: t.key.indexOf("sg:") === 0 ? link("sg", t.name) : link("gemeinde", GEM_BEZ[t.name] || "", t.name), text: t.name })), h("td", null, artBadge(t.art)),
+            h("td", { cls: "small", text: t.email || "fehlt – zu prüfen" }),
+            h("td", null, !e ? badge("neutral", "○", "offen") : e.bestaetigt ? badge("erfolg", "✓", "bestätigt") : badge("warnung", "!", e.korrekturen.length + " Korrekturen")), pinZelle);
+        })))));
+      var alle = []; Object.keys(st).forEach(function (k) { (st[k].korrekturen || []).forEach(function (c, i) { alle.push([k, i, c, st[k]]); }); });
+      hulle.appendChild(h("h3", { text: "Korrekturvorschläge (" + alle.length + ")" }));
+      if (!alle.length) hulle.appendChild(h("p", { cls: "small muted", text: "Noch keine Korrekturen eingereicht." }));
+      else hulle.appendChild(h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" },
+        h("thead", null, h("tr", null, ["Schulträger", "Bereich", "Feld", "Bisher", "Neu", "Entscheid"].map(function (x) { return h("th", { scope: "col", text: x }); }))),
+        h("tbody", null, alle.map(function (z) {
+          var c = z[2], zelle = h("td");
+          function setz(w) { var d = betaLesen(); d[z[0]].korrekturen[z[1]].entscheid = w; betaSchreiben(d); tabelle(); }
+          if (c.entscheid) zelle.appendChild(c.entscheid === "übernommen" ? badge("erfolg", "✓", "übernommen") : badge("neutral", "✗", "abgelehnt"));
+          else { var a1 = h("button", { type: "button", cls: "btn klein", text: "Übernehmen" }), a2 = h("button", { type: "button", cls: "btn klein", text: "Ablehnen" });
+            a1.addEventListener("click", function () { setz("übernommen"); }); a2.addEventListener("click", function () { setz("abgelehnt"); }); zelle.appendChild(a1); zelle.appendChild(document.createTextNode(" ")); zelle.appendChild(a2); }
+          return h("tr", null, h("td", { text: z[0].slice(3) }), h("td", { text: c.bereich }), h("td", { text: c.feld }), h("td", { cls: "small", text: c.alt || "–" }), h("td", { cls: "small", text: c.neu || "–" }), zelle);
+        })))));
+    }
+    tabelle();
+    return [kopf("Angaben prüfen (Beta)", "Zum offiziellen Beta-Release erhält jede Schulverwaltung einen einmaligen PIN an ihre Funktionsadresse und kann die Angaben ihres Schulträgers bestätigen oder korrigieren. Simulation – im Prototyp wird nichts versendet und nur in diesem Browser gespeichert."),
+      h("section", { cls: "karte" }, h("h2", { text: "Ablauf" }),
+        h("ol", { cls: "small" },
+          h("li", null, "Redaktion startet die Kampagne; je Schulträger wird ein zufälliger PIN erzeugt und nur als Hash gespeichert."),
+          h("li", null, "Versand an die Funktionsadresse aus dem Schulverzeichnis (Kanal E-Mail oder Brief – ", h("strong", { text: "zu prüfen" }), "). Link und PIN getrennt, der PIN nie in der Adresse."),
+          h("li", null, "Die Verwaltung löst den PIN einmal ein, prüft Verwaltungsstandort, Kontakt, Schulhäuser (mit Stufe), Mitgliedgemeinden und Links und reicht ein."),
+          h("li", null, "Die Redaktion übernimmt oder lehnt jede Korrektur ab; übernommene Werte erhalten die Quelle «Angabe der Verwaltung» und das Datum."))),
+      h("section", { cls: "karte" }, h("h2", { text: "Für Verwaltungen: PIN eingeben" }), h("div", { cls: "filterzeile" }, pinFeld, knopf), meld, formular),
+      h("details", { cls: "karte" }, h("summary", null, h("strong", { text: "Redaktion: Versandliste, Status und Korrekturen" })), hulle)];
+  }
+  function betaFormular(t, fertig) {
+    var felder = [], anl = SV.anlagen.filter(function (a) { return a.traeger === t.name || a.traeger_alt === t.name || (t.key.indexOf("eg:") === 0 && a.gemeinde === t.name && a.traeger === t.name); });
+    function feld(bereich, name, wert) { var i = h("input", { type: "text", value: wert || "", "aria-label": bereich + " – " + name }); felder.push({ bereich: bereich, feld: name, alt: wert || "", el: i }); return h("label", { cls: "feld" }, name + " ", i); }
+    var teile = [h("h3", { text: t.name + " (" + t.art + ")" })];
+    t.vw.forEach(function (v, i) {
+      var b = "Verwaltung " + (i + 1) + (v.vsa_nr ? " · VSA-Nr. " + v.vsa_nr : "");
+      teile.push(h("fieldset", { cls: "karte" }, h("legend", { text: b }),
+        feld(b, "Behörde", v.behoerde), feld(b, "Kontaktstelle", v.kontaktstelle), feld(b, "Strasse", (v.adresse || [])[0]), feld(b, "PLZ Ort", (v.adresse || [])[1]),
+        feld(b, "Telefon", v.telefon), feld(b, "E-Mail (Funktionsadresse)", v.email), feld(b, "Website", (v.websites || [])[0])));
+    });
+    if (!t.vw.length) teile.push(h("p", { cls: "meldung warnung", text: "Keine Verwaltung im Schulverzeichnis gefunden – bitte unten unter Bemerkung angeben." }));
+    var zeilen = anl.map(function (a) {
+      var ok = h("input", { type: "checkbox", "aria-label": a.name + " gehört zu uns" }); ok.checked = true;
+      var st = h("select", { "aria-label": "Stufe " + a.name }, [["", "Stufe wählen"], ["P", "Primar (inkl. KG)"], ["S", "Sekundar"], ["V", "beide"]].map(function (x) { var o = h("option", { value: x[0], text: x[1] }); if ((a.stufe || "") === x[0]) o.selected = true; return o; }));
+      felder.push({ bereich: "Schulanlage " + a.name, feld: "gehört zum Schulträger", alt: "ja", el: ok, bool: true }, { bereich: "Schulanlage " + a.name, feld: "Stufe", alt: a.stufe || "", el: st });
+      return h("tr", null, h("td", { text: a.name }), h("td", { text: a.gemeinde || "" }), h("td", null, ok), h("td", null, st));
+    });
+    teile.push(h("fieldset", { cls: "karte" }, h("legend", { text: "Schulanlagen (" + anl.length + ")" }),
+      anl.length ? h("div", { cls: "tabelle-wrap" }, h("table", { cls: "kompakt" }, h("thead", null, h("tr", null, ["Schulanlage", "Gemeinde", "Gehört zu uns", "Stufe"].map(function (x) { return h("th", { scope: "col", text: x }); }))), h("tbody", null, zeilen))) : h("p", { cls: "small muted", text: "Keine Schulanlagen zugeordnet." }),
+      (function () { var ta = h("textarea", { rows: "3", placeholder: "Fehlende Schulhäuser: Name, Adresse, Stufe – je Zeile", "aria-label": "Fehlende Schulhäuser" }); felder.push({ bereich: "Schulanlagen", feld: "fehlende Schulhäuser", alt: "", el: ta }); return h("label", { cls: "feld" }, "Fehlende Schulhäuser ", ta); })()));
+    if (t.mitglieder) teile.push(h("fieldset", { cls: "karte" }, h("legend", { text: "Mitgliedgemeinden" }), h("p", { cls: "small", text: t.mitglieder.join(", ") }), feld("Mitgliedgemeinden", "Korrektur", "")));
+    var bem = h("textarea", { rows: "3", "aria-label": "Bemerkung" }); felder.push({ bereich: "Allgemein", feld: "Bemerkung", alt: "", el: bem });
+    teile.push(h("label", { cls: "feld" }, "Bemerkung ", bem));
+    var aus = h("p", { cls: "small", role: "status" });
+    function senden(alles) {
+      var korr = felder.map(function (f) { var neu = f.bool ? (f.el.checked ? "ja" : "nein") : f.el.value.trim(); return neu !== f.alt && !(f.alt === "" && neu === "") ? { bereich: f.bereich, feld: f.feld, alt: f.alt, neu: neu } : null; }).filter(Boolean);
+      if (alles && korr.length) { aus.textContent = "Es sind Änderungen erfasst – bitte «Korrekturen einreichen» wählen."; return; }
+      var d = betaLesen(); d[t.key] = { eingereicht: new Date().toLocaleString("de-CH"), bestaetigt: !korr.length, korrekturen: korr }; betaSchreiben(d);
+      aus.textContent = korr.length ? korr.length + " Korrekturen eingereicht – die Redaktion prüft sie. Der PIN ist verbraucht." : "Angaben bestätigt – vielen Dank. Der PIN ist verbraucht.";
+      fertig();
+    }
+    var b1 = h("button", { type: "button", cls: "btn", text: "Alles stimmt – bestätigen" }), b2 = h("button", { type: "button", cls: "btn primaer", text: "Korrekturen einreichen" });
+    b1.addEventListener("click", function () { senden(true); }); b2.addEventListener("click", function () { senden(false); });
+    teile.push(h("p", null, b1, " ", b2), aus);
+    return h("div", null, teile);
   }
 
   function sgAnsicht(name) {
@@ -1128,8 +1295,9 @@
       h("p", { cls: "meldung info", text: "Die Rechtssammlung dieser Schulgemeinde ist noch nicht erfasst." }),
       fakten([["Mitglieder", s.mitglieder.join(", ") + (s.mitglieder_sicher ? "" : " (nur Sitz bekannt – weitere Gemeinden zu prüfen)")], ["VSA-Nr.", s.vsa_nr || "–"],
         ["Schulverwaltung", (s.verwaltungen || []).map(function (id) { var v = VW[id]; return v ? h("div", { text: [v.kontaktstelle, (v.adresse || []).join(", "), v.telefon, v.email].filter(Boolean).join(" · ") }) : null; })],
-        ["Quelle", D.quelle_sg]]),
-      h("p", null, h("a", { cls: "btn", href: link("standorte", s.name), text: "Standorte auf der Karte" }))];
+        ["Schulträger-Code", (s.traeger_codes || []).join(", ") || "–"], ["Schulgebiet", s.schulgebiet || "–"],
+        ["Quelle", (s.mitglieder_quelle ? s.mitglieder_quelle + "; " : "") + D.quelle_sg]]),
+      h("p", null, h("a", { cls: "btn", href: link("standorte", s.name), text: "Standorte auf der Karte" })), linksKarte("Links zu dieser Schulgemeinde", s.links)];
   }
 
   // ------------------------------------------------------------------ Ansichten einer Organisation
@@ -1533,6 +1701,7 @@
     else if (r.art === "schulgemeinden") inhalt = alleSchulgemeinden();
     else if (r.art === "sg") inhalt = sgAnsicht(r.a);
     else if (r.art === "standorte") inhalt = standorteSeite(r.a);
+    else if (r.art === "beta") inhalt = betaSeite();
     else if (r.art === "matrix") inhalt = matrix(r.a);
     else if (r.art === "pflicht") inhalt = pflichtSeite(r.a);
     else if (r.art === "aenderungen") inhalt = aenderungenSeite(r.a, r.b);

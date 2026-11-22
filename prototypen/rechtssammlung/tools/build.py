@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.39.0 – Generator.
+"""EduKSX-Codex Prototyp 0.40.0 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -8,7 +8,7 @@ gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
   - docs/evaluation.md
 Aufruf:  python3 prototypen/rechtssammlung/tools/build.py
 """
-import json, csv, html, re
+import json, csv, html, re, urllib.parse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -976,9 +976,86 @@ def schulverzeichnis(gem, sgs):
     for x in sgs:
         x["verwaltungen"] = [o["id"] for o in eintraege if o["traeger"]["name"] == x["name"]]
         x["vsa_nr"] = next((o["vsa_nr"] for o in eintraege if o["traeger"]["name"] == x["name"] and o["vsa_nr"]), None)
+    zaehl = {}
+    for o in eintraege: zaehl[o["traeger"]["art"]] = zaehl.get(o["traeger"]["art"], 0) + 1
+    return {"meta": sv["meta"], "meta_anlagen": sa["meta"], "verwaltungen": eintraege, "anlagen": sa["anlagen"], "zuordnung": zaehl}
+
+# ---------------------------------------------------------------- Schulträgerkarte des Gemeindeamts (Auftrag 22.11.2026)
+# Primar- und Sekundarschulträger je politische Gemeinde mit Code (VSA-Nr. + Ziffer), Schulgebiet, Anschlussvertrag, Zweckverband.
+STK_JSON = ROOT / "data" / "schultraeger.json"
+PAGES_URL = "https://markuskeller8200.github.io/EduKSX-Prototyp/rechtssammlung/index.html"
+QUELLE_ZH_VERZ = "https://www.zh.ch/de/bildung/schulen.html"
+
+def _stk_norm(x):
+    x = x.replace(" (ZH)", "").replace("a.d.Thur", "an der Thur").replace("a.d.Th.", "an der Thur").replace("a.d.L.", "an der Limmat").replace("a.I.", "am Irchel").replace("a.A.", "am Albis")
+    return re.sub(r"[^a-zäöüéè]", "", x.lower())
+
+def schultraegerkarte(gem, sgs, standorte):
+    if not STK_JSON.exists(): return None
+    k = json.loads(STK_JSON.read_text(encoding="utf-8"))
+    idx = {_stk_norm(g["gemeinde"]): g for g in gem}
+    sgidx = {_stk_norm(x["name"]): x for x in sgs}
+    T = {(t["stufe"], t["code"]): t for t in k["traeger"]}
+    for z in k["zuordnung"]:
+        g = idx.get(_stk_norm(z["gemeinde"]))
+        if g: g.setdefault("bfs", z["bfs"])
+    def traeger_text(t, g):
+        if t["typ"] in ("Primarschulgemeinde", "Sekundarschulgemeinde", "Volksschulgemeinde"):
+            x = sgidx.get(_stk_norm(t["bezeichnung"])); return x["name"] if x else t["bezeichnung"]
+        if t["typ"] == "Zweckverband": return t["bezeichnung"] + " (Zweckverband)"
+        if t["anschlussvertrag"]: return t["anschlussvertrag"].replace("Politischen Gemeinde", "politischen Gemeinde")
+        return "Gemeinde" if t["bfs"] == g.get("bfs") else t["bezeichnung"]
+    abw = []
+    for g in gem:
+        zs = [z for z in k["zuordnung"] if z["bfs"] == g.get("bfs")]
+        info = {}
+        for stufe, feld in (("P", "primar"), ("S", "sekundar")):
+            ts = [T[(stufe, z["traeger_code"])] for z in zs if z[feld] and (stufe, z["traeger_code"]) in T]
+            if ts: info[stufe] = [{"code": t["code"], "typ": t["typ"], "name": traeger_text(t, g), "schulgebiet": t["schulgebiet"], "anschlussvertrag": t["anschlussvertrag"]} for t in ts]
+        g["traeger_karte"] = info
+        eigen = lambda st: any(t["typ"] == "Politische Gemeinde" and not t["anschlussvertrag"] and t["name"] == "Gemeinde" for t in info.get(st, []))
+        p, s_ = eigen("P"), eigen("S")
+        kz = "EG" if p and s_ else "EG-P" if p else "EG-S" if s_ else "PG"
+        form = [t["name"] for st in ("P", "S") for t in info.get(st, []) if t["typ"] == "Zweckverband" or t["anschlussvertrag"]]
+        if kz != g["kuerzel"]:
+            abw.append({"gemeinde": g["gemeinde"], "verzeichnis": g["kuerzel"], "karte": kz, "grund": "; ".join(form) or "–"})
+            g["kuerzel_verzeichnis"] = g["kuerzel"]
+        g["kuerzel"] = kz
+        g["einheit"] = {"EG": "Einheitsgemeinde", "EG-P": "Einheitsgemeinde Primarstufe", "EG-S": "Einheitsgemeinde Sekundarstufe", "PG": "keine Einheitsgemeinde"}[kz] + (" – " + "; ".join(form) if form else "")
+        g["einheit_sicher"], g["einheit_quelle"] = True, "Schulträgerkarte Gemeindeamt (Abgleich mit Schulverzeichnis Bildungsdirektion)"
+        if info.get("P"): g["schultraeger"]["primar"] = " / ".join(t["name"] for t in info["P"])
+        if info.get("S"): g["schultraeger"]["sek"] = " / ".join(t["name"] for t in info["S"])
+    # Schulgemeinden: Code, Schulgebiet, Mitglieder (amtlich)
+    for t in k["traeger"]:
+        x = sgidx.get(_stk_norm(t["bezeichnung"]))
+        if not x: continue
+        x.setdefault("traeger_codes", []).append(t["code"]) if t["code"] not in x.get("traeger_codes", []) else None
+        x["schulgebiet"] = t["schulgebiet"]
+    for x in sgs:
+        codes = set(x.get("traeger_codes", []))
+        mit = list(dict.fromkeys(next((g["gemeinde"] for g in gem if g.get("bfs") == z["bfs"]), z["gemeinde"]) for z in k["zuordnung"] if z["traeger_code"] in codes))
+        if mit:
+            x["mitglieder"], x["mitglieder_sicher"], x["mitglieder_quelle"] = mit, True, "Schulträgerkarte Gemeindeamt"
+            x["art"] = "KSG" if len(mit) > 1 else "SG"; x["kuerzel"] = f'{x["art"]}-{x["stufe"]}'
+    # Links je Schulträger (gespeichert beim Schulträger; API-Feld links)
+    vw = {v["id"]: v for v in (standorte or {}).get("verwaltungen", [])}
+    def links(name, verw_ids):
+        v = next((vw[i] for i in verw_ids if i in vw), None)
+        l = {"codex_karte": PAGES_URL + "#/standorte/" + urllib.parse.quote(name), "schultraegerkarte": k["meta"]["quelle"], "schulverzeichnis": QUELLE_ZH_VERZ}
+        if v and v.get("websites"): l["website"] = v["websites"][0]
+        if v and v.get("lat"): l["map_geo_admin"] = geo_admin_link(v["lat"], v["lon"])
+        return l
+    for x in sgs: x["links"] = links(x["name"], x.get("verwaltungen", []))
+    for g in gem:
+        if g["kuerzel"] != "PG": g["links"] = links(g["gemeinde"], g.get("verwaltungen", []))
+    return {"meta": k["meta"], "abweichungen": abw, "flaechen": k["flaechen"], "traeger": k["traeger"]}
+
+def anlagen_zuordnen(gem, sa):
+    GN = {g["gemeinde"]: g for g in gem}
     # Schulanlagen dem Schulträger zuordnen (Gemeinde + Stufe aus dem Namen) – hergeleitet
     for a in sa["anlagen"]:
         g = GN.get(a.get("gemeinde"))
+        if a["kategorie"] not in ("Volksschule", "Volksschule (zu prüfen)", "Kindergarten"): a["traeger"] = None; continue   # eigene Trägerschaft
         if not g: a["traeger"] = None; continue
         if a.get("schulkreis"): a["traeger"] = "Stadt Zürich – Schulkreis " + a["schulkreis"]; continue
         nm = lambda tr: g["gemeinde"] if tr == "Gemeinde" else tr
@@ -987,9 +1064,17 @@ def schulverzeichnis(gem, sgs):
         elif a.get("stufe") == "P" or p_ == s_: a["traeger"] = p_
         else: a["traeger"], a["traeger_alt"] = p_, s_          # Stufe aus dem Namen nicht erkennbar
         a["traeger_hergeleitet"] = True
-    zaehl = {}
-    for o in eintraege: zaehl[o["traeger"]["art"]] = zaehl.get(o["traeger"]["art"], 0) + 1
-    return {"meta": sv["meta"], "meta_anlagen": sa["meta"], "verwaltungen": eintraege, "anlagen": sa["anlagen"], "zuordnung": zaehl}
+
+def wgs_lv95(lat, lon):
+    """Näherungsformel swisstopo (WGS84 → LV95), Genauigkeit ~1 m."""
+    p, l = (lat * 3600 - 169028.66) / 10000, (lon * 3600 - 26782.5) / 10000
+    e = 2600072.37 + 211455.93 * l - 10938.51 * l * p - 0.36 * l * p * p - 44.54 * l ** 3
+    n = 1200147.07 + 308807.95 * p + 3745.25 * l * l + 76.63 * p * p - 194.56 * l * l * p + 119.79 * p ** 3
+    return round(e), round(n)
+
+def geo_admin_link(lat, lon):
+    e, n = wgs_lv95(lat, lon)
+    return f"https://map.geo.admin.ch/#/map?lang=de&center={e},{n}&z=10&crosshair=marker"
 
 # ---------------------------------------------------------------- Struktur-Matrix (Menü › Untermenü › Dokument × Organisation)
 def norm(t):
@@ -2789,6 +2874,13 @@ def render_daten(gemeinden):
     gem = [{**g, "org": pg.get(g["gemeinde"])} for g in gemeinden]
     einheit(gem, sgs)
     standorte = schulverzeichnis(gem, sgs)
+    stk = schultraegerkarte(gem, sgs, standorte)
+    if standorte:
+        standorte["anlagen"] = [a for a in standorte["anlagen"] if a["kategorie"] != "Privatschule"]
+        anlagen_zuordnen(gem, {"anlagen": standorte["anlagen"]})   # Privatschulen ausgeblendet (Entscheid 22.11.2026)
+        for x in standorte["verwaltungen"] + standorte["anlagen"]:
+            if x.get("lat"): x["map_geo_admin"] = geo_admin_link(x["lat"], x["lon"])
+        standorte["schultraegerkarte"] = stk
     for o in ORGS:
         if o["typ"] == "Politische Gemeinde":
             g = next((x for x in gem if x["gemeinde"] == o["sitz"]), None)
@@ -2843,7 +2935,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.39.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.40.0 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <link rel="stylesheet" href="assets/lib/leaflet/leaflet.css">
   <script src="assets/lib/leaflet/leaflet.js"></script>
   <script src="assets/daten.js"></script>
@@ -2853,7 +2945,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.39.0 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.40.0 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

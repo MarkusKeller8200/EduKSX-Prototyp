@@ -224,6 +224,145 @@ def stadt_zuerich():
                         "bfs_nr": 261, "gemeinde": "Zürich", "quelle": "Stadt Zürich, Open Data «Schulanlagen» (CC0)"})
     return out
 
+# ---------------------------------------------------------------- 5. Schulträgerkarte des Gemeindeamts (zh.ch/de/politik-staat/gemeinden.html)
+QUELLE_STK = "https://www.zh.ch/de/politik-staat/gemeinden.html"
+OBS = "https://api.observablehq.com/d/06f16eabd96b28b2.js?v=3"     # Datenmodul der eingebetteten Karte (Statistisches Amt)
+STK_FLAECHEN = {"P": "https://www.web.statistik.zh.ch/geodaten_visualisierungen/VIS_PS_Schulgemeinden_GEN_F_KTZH/VIS_PS_Schulgemeinden_GEN_F_KTZH_2023_01_01_union.json",
+                "S": "https://www.web.statistik.zh.ch/geodaten_visualisierungen/VIS_OS_Schulgemeinden_GEN_F_KTZH/VIS_OS_Schulgemeinden_GEN_F_KTZH_2023_01_01_union.json"}
+
+def _csv_anhang(js, name):
+    import gzip, csv, io
+    m = re.search(r'\["' + re.escape(name) + r'", \{url: "([^"]+)"', js)
+    with urllib.request.urlopen(m[1], timeout=90) as r: roh = r.read()
+    try: roh = gzip.decompress(roh)
+    except OSError: pass
+    return list(csv.DictReader(io.StringIO(roh.decode("utf-8"))))
+
+def _runden(geo, stellen=4):
+    def r(c): return [round(c[0], stellen), round(c[1], stellen)] if isinstance(c[0], (int, float)) else [r(x) for x in c]
+    out = []
+    for f in geo["features"]:
+        if f["properties"].get("ART_N") == "See": continue
+        g = f["geometry"]
+        out.append({"code": f["properties"]["GEBIET_C"], "name": f["properties"]["GEBIET_N"], "typ": g["type"], "koord": r(g["coordinates"])})
+    return out
+
+def schultraegerkarte():
+    js = hole(OBS, roh=True)
+    traeger = []
+    for stufe, datei in (("P", "fetchedDataPS-2.csv"), ("S", "fetchedDataOS-16@1.csv")):
+        for z in _csv_anhang(js, datei):
+            av = None if z["anschlussvertrag"] in ("NA", "") else z["anschlussvertrag"]
+            traeger.append({"stufe": stufe, "code": z["code"], "name": z["name"], "typ": z["typ"], "bezeichnung": z["gemeindename"], "bfs": int(z["bfs"]),
+                            "schulgebiet": z["schulgebiet"], "anschlussvertrag": av})
+    zuordnung = [{"bfs": int(z["bfs"]), "gemeinde": z["gemeinde_name"], "traeger_code": z["code"], "traeger": z["schulgemeinde_name"],
+                  "primar": z["primar"] == "1", "sekundar": z["sekundar"] == "1"} for z in _csv_anhang(js, "schulgemeinden@2.csv")]
+    flaechen = {k: _runden(hole(u)) for k, u in STK_FLAECHEN.items()}
+    meta = {"stand": HEUTE, "quelle": QUELLE_STK, "daten": OBS, "flaechen_stand": "1.1.2023 (Geometrie)",
+            "hinweis": "Schulträgerkarte des Gemeindeamts (Statistisches Amt): Primar- und Sekundarschulträger mit Code, Schulgebiet und Anschlussverträgen. Die Karte selbst hat keine Direktlinks je Schulträger."}
+    return {"meta": meta, "traeger": traeger, "zuordnung": zuordnung, "flaechen": flaechen}
+
+# ---------------------------------------------------------------- 6. Privatschulen, Sonderschulen, Sekundarstufe II
+QUELLE_PRIVAT = "https://www.zh.ch/content/dam/zhweb/bilder-dokumente/themen/bildung/schulen/spezielle-schulen/privatschulen_oeffentliches_register_plz.pdf"
+QUELLE_SONDER = "https://www.zh.ch/de/bildung/schulen/volksschule/volksschule-besonderer-bildungsbedarf/sonderschulen.html"
+QUELLE_SEK2 = "https://maps.zh.ch/wfs/OGDZHWFS"
+
+def adresse_suchen(text):
+    text = text[:120]
+    try: r = hole(f"{GEO}/SearchServer?" + urllib.parse.urlencode({"searchText": text, "type": "locations", "origins": "address", "limit": "1", "sr": "4326"}))["results"]
+    except Exception: return None
+    if not r: return None
+    a = r[0]["attrs"]; lab = re.sub("<[^>]+>", "", a["label"])
+    nr = re.search(r"\s(\d+\w?)\b", text)
+    if nr and nr[1] not in lab: return None
+    return {"lat": round(a["lat"], 6), "lon": round(a["lon"], 6), "egid": a["featureId"].split("_")[0], "adresse_amtlich": lab, "koordinaten_quelle": "Gebäudeadressverzeichnis (swisstopo)"}
+
+def name_suchen(name, ort):
+    try: return _name_suchen(name[:80], ort[:40])
+    except Exception: return {"koordinaten_quelle": "nicht gefunden – Lage zu prüfen", "lage_zu_pruefen": True}
+
+def _name_suchen(name, ort):
+    for q in (f"{name} {ort}", name):
+        r = hole(f"{GEO}/SearchServer?" + urllib.parse.urlencode({"searchText": q, "type": "locations", "origins": "gazetteer", "limit": "5", "sr": "4326"}))["results"]
+        for x in r:
+            lab = re.sub("<[^>]+>", "", x["attrs"]["label"])
+            if "areal" in lab.lower() and ort.split()[0].lower()[:5] in lab.lower():
+                return {"lat": round(x["attrs"]["lat"], 6), "lon": round(x["attrs"]["lon"], 6), "koordinaten_quelle": "swissNAMES3D (Name)", "treffer": lab}
+    r = hole(f"{GEO}/SearchServer?" + urllib.parse.urlencode({"searchText": ort, "type": "locations", "origins": "gg25,zipcode", "limit": "1", "sr": "4326"}))["results"]
+    if r: return {"lat": round(r[0]["attrs"]["lat"], 6), "lon": round(r[0]["attrs"]["lon"], 6), "koordinaten_quelle": "Ortsmitte – Lage zu prüfen", "lage_zu_pruefen": True}
+    return {}
+
+def privatschulen():
+    import pdfplumber, tempfile
+    with urllib.request.urlopen(QUELLE_PRIVAT, timeout=120) as r: roh = r.read()
+    f = tempfile.NamedTemporaryFile(suffix=".pdf"); f.write(roh); f.flush()
+    pdf = pdfplumber.open(f.name)
+    zeilen = [z.strip() for p in pdf.pages for z in (p.extract_text() or "").split("\n") if z.strip()]
+    stand = next((z for z in zeilen[:12] if re.match(r"\d{1,2}\. \w+ \d{4}$", z)), None)
+    schluessel = {"Schulstufen": "stufen", "Schwerpunkte, Art": "art", "Telefon, E-Mail": "kontakt", "Website": "website", "Standort(e)": "standorte", "Trägerschaft": "traegerschaft", "Verbindungen*": "verbindungen", "Leitung": None}
+    out, akt, feld = [], None, None
+    for i, z in enumerate(zeilen):
+        if i + 1 < len(zeilen) and zeilen[i + 1].startswith("Schulstufen"):
+            akt = {"name": z, "kategorie": "Privatschule"}; out.append(akt); feld = None; continue
+        if akt is None: continue
+        k = next((k for k in schluessel if z.startswith(k + " ") or z == k), None)
+        if k:
+            feld = schluessel[k]
+            if feld: akt[feld] = z[len(k):].strip()
+            continue
+        if feld == "standorte" and re.search(r"\d{4} ", z): akt["standorte"] += "; " + z   # Fortsetzung mehrerer Standorte
+        elif feld in ("art", "traegerschaft") and not re.match(r"^\d{4} ", z) and not z.startswith(("*", "Kanton", "Bildungsdirektion")): akt[feld] += " " + z
+    res = []
+    for a in out:
+        tel, mail = None, None
+        if a.get("kontakt"):
+            m = re.match(r"([\d +]{9,}),?\s*(\S+@\S+)?", a["kontakt"]); tel = m[1].strip() if m else None; mail = m[2] if m and m[2] else None
+        if mail and not mail_ok(mail): mail = None
+        orte = [x.strip() for x in re.split(r";\s*", a.get("standorte", "")) if x.strip()]
+        for j, ort in enumerate(orte or [""]):
+            e = {"id": f"priv-{len(res) + 1:03d}", "name": a["name"] + (f" (Standort {j + 1})" if len(orte) > 1 else ""), "kategorie": "Privatschule",
+                 "stufen_text": a.get("stufen"), "art": a.get("art"), "telefon": tel, "email": mail, "website": ("https://" + a["website"]) if a.get("website") and not a["website"].startswith("http") else a.get("website"),
+                 "traegerschaft": a.get("traegerschaft"), "adresse": [x.strip() for x in ort.split(",")] if ort else [], "quelle": "Öffentliches Register Privatschulen, Volksschulamt" + (f", Stand {stand}" if stand else ""),
+                 "stufe": "S" if a.get("stufen") and "Sekundar" in a["stufen"] and "Primar" not in a["stufen"] else "P" if a.get("stufen") and "Sekundar" not in a["stufen"] else "V"}
+            g = adresse_suchen(ort) if ort else None
+            e.update(g or {"lage_zu_pruefen": True})
+            res.append(e)
+    return res, stand
+
+def sonderschulen():
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(hole(QUELLE_SONDER, roh=True), "html.parser")
+    out = []
+    for item in soup.select(".mdl-accordion__item"):
+        bezirk = item.select_one("button").get_text(" ", strip=True)
+        typ = None
+        for el in item.select("h4, li"):
+            if el.name == "h4": typ = el.get_text(" ", strip=True); continue
+            t = el.get_text(" ", strip=True)
+            if "Schulstufe" not in t: continue
+            a = el.select_one("a"); name = a.get_text(" ", strip=True) if a else t.split(",")[0]
+            m = re.search(r",\s*([^.]+?)\.\s*Schulstufen?:\s*(.*)$", t)
+            ort, stufen = (m[1].strip(), m[2].strip()) if m else ("", "")
+            out.append({"id": f"sond-{len(out) + 1:03d}", "name": name, "kategorie": "Sonderschule", "sonderschultyp": typ, "bezirk_liste": bezirk, "ort": ort, "stufen_text": stufen,
+                        "website": a["href"] if a and a.get("href", "").startswith("http") else None, "quelle": "Volksschulamt, Sonderschulen nach Bezirk und Typ",
+                        "stufe": "S" if stufen.strip() in ("Sekundarstufe",) else None})
+    with ThreadPoolExecutor(8) as ex:
+        for e, g in zip(out, ex.map(lambda e: name_suchen(e["name"], e["ort"]) if e["ort"] else {}, out)): e.update(g)
+    return out
+
+def sekundarstufe2():
+    d = hole(f"{QUELLE_SEK2}?" + urllib.parse.urlencode({"SERVICE": "WFS", "VERSION": "2.0.0", "REQUEST": "GetFeature", "TYPENAMES": "ms:ogd-0600_giszhpub_mba_sekii_schulen_p",
+                                                        "OUTPUTFORMAT": "geojson", "SRSNAME": "EPSG:4326"}))
+    out = []
+    for f in d["features"]:
+        p = f["properties"]; lon, lat = f["geometry"]["coordinates"][:2]
+        mail = p.get("kontakt_mail")
+        out.append({"id": f"sek2-{p.get('geodb_oid')}", "name": p.get("schule_name"), "kategorie": "Sekundarstufe II / Tertiär", "schultyp": p.get("schule_typ"), "standort_typ": p.get("standort_typ"),
+                    "adresse": [f"{(p.get('schule_strasse') or '').strip()} {p.get('schule_haus_nr') or ''}".strip(), f"{p.get('schule_plz') or ''} {p.get('schule_ort') or ''}".strip()],
+                    "telefon": p.get("kontakt_tel"), "email": mail if mail and mail_ok(mail) else None, "website": p.get("web"), "lat": round(lat, 6), "lon": round(lon, 6),
+                    "koordinaten_quelle": "Geodatensatz Schulen SekII (GIS-ZH Nr. 600)", "quelle": "Kanton Zürich, Geodatensatz «Schulen SekII» (OGD)"})
+    return out
+
 # ---------------------------------------------------------------- Hauptprogramm
 def main():
     v = [personen_entfernen(zerlegen(o)) for o in verzeichnis()]
@@ -232,8 +371,21 @@ def main():
     meta = {"stand": HEUTE, "quelle": QUELLE_ZH, "anzahl": len(v),
             "hinweis": "Schulträger der Volksschule gemäss Bildungsdirektion; Koordinaten aus dem Gebäudeadressverzeichnis (swisstopo), sonst aus dem Verzeichnis. Personendaten entfernt."}
     (ROOT / "data/schulverzeichnis.json").write_text(json.dumps({"meta": meta, "eintraege": v}, ensure_ascii=False, indent=1), encoding="utf-8")
-    sn = swissnames(); sz = stadt_zuerich()
-    meta2 = {"stand": HEUTE, "quellen": ["swisstopo swissNAMES3D – Schul- und Hochschulareal (ohne Stadt Zürich)", "Stadt Zürich – Open Data Schulanlagen (WFS, CC0)"],
+    stk = schultraegerkarte()
+    (ROOT / "data/schultraeger.json").write_text(json.dumps(stk, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"✓ Schulträgerkarte: {len(stk['traeger'])} Trägereinträge, {len(stk['zuordnung'])} Zuordnungen")
+    sn = [x for x in swissnames() if x["kategorie"] in ("Volksschule", "Volksschule (zu prüfen)")]   # übrige Arten aus den amtlichen Listen
+    sz = stadt_zuerich()
+    pv, pv_stand = privatschulen(); so = sonderschulen(); s2 = sekundarstufe2()
+    for liste in (pv, so):
+        for e in liste:
+            if e.get("lat"): e["bfs_nr"], e["gemeinde"], _ = gemeinde_an(e["lon"], e["lat"])
+    for e in s2: e["bfs_nr"], e["gemeinde"], _ = gemeinde_an(e["lon"], e["lat"])
+    sz = [x for x in sz if x["kategorie"] != "Sonderschule"] + [x for x in sz if x["kategorie"] == "Sonderschule"]
+    sn = sn + pv + so + s2
+    meta2 = {"stand": HEUTE, "quellen": ["swisstopo swissNAMES3D – Schul- und Hochschulareal (ohne Stadt Zürich)", "Stadt Zürich – Open Data Schulanlagen (WFS, CC0)",
+                                         "Volksschulamt – Öffentliches Register Privatschulen" + (f" ({pv_stand})" if pv_stand else ""), "Volksschulamt – Sonderschulen nach Bezirk und Typ",
+                                         "Kanton Zürich – Geodatensatz Schulen SekII (GIS-ZH Nr. 600)"],
              "hinweis": "Benannte Schulareale; nicht abschliessend (unbenannte Areale fehlen). Zuordnung zum Schulträger über Gemeinde und Stufe – hergeleitet."}
     (ROOT / "data/schulanlagen.json").write_text(json.dumps({"meta": meta2, "anlagen": sn + sz}, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"✓ {len(v)} Schulträger-Einträge ({sum(1 for o in v if o.get('egid'))} mit EGID, {sum(1 for o in v if o['person_entfernt'] or o['email_entfernt'])} mit entfernten Personendaten)")
