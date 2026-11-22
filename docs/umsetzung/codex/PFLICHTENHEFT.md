@@ -178,14 +178,14 @@ Zusätzlich zu den gemeinsamen Prüfpunkten in [`../README.md`](../README.md#4-g
 
 ## 5. Offene Punkte
 
-1. OFFEN: Soll Codex die amtliche Sammlung einer Gemeinde werden (Publikationsorgan) oder nur Spiegel/Hilfsmittel?
-2. OFFEN: Import und Textaufbereitung in Python als eigener Dienst oder in PHP?
+1. ENTSCHIEDEN (22.11.2026): Codex bleibt vorerst Spiegel/Hilfsmittel neben der amtlichen Sammlung. Entscheidet sich eine Gemeinde, Codex als Publikationsorgan für ihre systematische Rechtssammlung zu nutzen, erhält sie ein Login (Redaktion der eigenen Sammlung, CDX-F-16).
+2. ANGENOMMEN (Empfehlung, 22.11.2026 nicht beantwortet): Import und Textaufbereitung als eigener Python-Dienst neben dem Laravel-Modul (bestehende Werkzeuge weiterführen).
 3. ZU PRÜFEN: Zugehörigkeit Bachenbülach/Winkel zur Sek Bülach; weitere «EG ?»-Vermerke.
-4. ZU PRÜFEN: Ergänzende Quellen (Bildungsrat, Volksschulamt-Merkblätter) als Erlasse oder als Quellen-Klasse B?
-5. OFFEN: Darf ein technischer Client (KI-Recherche) Probeläufe nur einreichen (EMPFOHLEN) oder auch übernehmen? Freigabe bleibt in jedem Fall beim Menschen.
-6. OFFEN: Wird eine Hierarchie beim Ersetzen versioniert (Historie der Fassungen der Hierarchie) oder genügt das Änderungsprotokoll `data_changes` (EMPFOHLEN für den Start)?
-7. ZU PRÜFEN: Rhythmus der KI-Recherche (EMPFOHLEN monatlich und nach Kantonsrats-Publikationen) und wer den Prüfbericht abnimmt.
+4. ANGENOMMEN (Empfehlung, 22.11.2026 nicht beantwortet): Bildungsratsbeschlüsse als verbindliche Erlasse mit Fassungen; Merkblätter des Volksschulamts als Hinweise der Klasse C (wie in den Praxisthemen).
+5. ANGENOMMEN (Empfehlung, 22.11.2026 nicht beantwortet): Ein technischer Client der KI-Recherche darf nur Probeläufe einreichen; Übernahme und Freigabe nur durch Menschen.
+6. ENTSCHIEDEN (22.11.2026): Volle Versionierung – jede veröffentlichte Fassung einer Normenhierarchie bleibt abrufbar (Datenmodell: Fassungstabelle der Hierarchie, Umsetzung offen).
+7. ENTSCHIEDEN (22.11.2026): KI-Recherche monatlich und auf Anlass, auch ausgelöst von einer Gemeinde; den Prüfbericht nimmt die Redaktion EduKSX-Codex ab.
 8. ENTSCHIEDEN (22.11.2026): Einstufung Dokumenttyp A/B/C bleibt Vorschlag (Codex 0.32.0: Pflichtkatalog 18 × A, 13 × A/B, 9 × B; kommunale Dokumente aus Dokumentart und Titel) und wird beim Review fachlich geprüft; bis dahin sichtbar als «zu prüfen».
-9. OFFEN: Monitoring – nur Belegstellen (EMPFOHLEN, wenig Fehlalarme) oder alle Stellen eines Erlasses als Prüfauftrag? Wer erhält die Mitteilung (Schulverwaltung, Schulpflege)? Rhythmus (bei jeder neuen Fassung, EMPFOHLEN)?
+9. ENTSCHIEDEN (22.11.2026): Monitoring wie im Prototyp – geänderte Belegstelle = Prüfauftrag, andere Änderungen «zur Kenntnis». Mitteilung an Schulverwaltung, Schulpflege, Schulleitung und Gemeindeschreiber/in (Empfänger je Organisation einstellbar).
 10. ENTSCHIEDEN (22.11.2026): Gruppennamen der Normenhierarchie (neun Gruppen, Codex 0.30.0) vorerst bestätigt.
 11. ENTSCHIEDEN (22.11.2026): Praxisthemen nehmen Hinweise kantonaler Stellen auf – mit Quelle, als Klasse C (Erläuterung, keine Rechtsgrundlage).
