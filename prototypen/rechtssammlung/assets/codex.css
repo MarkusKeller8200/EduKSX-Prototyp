@@ -196,3 +196,11 @@ table.matrix tbody th { white-space: normal; }
 .themengruppe li a { display: block; padding: .12rem .35rem; margin: 0 -.35rem; border-radius: 4px; font-size: .86rem; line-height: 1.3; color: inherit; text-decoration: none; }
 .themengruppe li a:hover, .themengruppe li a:focus-visible { background: var(--muted); }
 .themengruppe li a.aktiv { background: var(--secondary); color: var(--secondary-foreground); font-weight: 600; box-shadow: inset 3px 0 0 var(--brand-orange, #f08c00); }
+
+/* Pflichtkatalog: keine Relevanz je Organisation */
+.nr-feld { margin-top: .3rem; }
+.nr-details[hidden] { display: none; }
+.nr-details { display: flex; flex-direction: column; gap: .25rem; margin-top: .25rem; }
+.nr-details select, .nr-details input { font-size: .78rem; max-width: 16rem; }
+td.bei-org { min-width: 12rem; }
+td.mz-nr { background: var(--muted); }

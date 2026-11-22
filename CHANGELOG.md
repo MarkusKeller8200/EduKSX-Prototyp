@@ -203,4 +203,6 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   (Gruppe Infrastruktur & Sicherheit) (#59).
 - EduKSX-Codex 0.32.0: Dokumenttyp A/B/C als Vorschlag (zu prüfen) – Pflichtkatalog, Struktur-Matrix, Dokumentlisten der
   Organisationen, Datenmodell (`document_class`), API und Importvorlage (#60).
+- EduKSX-Codex 0.33.0: Pflichtkatalog – je Organisation «keine Relevanz» mit Grund und Bemerkung setzen; zählt nicht zur
+  Vollständigkeit, Anzeige in der Struktur-Matrix; Datenmodell `mandatory_document_assessments` und API (#61).
 - `tools/neuer_prototyp.py` zum Anlegen und `tools/pruefen.py` für alle Prüfungen inkl. Übersicht im README.

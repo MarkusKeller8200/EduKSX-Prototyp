@@ -48,6 +48,7 @@ Geschäftsverwaltung/Beschlüsse, allgemeine Dokumentablage.
 | CDX-F-24 | Nachvollziehbarkeit: jeder Importlauf mit Herkunft (API, CSV, Excel, KI-Recherche), Recherchevermerk, Quellen, Prüfsumme der Datei und Protokoll je Datensatz; Datensätze verweisen auf den letzten Importlauf. | MUSS | – |
 | CDX-F-25 | KI-gestützte Aktualisierung nach der Anweisung [`KI-RECHERCHE.md`](KI-RECHERCHE.md): Abgleich mit ZH-Lex/Fedlex, Lieferung als Inhaltspaket, nie direkte Veröffentlichung. | SOLL | Recherchen im Chat |
 | CDX-F-26 | Dokumenttyp A/B/C je Pflichtdokument und je kommunalem Dokument: A Rechtserlass (gehört in die Rechtssammlung, § 7 Abs. 2 GG), B verbindliches Führungsdokument, C ergänzendes Dokument; A/B je nach Ausgestaltung. Vorschlag bis zur fachlichen Abnahme sichtbar als «zu prüfen». | SOLL | Pflichtkatalog, Struktur-Matrix, Dokumentlisten |
+| CDX-F-27 | Je Organisation und Pflichtdokument «keine Relevanz» setzen, mit Grund (gibt es nicht, muss nicht geregelt werden, anderswo geregelt, anderer Grund) und Bemerkung; nicht relevante Einträge zählen nicht zur Vollständigkeit und erscheinen in der Struktur-Matrix als «keine Relevanz». Recht: Redaktion der Organisation. | MUSS | Pflichtkatalog «Für Organisation erfassen» (im Prototyp nur im Browser gespeichert) |
 
 ### 2.2 Nicht fachliche Anforderungen
 

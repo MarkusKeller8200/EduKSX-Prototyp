@@ -36,6 +36,12 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-20 – Codex 0.33.0 – «keine Relevanz» im Pflichtkatalog (#61)
+
+- Pflichtkatalog: Auswahl «Für Organisation erfassen» (Route `#/pflicht/<org>`, Knopf «Erfassen» je Zeile). Spalte «Bei <Organisation>» mit Status (vorhanden, unsicher, fehlt) und bei fehlenden bzw. unsicheren Einträgen Haken «keine Relevanz» mit Grund (gibt es nicht, muss nicht geregelt werden, anderswo geregelt, anderer Grund) und Bemerkung. Vollständigkeit zählt nicht relevante Einträge nicht mit; neue Spalte «Keine Relevanz». Struktur-Matrix zeigt solche Zellen als «∅ keine Relevanz».
+- Im Prototyp nur im Browser gespeichert (localStorage `eduksx-codex-keine-relevanz`); getestet mit Playwright (Zählung 2/5 → 2/4, Matrix, Reload).
+- Datenmodell: Tabelle `mandatory_document_assessments` (Herausgeber × Pflichtdokument, is_relevant, reason, note); API `PUT /publishers/{publisher_key}/mandatory-documents/{document_key}/relevance` und Liste `/mandatory-document-assessments`. Pflichtenheft CDX-F-27. SQL-Test PostgreSQL ok (42 Tabellen), OpenAPI validiert.
+
 ### Sitzung 2026-11-20 – Codex 0.32.0 – Dokumenttyp A/B/C, Phase 4 (#60)
 
 - Phase 4 des Plans. Typen: A Rechtserlass (gehört in die Rechtssammlung, § 7 Abs. 2 GG), A/B je nach Ausgestaltung, B verbindliches Führungsdokument, C ergänzendes Dokument, – gehört nicht in die Sammlung, ? unklar. Überall als Vorschlag mit Status ZU PRÜFEN gekennzeichnet.

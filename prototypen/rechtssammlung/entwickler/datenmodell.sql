@@ -524,6 +524,23 @@ CREATE TABLE mandatory_documents (
     created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid
 );
 
+-- Relevanz eines Pflichtdokuments für eine Organisation («keine Relevanz», mit Grund)
+-- Geltungsbereich: global · Datenklasse: intern
+-- Herkunft/Verwendung: Pflichtkatalog «Für Organisation erfassen», gepflegt von der Redaktion des Herausgebers; Vollständigkeit zählt nur relevante Einträge
+CREATE TABLE mandatory_document_assessments (
+    id                      uuid PRIMARY KEY,
+    publisher_id            uuid NOT NULL REFERENCES publishers(id) ON DELETE CASCADE,   -- Herausgeber | Organisation, für die die Einschätzung gilt
+    mandatory_document_id   uuid NOT NULL REFERENCES mandatory_documents(id) ON DELETE CASCADE,   -- Pflichtdokument | Verweis
+    is_relevant             boolean NOT NULL DEFAULT false,  -- Relevant | false = keine Relevanz für diese Organisation
+    reason                  text CHECK (reason IN ('does_not_exist','not_to_regulate','regulated_elsewhere','other')),   -- Grund | warum keine Relevanz | intern | does_not_exist=gibt es nicht; not_to_regulate=muss nicht geregelt werden; regulated_elsewhere=anderswo geregelt; other=anderer Grund
+    note                    text,                            -- Bemerkung | Freitext, z. B. wo es geregelt ist
+    decided_by_id           uuid,                            -- Erfasst von | Person (ohne Constraint)
+    decided_at              timestamptz,                     -- Erfasst am | Zeitpunkt
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid,
+    CHECK (is_relevant OR reason IS NOT NULL),
+    UNIQUE (publisher_id, mandatory_document_id)
+);
+
 -- Zeile der Vergleichsmatrix (Rubrik › Unterordner › Dokumenttyp)
 -- Geltungsbereich: global · Datenklasse: öffentlich
 -- Herkunft/Verwendung: aus den erfassten Sammlungen und dem Pflichtkatalog; Ansicht «Struktur-Matrix»
@@ -712,6 +729,7 @@ CREATE INDEX hierarchy_edge_evidences_hierarchy_edge_id_index ON hierarchy_edge_
 CREATE INDEX hierarchy_edge_evidences_legal_act_id_index ON hierarchy_edge_evidences (legal_act_id);
 CREATE INDEX mandatory_documents_category_id_index ON mandatory_documents (category_id);
 CREATE INDEX mandatory_documents_content_import_id_index ON mandatory_documents (content_import_id);
+CREATE INDEX mandatory_document_assessments_mandatory_document_id_index ON mandatory_document_assessments (mandatory_document_id);
 CREATE INDEX matrix_rows_mandatory_document_id_index ON matrix_rows (mandatory_document_id);
 CREATE INDEX matrix_cells_publisher_id_index ON matrix_cells (publisher_id);
 CREATE INDEX parent_guide_topics_content_import_id_index ON parent_guide_topics (content_import_id);
@@ -1109,6 +1127,22 @@ COMMENT ON COLUMN mandatory_documents.updated_by_id IS 'Geändert von – Person
 COMMENT ON COLUMN mandatory_documents.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
 COMMENT ON COLUMN mandatory_documents.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
 COMMENT ON COLUMN mandatory_documents.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
+COMMENT ON TABLE mandatory_document_assessments IS 'Relevanz eines Pflichtdokuments für eine Organisation («keine Relevanz», mit Grund) – Pflichtkatalog «Für Organisation erfassen», gepflegt von der Redaktion des Herausgebers; Vollständigkeit zählt nur relevante Einträge';
+COMMENT ON COLUMN mandatory_document_assessments.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN mandatory_document_assessments.publisher_id IS 'Herausgeber – Organisation, für die die Einschätzung gilt';
+COMMENT ON COLUMN mandatory_document_assessments.mandatory_document_id IS 'Pflichtdokument – Verweis';
+COMMENT ON COLUMN mandatory_document_assessments.is_relevant IS 'Relevant';
+COMMENT ON COLUMN mandatory_document_assessments.reason IS 'Grund – warum keine Relevanz';
+COMMENT ON COLUMN mandatory_document_assessments.note IS 'Bemerkung – Freitext, z. B. wo es geregelt ist';
+COMMENT ON COLUMN mandatory_document_assessments.decided_by_id IS 'Erfasst von – Person (ohne Constraint)';
+COMMENT ON COLUMN mandatory_document_assessments.decided_at IS 'Erfasst am – Zeitpunkt';
+COMMENT ON COLUMN mandatory_document_assessments.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN mandatory_document_assessments.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN mandatory_document_assessments.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN mandatory_document_assessments.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN mandatory_document_assessments.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON COLUMN mandatory_document_assessments.deleted_at IS 'Gelöscht am – Papierkorb: vorläufig gelöscht';
+COMMENT ON COLUMN mandatory_document_assessments.deleted_by_id IS 'Gelöscht von – Person, die gelöscht hat (ohne Constraint)';
 COMMENT ON TABLE matrix_rows IS 'Zeile der Vergleichsmatrix (Rubrik › Unterordner › Dokumenttyp) – aus den erfassten Sammlungen und dem Pflichtkatalog; Ansicht «Struktur-Matrix»';
 COMMENT ON COLUMN matrix_rows.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN matrix_rows.row_key IS 'Schlüssel – z. B. «k6»';

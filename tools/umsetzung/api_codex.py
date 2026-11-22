@@ -37,6 +37,8 @@ API = {
         R("parent_guide_topics", "ParentGuideTopic", "ParentGuideTopic", "ParentGuideTopics", "Thema des Elternwegweisers", "Themen des Elternwegweisers", artikel="ein",
           eingebettet={"provisions": ("list:ref:ParentGuideProvision", "Rechtsstellen", "Stellen mit Auszug"), "hierarchy_keys": ("list:text", "Normenhierarchien", "Schlüssel der verknüpften Themen"),
                        "document_ids": ("list:uuid", "Dokumente", "kommunale Dokumente als Beispiele (aus dem Suchmuster)")}),
+        R("mandatory_document_assessments", "MandatoryDocumentAssessment", "MandatoryDocumentAssessment", "MandatoryDocumentAssessments", "Relevanzeinschätzung", "Relevanzeinschätzungen",
+          filter=["publisher_id", "mandatory_document_id", "is_relevant"], ops="lr", artikel="eine"),
         R("content_imports", "ContentImport", "ContentImport", "ContentImports", "Importlauf", "Importläufe", filter=["source_kind", "status"], ops="lr", artikel="einen",
           eingebettet={"items": ("list:ref:ContentImportItem", "Änderungen", "Prüfbericht bzw. Protokoll je Datensatz")}),
         R("collection_analyses", "CollectionAnalysis", "CollectionAnalysis", "CollectionAnalyses", "Analyse", "Analysen", filter=["publisher_id"], ops="lr", artikel="eine",
@@ -125,6 +127,10 @@ API = {
                                          "content_key": ("text", "Schlüssel", "z. B. «volksschule/vsg»"), "action": ("enum:create=neu;update=geändert;delete=gelöscht;unchanged=unverändert", "Aktion", "Wirkung"),
                                          "outcome": ("enum:ok=in Ordnung;warning=Warnung;error=Fehler", "Ergebnis", "Prüfung"), "messages": ("list:text", "Meldungen", "z. B. «Fundstelle LS 999 unbekannt»"),
                                          "changes": ("object?", "Änderungen", "Feld: alt → neu")}},
+        "MandatoryDocumentRelevance": {"title": "Relevanz festlegen", "description": "Einschätzung einer Organisation zu einem Pflichtdokument",
+                                       "felder": {"is_relevant": ("bool", "Relevant", "false = keine Relevanz"),
+                                                  "reason": ("enum:does_not_exist=gibt es nicht;not_to_regulate=muss nicht geregelt werden;regulated_elsewhere=anderswo geregelt;other=anderer Grund?", "Grund", "Pflicht bei keiner Relevanz"),
+                                                  "note": ("text?", "Bemerkung", "z. B. wo es geregelt ist")}, "pflicht": ["is_relevant"]},
         "Publication": {"title": "Freigabe", "description": "Entwurf prüfen und veröffentlichen",
                         "felder": {"is_reviewed": ("bool", "Fachlich geprüft", "Prüfstatus auf «geprüft» setzen"), "note": ("text?", "Bemerkung", "zur Freigabe")}, "pflicht": ["is_reviewed"]},
         "GuidelineCheck": {"title": "Ergebnis Leitfaden", "description": "Ergebnis einer Anforderung des Leitfadens",
@@ -207,6 +213,12 @@ API = {
         {"pfad": f"{V}/mandatory-documents/by-key/{{document_key}}", "methode": "put", "op": "putMandatoryDocumentByKey", "summary": "Pflichtdokument anlegen oder ersetzen", "ressource": "mandatory-documents",
          "pfadparam": {"document_key": ("Schlüssel", "Schlüssel des Pflichtdokuments", "p1")}, "body": "MandatoryDocumentEntry", "antwort": "MandatoryDocument",
          "query": [("dry_run", "bool", "Probelauf", "nur prüfen")], "klassen": ["public"], "fehler": ("400", "401", "403", "409", "412", "422")},
+        # ---- Relevanz je Organisation («keine Relevanz»)
+        {"pfad": f"{V}/publishers/{{publisher_key}}/mandatory-documents/{{document_key}}/relevance", "methode": "put", "op": "setMandatoryDocumentRelevance",
+         "summary": "Relevanz eines Pflichtdokuments für die Organisation festlegen", "ressource": "mandatory-document-assessments",
+         "beschreibung": "Setzt «keine Relevanz» mit Grund (oder hebt sie mit is_relevant=true auf). Nicht relevante Einträge zählen nicht zur Vollständigkeit; Recht: Redaktion der Organisation.",
+         "pfadparam": {"publisher_key": ("Herausgeber", "Schlüssel der Organisation", "ps-truellikon"), "document_key": ("Pflichtdokument", "Schlüssel im Pflichtkatalog", "p6")},
+         "body": "MandatoryDocumentRelevance", "antwort": "MandatoryDocumentAssessment", "klassen": ["public"], "fehler": ("400", "401", "403", "404", "422")},
         # ---- Importe (Paket, CSV, Excel) mit Probelauf
         {"pfad": f"{V}/content-imports/bundle", "op": "importContentBundle", "summary": "Inhaltspaket (JSON) prüfen oder übernehmen",
          "beschreibung": "Mit «mode=dry_run» (Vorgabe) wird nur geprüft: Schlüssel, Fundstellen, Stellen in den Textfassungen, reguläre Ausdrücke, Verweise zwischen Knoten. "

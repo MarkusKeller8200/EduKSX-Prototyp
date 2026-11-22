@@ -3826,6 +3826,177 @@
         }
       }
     },
+    "/api/v1/mandatory-document-assessments": {
+      "get": {
+        "tags": [
+          "mandatory-document-assessments"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Pflichtkatalog «Für Organisation erfassen», gepflegt von der Redaktion des Herausgebers; Vollständigkeit zählt nur relevante Einträge",
+        "operationId": "listMandatoryDocumentAssessments",
+        "summary": "Relevanzeinschätzungen auflisten",
+        "description": "Liste der Relevanzeinschätzungen (Cursor). Pflichtkatalog «Für Organisation erfassen», gepflegt von der Redaktion des Herausgebers; Vollständigkeit zählt nur relevante Einträge",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:mandatory-document-assessments.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "mandatory-document-assessments.read",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Sort"
+          },
+          {
+            "name": "publisher_id",
+            "in": "query",
+            "required": false,
+            "description": "Organisation, für die die Einschätzung gilt",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Herausgeber"
+            },
+            "example": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+          },
+          {
+            "name": "mandatory_document_id",
+            "in": "query",
+            "required": false,
+            "description": "Verweis",
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Pflichtdokument"
+            },
+            "example": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e"
+          },
+          {
+            "name": "is_relevant",
+            "in": "query",
+            "required": false,
+            "description": "Filter nach Relevant",
+            "schema": {
+              "type": "boolean",
+              "title": "Relevant"
+            },
+            "example": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Relevanzeinschätzungen",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MandatoryDocumentAssessment"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/mandatory-document-assessments/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        }
+      ],
+      "get": {
+        "tags": [
+          "mandatory-document-assessments"
+        ],
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Pflichtkatalog «Für Organisation erfassen», gepflegt von der Redaktion des Herausgebers; Vollständigkeit zählt nur relevante Einträge",
+        "operationId": "getMandatoryDocumentAssessment",
+        "summary": "Relevanzeinschätzung lesen",
+        "description": "Relevanzeinschätzung mit allen Feldern der Positivliste.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:mandatory-document-assessments.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "mandatory-document-assessments.read",
+        "responses": {
+          "200": {
+            "description": "Relevanzeinschätzung",
+            "headers": {
+              "ETag": {
+                "description": "Stand des Objekts: \"<id>.<lock_version>\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MandatoryDocumentAssessment"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
     "/api/v1/content-imports": {
       "get": {
         "tags": [
@@ -5871,6 +6042,102 @@
         }
       }
     },
+    "/api/v1/publishers/{publisher_key}/mandatory-documents/{document_key}/relevance": {
+      "parameters": [
+        {
+          "name": "publisher_key",
+          "in": "path",
+          "required": true,
+          "description": "Schlüssel der Organisation",
+          "schema": {
+            "type": "string",
+            "title": "Herausgeber"
+          },
+          "example": "ps-truellikon"
+        },
+        {
+          "name": "document_key",
+          "in": "path",
+          "required": true,
+          "description": "Schlüssel im Pflichtkatalog",
+          "schema": {
+            "type": "string",
+            "title": "Pflichtdokument"
+          },
+          "example": "p6"
+        }
+      ],
+      "put": {
+        "tags": [
+          "mandatory-document-assessments"
+        ],
+        "operationId": "setMandatoryDocumentRelevance",
+        "summary": "Relevanz eines Pflichtdokuments für die Organisation festlegen",
+        "description": "Setzt «keine Relevanz» mit Grund (oder hebt sie mit is_relevant=true auf). Nicht relevante Einträge zählen nicht zur Vollständigkeit; Recht: Redaktion der Organisation.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "codex:mandatory-document-assessments.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "mandatory-document-assessments.write",
+        "x-eduksx-data-classes": [
+          "public"
+        ],
+        "x-eduksx-purpose": "Relevanz eines Pflichtdokuments für die Organisation festlegen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MandatoryDocumentRelevance"
+              },
+              "example": {
+                "is_relevant": false,
+                "reason": "does_not_exist",
+                "note": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/MandatoryDocumentAssessment"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
     "/api/v1/content-imports/bundle": {
       "post": {
         "tags": [
@@ -6287,6 +6554,7 @@
               "codex:parent-guide-topics.read": "Elternwegweiser – lesen",
               "codex:parent-guide-topics.write": "Elternwegweiser – schreiben",
               "codex:parent-guide-topics.delete": "Elternwegweiser – löschen",
+              "codex:mandatory-document-assessments.read": "mandatory-document-assessments – lesen",
               "codex:content-imports.read": "Pflege und Import (API, CSV, Excel, KI-Recherche) – lesen",
               "codex:collection-analyses.read": "Evaluation und Leitfaden-Prüfung – lesen",
               "codex:search.read": "Suche und Fundstellen – lesen",
@@ -6296,6 +6564,7 @@
               "codex:collection-analyses.admin": "Evaluation und Leitfaden-Prüfung – verwalten",
               "codex:embed.read": "Widget für Websites – lesen",
               "codex:parent-guide-topics.admin": "Elternwegweiser – verwalten",
+              "codex:mandatory-document-assessments.write": "mandatory-document-assessments – schreiben",
               "codex:content-imports.write": "Pflege und Import (API, CSV, Excel, KI-Recherche) – schreiben",
               "codex:content-imports.admin": "Pflege und Import (API, CSV, Excel, KI-Recherche) – verwalten",
               "codex:content-exports.read": "Export der redaktionellen Inhalte – lesen"
@@ -6332,6 +6601,7 @@
               "codex:parent-guide-topics.read": "Elternwegweiser – lesen",
               "codex:parent-guide-topics.write": "Elternwegweiser – schreiben",
               "codex:parent-guide-topics.delete": "Elternwegweiser – löschen",
+              "codex:mandatory-document-assessments.read": "mandatory-document-assessments – lesen",
               "codex:content-imports.read": "Pflege und Import (API, CSV, Excel, KI-Recherche) – lesen",
               "codex:collection-analyses.read": "Evaluation und Leitfaden-Prüfung – lesen",
               "codex:search.read": "Suche und Fundstellen – lesen",
@@ -6341,6 +6611,7 @@
               "codex:collection-analyses.admin": "Evaluation und Leitfaden-Prüfung – verwalten",
               "codex:embed.read": "Widget für Websites – lesen",
               "codex:parent-guide-topics.admin": "Elternwegweiser – verwalten",
+              "codex:mandatory-document-assessments.write": "mandatory-document-assessments – schreiben",
               "codex:content-imports.write": "Pflege und Import (API, CSV, Excel, KI-Recherche) – schreiben",
               "codex:content-imports.admin": "Pflege und Import (API, CSV, Excel, KI-Recherche) – verwalten",
               "codex:content-exports.read": "Export der redaktionellen Inhalte – lesen"
@@ -8746,6 +9017,147 @@
           "title"
         ]
       },
+      "MandatoryDocumentAssessment": {
+        "type": "object",
+        "title": "Relevanzeinschätzung",
+        "description": "Relevanz eines Pflichtdokuments für eine Organisation («keine Relevanz», mit Grund). Pflichtkatalog «Für Organisation erfassen», gepflegt von der Redaktion des Herausgebers; Vollständigkeit zählt nur relevante Einträge",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "ID",
+            "description": "UUID v7, von der Anwendung vergeben",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "publisher_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Herausgeber",
+            "description": "Organisation, für die die Einschätzung gilt",
+            "x-eduksx-data-class": "internal"
+          },
+          "mandatory_document_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Pflichtdokument",
+            "description": "Verweis",
+            "x-eduksx-data-class": "internal"
+          },
+          "is_relevant": {
+            "type": "boolean",
+            "title": "Relevant",
+            "description": "Pflichtkatalog «Für Organisation erfassen», gepflegt von der Redaktion des Herausgebers; Vollständigkeit zählt nur relevante Einträge",
+            "x-eduksx-data-class": "internal"
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "does_not_exist",
+              "not_to_regulate",
+              "regulated_elsewhere",
+              "other"
+            ],
+            "x-eduksx-labels": {
+              "does_not_exist": "gibt es nicht",
+              "not_to_regulate": "muss nicht geregelt werden",
+              "regulated_elsewhere": "anderswo geregelt",
+              "other": "anderer Grund"
+            },
+            "title": "Grund",
+            "description": "warum keine Relevanz",
+            "x-eduksx-data-class": "internal"
+          },
+          "reason_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Grund (Text)",
+            "description": "deutsches Label zu «reason» in der gewählten Sprache"
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "Freitext, z. B. wo es geregelt ist",
+            "x-eduksx-data-class": "internal"
+          },
+          "decided_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erfasst von",
+            "description": "Person (ohne Constraint)",
+            "x-eduksx-data-class": "internal"
+          },
+          "decided_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "title": "Erfasst am",
+            "description": "Zeitpunkt",
+            "x-eduksx-data-class": "internal"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Erstellt am",
+            "description": "Zeitpunkt der Erfassung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "created_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Erstellt von",
+            "description": "Person, die den Datensatz angelegt hat (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Geändert am",
+            "description": "Zeitpunkt der letzten Änderung (UTC)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "updated_by_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Geändert von",
+            "description": "Person der letzten Änderung (ohne Constraint)",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          },
+          "lock_version": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Version",
+            "description": "optimistisches Sperren; ETag und If-Match",
+            "readOnly": true,
+            "x-eduksx-data-class": "internal"
+          }
+        },
+        "required": [
+          "publisher_id",
+          "mandatory_document_id"
+        ]
+      },
       "ContentImport": {
         "type": "object",
         "title": "Importlauf",
@@ -10269,6 +10681,49 @@
             "description": "Feld: alt → neu"
           }
         }
+      },
+      "MandatoryDocumentRelevance": {
+        "type": "object",
+        "title": "Relevanz festlegen",
+        "description": "Einschätzung einer Organisation zu einem Pflichtdokument",
+        "properties": {
+          "is_relevant": {
+            "type": "boolean",
+            "title": "Relevant",
+            "description": "false = keine Relevanz"
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "does_not_exist",
+              "not_to_regulate",
+              "regulated_elsewhere",
+              "other"
+            ],
+            "x-eduksx-labels": {
+              "does_not_exist": "gibt es nicht",
+              "not_to_regulate": "muss nicht geregelt werden",
+              "regulated_elsewhere": "anderswo geregelt",
+              "other": "anderer Grund"
+            },
+            "title": "Grund",
+            "description": "Pflicht bei keiner Relevanz"
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "z. B. wo es geregelt ist"
+          }
+        },
+        "required": [
+          "is_relevant"
+        ]
       },
       "Publication": {
         "type": "object",
