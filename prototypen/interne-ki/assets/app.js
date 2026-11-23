@@ -8,7 +8,7 @@
   "use strict";
 
   const D = window.AI_DATEN;
-  const VERSION = "0.1.0";
+  const VERSION = "0.1.1";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // Einstiegsseite aller Prototypen
   const SPEICHER = "eduksx-ai-v1";
   const VERGLEICH = "https://www.openstream.ch/vergleich-ki-anbieter-schweiz/";
@@ -797,6 +797,10 @@
   // ---------------------------------------------------------------- Ablauf
   function route() { const h = (location.hash || "#/chat").slice(2).split("/"); return [h[0] || "chat", h[1], h[2]]; }
   const aktuellerChat = () => chat(route()[1]) || S.chats[0];
+  // Feste Zuordnung Adresse → Seite (kein Aufruf per Name aus der Adresse)
+  const VERWALTUNG = new Map([["organisation", seiteOrganisation], ["benutzer", seiteBenutzer], ["rollen", seiteRollen], ["modelle", seiteModelle],
+    ["orte", seiteOrte], ["werkzeuge", seiteWerkzeuge], ["datenschutz", seiteDatenschutz], ["zustand", seiteZustand]]);
+  const eigen = (o, k) => (Object.prototype.hasOwnProperty.call(o, k) ? o[k] : null);
   function stoppStill() { if (E.laeuft) { clearInterval(E.laeuft.timer); E.laeuft = null; } }
   function render() {
     const [s, a] = route();
@@ -805,8 +809,9 @@
       case "assistenten": inhalt = a ? seiteAssistent(a) : seiteAssistenten(); break;
       case "wissen": inhalt = a ? seiteWissenDetail(a) : seiteWissen(); break;
       case "verwaltung": {
-        aktiv = `verwaltung/${a || "organisation"}`;
-        inhalt = ({ organisation: seiteOrganisation, benutzer: seiteBenutzer, rollen: seiteRollen, modelle: seiteModelle, orte: seiteOrte, werkzeuge: seiteWerkzeuge, datenschutz: seiteDatenschutz, zustand: seiteZustand }[a] || seiteOrganisation)();
+        const seite = VERWALTUNG.get(a) || VERWALTUNG.get("organisation");
+        aktiv = `verwaltung/${VERWALTUNG.has(a) ? a : "organisation"}`;
+        inhalt = seite();
         break;
       }
       default: aktiv = "chat"; breit = true; inhalt = seiteChat(a);
@@ -823,10 +828,10 @@
 
   document.addEventListener("click", (ev) => {
     const el = ev.target.closest("[data-aktion]"); if (!el) return;
-    const f = AKTIONEN[el.dataset.aktion]; if (!f) return;
+    const f = eigen(AKTIONEN, el.dataset.aktion); if (!f) return;
     ev.preventDefault(); f(el);
   });
-  document.addEventListener("change", (ev) => { const el = ev.target.closest("[data-change]"); if (el && AENDERUNGEN[el.dataset.change]) AENDERUNGEN[el.dataset.change](el); });
+  document.addEventListener("change", (ev) => { const el = ev.target.closest("[data-change]"); const f = el && eigen(AENDERUNGEN, el.dataset.change); if (f) f(el); });
   document.addEventListener("input", (ev) => {
     const el = ev.target;
     if (el.id === "frage") { E.entwurf = el.value; return; }
@@ -834,7 +839,7 @@
     else if (el.dataset.eingabe === "ass-suche") { E.assSuche = el.value; render(); }
     if (el.dataset.zaehlen) { const z = document.getElementById(el.dataset.zaehlen); if (z) z.textContent = el.value.length; }
   });
-  document.addEventListener("submit", (ev) => { const form = ev.target.closest("[data-form]"); if (!form || !FORMULARE[form.dataset.form]) return; ev.preventDefault(); FORMULARE[form.dataset.form](form); });
+  document.addEventListener("submit", (ev) => { const form = ev.target.closest("[data-form]"); const f = form && eigen(FORMULARE, form.dataset.form); if (!f) return; ev.preventDefault(); f(form); });
   document.addEventListener("keydown", (ev) => {
     if (ev.target.id === "frage" && ev.key === "Enter" && !ev.shiftKey && !ev.isComposing) { ev.preventDefault(); senden(ev.target.value); }
   });

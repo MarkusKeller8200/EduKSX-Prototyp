@@ -3,7 +3,7 @@
   "produkt": "EduKSX-AI",
   "icon": "eduksx",
   "beschreibung": "KI-Plattform im internen, geschützten Umfeld: Chat wie bei bekannten KI-Assistenten mit offenen Modellen (Apertus, Qwen, DeepSeek, GLM, Kimi …) auf dem eigenen KI-Server oder bei geprüften Schweizer Anbietern; Schutzbedarf je Unterhaltung steuert den Betriebsort, Personendaten-Prüfung, Assistenten, Wissenssammlungen mit Quellen, Werkzeuge über MCP, Verwaltung von Modellen, Betriebsorten, Rollen und Datenschutz.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "status": "in-arbeit",
   "technik": "html",
   "modul": "EduKSX-AI",
