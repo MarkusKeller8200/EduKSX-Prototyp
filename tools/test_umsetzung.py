@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from umsetzung import modell, openapi  # noqa: E402
 
 UMSETZUNG = Path(__file__).resolve().parent.parent / "docs" / "umsetzung"
-MODULE = ["staffing", "flow", "codex", "sign", "time"]
+MODULE = ["staffing", "flow", "codex", "sign", "time", "ai"]
 TEILE = ["## 1. Zweck und Abgrenzung", "## 2. Anforderungskatalog", "## 3. Pflichtenheft",
          "## 4. Prüfpunkte für die produktive Umsetzung", "## 5. Offene Punkte"]
 

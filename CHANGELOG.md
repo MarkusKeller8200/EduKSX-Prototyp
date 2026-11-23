@@ -6,6 +6,15 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ## [Unveröffentlicht]
 
+### Hinzugefügt
+
+- **Prototyp EduKSX-AI – Interne KI (23.11.2026, #88):** `prototypen/interne-ki` 0.1.1 – Chat mit offenen Modellen
+  (Apertus, Qwen, DeepSeek, GLM, Kimi, gpt-oss) auf dem internen KI-Server oder bei geprüften Schweizer Anbietern;
+  Schutzbedarf je Unterhaltung steuert den Betriebsort, Personendaten-Prüfung vor dem Senden, Assistenten,
+  Wissenssammlungen mit Quellen, Werkzeuge über MCP, Verwaltung (Organisation, Benutzer & Gruppen, Rollen & Rechte,
+  Modelle, Betriebsorte, Werkzeuge, Datenschutz, Systemzustand). Umsetzungsgrundlagen `docs/umsetzung/ai/`
+  (26 Tabellen, 63 Operationen, Pflichtenheft); Label `prototyp:ai` und Meilenstein «EduKSX-AI – Interne KI».
+
 ### Geändert
 
 - **CodeQL-Funde behoben (23.11.2026, #1–#5, #13, #20, #27–#29):** Werte aus Zustand und Eingaben werden in allen

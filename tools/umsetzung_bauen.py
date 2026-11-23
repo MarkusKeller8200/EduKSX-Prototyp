@@ -25,7 +25,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from umsetzung import modell, openapi  # noqa: E402
 
-MODULE = ["staffing", "flow", "codex", "sign", "time"]
+MODULE = ["staffing", "flow", "codex", "sign", "time", "ai"]
 
 
 def block_ersetzen(text: str, name: str, inhalt: str) -> str:

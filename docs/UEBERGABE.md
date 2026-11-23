@@ -36,6 +36,10 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-23 – Prototyp EduKSX-AI (Interne KI), #88
+
+Neuer Klickprototyp `prototypen/interne-ki` 0.1.0 mit Umsetzungsgrundlagen `docs/umsetzung/ai/`. Entscheide 23.11.2026: Produktname EduKSX-AI; Modelle und öffentlich angebotene Schweizer Anbieter dürfen genannt und verlinkt werden; Vorlage-Bildschirmfotos nur konzeptionell (keine Namen, Marken, Herkunft). Offen: Icon «ai» in EduKSX-UI, Label `prototyp:ai` wird erst nach Merge über «Einstellungen anwenden» angelegt (Issue #88 dann nachträglich labeln), Betriebsmodell, Anbieterprüfung.
+
 ### Sitzung 2026-11-20 – Lange URL verdeckt
 
 Linktexte mit Adresse werden automatisch gekürzt (Domain › …), volle Adresse im Tooltip; Einbettungscode bleibt vollständig.
