@@ -8,6 +8,11 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Geändert
 
+- **CodeQL-Funde behoben (23.11.2026, #1–#5, #13, #20, #27–#29):** Werte aus Zustand und Eingaben werden in allen
+  HTML-Vorlagen escaped (IDs, Zahlen, Datumswerte, Attribute); Seitenwahl in EduKSX-Flow über feste Zuordnung statt
+  Aufruf per Name aus der Adresse; Sign-Filter `sauber()` ohne HTML-Parser (erlaubte Tags fest, Text immer escaped);
+  Codex-Generator entfernt `<script>` unabhängig von Gross-/Kleinschreibung. Lokale CodeQL-Analyse ohne Funde, Anzeige
+  unverändert – EduKSX-Flow 0.6.2, EduKSX-Staffing 0.2.2, EduKSX-Sign 0.2.2, EduKSX-Time 0.4.2, EduKSX-Codex 0.41.2.
 - **Einstellungen per Action (23.11.2026):** Blueprint 62cb40d mit Workflow «Einstellungen anwenden»
   (`einstellungen.yml`): Repository-Einstellungen aus `.github/blueprint.toml` werden nach dem Merge auf main gesetzt;
   braucht das Secret `BLUEPRINT_ADMIN_TOKEN`. Blueprint-Skripte lesen `gh`-Ausgaben immer als UTF-8.

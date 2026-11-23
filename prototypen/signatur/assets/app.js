@@ -9,7 +9,7 @@
   "use strict";
 
   const D = window.SIGN_DATEN;
-  const VERSION = "0.2.1";
+  const VERSION = "0.2.2";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // Einstiegsseite aller Prototypen
   const SPEICHER = "eduksx-sign-v1";
 
@@ -22,14 +22,27 @@
   function jetzt() { const d = new Date(); return `${d.getFullYear()}-${zwei(d.getMonth() + 1)}-${zwei(d.getDate())}T${zwei(d.getHours())}:${zwei(d.getMinutes())}`; }
   function heute() { return jetzt().slice(0, 10); }
   function plusTage(iso, n) { const d = new Date(iso.slice(0, 10) + "T12:00"); d.setDate(d.getDate() + n); return `${d.getFullYear()}-${zwei(d.getMonth() + 1)}-${zwei(d.getDate())}`; }
-  function datum(iso) { if (!iso) return ""; const [j, m, t] = iso.slice(0, 10).split("-"); return `${t}.${m}.${j}`; }
-  function datumZeit(iso) { return iso ? `${datum(iso)} ${iso.slice(11, 16)}` : ""; }
-  function groesse(b) { if (b == null) return "–"; if (b < 1024) return b + " B"; if (b < 1048576) return Math.round(b / 1024) + " KB"; return (b / 1048576).toFixed(1).replace(".", ",") + " MB"; }
+  function datum(iso) { if (!iso) return ""; const [j, m, t] = iso.slice(0, 10).split("-"); return esc(`${t}.${m}.${j}`); }
+  function datumZeit(iso) { return iso ? `${datum(iso)} ${esc(iso.slice(11, 16))}` : ""; }
+  function groesse(b) { if (b == null) return "–"; b = Number(b) || 0; if (b < 1024) return b + " B"; if (b < 1048576) return Math.round(b / 1024) + " KB"; return (b / 1048576).toFixed(1).replace(".", ",") + " MB"; }
   const basis = (name) => name.replace(/\.[^.]+$/, "");
   const endung = (name) => (name.match(/\.([^.]+)$/) || ["", ""])[1].toLowerCase();
+  // Erlaubte Auszeichnungen aus der Bearbeitung (feste Tags ohne Attribute)
+  const ERLAUBTE_TAGS = new Map([["b", ["<b>", "</b>"]], ["i", ["<i>", "</i>"]], ["u", ["<u>", "</u>"]], ["strong", ["<strong>", "</strong>"]], ["em", ["<em>", "</em>"]], ["br", ["<br>", ""]]]);
+  const ENTITAETEN = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: "\u00a0" };
+  const entschluesseln = (t) => t.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (m, n) => {
+    if (n[0] === "#") { const z = n[1].toLowerCase() === "x" ? parseInt(n.slice(2), 16) : parseInt(n.slice(1), 10); return z > 0 && z < 0x110000 ? String.fromCodePoint(z) : ""; }
+    return Object.prototype.hasOwnProperty.call(ENTITAETEN, n.toLowerCase()) ? ENTITAETEN[n.toLowerCase()] : m;
+  });
   function sauber(html) {
-    // Nur einfache Auszeichnungen aus der Bearbeitung übernehmen, alle Attribute entfernen
-    return String(html || "").replace(/<(\/?)([a-z0-9]+)[^>]*>/gi, (m, s, t) => (["b", "i", "u", "strong", "em", "br"].includes(t.toLowerCase()) ? `<${s}${t.toLowerCase()}>` : ""));
+    // Nur einfache Auszeichnungen aus der Bearbeitung übernehmen, ohne HTML-Parser: in Tags und Text zerlegen; erlaubte
+    // Tags als feste Zeichenfolgen neu schreiben, alle anderen Tags entfernen, Text immer escapen.
+    return String(html || "").split(/(<[^>]*>)/).map((teil, i) => {
+      if (i % 2 === 0) return esc(entschluesseln(teil));
+      const m = /^<(\/?)([a-z][a-z0-9]*)\b/i.exec(teil);
+      const fest = m && ERLAUBTE_TAGS.get(m[2].toLowerCase());
+      return fest ? fest[m[1] ? 1 : 0] : "";
+    }).join("");
   }
   const textAus = (html) => { const d = document.createElement("div"); d.innerHTML = sauber(html); return d.textContent || ""; };
   function pruefsumme(obj) {
@@ -55,7 +68,7 @@
   function typVon(name) { const e = endung(name); return Object.keys(TYPEN).find((k) => TYPEN[k].endungen.includes(e)) || "andere"; }
   const signierbar = (d) => d.typ !== "andere";
   const gesperrt = (d) => ["signiert", "versiegelt"].includes(d.status) || !!inSignatur(d);
-  const typBadge = (t) => `<span class="typ ${t}" title="${esc(TYPEN[t].name)}">${TYPEN[t].kurz}</span>`;
+  const typBadge = (t) => `<span class="typ ${esc(t)}" title="${esc(TYPEN[t].name)}">${esc(TYPEN[t].kurz)}</span>`;
 
   const STUFEN = {
     ses: { kurz: "SES", name: "Einfache elektronische Signatur", text: "Bestätigung per Klick und E-Mail. Für interne Bestätigungen und Visa ohne Formvorschrift." },
@@ -169,15 +182,15 @@
   // ---------------------------------------------------------------- Seitenmodell (vereinfachtes PDF)
   function blockHTML(b, ctx) {
     switch (b.t) {
-      case "h1": case "h2": case "p": case "klein": return `<div class="b-${b.t}">${esc(b.x)}</div>`;
-      case "html": return `<div class="b-${b.stil === "p" ? "p" : b.stil}">${sauber(b.html)}</div>`;
+      case "h1": case "h2": case "p": case "klein": return `<div class="b-${esc(b.t)}">${esc(b.x)}</div>`;
+      case "html": return `<div class="b-${b.stil === "p" ? "p" : esc(b.stil)}">${sauber(b.html)}</div>`;
       case "pre": return `<pre>${esc(b.x)}</pre>`;
       case "abstand": return `<div class="b-abstand"></div>`;
       case "linie": return `<div class="b-linie">${esc(b.x)}</div>`;
       case "bild": return b.src ? `<img class="b-bild" src="${esc(b.src)}" alt="">` : "";
       case "tabelle": return `<table><thead><tr>${b.kopf.map((k) => `<th>${esc(k)}</th>`).join("")}</tr></thead><tbody>${b.zeilen.map((z, zi) => `<tr${b.summe && zi === b.zeilen.length - 1 ? ' style="font-weight:700"' : ""}>${z.map((c) => `<td${/^[-+]?[\d'.,:]+$/.test(c) ? ' class="zahl"' : ""}>${esc(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
       case "feld": {
-        const id = `f-${ctx.dokId}-${b.id}`;
+        const id = esc(`f-${ctx.dokId}-${b.id}`);
         if (ctx.formular) {
           if (b.typ === "check") return `<div class="b-feld"><label for="${id}">${esc(b.label)}</label><span><input type="checkbox" id="${id}" data-formfeld="${esc(b.id)}" ${b.wert ? "checked" : ""}></span></div>`;
           return `<div class="b-feld"><label for="${id}">${esc(b.label)}</label><input type="${b.typ === "datum" ? "date" : "text"}" id="${id}" data-formfeld="${esc(b.id)}" value="${esc(b.wert)}"></div>`;
@@ -189,21 +202,21 @@
     }
   }
   function elementHTML(el, ctx) {
-    const pos = `left:${el.x}%;top:${el.y}%;${el.w ? `width:${el.w}%;height:${el.h}%;` : ""}`;
+    const pos = esc(`left:${Number(el.x) || 0}%;top:${Number(el.y) || 0}%;${el.w ? `width:${Number(el.w) || 0}%;height:${Number(el.h) || 0}%;` : ""}`);
     const beweg = ctx.bearbeitbar && el.art !== "sig" && el.art !== "siegel" && el.art !== "fix";
     const cls = `el ${beweg ? "beweglich" : ""} ${E.auswahl === el.id ? "ausgewaehlt" : ""}`;
-    const weg = beweg ? `<button class="weg" data-aktion="el-weg" data-el="${el.id}" aria-label="Element entfernen" title="Entfernen">✕</button>` : "";
+    const weg = beweg ? `<button class="weg" data-aktion="el-weg" data-el="${esc(el.id)}" aria-label="Element entfernen" title="Entfernen">✕</button>` : "";
     switch (el.art) {
       case "text": case "datum": case "fix":
-        return `<div class="${cls} el-${el.art === "datum" ? "datum" : "text"}" style="${pos}" data-el="${el.id}">${ctx.bearbeitbar && el.art !== "fix" ? `<span contenteditable="true" data-eltext="${el.id}" spellcheck="false">${esc(el.text)}</span>` : esc(el.text)}${weg}</div>`;
+        return `<div class="${cls} el-${el.art === "datum" ? "datum" : "text"}" style="${pos}" data-el="${esc(el.id)}">${ctx.bearbeitbar && el.art !== "fix" ? `<span contenteditable="true" data-eltext="${esc(el.id)}" spellcheck="false">${esc(el.text)}</span>` : esc(el.text)}${weg}</div>`;
       case "kommentar":
-        return `<div class="${cls} el-kommentar" style="${pos}" data-el="${el.id}" title="${esc(el.text || "Kommentar")}" role="note" aria-label="Kommentar ${el.nr}: ${esc(el.text)}">${el.nr}${weg}</div>`;
+        return `<div class="${cls} el-kommentar" style="${pos}" data-el="${esc(el.id)}" title="${esc(el.text || "Kommentar")}" role="note" aria-label="Kommentar ${esc(el.nr)}: ${esc(el.text)}">${esc(el.nr)}${weg}</div>`;
       case "feld": {
         if (el.sig) return `<div class="el el-sig" style="${pos}"><img src="${esc(el.sig.img)}" alt="Unterschrift ${esc(el.sig.name)}"><div class="unter">${esc(el.sig.name)} · ${esc(datumZeit(el.sig.zeit))} · ${esc(STUFEN[el.sig.stufe] ? STUFEN[el.sig.stufe].kurz : "")}</div></div>`;
         const idx = ctx.personen ? ctx.personen.findIndex((p) => p.id === el.person) : 0;
         const p = ctx.personen && ctx.personen[idx];
         const mein = ctx.meinFeld && el.person === "ich";
-        return `<div class="${cls} el-feld p${Math.max(0, idx) % 5} ${mein ? "mein" : ""}" style="${pos}" data-el="${el.id}" ${mein ? `data-aktion="${ctx.meinFeld}" tabindex="0" role="button" aria-label="Hier unterschreiben"` : ""}>✍ ${mein ? "Hier unterschreiben" : "Unterschrift"}${p ? `<span class="wer">${idx + 1} · ${esc(p.name)}</span>` : '<span class="wer">noch nicht zugeordnet</span>'}${weg}</div>`;
+        return `<div class="${cls} el-feld p${Math.max(0, idx) % 5} ${mein ? "mein" : ""}" style="${pos}" data-el="${esc(el.id)}" ${mein ? `data-aktion="${esc(ctx.meinFeld)}" tabindex="0" role="button" aria-label="Hier unterschreiben"` : ""}>✍ ${mein ? "Hier unterschreiben" : "Unterschrift"}${p ? `<span class="wer">${idx + 1} · ${esc(p.name)}</span>` : '<span class="wer">noch nicht zugeordnet</span>'}${weg}</div>`;
       }
       case "sig":
         return `<div class="el el-sig" style="${pos}"><img src="${esc(el.img)}" alt="Unterschrift ${esc(el.name)}"><div class="unter">${esc(el.name)} · ${esc(datumZeit(el.zeit))} · ${esc(el.stufe)}</div></div>`;
@@ -215,10 +228,10 @@
   function seitenHTML(seiten, elemente, ctx) {
     return seiten.map((s, i) => {
       const els = (elemente || []).filter((e) => (e.seite || 0) === i).map((e) => elementHTML(e, ctx)).join("");
-      const ph = ctx.platzhalterZeigen ? (s.platzhalter || []).map((p) => `<span class="platzhalter" style="left:${p.x}%;top:${p.y + 6}%">${esc(p.text)}</span>`).join("") : "";
+      const ph = ctx.platzhalterZeigen ? (s.platzhalter || []).map((p) => `<span class="platzhalter" style="left:${esc(p.x)}%;top:${esc(p.y + 6)}%">${esc(p.text)}</span>`).join("") : "";
       const leer = s.leer ? `<div class="leer-hinweis">${esc(s.leer)}</div>` : "";
       return `<div class="seitennr">Seite ${i + 1} von ${seiten.length}</div>
-        <div class="seite ${ctx.platzieren ? "werkzeug-aktiv" : ""}" data-seite="${i}" ${ctx.quelle ? `data-quelle="${ctx.quelle}"` : ""} ${ctx.platzieren ? 'data-platzieren="1"' : ""}>
+        <div class="seite ${ctx.platzieren ? "werkzeug-aktiv" : ""}" data-seite="${i}" ${ctx.quelle ? `data-quelle="${esc(ctx.quelle)}"` : ""} ${ctx.platzieren ? 'data-platzieren="1"' : ""}>
           <div class="fluss">${(s.bloecke || []).map((b) => blockHTML(b, ctx)).join("")}</div>${ph}${leer}${els}
         </div>`;
     }).join("");
@@ -294,8 +307,8 @@
     const laufend = S.prozesse.filter((p) => p.status === "laufend");
     const ausstehend = S.dokumente.filter((d) => d.sync !== "ok").length;
     const zuletzt = S.dokumente.slice().sort((a, b) => b.geaendert.localeCompare(a.geaendert)).slice(0, 6);
-    const zuListe = offen.map((e) => `<li><a href="#/eingang/${e.id}"><strong>${esc(e.titel)}</strong></a><div class="small muted">aus ${wordmark(e.quelle.replace("EduKSX-", ""))} · von ${esc(person(e.von).name)} · Frist ${datum(e.frist)} ${e.frist < heute() ? '<span class="badge fehler">⚠ überfällig</span>' : ""}</div></li>`)
-      .concat(meine.map((p) => `<li><a href="#/prozess/${p.id}"><strong>${esc(p.titel)}</strong></a><div class="small muted">eigener Signaturprozess – Sie sind an der Reihe</div></li>`)).join("");
+    const zuListe = offen.map((e) => `<li><a href="#/eingang/${esc(e.id)}"><strong>${esc(e.titel)}</strong></a><div class="small muted">aus ${wordmark(e.quelle.replace("EduKSX-", ""))} · von ${esc(person(e.von).name)} · Frist ${datum(e.frist)} ${e.frist < heute() ? '<span class="badge fehler">⚠ überfällig</span>' : ""}</div></li>`)
+      .concat(meine.map((p) => `<li><a href="#/prozess/${esc(p.id)}"><strong>${esc(p.titel)}</strong></a><div class="small muted">eigener Signaturprozess – Sie sind an der Reihe</div></li>`)).join("");
     return `
       <div class="seitenkopf"><div><h1>Übersicht</h1><p class="muted">Ihr persönlicher Bereich: Dokumente ablegen, ausfüllen und bearbeiten, Unterschriften einholen und Signaturanfragen aus den anderen Modulen erledigen.</p></div>
         <div class="aktionen"><a class="btn primaer" href="#/ablage">${ICONS.ablage.replace("<svg", '<svg width="16" height="16"')} Meine Ablage</a></div></div>
@@ -303,11 +316,11 @@
         <a class="karte" href="#/eingang" style="text-decoration:none;color:inherit"><div class="titel">Zu unterschreiben</div><div class="zahl">${offen.length + meine.length}</div><div class="small muted">${offen.filter((e) => e.frist < heute()).length} überfällig</div></a>
         <a class="karte" href="#/prozesse" style="text-decoration:none;color:inherit"><div class="titel">Laufende Signaturprozesse</div><div class="zahl">${laufend.length}</div><div class="small muted">${S.prozesse.filter((p) => p.status === "abgeschlossen").length} abgeschlossen</div></a>
         <a class="karte" href="#/ablage" style="text-decoration:none;color:inherit"><div class="titel">Dokumente in der Ablage</div><div class="zahl">${S.dokumente.length}</div><div class="small muted">in ${S.ordner.length} Ordnern</div></a>
-        <a class="karte" href="#/sync" style="text-decoration:none;color:inherit"><div class="titel">Cloud-Ablage</div><div class="zahl">${ausstehend ? "↻ " + ausstehend : "✓"}</div><div class="small muted">${ausstehend ? "Änderungen ausstehend" : "abgeglichen"} · zuletzt ${datumZeit(S.sync.letzte)}</div></a>
+        <a class="karte" href="#/sync" style="text-decoration:none;color:inherit"><div class="titel">Cloud-Ablage</div><div class="zahl">${ausstehend ? "↻ " + ausstehend : "✓"}</div><div class="small muted">${ausstehend ? "Änderungen ausstehend" : "abgeglichen"} · zuletzt ${esc(datumZeit(S.sync.letzte))}</div></a>
       </div>
       <div class="spalten">
         <section class="karte"><h2>Zu unterschreiben</h2>${zuListe ? `<ul class="infoliste">${zuListe}</ul>` : '<p class="muted">Nichts offen. ✓</p>'}</section>
-        <section class="karte"><h2>Zuletzt geändert</h2><ul class="infoliste">${zuletzt.map((d) => `<li><span class="dateiname">${typBadge(d.typ)} <a href="#/dok/${d.id}">${esc(d.name)}</a></span><div class="small muted">${esc(pfadText(d.ordner))} · ${datumZeit(d.geaendert)} ${statusBadge(d)}</div></li>`).join("")}</ul></section>
+        <section class="karte"><h2>Zuletzt geändert</h2><ul class="infoliste">${zuletzt.map((d) => `<li><span class="dateiname">${typBadge(d.typ)} <a href="#/dok/${esc(d.id)}">${esc(d.name)}</a></span><div class="small muted">${esc(pfadText(d.ordner))} · ${datumZeit(d.geaendert)} ${statusBadge(d)}</div></li>`).join("")}</ul></section>
       </div>`;
   }
 
@@ -315,7 +328,7 @@
   function baumHTML(aktiv) {
     const zweig = (eltern) => {
       const k = kinder(eltern); if (!k.length) return "";
-      return `<ul>${k.map((o) => `<li><a href="#/ablage/${o.id}" data-ordner-ziel="${o.id}" ${aktiv === o.id ? 'aria-current="page"' : ""}>${aktiv === o.id ? ICONS.ordnerOffen : ICONS.ordner}<span>${esc(o.name)}</span><span class="anzahl">${anzahlIn(o.id)}</span></a>${zweig(o.id)}</li>`).join("")}</ul>`;
+      return `<ul>${k.map((o) => `<li><a href="#/ablage/${esc(o.id)}" data-ordner-ziel="${esc(o.id)}" ${aktiv === o.id ? 'aria-current="page"' : ""}>${aktiv === o.id ? ICONS.ordnerOffen : ICONS.ordner}<span>${esc(o.name)}</span><span class="anzahl">${anzahlIn(o.id)}</span></a>${zweig(o.id)}</li>`).join("")}</ul>`;
     };
     return `<nav class="baum" aria-label="Ordner"><ul><li><a href="#/ablage" data-ordner-ziel="" ${!aktiv ? 'aria-current="page"' : ""}>${ICONS.ablage}<span><strong>Meine Ablage</strong></span><span class="anzahl">${S.dokumente.length}</span></a>${zweig(null)}</li></ul>
       <p class="small muted" style="margin:.6rem .4rem 0">${S.sync.aktiv ? `⇄ abgeglichen mit<br><span title="${esc(S.sync.ziel)}">${esc(S.sync.ziel)}</span>` : "Abgleich ausgeschaltet"}</p></nav>`;
@@ -323,29 +336,29 @@
   function seiteAblage(oid) {
     if (oid && !ordnerVon(oid)) return `<p>Ordner nicht gefunden. <a href="#/ablage">Zur Ablage</a></p>`;
     const p = pfad(oid);
-    const krumen = `<div class="pfad"><a href="#/ablage">Meine Ablage</a>${p.map((o, i) => ` › ${i === p.length - 1 ? esc(o.name) : `<a href="#/ablage/${o.id}">${esc(o.name)}</a>`}`).join("")}</div>`;
-    const unter = kinder(oid).map((o) => `<tr data-ordner-ziel="${o.id}"><td><span class="dateiname">${ICONS.ordner}<a href="#/ablage/${o.id}">${esc(o.name)}</a></span></td><td><span class="typ ordner">ORDNER</span></td><td>${anzahlIn(o.id)} Dateien</td><td></td>
-      <td><div class="zeilenaktionen"><button class="btn klein" data-aktion="ordner-umbenennen" data-ordner="${o.id}">Umbenennen</button><button class="btn klein gefahr" data-aktion="ordner-loeschen" data-ordner="${o.id}" aria-label="Ordner ${esc(o.name)} löschen">Löschen</button></div></td></tr>`).join("");
-    const dateien = dokumenteIn(oid).map((d) => `<tr draggable="true" data-dok-ziehen="${d.id}">
-      <td><span class="dateiname">${typBadge(d.typ)}<a href="#/dok/${d.id}">${esc(d.name)}</a></span></td>
-      <td>${statusBadge(d)}</td><td>${datumZeit(d.geaendert)}<div class="small muted">v${d.version || 1} · ${groesse(d.groesse)}</div></td><td>${syncBadge(d)}</td>
+    const krumen = `<div class="pfad"><a href="#/ablage">Meine Ablage</a>${p.map((o, i) => ` › ${i === p.length - 1 ? esc(o.name) : `<a href="#/ablage/${esc(o.id)}">${esc(o.name)}</a>`}`).join("")}</div>`;
+    const unter = kinder(oid).map((o) => `<tr data-ordner-ziel="${esc(o.id)}"><td><span class="dateiname">${ICONS.ordner}<a href="#/ablage/${esc(o.id)}">${esc(o.name)}</a></span></td><td><span class="typ ordner">ORDNER</span></td><td>${anzahlIn(o.id)} Dateien</td><td></td>
+      <td><div class="zeilenaktionen"><button class="btn klein" data-aktion="ordner-umbenennen" data-ordner="${esc(o.id)}">Umbenennen</button><button class="btn klein gefahr" data-aktion="ordner-loeschen" data-ordner="${esc(o.id)}" aria-label="Ordner ${esc(o.name)} löschen">Löschen</button></div></td></tr>`).join("");
+    const dateien = dokumenteIn(oid).map((d) => `<tr draggable="true" data-dok-ziehen="${esc(d.id)}">
+      <td><span class="dateiname">${typBadge(d.typ)}<a href="#/dok/${esc(d.id)}">${esc(d.name)}</a></span></td>
+      <td>${statusBadge(d)}</td><td>${datumZeit(d.geaendert)}<div class="small muted">v${esc(d.version || 1)} · ${esc(groesse(d.groesse))}</div></td><td>${syncBadge(d)}</td>
       <td><div class="zeilenaktionen">
-        ${signierbar(d) && !inSignatur(d) && !d.status ? `<button class="btn klein primaer" data-aktion="prozess-start" data-dok="${d.id}">✍ Signieren</button>` : ""}
+        ${signierbar(d) && !inSignatur(d) && !d.status ? `<button class="btn klein primaer" data-aktion="prozess-start" data-dok="${esc(d.id)}">✍ Signieren</button>` : ""}
         <details class="menu"><summary class="btn klein" aria-label="Weitere Aktionen für ${esc(d.name)}">⋯</summary><div class="liste">
-          <a href="#/dok/${d.id}">Öffnen</a>
-          ${signierbar(d) && d.status !== "versiegelt" && !d.siegel ? `<button data-aktion="versiegeln" data-dok="${d.id}">🔏 Versiegeln</button>` : ""}
-          <button data-aktion="umbenennen" data-dok="${d.id}">Umbenennen</button>
-          <button data-aktion="verschieben" data-dok="${d.id}">Verschieben …</button>
-          ${DATEIEN.has(d.id) ? `<a href="${DATEIEN.get(d.id)}" download="${esc(d.name)}">⬇ Herunterladen</a>` : ""}
-          <button data-aktion="loeschen" data-dok="${d.id}" class="gefahr">Löschen …</button>
+          <a href="#/dok/${esc(d.id)}">Öffnen</a>
+          ${signierbar(d) && d.status !== "versiegelt" && !d.siegel ? `<button data-aktion="versiegeln" data-dok="${esc(d.id)}">🔏 Versiegeln</button>` : ""}
+          <button data-aktion="umbenennen" data-dok="${esc(d.id)}">Umbenennen</button>
+          <button data-aktion="verschieben" data-dok="${esc(d.id)}">Verschieben …</button>
+          ${DATEIEN.has(d.id) ? `<a href="${esc(DATEIEN.get(d.id))}" download="${esc(d.name)}">⬇ Herunterladen</a>` : ""}
+          <button data-aktion="loeschen" data-dok="${esc(d.id)}" class="gefahr">Löschen …</button>
         </div></details></div></td></tr>`).join("");
     const leer = !unter && !dateien;
     return `
       <div class="seitenkopf"><div>${krumen}<h1>${esc(oid ? ordnerVon(oid).name : "Meine Ablage")}</h1><p class="muted">Dateien hierher ziehen oder hochladen. Unterstützt: PDF, Word, Excel, Bilder, Text und weitere Formate (abgelegt und abgeglichen; signieren erst nach Umwandlung in PDF). Zeilen lassen sich auf Ordner ziehen.</p></div>
-        <div class="aktionen"><button class="btn" data-aktion="ordner-neu" data-ordner="${oid || ""}">+ Ordner</button>
-          <button class="btn primaer" data-aktion="hochladen-waehlen">⇪ Hochladen</button><input id="hochladen" type="file" multiple hidden data-hochladen="${oid || ""}"></div></div>
+        <div class="aktionen"><button class="btn" data-aktion="ordner-neu" data-ordner="${esc(oid || "")}">+ Ordner</button>
+          <button class="btn primaer" data-aktion="hochladen-waehlen">⇪ Hochladen</button><input id="hochladen" type="file" multiple hidden data-hochladen="${esc(oid || "")}"></div></div>
       <div class="ablage">${baumHTML(oid)}
-        <section class="ablagezone" data-ablagezone="${oid || ""}" aria-label="Dateien in ${esc(oid ? ordnerVon(oid).name : "Meine Ablage")}">
+        <section class="ablagezone" data-ablagezone="${esc(oid || "")}" aria-label="Dateien in ${esc(oid ? ordnerVon(oid).name : "Meine Ablage")}">
           ${leer ? "" : `<div class="tabelle-wrap"><table><thead><tr><th>Name</th><th>Status</th><th>Geändert</th><th>Cloud-Ablage</th><th><span class="sr-only">Aktionen</span></th></tr></thead><tbody>${unter}${dateien}</tbody></table></div>`}
           <div class="dropflaeche">${leer ? "<strong>Dieser Ordner ist leer.</strong><br>" : ""}⇪ Dateien hier ablegen oder <button class="link" data-aktion="hochladen-waehlen">auswählen</button> – sie werden in «${esc(pfadText(oid))}» gespeichert und mit der Cloud-Ablage abgeglichen.</div>
         </section></div>`;
@@ -356,21 +369,21 @@
     const d = dok(id);
     if (!d) return `<p>Dokument nicht gefunden. <a href="#/ablage">Zur Ablage</a></p>`;
     const p = pfad(d.ordner);
-    const krumen = `<div class="pfad"><a href="#/ablage">Meine Ablage</a>${p.map((o) => ` › <a href="#/ablage/${o.id}">${esc(o.name)}</a>`).join("")}</div>`;
+    const krumen = `<div class="pfad"><a href="#/ablage">Meine Ablage</a>${p.map((o) => ` › <a href="#/ablage/${esc(o.id)}">${esc(o.name)}</a>`).join("")}</div>`;
     const lauf = inSignatur(d);
     const sperre = gesperrt(d);
     const aktionen = `
-      ${signierbar(d) && !lauf && !d.status ? `<button class="btn primaer" data-aktion="prozess-start" data-dok="${d.id}">✍ Signaturprozess starten</button>` : ""}
-      ${lauf ? `<a class="btn" href="#/prozess/${lauf.id}">✍ Laufender Prozess</a>` : ""}
-      ${signierbar(d) && d.status !== "versiegelt" && !d.siegel && !lauf ? `<button class="btn" data-aktion="versiegeln" data-dok="${d.id}">🔏 Versiegeln</button>` : ""}
-      ${DATEIEN.has(d.id) ? `<a class="btn" href="${DATEIEN.get(d.id)}" download="${esc(d.name)}">⬇ Original</a>` : ""}
-      <button class="btn" data-aktion="umbenennen" data-dok="${d.id}">Umbenennen</button>`;
+      ${signierbar(d) && !lauf && !d.status ? `<button class="btn primaer" data-aktion="prozess-start" data-dok="${esc(d.id)}">✍ Signaturprozess starten</button>` : ""}
+      ${lauf ? `<a class="btn" href="#/prozess/${esc(lauf.id)}">✍ Laufender Prozess</a>` : ""}
+      ${signierbar(d) && d.status !== "versiegelt" && !d.siegel && !lauf ? `<button class="btn" data-aktion="versiegeln" data-dok="${esc(d.id)}">🔏 Versiegeln</button>` : ""}
+      ${DATEIEN.has(d.id) ? `<a class="btn" href="${esc(DATEIEN.get(d.id))}" download="${esc(d.name)}">⬇ Original</a>` : ""}
+      <button class="btn" data-aktion="umbenennen" data-dok="${esc(d.id)}">Umbenennen</button>`;
     let editor = "";
     if (d.typ === "pdf") editor = pdfEditor(d, sperre);
     else if (d.typ === "docx") editor = wordEditor(d, sperre);
     else if (d.typ === "xlsx") editor = excelEditor(d, sperre);
     else if (d.typ === "bild" || d.typ === "text") editor = `<div class="seitenspalte">${seitenHTML(zuPdfSeiten(d), [], { dokId: d.id })}</div>`;
-    else editor = `<div class="karte"><h2>Keine Vorschau</h2><p>Dateien im Format <code>.${esc(endung(d.name))}</code> werden abgelegt und mit der Cloud-Ablage abgeglichen, aber nicht angezeigt. Zum Signieren das Dokument zuerst als PDF, Word oder Excel speichern.</p>${DATEIEN.has(d.id) ? `<a class="btn" href="${DATEIEN.get(d.id)}" download="${esc(d.name)}">⬇ Herunterladen</a>` : ""}</div>`;
+    else editor = `<div class="karte"><h2>Keine Vorschau</h2><p>Dateien im Format <code>.${esc(endung(d.name))}</code> werden abgelegt und mit der Cloud-Ablage abgeglichen, aber nicht angezeigt. Zum Signieren das Dokument zuerst als PDF, Word oder Excel speichern.</p>${DATEIEN.has(d.id) ? `<a class="btn" href="${esc(DATEIEN.get(d.id))}" download="${esc(d.name)}">⬇ Herunterladen</a>` : ""}</div>`;
     return `
       <div class="seitenkopf"><div>${krumen}<h1><span class="dateiname">${typBadge(d.typ)} ${esc(d.name)}</span></h1><p class="muted">${esc(TYPEN[d.typ].name)} ${statusBadge(d)}</p></div><div class="aktionen">${aktionen}</div></div>
       <div class="dokrahmen"><div>${editor}</div><aside class="seitenleiste">${seitenleisteDok(d)}</aside></div>`;
@@ -379,14 +392,14 @@
   function pdfEditor(d, sperre) {
     const w = (k, sym, txt, tip) => `<button class="btn klein" data-aktion="werkzeug" data-werkzeug="${k}" aria-pressed="${E.werkzeug === k}" title="${esc(tip)}">${sym} ${txt}</button>`;
     const leiste = sperre
-      ? `<div class="werkzeugleiste" role="note">🔒 ${d.status === "versiegelt" || d.siegel ? "Versiegelt" : d.status === "signiert" ? "Signiert" : "Im Signaturprozess"} – nicht mehr veränderbar; jede Änderung würde die Signatur ungültig machen. <span class="rechts"><button class="btn klein" data-aktion="kopie" data-dok="${d.id}">Bearbeitbare Kopie erstellen</button></span></div>`
+      ? `<div class="werkzeugleiste" role="note">🔒 ${d.status === "versiegelt" || d.siegel ? "Versiegelt" : d.status === "signiert" ? "Signiert" : "Im Signaturprozess"} – nicht mehr veränderbar; jede Änderung würde die Signatur ungültig machen. <span class="rechts"><button class="btn klein" data-aktion="kopie" data-dok="${esc(d.id)}">Bearbeitbare Kopie erstellen</button></span></div>`
       : `<div class="werkzeugleiste" role="toolbar" aria-label="Werkzeuge">${w("auswahl", "↖", "Auswählen", "Elemente auswählen und verschieben; Formularfelder ausfüllen")}<span class="trenner"></span>
           ${w("text", "T", "Text", "Klick ins Dokument setzt ein Textfeld")}${w("kommentar", "💬", "Kommentar", "Klick setzt eine Kommentar-Markierung")}${w("datum", "📅", "Datum", "Klick setzt das heutige Datum")}${w("feld", "✍", "Unterschriftsfeld", "Klick setzt ein Unterschriftsfeld (im Signaturprozess übernommen)")}
           <span class="rechts small muted">${E.werkzeug === "auswahl" ? "Formularfelder direkt ausfüllen · Elemente ziehen" : "In die Seite klicken zum Platzieren · Esc beendet"}</span></div>`;
     return `${leiste}<div class="seitenspalte">${seitenHTML(d.inhalt.seiten, d.elemente, { dokId: d.id, formular: !sperre, bearbeitbar: !sperre, platzieren: !sperre && E.werkzeug !== "auswahl", quelle: "dok:" + d.id, personen: [D.ICH], platzhalterZeigen: !sperre })}</div>`;
   }
   function wordEditor(d, sperre) {
-    const abs = d.inhalt.absaetze.map((a, i) => `<div class="s-${a.stil}" ${sperre ? "" : 'contenteditable="true"'} data-absatz="${i}" role="textbox" aria-label="Absatz ${i + 1}" aria-multiline="true">${sauber(a.html)}</div>`).join("");
+    const abs = d.inhalt.absaetze.map((a, i) => `<div class="s-${esc(a.stil)}" ${sperre ? "" : 'contenteditable="true"'} data-absatz="${i}" role="textbox" aria-label="Absatz ${i + 1}" aria-multiline="true">${sauber(a.html)}</div>`).join("");
     const leiste = sperre ? `<div class="werkzeugleiste" role="note">🔒 Gesperrt, solange das Dokument im Signaturprozess ist.</div>`
       : `<div class="werkzeugleiste" role="toolbar" aria-label="Formatierung">
           <button class="btn klein" data-aktion="format" data-befehl="bold" title="Fett (Strg+B)"><b>F</b></button>
@@ -395,8 +408,8 @@
           <button class="btn klein" data-aktion="absatz-stil" data-stil="h2" title="Aktuellen Absatz als Überschrift">Überschrift</button>
           <button class="btn klein" data-aktion="absatz-stil" data-stil="p" title="Aktuellen Absatz als Text">Text</button>
           <button class="btn klein" data-aktion="absatz-neu" title="Absatz am Ende anfügen">¶ Absatz</button>
-          <span class="rechts"><span class="small muted" id="word-stand">${E.wordGeaendert ? "● ungespeichert" : "✓ gespeichert"}</span><button class="btn klein primaer" data-aktion="word-speichern" data-dok="${d.id}">Speichern</button></span></div>`;
-    return `${leiste}<div class="seitenspalte"><div class="wordblatt ${sperre ? "gesperrt" : ""}" data-word="${d.id}">${abs}</div></div>`;
+          <span class="rechts"><span class="small muted" id="word-stand">${E.wordGeaendert ? "● ungespeichert" : "✓ gespeichert"}</span><button class="btn klein primaer" data-aktion="word-speichern" data-dok="${esc(d.id)}">Speichern</button></span></div>`;
+    return `${leiste}<div class="seitenspalte"><div class="wordblatt ${sperre ? "gesperrt" : ""}" data-word="${esc(d.id)}">${abs}</div></div>`;
   }
   function excelEditor(d, sperre) {
     const z = d.inhalt.zellen; const sp = d.inhalt.summeSpalte;
@@ -404,22 +417,22 @@
     const summe = sp != null ? z.slice(1).reduce((a, r) => a + (parseFloat(String(r[sp]).replace(/'/g, "")) || 0), 0) : null;
     const zeilen = z.map((r, ri) => `<tr><td class="zeilenkopf">${ri + 1}</td>${r.map((c, ci) => `<td>${sperre ? esc(c) : `<input aria-label="Zelle ${buchst(ci)}${ri + 1}" data-zelle="${ri},${ci}" value="${esc(c)}" ${ri === 0 ? 'style="font-weight:600"' : ""}>`}</td>`).join("")}</tr>`).join("");
     const tot = summe != null ? `<tr class="summe"><td class="zeilenkopf">Σ</td>${z[0].map((_, ci) => `<td class="${ci === sp ? "zahl" : ""}">${ci === 0 ? "Total" : ci === sp ? summe.toFixed(2) : ""}</td>`).join("")}</tr>` : "";
-    return `<div class="werkzeugleiste">${sperre ? "🔒 Gesperrt (im Signaturprozess)." : `<button class="btn klein" data-aktion="zeile-neu" data-dok="${d.id}">+ Zeile</button><span class="rechts small muted">Zellen direkt bearbeiten – wird sofort gespeichert. Zum Signieren wird die Tabelle in PDF/A umgewandelt.</span>`}</div>
+    return `<div class="werkzeugleiste">${sperre ? "🔒 Gesperrt (im Signaturprozess)." : `<button class="btn klein" data-aktion="zeile-neu" data-dok="${esc(d.id)}">+ Zeile</button><span class="rechts small muted">Zellen direkt bearbeiten – wird sofort gespeichert. Zum Signieren wird die Tabelle in PDF/A umgewandelt.</span>`}</div>
       <h2>${esc(d.inhalt.titel || "")}</h2>
       <div class="tabellenblatt"><table><thead><tr><th class="zeilenkopf"></th>${z[0].map((_, i) => `<th>${buchst(i)}</th>`).join("")}</tr></thead><tbody>${zeilen}${tot}</tbody></table></div>`;
   }
   function seitenleisteDok(d) {
     const info = `<section class="karte"><h2>Angaben</h2><div class="feldliste small">
       <div class="feldzeile"><span>Ordner</span><span>${esc(pfadText(d.ordner))}</span></div>
-      <div class="feldzeile"><span>Grösse</span><span>${groesse(d.groesse)}</span></div>
-      <div class="feldzeile"><span>Version</span><span>${d.version || 1}</span></div>
+      <div class="feldzeile"><span>Grösse</span><span>${esc(groesse(d.groesse))}</span></div>
+      <div class="feldzeile"><span>Version</span><span>${esc(d.version || 1)}</span></div>
       <div class="feldzeile"><span>Geändert</span><span>${datumZeit(d.geaendert)}</span></div>
       <div class="feldzeile"><span>Cloud-Ablage</span><span>${syncBadge(d)}</span></div></div>
-      ${d.sync === "konflikt" ? `<div class="meldung fehler small" style="margin:.6rem 0 0">⚠ Die Datei wurde gleichzeitig in der Cloud-Ablage geändert. Die Cloud-Fassung liegt als «… (Konflikt Cloud)» daneben.<div style="margin-top:.4rem"><button class="btn klein" data-aktion="konflikt-loesen" data-dok="${d.id}">Diese Fassung behalten</button></div></div>` : ""}</section>`;
+      ${d.sync === "konflikt" ? `<div class="meldung fehler small" style="margin:.6rem 0 0">⚠ Die Datei wurde gleichzeitig in der Cloud-Ablage geändert. Die Cloud-Fassung liegt als «… (Konflikt Cloud)» daneben.<div style="margin-top:.4rem"><button class="btn klein" data-aktion="konflikt-loesen" data-dok="${esc(d.id)}">Diese Fassung behalten</button></div></div>` : ""}</section>`;
     let kommentare = "";
     if (d.typ === "pdf" && !(gesperrt(d) && !(d.elemente || []).some((e) => e.art === "kommentar"))) {
       const k = (d.elemente || []).filter((e) => e.art === "kommentar");
-      kommentare = `<section class="karte"><h2>💬 Kommentare</h2>${k.length ? `<ul class="kommentarliste">${k.map((e) => `<li><label class="small" for="k-${e.id}"><strong>${e.nr}</strong> · Seite ${e.seite + 1} · ${esc(D.ICH.name)}</label>${gesperrt(d) ? `<div>${esc(e.text)}</div>` : `<textarea id="k-${e.id}" data-kommentar="${e.id}" placeholder="Kommentar schreiben …">${esc(e.text)}</textarea>`}</li>`).join("")}</ul>` : '<p class="small muted">Noch keine Kommentare. Werkzeug «Kommentar» wählen und in die Seite klicken.</p>'}</section>`;
+      kommentare = `<section class="karte"><h2>💬 Kommentare</h2>${k.length ? `<ul class="kommentarliste">${k.map((e) => `<li><label class="small" for="k-${esc(e.id)}"><strong>${esc(e.nr)}</strong> · Seite ${esc(e.seite + 1)} · ${esc(D.ICH.name)}</label>${gesperrt(d) ? `<div>${esc(e.text)}</div>` : `<textarea id="k-${esc(e.id)}" data-kommentar="${esc(e.id)}" placeholder="Kommentar schreiben …">${esc(e.text)}</textarea>`}</li>`).join("")}</ul>` : '<p class="small muted">Noch keine Kommentare. Werkzeug «Kommentar» wählen und in die Seite klicken.</p>'}</section>`;
     }
     let pruefung = "";
     if (d.signaturen && d.signaturen.length || d.siegel) {
@@ -455,18 +468,18 @@
     if (!p) return `<p>Signaturprozess nicht gefunden. <a href="#/prozesse">Zur Liste</a></p>`;
     if (p.status !== "entwurf") return prozessDetail(p);
     const d = dok(p.dokId);
-    const kette = `<ol class="schritte" aria-label="Schritte">${SCHRITTE.map((s, i) => `<li class="${i < p.schritt ? "erledigt" : i === p.schritt ? "aktuell" : ""}" ${i === p.schritt ? 'aria-current="step"' : ""}>${i < p.schritt ? `<button data-aktion="schritt" data-p="${p.id}" data-s="${i}">${esc(s)}</button>` : esc(s)}</li>`).join("")}</ol>`;
+    const kette = `<ol class="schritte" aria-label="Schritte">${SCHRITTE.map((s, i) => `<li class="${i < p.schritt ? "erledigt" : i === p.schritt ? "aktuell" : ""}" ${i === p.schritt ? 'aria-current="step"' : ""}>${i < p.schritt ? `<button data-aktion="schritt" data-p="${esc(p.id)}" data-s="${i}">${esc(s)}</button>` : esc(s)}</li>`).join("")}</ol>`;
     let inhalt = "";
     if (p.schritt === 0) inhalt = schrittDokument(p, d);
     else if (p.schritt === 1) inhalt = schrittPersonen(p);
     else if (p.schritt === 2) inhalt = schrittFelder(p);
     else inhalt = schrittSenden(p, d);
-    return `<div class="seitenkopf"><div><div class="pfad"><a href="#/prozesse">Signaturprozesse</a> › Neu</div><h1>Signaturprozess: ${esc(p.titel)}</h1><p class="muted">Quelle: ${d ? `<a href="#/dok/${d.id}">${esc(pfadText(d.ordner))} / ${esc(d.name)}</a>` : esc(p.quelleName)}</p></div>
-      <div class="aktionen"><button class="btn gefahr" data-aktion="entwurf-verwerfen" data-p="${p.id}">Entwurf verwerfen</button></div></div>${kette}${inhalt}`;
+    return `<div class="seitenkopf"><div><div class="pfad"><a href="#/prozesse">Signaturprozesse</a> › Neu</div><h1>Signaturprozess: ${esc(p.titel)}</h1><p class="muted">Quelle: ${d ? `<a href="#/dok/${esc(d.id)}">${esc(pfadText(d.ordner))} / ${esc(d.name)}</a>` : esc(p.quelleName)}</p></div>
+      <div class="aktionen"><button class="btn gefahr" data-aktion="entwurf-verwerfen" data-p="${esc(p.id)}">Entwurf verwerfen</button></div></div>${kette}${inhalt}`;
   }
   function weiterLeiste(p, ok, grund) {
-    return `<div class="formzeile" style="margin-top:1rem;justify-content:space-between">${p.schritt > 0 ? `<button class="btn" data-aktion="schritt" data-p="${p.id}" data-s="${p.schritt - 1}">← Zurück</button>` : "<span></span>"}
-      <span>${!ok && grund ? `<span class="small muted" style="margin-right:.6rem">${esc(grund)}</span>` : ""}<button class="btn primaer" data-aktion="schritt" data-p="${p.id}" data-s="${p.schritt + 1}" ${ok ? "" : "disabled"}>Weiter →</button></span></div>`;
+    return `<div class="formzeile" style="margin-top:1rem;justify-content:space-between">${p.schritt > 0 ? `<button class="btn" data-aktion="schritt" data-p="${esc(p.id)}" data-s="${p.schritt - 1}">← Zurück</button>` : "<span></span>"}
+      <span>${!ok && grund ? `<span class="small muted" style="margin-right:.6rem">${esc(grund)}</span>` : ""}<button class="btn primaer" data-aktion="schritt" data-p="${esc(p.id)}" data-s="${esc(p.schritt + 1)}" ${ok ? "" : "disabled"}>Weiter →</button></span></div>`;
   }
   function schrittDokument(p, d) {
     if (!d) return `<div class="meldung fehler">Das Quelldokument wurde gelöscht.</div>`;
@@ -475,24 +488,24 @@
     const vorschau = p.umgewandelt ? `<div class="seitenspalte" style="margin-top:1rem">${seitenHTML(p.seiten, p.elementeFix, { dokId: p.id })}</div>` : "";
     return `<section class="karte"><h2>1. Dokument für die Signatur vorbereiten</h2>
       <p class="muted">Signiert wird immer ein PDF/A (Langzeitformat). ${umwandeln ? "Word-, Excel-, Text- und Bilddateien werden zuerst umgewandelt; das Original bleibt unverändert in der Ablage." : "Das PDF wird als PDF/A-2b normalisiert: Schriften eingebettet, ausgefüllte Formularfelder und gesetzte Texte fest übernommen."}</p>
-      <div class="umwandlung"><div class="karte"><div class="dateiname">${typBadge(d.typ)} <strong>${esc(d.name)}</strong></div><div class="small muted">${esc(TYPEN[d.typ].name)} · ${groesse(d.groesse)} · v${d.version || 1}</div></div>
+      <div class="umwandlung"><div class="karte"><div class="dateiname">${typBadge(d.typ)} <strong>${esc(d.name)}</strong></div><div class="small muted">${esc(TYPEN[d.typ].name)} · ${groesse(d.groesse)} · v${esc(d.version || 1)}</div></div>
         <div class="pfeil" aria-hidden="true">→</div>
         <div class="karte"><div class="dateiname">${typBadge("pdf")} <strong>${esc(ziel)}</strong></div><div class="small muted">${p.umgewandelt ? `✓ PDF/A-2b · ${p.seiten.length} Seite(n) · ${esc(datumZeit(p.umgewandeltAm))}` : "PDF/A-2b – noch nicht erstellt"}</div></div></div>
-      <div style="margin-top:.8rem">${p.umgewandelt ? `<span class="badge erfolg">✓ Bereit zur Signatur</span> <button class="btn klein" data-aktion="umwandeln" data-p="${p.id}">Erneut umwandeln</button>` : `<button class="btn primaer" data-aktion="umwandeln" data-p="${p.id}">${umwandeln ? "In PDF/A umwandeln" : "Als PDF/A vorbereiten"}</button><div class="fortschritt" style="margin-top:.6rem;max-width:420px" hidden id="umw-fortschritt"><span></span></div>`}</div>
+      <div style="margin-top:.8rem">${p.umgewandelt ? `<span class="badge erfolg">✓ Bereit zur Signatur</span> <button class="btn klein" data-aktion="umwandeln" data-p="${esc(p.id)}">Erneut umwandeln</button>` : `<button class="btn primaer" data-aktion="umwandeln" data-p="${esc(p.id)}">${umwandeln ? "In PDF/A umwandeln" : "Als PDF/A vorbereiten"}</button><div class="fortschritt" style="margin-top:.6rem;max-width:420px" hidden id="umw-fortschritt"><span></span></div>`}</div>
       ${umwandeln ? `<label class="small" style="display:block;margin-top:.7rem"><input type="checkbox" data-pfeld="pdfaAblegen" ${p.pdfaAblegen ? "checked" : ""}> PDF/A-Datei zusätzlich unsigniert im Ordner ablegen</label>` : ""}
       ${vorschau}</section>${weiterLeiste(p, p.umgewandelt, "Zuerst umwandeln.")}`;
   }
   function schrittPersonen(p) {
-    const opts = (sel) => `<option value="ich" ${sel === "ich" ? "selected" : ""}>${esc(D.ICH.name)} (ich)</option>${D.PERSONEN.map((x) => `<option value="${x.id}" ${sel === x.id ? "selected" : ""}>${esc(x.name)} – ${esc(x.funktion)}</option>`).join("")}${sel && sel.startsWith("x-") ? `<option value="${sel}" selected>${esc(p.personen.find((x) => x.id === sel).name)} (extern)</option>` : ""}<option value="extern">Externe Person …</option>`;
+    const opts = (sel) => `<option value="ich" ${sel === "ich" ? "selected" : ""}>${esc(D.ICH.name)} (ich)</option>${D.PERSONEN.map((x) => `<option value="${esc(x.id)}" ${sel === x.id ? "selected" : ""}>${esc(x.name)} – ${esc(x.funktion)}</option>`).join("")}${sel && sel.startsWith("x-") ? `<option value="${esc(sel)}" selected>${esc(p.personen.find((x) => x.id === sel).name)} (extern)</option>` : ""}<option value="extern">Externe Person …</option>`;
     const zeilen = p.personen.map((x, i) => `<div class="personzeile"><span class="nr p${i % 5}" aria-hidden="true">${i + 1}</span>
       <label><span class="sr-only">Person ${i + 1}</span><select data-person-idx="${i}" style="width:100%">${opts(x.id)}</select><div class="small muted">${esc(x.mail)}</div></label>
       <label><span class="sr-only">Rolle</span><select data-rolle-idx="${i}" style="width:100%">${Object.entries(ROLLEN).map(([k, v]) => `<option value="${k}" ${x.rolle === k ? "selected" : ""}>${v}</option>`).join("")}</select></label>
-      <button class="btn klein" data-aktion="person-weg" data-p="${p.id}" data-i="${i}" ${p.personen.length < 2 ? "disabled" : ""} aria-label="Person ${i + 1} entfernen">✕</button></div>`).join("");
+      <button class="btn klein" data-aktion="person-weg" data-p="${esc(p.id)}" data-i="${i}" ${p.personen.length < 2 ? "disabled" : ""} aria-label="Person ${i + 1} entfernen">✕</button></div>`).join("");
     const unterschreibende = p.personen.filter((x) => x.rolle === "unterschreiben").length;
     const doppelt = new Set(p.personen.map((x) => x.id)).size !== p.personen.length;
-    const stufen = Object.entries(STUFEN).map(([k, s]) => `<label class="wahlkarte"><span><input type="radio" name="stufe" data-pfeld="stufe" value="${k}" ${p.stufe === k ? "checked" : ""}><strong>${s.kurz}</strong> – ${esc(s.name)}</span><span class="small">${esc(s.text)}</span></label>`).join("");
+    const stufen = Object.entries(STUFEN).map(([k, s]) => `<label class="wahlkarte"><span><input type="radio" name="stufe" data-pfeld="stufe" value="${k}" ${p.stufe === k ? "checked" : ""}><strong>${esc(s.kurz)}</strong> – ${esc(s.name)}</span><span class="small">${esc(s.text)}</span></label>`).join("");
     return `<div class="spalten"><section class="karte"><h2>2. Wer unterschreibt?</h2>${zeilen}
-        <div class="formzeile" style="margin-top:.7rem"><button class="btn" data-aktion="person-neu" data-p="${p.id}">+ Person</button></div>
+        <div class="formzeile" style="margin-top:.7rem"><button class="btn" data-aktion="person-neu" data-p="${esc(p.id)}">+ Person</button></div>
         <fieldset style="border:none;padding:0;margin:.5rem 0 0"><legend class="small muted">Reihenfolge</legend>
           <label class="small" style="margin-right:1rem"><input type="radio" name="reihenfolge" data-pfeld="reihenfolge" value="nacheinander" ${p.reihenfolge === "nacheinander" ? "checked" : ""}> nacheinander (in der Reihenfolge der Liste)</label>
           <label class="small"><input type="radio" name="reihenfolge" data-pfeld="reihenfolge" value="gleichzeitig" ${p.reihenfolge === "gleichzeitig" ? "checked" : ""}> gleichzeitig (Genehmigende zuerst)</label></fieldset></section>
@@ -522,7 +535,7 @@
         <div class="werkzeugleiste" role="toolbar" aria-label="Unterschriftsfelder"><span class="small muted">Feld setzen für:</span> ${knoepfe}<span class="rechts small muted">Klick in die Seite setzt ein Feld · Felder ziehen zum Verschieben</span></div>
         <div class="seitenspalte">${seitenHTML(p.seiten, p.elementeFix.concat(p.felder.map((f) => Object.assign({ art: "feld" }, f))), { dokId: p.id, bearbeitbar: true, platzieren: true, quelle: "prozess:" + p.id, personen: p.personen, platzhalterZeigen: true })}</div></div>
       <aside class="seitenleiste"><section class="karte"><h2>3. Felder platzieren</h2><ul class="infoliste" style="list-style:none">${liste}</ul>
-        ${anzahlPh ? `<p class="small" style="margin-top:.6rem">${anzahlPh} Platzhalter (<code>#sign#n#</code>) im Dokument erkannt${p.platzhalterUebernommen ? " und übernommen" : ""}. <button class="link small" data-aktion="platzhalter" data-p="${p.id}">Erneut übernehmen</button></p>` : ""}
+        ${anzahlPh ? `<p class="small" style="margin-top:.6rem">${anzahlPh} Platzhalter (<code>#sign#n#</code>) im Dokument erkannt${p.platzhalterUebernommen ? " und übernommen" : ""}. <button class="link small" data-aktion="platzhalter" data-p="${esc(p.id)}">Erneut übernehmen</button></p>` : ""}
         <p class="small muted">Wie im Signaturdienst: Personen erhalten nur ihre eigenen Felder. Mehrere Felder pro Person sind möglich (z. B. Visum auf jeder Seite).</p></section></aside></div>
       ${weiterLeiste(p, !fehlt.length, fehlt.length ? `Feld fehlt für ${fehlt.map(([x]) => x.name).join(", ")}.` : "")}`;
   }
@@ -536,11 +549,11 @@
       <section class="karte"><h2>Zusammenfassung</h2><div class="feldliste small">
         <div class="feldzeile"><span>Dokument</span><span>${esc(basis(p.quelleName))}.pdf · PDF/A-2b · ${p.seiten.length} S.</span></div>
         <div class="feldzeile"><span>Signaturstufe</span><span>${STUFEN[p.stufe].kurz} · ${esc(RECHTSRAUM[p.rechtsraum])}</span></div>
-        <div class="feldzeile"><span>Reihenfolge</span><span>${p.reihenfolge}</span></div>
+        <div class="feldzeile"><span>Reihenfolge</span><span>${esc(p.reihenfolge)}</span></div>
         ${p.personen.map((x, i) => `<div class="feldzeile"><span><span class="nr p${i % 5}" aria-hidden="true">${i + 1}</span> ${esc(x.name)}</span><span>${ROLLEN[x.rolle]}${x.rolle === "unterschreiben" ? ` · ${p.felder.filter((f) => f.person === x.id).length} Feld(er)` : ""}</span></div>`).join("")}
         <div class="feldzeile"><span>Ergebnis</span><span>${esc(pfadText(d ? d.ordner : null))} / <strong>${esc(zielName)}</strong></span></div></div></section></div>
-      <div class="formzeile" style="margin-top:1rem;justify-content:space-between"><button class="btn" data-aktion="schritt" data-p="${p.id}" data-s="2">← Zurück</button>
-        <button class="btn primaer" data-aktion="senden" data-p="${p.id}">✉ Signaturprozess starten</button></div>`;
+      <div class="formzeile" style="margin-top:1rem;justify-content:space-between"><button class="btn" data-aktion="schritt" data-p="${esc(p.id)}" data-s="2">← Zurück</button>
+        <button class="btn primaer" data-aktion="senden" data-p="${esc(p.id)}">✉ Signaturprozess starten</button></div>`;
   }
 
   // ---------------------------------------------------------------- Signaturprozess: Ablauf
@@ -619,8 +632,8 @@
     const zeilen = p.personen.map((x, i) => {
       let aktion = "";
       if (akt.includes(x.id)) {
-        if (x.id === "ich") aktion = `<button class="btn klein primaer" data-aktion="ich-unterschreibe" data-p="${p.id}">✍ ${x.rolle === "genehmigen" ? "Genehmigen" : "Jetzt unterschreiben"}</button>`;
-        else aktion = `<button class="btn klein" data-aktion="sim-ok" data-p="${p.id}" data-pid="${x.id}" title="Simuliert die Handlung der Person">↩ ${x.rolle === "genehmigen" ? "Genehmigung" : "Unterschrift"} simulieren</button> <button class="btn klein gefahr" data-aktion="sim-nein" data-p="${p.id}" data-pid="${x.id}">Ablehnung simulieren</button>`;
+        if (x.id === "ich") aktion = `<button class="btn klein primaer" data-aktion="ich-unterschreibe" data-p="${esc(p.id)}">✍ ${x.rolle === "genehmigen" ? "Genehmigen" : "Jetzt unterschreiben"}</button>`;
+        else aktion = `<button class="btn klein" data-aktion="sim-ok" data-p="${esc(p.id)}" data-pid="${esc(x.id)}" title="Simuliert die Handlung der Person">↩ ${x.rolle === "genehmigen" ? "Genehmigung" : "Unterschrift"} simulieren</button> <button class="btn klein gefahr" data-aktion="sim-nein" data-p="${esc(p.id)}" data-pid="${esc(x.id)}">Ablehnung simulieren</button>`;
       }
       const s = x.rolle === "kopie" ? (p.status === "abgeschlossen" ? '<span class="badge neutral">✉ Kopie erhalten</span>' : '<span class="badge neutral">erhält Kopie</span>')
         : x.status === "unterschrieben" ? `<span class="badge erfolg">✓ ${x.rolle === "genehmigen" ? "genehmigt" : "unterschrieben"}</span>`
@@ -632,8 +645,8 @@
     const ctx = { dokId: p.id, personen: p.personen, meinFeld: akt.includes("ich") ? "ich-unterschreibe" : null };
     const els = p.elementeFix.concat(p.felder.map((f) => Object.assign({ art: "feld" }, f)));
     return `<div class="seitenkopf"><div><div class="pfad"><a href="#/prozesse">Signaturprozesse</a> › ${esc(p.id)}</div><h1>${esc(p.titel)} <span class="badge ${st[0]}">${st[1]}</span></h1>
-        <p class="muted">${STUFEN[p.stufe].kurz} · ${esc(RECHTSRAUM[p.rechtsraum])} · ${p.reihenfolge} · Frist ${datum(p.frist)}${p.versiegeln ? " · wird versiegelt" : ""}</p></div>
-      <div class="aktionen">${erg ? `<a class="btn primaer" href="#/dok/${erg.id}">📄 ${esc(erg.name)} öffnen</a>` : ""}${p.status === "laufend" ? `<button class="btn" data-aktion="erinnern" data-p="${p.id}">✉ Erinnern</button><button class="btn gefahr" data-aktion="zurueckziehen" data-p="${p.id}">Zurückziehen …</button>` : ""}</div></div>
+        <p class="muted">${STUFEN[p.stufe].kurz} · ${esc(RECHTSRAUM[p.rechtsraum])} · ${esc(p.reihenfolge)} · Frist ${datum(p.frist)}${p.versiegeln ? " · wird versiegelt" : ""}</p></div>
+      <div class="aktionen">${erg ? `<a class="btn primaer" href="#/dok/${esc(erg.id)}">📄 ${esc(erg.name)} öffnen</a>` : ""}${p.status === "laufend" ? `<button class="btn" data-aktion="erinnern" data-p="${esc(p.id)}">✉ Erinnern</button><button class="btn gefahr" data-aktion="zurueckziehen" data-p="${esc(p.id)}">Zurückziehen …</button>` : ""}</div></div>
       ${akt.includes("ich") ? `<div class="meldung info">✍ Sie sind an der Reihe. Auf Ihr Feld im Dokument klicken oder «Jetzt unterschreiben».</div>` : ""}
       <div class="tabelle-wrap"><table><thead><tr><th></th><th>Person</th><th>Rolle</th><th>Status</th><th>Aktion</th></tr></thead><tbody>${zeilen}</tbody></table></div>
       <div class="dokrahmen" style="margin-top:1rem"><div class="seitenspalte">${seitenHTML(p.seiten, els, ctx)}</div>
@@ -645,7 +658,7 @@
       const st = { entwurf: ["neutral", "✎ Entwurf"], laufend: ["info", "↻ läuft"], abgeschlossen: ["erfolg", "✓ abgeschlossen"], abgelehnt: ["fehler", "✕ abgelehnt"], zurueckgezogen: ["neutral", "– zurückgezogen"] }[p.status];
       const fertig = p.personen.filter((x) => x.rolle !== "kopie" && x.status === "unterschrieben").length, alle = p.personen.filter((x) => x.rolle !== "kopie").length;
       const an = aktivePersonen(p).map((x) => x.id === "ich" ? "Sie" : x.name).join(", ");
-      return `<tr><td><a href="#/prozess/${p.id}">${esc(p.titel)}</a><div class="small muted">${esc(p.quelleName)}</div></td><td><span class="badge ${st[0]}">${st[1]}</span></td><td>${p.status === "entwurf" ? "–" : `${fertig} / ${alle}`}${an ? `<div class="small muted">an der Reihe: ${esc(an)}</div>` : ""}</td><td>${STUFEN[p.stufe].kurz}</td><td>${datumZeit(p.gesendet || p.erstellt)}</td></tr>`;
+      return `<tr><td><a href="#/prozess/${esc(p.id)}">${esc(p.titel)}</a><div class="small muted">${esc(p.quelleName)}</div></td><td><span class="badge ${st[0]}">${st[1]}</span></td><td>${p.status === "entwurf" ? "–" : `${fertig} / ${alle}`}${an ? `<div class="small muted">an der Reihe: ${esc(an)}</div>` : ""}</td><td>${STUFEN[p.stufe].kurz}</td><td>${datumZeit(p.gesendet || p.erstellt)}</td></tr>`;
     }).join("");
     return `<div class="seitenkopf"><div><h1>Signaturprozesse</h1><p class="muted">Von Ihnen gestartete Prozesse. Neue Prozesse starten Sie in der Ablage mit «✍ Signieren».</p></div><div class="aktionen"><a class="btn primaer" href="#/ablage">Dokument wählen</a></div></div>
       ${zeilen ? `<div class="tabelle-wrap"><table><thead><tr><th>Dokument</th><th>Status</th><th>Unterschriften</th><th>Stufe</th><th>Gestartet</th></tr></thead><tbody>${zeilen}</tbody></table></div>` : '<div class="karte"><p>Noch keine Signaturprozesse. Tipp: <a href="#/dok/d-laptop">Vereinbarung Laptop-Ausleihe</a> enthält Platzhalter für zwei Unterschriften, <a href="#/dok/d-ziel">Zielvereinbarung 2026</a> ist ein Word-Dokument, das zuerst in PDF/A umgewandelt wird.</p></div>'}`;
@@ -655,11 +668,11 @@
   function seiteEingang() {
     const zeilen = S.eingang.map((e) => {
       const st = e.status === "offen" ? (e.frist < heute() ? '<span class="badge fehler">⚠ überfällig</span>' : '<span class="badge warnung">● offen</span>') : e.status === "unterschrieben" ? '<span class="badge erfolg">✓ unterschrieben</span>' : '<span class="badge fehler">✕ abgelehnt</span>';
-      return `<tr><td><a href="#/eingang/${e.id}">${esc(e.titel)}</a><div class="small muted">${esc(e.datei)}</div></td><td>${wordmark(e.quelle.replace("EduKSX-", ""))}</td><td>${esc(person(e.von).name)}<div class="small muted">${esc(person(e.von).funktion)}</div></td><td>${datum(e.erhalten)}</td><td>${datum(e.frist)}</td><td>${STUFEN[e.stufe].kurz}</td><td>${st}</td></tr>`;
+      return `<tr><td><a href="#/eingang/${esc(e.id)}">${esc(e.titel)}</a><div class="small muted">${esc(e.datei)}</div></td><td>${wordmark(e.quelle.replace("EduKSX-", ""))}</td><td>${esc(person(e.von).name)}<div class="small muted">${esc(person(e.von).funktion)}</div></td><td>${datum(e.erhalten)}</td><td>${datum(e.frist)}</td><td>${STUFEN[e.stufe].kurz}</td><td>${st}</td></tr>`;
     }).join("");
     const meine = meineZuge();
     return `<div class="seitenkopf"><div><h1>Zu unterschreiben</h1><p class="muted">Signaturanfragen an Sie – aus den anderen ${wordmark()}-Modulen oder von Kolleg:innen. Unterschreiben Sie direkt im Dokument.</p></div><div class="aktionen"><a class="btn" href="#/einbindung">Anfrage aus einem Modul simulieren</a></div></div>
-      ${meine.length ? `<div class="meldung info">✍ In eigenen Signaturprozessen sind Sie an der Reihe: ${meine.map((p) => `<a href="#/prozess/${p.id}">${esc(p.titel)}</a>`).join(", ")}</div>` : ""}
+      ${meine.length ? `<div class="meldung info">✍ In eigenen Signaturprozessen sind Sie an der Reihe: ${meine.map((p) => `<a href="#/prozess/${esc(p.id)}">${esc(p.titel)}</a>`).join(", ")}</div>` : ""}
       ${zeilen ? `<div class="tabelle-wrap"><table><thead><tr><th>Dokument</th><th>Aus</th><th>Von</th><th>Erhalten</th><th>Frist</th><th>Stufe</th><th>Status</th></tr></thead><tbody>${zeilen}</tbody></table></div>` : '<p class="muted">Keine Anfragen.</p>'}`;
   }
   function seiteEingangDok(id) {
@@ -669,7 +682,7 @@
     const ctx = { dokId: e.id, personen: [D.ICH], meinFeld: offen ? "eingang-unterschreiben" : null };
     return `<div class="seitenkopf"><div><div class="pfad"><a href="#/eingang">Zu unterschreiben</a> › ${esc(e.datei)}</div><h1>${esc(e.titel)}</h1>
         <p class="muted">aus ${wordmark(e.quelle.replace("EduKSX-", ""))} · von ${esc(person(e.von).name)} · Frist ${datum(e.frist)} · ${STUFEN[e.stufe].kurz} · ${esc(RECHTSRAUM[e.rechtsraum])}</p></div>
-      <div class="aktionen">${offen ? `<button class="btn primaer" data-aktion="eingang-unterschreiben" data-e="${e.id}">✍ Unterschreiben</button><button class="btn gefahr" data-aktion="eingang-ablehnen" data-e="${e.id}">Ablehnen …</button>` : e.ablage ? `<a class="btn" href="#/dok/${e.ablage}">📄 In der Ablage öffnen</a>` : ""}</div></div>
+      <div class="aktionen">${offen ? `<button class="btn primaer" data-aktion="eingang-unterschreiben" data-e="${esc(e.id)}">✍ Unterschreiben</button><button class="btn gefahr" data-aktion="eingang-ablehnen" data-e="${esc(e.id)}">Ablehnen …</button>` : e.ablage ? `<a class="btn" href="#/dok/${esc(e.ablage)}">📄 In der Ablage öffnen</a>` : ""}</div></div>
       ${e.nachricht ? `<div class="meldung info"><strong>${esc(person(e.von).name)}:</strong> ${esc(e.nachricht)}</div>` : ""}
       <div class="dokrahmen"><div class="seitenspalte">${seitenHTML(e.seiten, e.felder.map((f) => Object.assign({ art: "feld" }, f)), ctx)}</div>
         <aside class="seitenleiste"><section class="karte"><h2>Unterschriften</h2><ul class="pruefliste">
@@ -731,7 +744,7 @@
       <div class="syncbild"><div class="karte"><div>${ICON_SIGN.replace("<svg", '<svg width="32" height="32"')}</div><strong>${wordmark("Sign")} · Meine Ablage</strong><div class="small muted">${S.ordner.length} Ordner · ${S.dokumente.length} Dateien</div></div>
         <div class="pfeil" aria-label="${s.richtung === "beide" ? "in beide Richtungen" : "nur hochladen"}">${s.richtung === "beide" ? "⇄" : "→"}</div>
         <div class="karte"><div style="font-size:1.6rem" aria-hidden="true">☁</div><strong>Cloud-Ablage</strong><div class="small muted">${esc(s.ziel)}</div></div></div>
-      <div class="meldung ${!s.aktiv ? "warnung" : konf ? "fehler" : aus ? "info" : ""}" style="margin-top:1rem">${!s.aktiv ? "Abgleich ausgeschaltet." : konf ? `⚠ ${konf} Datei(en) mit Konflikt – in der Datei «Diese Fassung behalten» wählen oder die Konflikt-Kopie löschen.` : aus ? `↻ ${aus} Änderung(en) warten auf den nächsten Abgleich (${s.intervall === "sofort" ? "sofort" : "alle " + s.intervall + " Min."}).` : "✓ Alles abgeglichen."} Letzter Abgleich: ${datumZeit(s.letzte)}.</div>
+      <div class="meldung ${!s.aktiv ? "warnung" : konf ? "fehler" : aus ? "info" : ""}" style="margin-top:1rem">${!s.aktiv ? "Abgleich ausgeschaltet." : konf ? `⚠ ${konf} Datei(en) mit Konflikt – in der Datei «Diese Fassung behalten» wählen oder die Konflikt-Kopie löschen.` : aus ? `↻ ${aus} Änderung(en) warten auf den nächsten Abgleich (${s.intervall === "sofort" ? "sofort" : "alle " + s.intervall + " Min."}).` : "✓ Alles abgeglichen."} Letzter Abgleich: ${esc(datumZeit(s.letzte))}.</div>
       <div class="spalten"><section class="karte"><h2>Einstellungen</h2>
           <label class="small" style="display:block;margin-bottom:.6rem"><input type="checkbox" data-sync="aktiv" ${s.aktiv ? "checked" : ""}> Abgleich mit der Cloud-Ablage eingeschaltet</label>
           <div class="formzeile"><label class="feld" style="flex:1">Zielordner in der Cloud-Ablage<input type="text" data-sync="ziel" value="${esc(s.ziel)}" style="width:100%"></label></div>
@@ -792,9 +805,9 @@
       <div class="spalten"><section class="karte"><h2>Unterschrift zeichnen</h2>
           <canvas class="zeichenflaeche" width="900" height="300" aria-label="Zeichenfläche für die Unterschrift – mit Maus, Finger oder Stift zeichnen"></canvas>
           <div class="formzeile" style="margin-top:.6rem"><button class="btn" data-aktion="zeichnen-leeren">Leeren</button><button class="btn" data-aktion="zeichnen-name">Name als Schriftzug</button><button class="btn primaer" data-aktion="zeichnen-speichern">Speichern</button></div></section>
-        <section class="karte"><h2>Gespeichert</h2>${S.unterschrift ? `<div class="unterschrift-vorschau"><img src="${S.unterschrift}" alt="Gespeicherte Unterschrift"></div><p class="small muted" style="margin-top:.5rem">${esc(D.ICH.name)}</p>` : '<p class="muted">Noch keine Unterschrift gespeichert. Beim ersten Unterschreiben werden Sie danach gefragt.</p>'}
+        <section class="karte"><h2>Gespeichert</h2>${S.unterschrift ? `<div class="unterschrift-vorschau"><img src="${esc(S.unterschrift)}" alt="Gespeicherte Unterschrift"></div><p class="small muted" style="margin-top:.5rem">${esc(D.ICH.name)}</p>` : '<p class="muted">Noch keine Unterschrift gespeichert. Beim ersten Unterschreiben werden Sie danach gefragt.</p>'}
           <h3 style="margin-top:1rem">Voreinstellung für neue Prozesse</h3>
-          <div class="formzeile"><label class="feld">Signaturstufe<select data-einst="stufe">${Object.entries(STUFEN).map(([k, v]) => `<option value="${k}" ${S.einst.stufe === k ? "selected" : ""}>${v.kurz} – ${v.name}</option>`).join("")}</select></label>
+          <div class="formzeile"><label class="feld">Signaturstufe<select data-einst="stufe">${Object.entries(STUFEN).map(([k, v]) => `<option value="${k}" ${S.einst.stufe === k ? "selected" : ""}>${esc(v.kurz)} – ${esc(v.name)}</option>`).join("")}</select></label>
             <label class="feld">Rechtsraum<select data-einst="rechtsraum">${Object.entries(RECHTSRAUM).map(([k, v]) => `<option value="${k}" ${S.einst.rechtsraum === k ? "selected" : ""}>${v}</option>`).join("")}</select></label></div>
           <h3 style="margin-top:1rem">Organisationssiegel</h3><p class="small">🔏 ${esc(D.ORGANISATION.siegel)}<br><span class="muted">Zertifikat der Organisation, verwaltet von der Administration. Berechtigt zum Versiegeln: Schulverwaltung, Schulleitung.</span></p>
           <h3 style="margin-top:1rem">Identifikation</h3><p class="small">✓ Mobilnummer bestätigt (${esc(D.ICH.tel)}) – für FES<br>✓ Identifikation für QES vorhanden (simuliert)</p></section></div>`;
@@ -824,7 +837,7 @@
     let inhalt = "";
     if (dl.art === "frage") inhalt = kopf(dl.titel) + `<p>${dl.text}</p>` + fuss(dl.ok, dl.gefahr ? "gefahr" : "primaer");
     else if (dl.art === "eingabe") inhalt = kopf(dl.titel) + dl.felder.map((f, i) => `<label class="feld" style="margin-bottom:.6rem">${esc(f.label)}${f.mehrzeilig ? `<textarea data-dlg="${i}" rows="3">${esc(f.wert || "")}</textarea>` : `<input type="${f.typ || "text"}" data-dlg="${i}" value="${esc(f.wert || "")}" style="width:100%">`}</label>`).join("") + fuss(dl.ok);
-    else if (dl.art === "verschieben") inhalt = kopf("Verschieben: " + dl.name) + `<label class="feld">Zielordner<select data-dlg="0">${[["", "Meine Ablage"]].concat(S.ordner.map((o) => [o.id, pfadText(o.id)])).sort((a, b) => a[1].localeCompare(b[1], "de")).map(([k, v]) => `<option value="${k}" ${k === (dl.ordner || "") ? "selected" : ""}>${esc(v)}</option>`).join("")}</select></label>` + fuss("Verschieben");
+    else if (dl.art === "verschieben") inhalt = kopf("Verschieben: " + dl.name) + `<label class="feld">Zielordner<select data-dlg="0">${[["", "Meine Ablage"]].concat(S.ordner.map((o) => [o.id, pfadText(o.id)])).sort((a, b) => a[1].localeCompare(b[1], "de")).map(([k, v]) => `<option value="${esc(k)}" ${k === (dl.ordner || "") ? "selected" : ""}>${esc(v)}</option>`).join("")}</select></label>` + fuss("Verschieben");
     else if (dl.art === "versiegeln") {
       const d = dok(dl.dokId);
       const umw = d.typ !== "pdf";
@@ -839,7 +852,7 @@
       const stufe = dl.stufe;
       const hatBild = !!S.unterschrift;
       inhalt = kopf(`Unterschreiben – ${STUFEN[stufe].kurz}`) + `<p class="small muted">${esc(dl.titel)} · ${esc(STUFEN[stufe].name)} · ${esc(RECHTSRAUM[dl.rechtsraum])}</p>
-        ${dl.rolle === "genehmigen" ? "" : hatBild && !dl.neuZeichnen ? `<div class="unterschrift-vorschau"><img src="${S.unterschrift}" alt="Ihre Unterschrift"></div><button class="link small" data-aktion="dlg-neu-zeichnen">Andere Unterschrift zeichnen</button>`
+        ${dl.rolle === "genehmigen" ? "" : hatBild && !dl.neuZeichnen ? `<div class="unterschrift-vorschau"><img src="${esc(S.unterschrift)}" alt="Ihre Unterschrift"></div><button class="link small" data-aktion="dlg-neu-zeichnen">Andere Unterschrift zeichnen</button>`
           : `<p class="small">Zeichnen Sie Ihre Unterschrift (wird für künftige Unterschriften gespeichert):</p><canvas class="zeichenflaeche" width="900" height="300" aria-label="Zeichenfläche für die Unterschrift"></canvas><div class="formzeile" style="margin-top:.4rem"><button class="btn klein" data-aktion="zeichnen-leeren">Leeren</button><button class="btn klein" data-aktion="zeichnen-name">Name als Schriftzug</button></div>`}
         <div style="margin-top:.9rem">${stufe === "ses"
           ? `<label class="small"><input type="checkbox" data-dlg="bestaetigt"> Ich ${dl.rolle === "genehmigen" ? "genehmige" : "unterschreibe"} dieses Dokument elektronisch.</label>`

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""EduKSX-Codex Prototyp 0.41.1 – Generator.
+"""EduKSX-Codex Prototyp 0.41.2 – Generator.
 
 Liest die erfassten Rechtssammlungen (Stand 17.11.2026), normalisiert sie in ein
 gemeinsames Datenmodell (data/rechtssammlungen.json) und erzeugt:
@@ -802,7 +802,7 @@ def iframe_variante(o, html_nachbau):
     block = (f'<div class="cx-iframe-hinweis">Hier eingebettet: EduKSX-Codex-Widget (iFrame) – so könnte die Gemeinde die Rechtssammlung in ihre eigene Seite einbauen.</div>'
              f'<iframe id="cx-frame" class="cx-frame" title="Rechtssammlung {esc(o["name"])}" src="../embed/index.html?org={o["id"]}" loading="lazy"></iframe>')
     neu = re.sub(r"<!--CX-->.*?<!--/CX-->", lambda m: "<!--CX-->" + block + "<!--/CX-->", html_nachbau, count=1, flags=re.S)
-    neu = re.sub(r"<script>.*?</script>", "", neu, flags=re.S)
+    neu = re.sub(r"<script\b[^>]*>.*?</script[^>]*>", "", neu, flags=re.S | re.I)  # eigene Skripte des Nachbaus entfernen
     zusatz = ("<style>.cx-frame{width:100%;min-height:560px;border:0;display:block}.cx-iframe-hinweis{font:12px/1.4 system-ui,sans-serif;background:#fff7d6;border-left:4px solid #f2b705;padding:6px 10px;margin:0 0 10px}</style>"
               "<script>window.addEventListener('message',function(e){if(e.data&&e.data.cxHoehe){document.getElementById('cx-frame').style.height=(e.data.cxHoehe+20)+'px';}});</script></body>")
     return neu.replace("</body>", zusatz, 1).replace("Nachbau des Seitenaufbaus", "Nachbau mit eingebettetem EduKSX-Codex-Widget", 1)
@@ -2944,7 +2944,7 @@ def render_index(gemeinden):
   <div class="hinweis-band" role="note"><strong>Prototyp</strong> – Evaluation öffentlich zugänglicher Rechtssammlungen, Stand {STAND}.
     Die Demo-Seiten bauen den Seitenaufbau der Originale nach und sind keine offiziellen Seiten; alle Downloads führen zu den Original-Dokumenten.</div>
   <div class="rahmen" id="rahmen"><main style="padding:2rem">Prototyp wird geladen … Für diesen Prototyp muss JavaScript eingeschaltet sein.</main></div>
-  <footer class="fuss"><span>{WM} · Prototyp 0.41.1 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
+  <footer class="fuss"><span>{WM} · Prototyp 0.41.2 · Stand {STAND}</span><span><a href="https://github.com/MarkusKeller8200/EduKSX-Prototyp/tree/main/prototypen/rechtssammlung">Quellcode</a></span></footer>
   <link rel="stylesheet" href="assets/lib/leaflet/leaflet.css">
   <script src="assets/lib/leaflet/leaflet.js"></script>
   <script src="assets/daten.js"></script>
@@ -2954,7 +2954,7 @@ def render_index(gemeinden):
 """
 
 def render_md():
-    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.41.1 · Stand {STAND}", "",
+    L = [f"# EduKSX-Codex – Evaluation systematischer Rechtssammlungen", "", f"Prototyp 0.41.2 · Stand {STAND}", "",
          "## Vergleich", "", "| | " + " | ".join(o["kurz"] for o in ORGS) + " |", "|---|" + "---|"*len(ORGS)]
     for lab, f in [("CMS", lambda o:o["cms"]), ("Menüpfad", lambda o:" › ".join(o["menu_pfad"])),
                    ("Rubriken / Dokumente", lambda o:f"{o['anzahl_rubriken']} / {o['anzahl_dokumente']}"),

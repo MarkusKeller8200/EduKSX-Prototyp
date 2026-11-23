@@ -284,7 +284,7 @@
   function buchungsliste(liste) {
     if (!liste.length) return '<ul class="liste"><li class="leer">Heute noch keine Buchung.</li></ul>';
     return `<ul class="liste">${[...liste].reverse().map((b) => `<li>
-      <span class="punkt ${b.typ}" aria-hidden="true"></span>
+      <span class="punkt ${e(b.typ)}" aria-hidden="true"></span>
       <span class="uhrzeit">${hhmm(b.zeit)}</span>
       <span class="art">${e(TYPEN[b.typ].name)}<small>${e(ARTEN[b.art]?.name || b.art)}${b.nachgetragen ? " · nachgetragen" : ""}</small></span>
       ${syncBadge(b)}</li>`).join("")}</ul>`;
@@ -363,10 +363,10 @@
       </svg>
       <div class="mitte">
         <span class="etikett"><span class="puls" aria-hidden="true"></span><span data-etikett>${e(x.etikett)}</span></span>
-        <span class="block" data-block>${x.block}</span>
+        <span class="block" data-block>${e(x.block)}</span>
         <span class="trenn" aria-hidden="true"></span>
         <span class="gesamt-etikett">Heute gesamt</span>
-        <span class="gesamt" data-gesamt>${x.gesamt}</span>
+        <span class="gesamt" data-gesamt>${e(x.gesamt)}</span>
         <span class="soll muted" data-sollzeile>${e(x.soll)}</span>
       </div>
     </section>
@@ -437,7 +437,7 @@
     // Buchungsart (nur vor dem Kommen wählbar)
     if (z.art === "aus") {
       teile.push(`<fieldset class="arten"><legend>Buchungsart</legend>${Object.entries(ARTEN).map(([k, v]) => `
-        <label><input type="radio" name="art" value="${k}"${daten.art === k ? " checked" : ""}><span><span aria-hidden="true">${v.zeichen}</span> ${e(v.name)}</span></label>`).join("")}</fieldset>`);
+        <label><input type="radio" name="art" value="${k}"${daten.art === k ? " checked" : ""}><span><span aria-hidden="true">${e(v.zeichen)}</span> ${e(v.name)}</span></label>`).join("")}</fieldset>`);
     }
 
     // Tasten
