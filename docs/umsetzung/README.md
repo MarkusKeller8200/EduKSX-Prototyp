@@ -12,6 +12,7 @@ Für jeden Prototyp liegt hier, was die produktive Umsetzung im jeweiligen Modul
 | EduKSX-Codex | [`rechtssammlung`](../../prototypen/rechtssammlung) | [`codex/datenbank.sql`](codex/datenbank.sql) | [`codex/openapi.json`](codex/openapi.json) | [`codex/PFLICHTENHEFT.md`](codex/PFLICHTENHEFT.md) |
 | EduKSX-Sign | [`signatur`](../../prototypen/signatur) | [`sign/datenbank.sql`](sign/datenbank.sql) | [`sign/openapi.json`](sign/openapi.json) | [`sign/PFLICHTENHEFT.md`](sign/PFLICHTENHEFT.md) |
 | EduKSX-Time | [`zeiterfassung`](../../prototypen/zeiterfassung) | [`time/datenbank.sql`](time/datenbank.sql) | [`time/openapi.json`](time/openapi.json) | [`time/PFLICHTENHEFT.md`](time/PFLICHTENHEFT.md) |
+| EduKSX-AI | [`interne-ki`](../../prototypen/interne-ki) | [`ai/datenbank.sql`](ai/datenbank.sql) | [`ai/openapi.json`](ai/openapi.json) | [`ai/PFLICHTENHEFT.md`](ai/PFLICHTENHEFT.md) |
 
 Grundlage ist jeweils, **was der Prototyp anzeigt und bearbeitet** (Testdaten in `assets/daten.js`, Zustand im
 Browser-Speicher). Jedes angezeigte Feld hat eine Spalte; berechnete Werte (Ist-Pensum, Saldo, Fristen …) werden
@@ -37,7 +38,7 @@ Skripte ihn umsetzen.
 | Thema | Umsetzung |
 |---|---|
 | System | PostgreSQL 16; die Skripte laufen ohne Erweiterungen. |
-| Schema | ein Schema je Modulschlüssel (`staffing`, `flow`, `codex`, `sign`, `time`); jedes Skript setzt `search_path` und ist für sich lauffähig. |
+| Schema | ein Schema je Modulschlüssel (`staffing`, `flow`, `codex`, `sign`, `time`, `ai`); jedes Skript setzt `search_path` und ist für sich lauffähig. |
 | Namen | **englisch**, `snake_case`, Tabellen im Plural (`classes`, `staff_members`), Fremdschlüssel `<ziel>_id`, Zeitpunkte `_at`, Daten `_on`, Zeiträume `valid_from`/`valid_until`, Wahrheitswerte `is_…`, Aufzählungen `status`/`<x>_type`. |
 | Deutsche Beschreibung (A8) | je Tabelle Kurzbeschreibung, **Geltungsbereich** (global / Organisation / persönlich), **Datenklasse** (öffentlich, intern, personenbezogen, besonders schützenswert, geheim) und Herkunft/Verwendung; je Spalte deutscher Begriff, Herkunft/Verwendung, abweichende Datenklasse und die deutschen Labels jedes Werts. Steht als strukturierter Kommentar im Skript und wird als `COMMENT ON` in die Datenbank geschrieben. |
 | Schlüssel | `id uuid` (UUID v7, von der Anwendung vergeben); fachliche Kürzel als eigene Spalte mit Eindeutigkeit je Organisation. Index auf jedem Fremdschlüssel. |

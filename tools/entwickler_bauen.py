@@ -59,6 +59,7 @@ MODULE = {
     "codex": ("rechtssammlung", "EduKSX-Codex"),
     "sign": ("signatur", "EduKSX-Sign"),
     "time": ("zeiterfassung", "EduKSX-Time"),
+    "ai": ("interne-ki", "EduKSX-AI"),
 }
 LIB = {
     "scalar/standalone.js": "@scalar/api-reference/dist/browser/standalone.js",
