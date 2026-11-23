@@ -119,6 +119,7 @@ zusatzlabels = [
   { name = "prototyp:time", farbe = "fbca04", beschreibung = "EduKSX-Time – Zeiterfassung" },
   { name = "prototyp:sign", farbe = "d93f0b", beschreibung = "EduKSX-Sign – Signatur" },
   { name = "prototyp:ai", farbe = "006b75", beschreibung = "EduKSX-AI – Interne KI" },
+  { name = "prototyp:ex", farbe = "c5def5", beschreibung = "EduKSX-Experience – GUI-Experience" },
   { name = "prototyp:alle", farbe = "bfdadc", beschreibung = "Alle Prototypen (übergreifend)" },
 ]
 
@@ -127,7 +128,7 @@ zusatzlabels = [
 sammlungen = true
 # Projekteigenheit EduKSX-Prototyp: je Prototyp ein Meilenstein; neue Issues nach Prototyp-Label zuordnen.
 # Reihenfolge zählt – das erste passende Label gewinnt. Ohne Prototyp-Label greifen die Sammlungen (falls vorhanden).
-zuordnung = { "prototyp:staffing" = "EduKSX-Staffing – Einsatzplanung", "prototyp:flow" = "EduKSX-Flow – Ablaufplanung", "prototyp:codex" = "EduKSX-Codex – Rechtssammlung", "prototyp:time" = "EduKSX-Time – Zeiterfassung", "prototyp:sign" = "EduKSX-Sign – Signatur", "prototyp:ai" = "EduKSX-AI – Interne KI", "prototyp:alle" = "Alle Prototypen (übergreifend)", fehler = "Fehler", verbesserung = "Verbesserungen", funktion = "Funktionen" }
+zuordnung = { "prototyp:staffing" = "EduKSX-Staffing – Einsatzplanung", "prototyp:flow" = "EduKSX-Flow – Ablaufplanung", "prototyp:codex" = "EduKSX-Codex – Rechtssammlung", "prototyp:time" = "EduKSX-Time – Zeiterfassung", "prototyp:sign" = "EduKSX-Sign – Signatur", "prototyp:ai" = "EduKSX-AI – Interne KI", "prototyp:ex" = "EduKSX-Experience – GUI-Experience", "prototyp:alle" = "Alle Prototypen (übergreifend)", fehler = "Fehler", verbesserung = "Verbesserungen", funktion = "Funktionen" }
 # erster Release-Meilenstein, leer = keiner
 erster_release = "0.1.0 – Grundgerüst"
 

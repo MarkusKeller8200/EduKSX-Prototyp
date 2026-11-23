@@ -24,7 +24,7 @@ Projekt: EduKSX-Prototyp.
   https://glossary.eduksx.ch/embed/manifest.json); bei neuer Version beides zusammen ändern.
 - GitHub Pages: projekteigener Workflow `seite.yml` mit `tools/seite_bauen.py` (nicht `pages.yml` des Blueprints).
 - Meilensteine je Prototyp (Abweichung vom Blueprint): jedes Issue erhält zusätzlich zur Art genau ein Label
-  `prototyp:<schlüssel>` (`staffing`, `flow`, `codex`, `time`, `sign`, `ai`, übergreifend `alle`); der Workflow
+  `prototyp:<schlüssel>` (`staffing`, `flow`, `codex`, `time`, `sign`, `ai`, `ex`, übergreifend `alle`); der Workflow
   `issue-milestone` ordnet es damit dem Meilenstein des Prototyps zu (`[meilensteine] zuordnung` in
   `.github/blueprint.toml`). Die Sammlungen Fehler/Verbesserungen/Funktionen gelten nur für Issues ohne
   Prototyp-Label. Neuer Prototyp: Label in `[issues] zusatzlabels`, Eintrag in `zuordnung` und Meilenstein

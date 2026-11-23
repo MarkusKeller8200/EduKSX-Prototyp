@@ -1,0 +1,57 @@
+/* EduKSX-Experience – gemeinsame Bausteine aller Varianten (nur Werte aus eduksx.css) */
+.wm-gross { font-size: 1.15rem; }
+svg[aria-hidden="true"] { flex: none; }
+
+/* Status: immer Symbol + Text, Farbe nur zusätzlich */
+.status { display: inline-flex; align-items: center; gap: .3rem; font-size: .78rem; font-weight: 600; padding: .1rem .5rem;
+  border-radius: 999px; white-space: nowrap; border: 1px solid transparent; }
+.status .sym { font-weight: 700; width: 1em; text-align: center; }
+.s-offen { background: var(--muted); color: var(--muted-foreground); border-color: var(--border); }
+.s-heute { background: var(--warning-soft); color: var(--warning); border-color: color-mix(in srgb, var(--warning) 35%, transparent); }
+.s-ueber { background: var(--destructive-soft); color: var(--destructive); border-color: color-mix(in srgb, var(--destructive) 35%, transparent); }
+.s-erledigt { background: var(--success-soft); color: var(--success); border-color: color-mix(in srgb, var(--success) 35%, transparent); }
+
+/* Modulfarben als Akzent (nie als Schrift auf Orange) */
+.m-violet { --m: var(--brand-violet); --m-soft: var(--violet-soft); --m-text: var(--violet-text); }
+.m-blue { --m: var(--brand-blue); --m-soft: var(--accent); --m-text: var(--accent-foreground); }
+.m-orange { --m: var(--brand-orange); --m-soft: var(--secondary); --m-text: var(--secondary-foreground); }
+
+/* Variantenwahl: schwebende Leiste unten */
+.ex-leiste {
+  position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 1000;
+  display: flex; align-items: center; gap: 4px; padding: 5px; border-radius: 999px;
+  background: var(--card); border: 1px solid var(--border);
+  box-shadow: 0 6px 24px rgb(15 23 42 / .18); font: 600 13px/1 var(--font-sans); color: var(--foreground);
+}
+.ex-leiste a, .ex-leiste button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 34px; height: 34px; padding: 0 10px;
+  border-radius: 999px; border: 0; background: transparent; color: inherit; text-decoration: none; font: inherit; cursor: pointer;
+}
+.ex-leiste a:hover, .ex-leiste button:hover { background: var(--muted); }
+.ex-leiste a[aria-current="page"] { background: var(--secondary); color: var(--secondary-foreground); box-shadow: inset 0 -2px 0 var(--brand-orange); }
+.ex-leiste .trenner { width: 1px; height: 20px; background: var(--border); margin: 0 2px; }
+.ex-leiste .lang { display: none; }
+@media (min-width: 760px) { .ex-leiste .lang { display: inline; } }
+.ex-leiste svg { width: 16px; height: 16px; }
+
+/* Bewertung */
+.ex-dialog { border: 1px solid var(--border); border-radius: 14px; padding: 0; width: min(440px, calc(100vw - 2rem));
+  background: var(--card); color: var(--foreground); box-shadow: 0 20px 60px rgb(15 23 42 / .3); }
+.ex-dialog::backdrop { background: rgb(15 23 42 / .45); }
+.ex-dialog form { padding: 1.25rem; display: grid; gap: .9rem; }
+.ex-dialog h2 { margin: 0; font-size: 1.1rem; }
+.ex-dialog fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: .35rem; }
+.ex-dialog legend { font-size: .85rem; font-weight: 600; margin-bottom: .3rem; }
+.ex-skala { display: flex; gap: .35rem; }
+.ex-skala label { flex: 1; text-align: center; border: 1px solid var(--input); border-radius: 8px; padding: .45rem 0; cursor: pointer; font-size: .85rem; }
+.ex-skala input { position: absolute; opacity: 0; pointer-events: none; }
+.ex-skala input:checked + span { font-weight: 700; }
+.ex-skala label:has(input:checked) { background: var(--secondary); border-color: var(--brand-orange); color: var(--secondary-foreground); }
+.ex-skala label:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+.ex-dialog textarea { width: 100%; min-height: 4.5rem; border: 1px solid var(--input); border-radius: 8px; padding: .5rem; font: inherit;
+  background: var(--background); color: var(--foreground); }
+.ex-dialog .zeile { display: flex; gap: .5rem; justify-content: flex-end; }
+.ex-dialog button { font: inherit; border-radius: 8px; padding: .45rem .9rem; border: 1px solid var(--input); background: var(--card); color: var(--foreground); cursor: pointer; }
+.ex-dialog button.primaer { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); font-weight: 600; }
+.ex-toast { position: fixed; left: 50%; bottom: 70px; transform: translateX(-50%); z-index: 1001; background: var(--foreground); color: var(--background);
+  padding: .5rem .9rem; border-radius: 8px; font: 500 14px var(--font-sans); }
