@@ -259,7 +259,7 @@
     if (pz > P().maxPensum + 0.05) warnungen.push({ text: `Beschäftigungsgrad über ${P().maxPensum} %`, recht: ["LPVO", "9"] });
     if (netto && anteilU < P().anteilUnterrichtMin) warnungen.push({ text: `60-%-Regel verletzt: nur ${zahl(anteilU)} % der Netto-Arbeitszeit im Unterricht`, recht: ["LPG", "6", "Abs. 2"] });
     if (soll && Math.abs(soll.diffH) > 5) warnungen.push({ text: `Zuteilung weicht vom vereinbarten Beschäftigungsgrad (${zahl(soll.prozent)} %) um ${soll.diffH > 0 ? "+" : "−"}${zahl(Math.abs(soll.diffH))} h ab`, recht: ["LPVO", "9"] });
-    for (const k of klassen) if (k.wlInKlasse < P().klpMindestlektionen) warnungen.push({ text: `Klassenlehrperson ${k.klasse}: nur ${k.wlInKlasse} WL in der Klasse (mindestens ${P().klpMindestlektionen})`, recht: ["LPVO", "10 f"] });
+    for (const k of klassen) if (k.wlInKlasse < P().klpMindestlektionen) warnungen.push({ text: `Klassenlehrperson ${esc(k.klasse)}: nur ${esc(k.wlInKlasse)} WL in der Klasse (mindestens ${P().klpMindestlektionen})`, recht: ["LPVO", "10 f"] });
     for (const [b, x] of Object.entries(bereiche)) if (x.verplant > x.soll + 0.5) warnungen.push({ text: `Bereich ${b}: ${zahl(x.verplant)} h verplant, Pauschale nur ${zahl(x.soll)} h`, recht: ["LPVO", { Schule: "10 a", Zusammenarbeit: "10 b", Weiterbildung: "10 c" }[b]] });
     if (flexH > frei + 0.5) warnungen.push({ text: `Flexible Aufgaben (${zahl(flexH)} h) übersteigen die nicht zugewiesene Zeit (${zahl(frei)} h)`, recht: ["LPVO", "10", "Abs. 1"] });
     for (const x of gefaesse) if (x.g.kustodie && !x.g.entschaedigt && x.h > P().kustodieMaxStunden) warnungen.push({ text: `${x.g.name}: über ${P().kustodieMaxStunden} h – zusätzlich entschädigen`, recht: ["LPVO", "2 f"] });
@@ -296,7 +296,7 @@
     if (f.angestellt) return { key: "angestellt", text: "Angestellt", cls: "erfolg", sym: "✓" };
     return { key: "freigegeben", text: "Freigegeben", cls: "info", sym: "➜" };
   }
-  const badge = (st) => `<span class="badge ${st.cls}"><span aria-hidden="true">${st.sym}</span>${esc(st.text)}</span>`;
+  const badge = (st) => `<span class="badge ${esc(st.cls)}"><span aria-hidden="true">${esc(st.sym)}</span>${esc(st.text)}</span>`;
 
   // Stellenberechnung Sekundarstufe: VZE = Schülerzahl × Sozialindex × Korrekturfaktor / (Basiswert × 100)
   function stellenRechnung() {
@@ -393,7 +393,7 @@
       const aktiv = seite === n[0] || ({ person: "personen", einsatz: "unterricht", klasse: "klassen" }[seite] === n[0]);
       return `<li><a href="#/${n[0]}" ${aktiv ? 'aria-current="page"' : ""}>${ICONS[n[0]]}<span>${esc(n[1])}</span></a></li>`;
     }).join("") + `<li class="gruppe" aria-hidden="true">Entwicklung</li><li><a href="entwickler/" title="Datenmodell und API – Entwurf für die Umsetzung">${ico('<path d="m8 8-4 4 4 4"/><path d="m16 8 4 4-4 4"/><path d="m14 4-4 16"/>')}<span>Entwickler</span></a></li>`;
-    const schulen = S.schulen.map((s) => `<option value="${s.id}" ${s.id === S.schule ? "selected" : ""}>${esc(s.name)}</option>`).join("");
+    const schulen = S.schulen.map((s) => `<option value="${esc(s.id)}" ${s.id === S.schule ? "selected" : ""}>${esc(s.name)}</option>`).join("");
     const jahre = S.schuljahre.map((j) => `<option ${j === S.schuljahr ? "selected" : ""}>${esc(j)}</option>`).join("");
     const rollen = Object.entries(ROLLEN).map(([k, v]) => `<option value="${k}" ${k === S.rolle ? "selected" : ""}>${esc(v)}</option>`).join("");
     const dunkel = document.documentElement.classList.contains("dark");
@@ -416,7 +416,7 @@
         <nav class="navi" aria-label="Hauptnavigation"><ul>${navi}</ul></nav>
         <main id="inhalt" tabindex="-1">${inhalt}</main>
       </div>
-      <footer class="fuss"><span>${wordmark("Staffing")} · Prototyp 0.2.1 · in Entwicklung · <a href="../">Alle Prototypen</a> · Begriffe: <a href="https://glossary.eduksx.ch">EduKSX-Glossary</a> (CC BY 4.0)</span><span>Developed by ${WM_DEV}</span></footer>
+      <footer class="fuss"><span>${wordmark("Staffing")} · Prototyp 0.2.2 · in Entwicklung · <a href="../">Alle Prototypen</a> · Begriffe: <a href="https://glossary.eduksx.ch">EduKSX-Glossary</a> (CC BY 4.0)</span><span>Developed by ${WM_DEV}</span></footer>
       <div class="sr-only" aria-live="polite" id="ansage"></div>`;
   }
 
@@ -450,7 +450,7 @@
     if (geaendert) schritte.push(`<li>${geaendert} Planungen wurden nach der Freigabe geändert – <a href="#/freigaben">prüfen</a></li>`);
     const uberzogen = S.ressourcen.filter((r) => budget(r) - v[r.id].verplant < -0.05);
     const mitWarnung = lp.filter((p) => rechnung(p.id).warnungen.length);
-    if (mitWarnung.length) schritte.push(`<li>${mitWarnung.length} Personen verletzen eine Regel des Berufsauftrags (Mindestpensum, 60-%-Regel, Klassenlehrperson) – ${mitWarnung.map((p) => `<a href="#/person/${p.id}">${esc(p.name)}</a>`).join(", ")}</li>`);
+    if (mitWarnung.length) schritte.push(`<li>${mitWarnung.length} Personen verletzen eine Regel des Berufsauftrags (Mindestpensum, 60-%-Regel, Klassenlehrperson) – ${mitWarnung.map((p) => `<a href="#/person/${esc(p.id)}">${esc(p.name)}</a>`).join(", ")}</li>`);
     const grosse = S.klassen.filter((k) => klassengroesse(k).cls !== "erfolg");
     if (grosse.length) schritte.push(`<li>Klassengrösse über der Höchstzahl: ${grosse.map((k) => esc(k.id)).join(", ")} – <a href="#/stellenplan">Stellenplan</a></li>`);
     for (const r of uberzogen) schritte.push(`<li>Budget «${esc(r.name)}» ist überschritten – <a href="#/ressourcen">Ressourcen</a></li>`);
@@ -490,15 +490,15 @@
     const tab = (k) => `<button role="tab" aria-selected="${g === k}" data-aktion="einsatz-gruppe" data-gruppe="${k}">${GRUPPEN[k]} <span class="small muted">(${S.lektionen.filter((l) => gruppe(l) === k).length})</span></button>`;
     const zeilen = liste.map((l) => {
       const soll = sollLp(l), ist = istLp(l);
-      return `<tr><td><a href="#/einsatz/${l.id}">${esc(eTitel(l))}</a>${l.kategorie ? `<div class="small muted">${esc(l.kategorie)}${l.stufe ? " · " + esc(l.stufe) : ""}</div>` : ""}</td>
+      return `<tr><td><a href="#/einsatz/${esc(l.id)}">${esc(eTitel(l))}</a>${l.kategorie ? `<div class="small muted">${esc(l.kategorie)}${l.stufe ? " · " + esc(l.stufe) : ""}</div>` : ""}</td>
         <td class="small">${esc(rn[l.ressource] || l.ressource)}<div class="muted">${anstellungstyp(l)}</div></td>
         <td class="zahl">${einheit(l) === "WL" && g !== "anstellung" ? zahl(l.wlSus || 0) : "–"}</td>
         <td class="zahl">${fmtE(l, soll)}</td>
-        <td>${l.zuteilung.length ? l.zuteilung.map((z) => `<a href="#/person/${z.person}" title="${esc(pname(z.person))}">${esc(kuerzel(z.person))}</a> ${zahl(z.wl, Number.isInteger(Number(z.wl)) ? 0 : 1)}`).join(" · ") : '<span class="muted">–</span>'}</td>
+        <td>${l.zuteilung.length ? l.zuteilung.map((z) => `<a href="#/person/${esc(z.person)}" title="${esc(pname(z.person))}">${esc(kuerzel(z.person))}</a> ${zahl(z.wl, Number.isInteger(Number(z.wl)) ? 0 : 1)}`).join(" · ") : '<span class="muted">–</span>'}</td>
         <td class="zahl">${fmtE(l, ist)}</td><td>${diffBadge(ist - soll, l)}</td>
         <td class="small">${semF(l) < 1 ? (l.semester[0] ? "1. Sem." : "2. Sem.") : "ganzjährig"}${l.faktor != null ? `<div>Faktor ${zahl(l.faktor)}</div>` : ""}</td></tr>`;
     }).join("");
-    const kOpts = `<option value="">alle</option>` + S.klassen.map((k) => `<option ${k.id === klasse ? "selected" : ""}>${k.id}</option>`).join("");
+    const kOpts = `<option value="">alle</option>` + S.klassen.map((k) => `<option ${k.id === klasse ? "selected" : ""}>${esc(k.id)}</option>`).join("");
     const summeSoll = liste.reduce((a, l) => a + umrechnen(l, sollLp(l), "WL"), 0), summeIst = liste.reduce((a, l) => a + umrechnen(l, istLp(l), "WL"), 0);
     return `<div class="seitenkopf"><div><h1>Unterricht und Einsätze</h1><p class="muted">Jedes Gefäss hat ein Soll (Lehrpersonen-Lektionen, Stellenprozent oder Wochenstunden) und wird einer oder mehreren Personen zugeteilt. Halbklassen verdoppeln die Lektionen der Lehrpersonen; Semesterfächer zählen halb. Abweichender Faktor je Gefäss: ${R("LPVO", "10", "Abs. 1")}.</p></div>
       <div class="aktionen">${istSL() ? `<button class="btn primaer" data-aktion="einsatz-neu" data-gruppe="${g}">+ ${g === "anstellung" ? "Anstellung" : "Gefäss"}</button>` : ""}</div></div>
@@ -517,30 +517,30 @@
     const d = istSL() ? "" : "disabled";
     const soll = sollLp(l), ist = istLp(l);
     const kandidaten = S.personen.filter((p) => !l.zuteilung.some((z) => z.person === p.id));
-    const zt = l.zuteilung.map((z, i) => `<tr><td><a href="#/person/${z.person}">${esc(pname(z.person))}</a> <span class="muted small">${esc(kuerzel(z.person))}</span></td>
-      <td class="zahl"><input type="number" min="0" step="${einheit(l) === "WL" ? 1 : 0.5}" value="${z.wl}" data-aktion="zt-wert" data-id="${l.id}" data-i="${i}" aria-label="Anteil ${esc(pname(z.person))}" ${d}> ${einheit(l)}</td>
-      <td class="zahl">${zahl(bgRichtwert(l, z.wl), 2)} %</td>${istSL() ? `<td><button class="btn klein" data-aktion="zt-weg" data-id="${l.id}" data-i="${i}" aria-label="${esc(pname(z.person))} entfernen">✕</button></td>` : ""}</tr>`).join("");
+    const zt = l.zuteilung.map((z, i) => `<tr><td><a href="#/person/${esc(z.person)}">${esc(pname(z.person))}</a> <span class="muted small">${esc(kuerzel(z.person))}</span></td>
+      <td class="zahl"><input type="number" min="0" step="${einheit(l) === "WL" ? 1 : 0.5}" value="${esc(z.wl)}" data-aktion="zt-wert" data-id="${esc(l.id)}" data-i="${i}" aria-label="Anteil ${esc(pname(z.person))}" ${d}> ${einheit(l)}</td>
+      <td class="zahl">${zahl(bgRichtwert(l, z.wl), 2)} %</td>${istSL() ? `<td><button class="btn klein" data-aktion="zt-weg" data-id="${esc(l.id)}" data-i="${i}" aria-label="${esc(pname(z.person))} entfernen">✕</button></td>` : ""}</tr>`).join("");
     const rn = RESS_NAME();
     const feld = (t, html) => `<div class="feldzeile"><span class="muted">${t}</span><span>${html}</span></div>`;
     return `<p class="small"><a href="#/unterricht?gruppe=${gruppe(l)}">← ${GRUPPEN[gruppe(l)]}</a></p>
-      <div class="seitenkopf"><div><h1>${esc(eTitel(l))}</h1><p class="muted">${esc(GRUPPEN[gruppe(l)])}${l.kategorie ? " · " + esc(l.kategorie) : ""}${l.klasse ? ` · Klasse <a href="#/klasse/${l.klasse}">${esc(l.klasse)}</a>` : ""} · ${anstellungstyp(l)}</p></div>
-        <div class="aktionen">${diffBadge(ist - soll, l)}${istSL() ? ` <button class="btn gefahr" data-aktion="einsatz-loeschen" data-id="${l.id}">Löschen …</button>` : ""}</div></div>
+      <div class="seitenkopf"><div><h1>${esc(eTitel(l))}</h1><p class="muted">${esc(GRUPPEN[gruppe(l)])}${l.kategorie ? " · " + esc(l.kategorie) : ""}${l.klasse ? ` · Klasse <a href="#/klasse/${esc(l.klasse)}">${esc(l.klasse)}</a>` : ""} · ${anstellungstyp(l)}</p></div>
+        <div class="aktionen">${diffBadge(ist - soll, l)}${istSL() ? ` <button class="btn gefahr" data-aktion="einsatz-loeschen" data-id="${esc(l.id)}">Löschen …</button>` : ""}</div></div>
       <div class="spalten">
         <section class="karte"><h2>Soll</h2><div class="feldliste">
-          ${feld("Einheit", `<select data-aktion="e-feld" data-id="${l.id}" data-feld="einheit" ${d}>${Object.entries(EINHEITEN).map(([k, v]) => `<option value="${k}" ${einheit(l) === k ? "selected" : ""}>${esc(v)}</option>`).join("")}</select>`)}
-          ${einheit(l) === "WL" ? feld("WL Schüler/innen", `<input type="number" min="0" value="${l.wlSus || 0}" data-aktion="e-feld" data-id="${l.id}" data-feld="wlSus" ${d}>`) + feld("in Halbklassen", `<input type="checkbox" data-aktion="e-feld" data-id="${l.id}" data-feld="halbklassen" ${l.halbklassen ? "checked" : ""} ${d}> <span class="small muted">verdoppelt die Lektionen der Lehrpersonen</span>`) : ""}
-          ${feld(einheit(l) === "WL" ? "WL Lehrpersonen (Soll)" : "Soll", `<input type="number" min="0" step="0.5" value="${l.wlLp != null ? l.wlLp : ""}" placeholder="${soll}" data-aktion="e-feld" data-id="${l.id}" data-feld="wlLp" ${d}> <span class="small muted">${l.wlLp != null ? "abweichend festgelegt" : "berechnet: " + fmtE(l, soll)}</span>`)}
+          ${feld("Einheit", `<select data-aktion="e-feld" data-id="${esc(l.id)}" data-feld="einheit" ${d}>${Object.entries(EINHEITEN).map(([k, v]) => `<option value="${k}" ${einheit(l) === k ? "selected" : ""}>${esc(v)}</option>`).join("")}</select>`)}
+          ${einheit(l) === "WL" ? feld("WL Schüler/innen", `<input type="number" min="0" value="${l.wlSus || 0}" data-aktion="e-feld" data-id="${esc(l.id)}" data-feld="wlSus" ${d}>`) + feld("in Halbklassen", `<input type="checkbox" data-aktion="e-feld" data-id="${esc(l.id)}" data-feld="halbklassen" ${l.halbklassen ? "checked" : ""} ${d}> <span class="small muted">verdoppelt die Lektionen der Lehrpersonen</span>`) : ""}
+          ${feld(einheit(l) === "WL" ? "WL Lehrpersonen (Soll)" : "Soll", `<input type="number" min="0" step="0.5" value="${l.wlLp != null ? l.wlLp : ""}" placeholder="${soll}" data-aktion="e-feld" data-id="${esc(l.id)}" data-feld="wlLp" ${d}> <span class="small muted">${l.wlLp != null ? "abweichend festgelegt" : "berechnet: " + fmtE(l, soll)}</span>`)}
           ${feld("BG-Richtwert", `${zahl(bgRichtwert(l, soll), 2)} % Soll · ${zahl(bgRichtwert(l, ist), 2)} % Ist`)}
-          ${einheit(l) === "WL" ? feld("Semester", `<label><input type="checkbox" data-aktion="e-sem" data-id="${l.id}" data-i="0" ${l.semester[0] ? "checked" : ""} ${d}> 1.</label> <label><input type="checkbox" data-aktion="e-sem" data-id="${l.id}" data-i="1" ${l.semester[1] ? "checked" : ""} ${d}> 2.</label>`) + feld("Faktor (h je WL)", `<input type="number" min="0" step="0.5" value="${l.faktor != null ? l.faktor : ""}" placeholder="${P().faktorLektion}" data-aktion="e-feld" data-id="${l.id}" data-feld="faktor" ${d}> <span class="small">${R("LPVO", "10", "Abs. 1")}</span>`) : ""}
-          ${feld("Ressource", `<select data-aktion="e-feld" data-id="${l.id}" data-feld="ressource" ${d}>${S.ressourcen.map((r) => `<option value="${r.id}" ${r.id === l.ressource ? "selected" : ""}>${esc(r.name)}</option>`).join("")}</select>`)}
+          ${einheit(l) === "WL" ? feld("Semester", `<label><input type="checkbox" data-aktion="e-sem" data-id="${esc(l.id)}" data-i="0" ${l.semester[0] ? "checked" : ""} ${d}> 1.</label> <label><input type="checkbox" data-aktion="e-sem" data-id="${esc(l.id)}" data-i="1" ${l.semester[1] ? "checked" : ""} ${d}> 2.</label>`) + feld("Faktor (h je WL)", `<input type="number" min="0" step="0.5" value="${l.faktor != null ? l.faktor : ""}" placeholder="${P().faktorLektion}" data-aktion="e-feld" data-id="${esc(l.id)}" data-feld="faktor" ${d}> <span class="small">${R("LPVO", "10", "Abs. 1")}</span>`) : ""}
+          ${feld("Ressource", `<select data-aktion="e-feld" data-id="${esc(l.id)}" data-feld="ressource" ${d}>${S.ressourcen.map((r) => `<option value="${esc(r.id)}" ${r.id === l.ressource ? "selected" : ""}>${esc(r.name)}</option>`).join("")}</select>`)}
           ${feld("Anstellung", `${anstellungstyp(l)} <span class="small muted">(aus der Ressource)</span>`)}
-          ${feld("Stufe", `<input type="text" value="${esc(l.stufe || (l.klasse ? "Sek" : ""))}" data-aktion="e-feld" data-id="${l.id}" data-feld="stufe" ${d}>`)}
+          ${feld("Stufe", `<input type="text" value="${esc(l.stufe || (l.klasse ? "Sek" : ""))}" data-aktion="e-feld" data-id="${esc(l.id)}" data-feld="stufe" ${d}>`)}
         </div></section>
         <section class="karte"><h2>Zuteilung</h2>
           <div class="tabelle-wrap"><table><thead><tr><th>Person</th><th class="zahl">Anteil</th><th class="zahl">BG-Richtwert</th>${istSL() ? "<th></th>" : ""}</tr></thead><tbody>${zt || '<tr><td colspan="4" class="muted">noch niemand</td></tr>'}
             <tr class="summe"><td>Ist</td><td class="zahl">${fmtE(l, ist)}</td><td class="zahl">${zahl(bgRichtwert(l, ist), 2)} %</td>${istSL() ? "<td></td>" : ""}</tr></tbody></table></div>
-          ${istSL() ? `<div class="formzeile" style="margin-top:.75rem"><label class="feld">Person hinzufügen<select data-aktion="zt-dazu" data-id="${l.id}"><option value="">wählen …</option>${kandidaten.map((p) => `<option value="${p.id}">${esc(p.name)} (${esc(p.kuerzel || "")})${l.fach && p.faecher.includes(l.fach) ? " ✓ Fach" : ""}</option>`).join("")}</select></label></div>` : ""}
-          <h3 style="margin-top:1rem">Bemerkungen</h3><textarea rows="3" style="width:100%" data-aktion="e-feld" data-id="${l.id}" data-feld="bemerkung" ${d}>${esc(l.bemerkung || "")}</textarea>
+          ${istSL() ? `<div class="formzeile" style="margin-top:.75rem"><label class="feld">Person hinzufügen<select data-aktion="zt-dazu" data-id="${esc(l.id)}"><option value="">wählen …</option>${kandidaten.map((p) => `<option value="${esc(p.id)}">${esc(p.name)} (${esc(p.kuerzel || "")})${l.fach && p.faecher.includes(l.fach) ? " ✓ Fach" : ""}</option>`).join("")}</select></label></div>` : ""}
+          <h3 style="margin-top:1rem">Bemerkungen</h3><textarea rows="3" style="width:100%" data-aktion="e-feld" data-id="${esc(l.id)}" data-feld="bemerkung" ${d}>${esc(l.bemerkung || "")}</textarea>
         </section>
       </div>`;
   };
@@ -548,8 +548,8 @@
   seiten.klassen = function () {
     const zeilen = S.klassen.map((k) => {
       const t = tafel(k); const g = klassengroesse(k); const ks = klasseZahlen(k);
-      return `<tr><td><a href="#/klasse/${k.id}">${esc(k.id)}</a>${k.nameVorjahr ? `<div class="small muted">Vorjahr ${esc(k.nameVorjahr)}</div>` : ""}</td><td class="small">${esc(t.name)}</td>
-        <td><span class="badge ${g.cls}"><span aria-hidden="true">${g.sym}</span>${esc(g.text)}</span></td>
+      return `<tr><td><a href="#/klasse/${esc(k.id)}">${esc(k.id)}</a>${k.nameVorjahr ? `<div class="small muted">Vorjahr ${esc(k.nameVorjahr)}</div>` : ""}</td><td class="small">${esc(t.name)}</td>
+        <td><span class="badge ${esc(g.cls)}"><span aria-hidden="true">${esc(g.sym)}</span>${esc(g.text)}</span></td>
         <td>${k.klp.map((pid) => `<a href="#/person/${pid}" title="${esc(pname(pid))}">${esc(kuerzel(pid))}</a>`).join(" / ") || '<span class="badge warnung"><span aria-hidden="true">△</span>fehlt</span>'}</td>
         <td class="zahl">${zahl(ks.klpIst)} / ${zahl(ks.klpSoll)} h</td><td class="zahl">${zahl(ks.wlSus)}</td><td class="zahl">${zahl(ks.wlLpIst)} / ${zahl(ks.wlLpSoll)}</td>
         <td>${Math.abs(ks.wlLpIst - ks.wlLpSoll) < 0.005 && Math.abs(ks.klpIst - ks.klpSoll) < 0.5 ? '<span class="badge erfolg"><span aria-hidden="true">✓</span>vollständig</span>' : `<span class="badge warnung"><span aria-hidden="true">△</span>${ks.wlLpSoll - ks.wlLpIst ? zahl(ks.wlLpSoll - ks.wlLpIst) + " WL offen" : ""}${Math.abs(ks.klpIst - ks.klpSoll) >= 0.5 ? " KLP " + zahl(ks.klpIst - ks.klpSoll) + " h" : ""}</span>`}</td></tr>`;
@@ -568,10 +568,10 @@
     if (!k) return "<p>Klasse nicht gefunden.</p>";
     const d = istSL() ? "" : "disabled";
     const ks = klasseZahlen(k); const t = tafel(k); const g = klassengroesse(k);
-    const klp = k.klp.map((pid) => `<tr><td><a href="#/person/${pid}">${esc(pname(pid))}</a></td><td class="zahl"><input type="number" min="0" max="100" step="5" value="${k.klpStunden && k.klpStunden[pid] != null ? k.klpStunden[pid] : zahl(P().klassenlehrperson / k.klp.length)}" data-aktion="klp-h" data-klasse="${k.id}" data-p="${pid}" ${d}> h</td>${istSL() ? `<td><button class="btn klein" data-aktion="klp-weg" data-klasse="${k.id}" data-p="${pid}">✕</button></td>` : ""}</tr>`).join("");
-    const lz = ks.ls.map((l) => `<tr><td><a href="#/einsatz/${l.id}">${esc(eTitel(l))}</a></td><td class="zahl">${zahl(l.wlSus || 0)}</td><td class="zahl">${zahl(sollLp(l))}</td><td>${l.zuteilung.map((z) => `${esc(kuerzel(z.person))} ${z.wl}`).join(" · ") || "–"}</td><td>${diffBadge(istLp(l) - sollLp(l), l)}</td></tr>`).join("");
+    const klp = k.klp.map((pid) => `<tr><td><a href="#/person/${pid}">${esc(pname(pid))}</a></td><td class="zahl"><input type="number" min="0" max="100" step="5" value="${k.klpStunden && k.klpStunden[pid] != null ? k.klpStunden[pid] : zahl(P().klassenlehrperson / k.klp.length)}" data-aktion="klp-h" data-klasse="${esc(k.id)}" data-p="${pid}" ${d}> h</td>${istSL() ? `<td><button class="btn klein" data-aktion="klp-weg" data-klasse="${esc(k.id)}" data-p="${pid}">✕</button></td>` : ""}</tr>`).join("");
+    const lz = ks.ls.map((l) => `<tr><td><a href="#/einsatz/${esc(l.id)}">${esc(eTitel(l))}</a></td><td class="zahl">${zahl(l.wlSus || 0)}</td><td class="zahl">${zahl(sollLp(l))}</td><td>${l.zuteilung.map((z) => `${esc(kuerzel(z.person))} ${esc(z.wl)}`).join(" · ") || "–"}</td><td>${diffBadge(istLp(l) - sollLp(l), l)}</td></tr>`).join("");
     return `<p class="small"><a href="#/klassen">← Klassen</a></p>
-      <div class="seitenkopf"><div><h1>Klasse ${esc(k.id)}</h1><p class="muted">${esc(t.name)} · <span class="badge ${g.cls}"><span aria-hidden="true">${g.sym}</span>${esc(g.text)}</span>${k.nameVorjahr ? " · Vorjahr " + esc(k.nameVorjahr) : ""}</p></div></div>
+      <div class="seitenkopf"><div><h1>Klasse ${esc(k.id)}</h1><p class="muted">${esc(t.name)} · <span class="badge ${esc(g.cls)}"><span aria-hidden="true">${esc(g.sym)}</span>${esc(g.text)}</span>${k.nameVorjahr ? " · Vorjahr " + esc(k.nameVorjahr) : ""}</p></div></div>
       <div class="karten">
         <div class="karte"><div class="titel">WL Schüler/innen</div><div class="zahl">${zahl(ks.wlSus)}</div><div class="small muted">Pflichtlektionen je Schüler/in ${esc(String(t.pflicht))}</div></div>
         <div class="karte"><div class="titel">WL Lehrpersonen</div><div class="zahl">${zahl(ks.wlLpIst)} / ${zahl(ks.wlLpSoll)}</div><div class="small muted">zugeteilt / Soll (inkl. Halbklassen)</div></div>
@@ -580,9 +580,9 @@
       </div>
       <div class="spalten">
         <section class="karte"><h2>Klassenlehrperson(en)</h2><div class="tabelle-wrap"><table><tbody>${klp || '<tr><td class="muted">keine</td></tr>'}</tbody></table></div>
-          ${istSL() ? `<div class="formzeile" style="margin-top:.5rem"><label class="feld">Person hinzufügen<select data-aktion="klp-dazu" data-klasse="${k.id}"><option value="">wählen …</option>${lehrpersonen().filter((p) => !k.klp.includes(p.id)).map((p) => `<option value="${p.id}">${esc(p.name)}</option>`).join("")}</select></label></div>` : ""}
-          <div class="formzeile" style="margin-top:.75rem"><label class="feld">Schüler/innen<input type="number" min="0" value="${k.schueler}" data-aktion="schueler" data-klasse="${k.id}" ${d}></label><label class="feld">Name im Vorjahr<input type="text" value="${esc(k.nameVorjahr || "")}" data-aktion="k-feld" data-klasse="${k.id}" data-feld="nameVorjahr" ${d}></label></div>
-          <h3>Bemerkungen</h3><textarea rows="3" style="width:100%" data-aktion="k-feld" data-klasse="${k.id}" data-feld="bemerkung" ${d}>${esc(k.bemerkung || "")}</textarea></section>
+          ${istSL() ? `<div class="formzeile" style="margin-top:.5rem"><label class="feld">Person hinzufügen<select data-aktion="klp-dazu" data-klasse="${esc(k.id)}"><option value="">wählen …</option>${lehrpersonen().filter((p) => !k.klp.includes(p.id)).map((p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("")}</select></label></div>` : ""}
+          <div class="formzeile" style="margin-top:.75rem"><label class="feld">Schüler/innen<input type="number" min="0" value="${esc(k.schueler)}" data-aktion="schueler" data-klasse="${esc(k.id)}" ${d}></label><label class="feld">Name im Vorjahr<input type="text" value="${esc(k.nameVorjahr || "")}" data-aktion="k-feld" data-klasse="${esc(k.id)}" data-feld="nameVorjahr" ${d}></label></div>
+          <h3>Bemerkungen</h3><textarea rows="3" style="width:100%" data-aktion="k-feld" data-klasse="${esc(k.id)}" data-feld="bemerkung" ${d}>${esc(k.bemerkung || "")}</textarea></section>
         <section><h2>Lektionen</h2><div class="tabelle-wrap"><table><thead><tr><th>Gefäss</th><th class="zahl">WL SuS</th><th class="zahl">WL Lp</th><th>Zuteilung</th><th>Stand</th></tr></thead><tbody>${lz}</tbody></table></div></section>
       </div>`;
   };
@@ -603,11 +603,11 @@
       return `<td class="${hier ? "klp-hier" : andere ? "klp-andere" : ""}">${txt}${offen ? ' <span class="badge warnung" title="nicht vollständig zugeteilt"><span aria-hidden="true">△</span></span>' : ""}</td>`;
     };
     const zeilen = ks.map((k) => { const z = klasseZahlen(k); const d = z.wlLpIst - z.wlLpSoll;
-      return `<tr><td><a href="#/klasse/${k.id}">${esc(k.id)}</a></td><td class="zahl">${Math.abs(d) < 0.005 ? "0" : `<span class="badge warnung">${zahl(d, 1)}</span>`}</td><td>${k.klp.map((pid) => esc(kuerzel(pid))).join("/") || "–"}</td>${faecher.map((f) => zelle(k, f)).join("")}</tr>`; }).join("");
+      return `<tr><td><a href="#/klasse/${esc(k.id)}">${esc(k.id)}</a></td><td class="zahl">${Math.abs(d) < 0.005 ? "0" : `<span class="badge warnung">${zahl(d, 1)}</span>`}</td><td>${k.klp.map((pid) => esc(kuerzel(pid))).join("/") || "–"}</td>${faecher.map((f) => zelle(k, f)).join("")}</tr>`; }).join("");
     const kats = [...new Set(S.lektionen.filter((l) => gruppe(l) === "weitere").map((l) => l.kategorie || "Weitere"))];
     const weitere = kats.map((kat) => {
       const ls = S.lektionen.filter((l) => gruppe(l) === "weitere" && (l.kategorie || "Weitere") === kat);
-      return `<tr><th scope="rowgroup" colspan="4">${esc(kat)}</th></tr>${ls.map((l) => `<tr><td><a href="#/einsatz/${l.id}">${esc(eTitel(l))}</a></td><td class="zahl">${zahl(sollLp(l))}</td><td>${l.zuteilung.map((z) => esc(kuerzel(z.person))).join(", ") || '<span class="badge warnung"><span aria-hidden="true">△</span>offen</span>'}</td><td>${diffBadge(istLp(l) - sollLp(l), l)}</td></tr>`).join("")}`;
+      return `<tr><th scope="rowgroup" colspan="4">${esc(kat)}</th></tr>${ls.map((l) => `<tr><td><a href="#/einsatz/${esc(l.id)}">${esc(eTitel(l))}</a></td><td class="zahl">${zahl(sollLp(l))}</td><td>${l.zuteilung.map((z) => esc(kuerzel(z.person))).join(", ") || '<span class="badge warnung"><span aria-hidden="true">△</span>offen</span>'}</td><td>${diffBadge(istLp(l) - sollLp(l), l)}</td></tr>`).join("")}`;
     }).join("");
     return `<div class="seitenkopf"><div><h1>Klasse – Fach – Lehrperson</h1><p class="muted">Wer unterrichtet was in welcher Klasse. Kürzel mit ● = Klassenlehrperson dieser Klasse (hinterlegt), ○ = Klassenlehrperson einer anderen Klasse (gestrichelt), ohne Zeichen = Fachlehrperson. Spalte «Diff.»: zugeteilte minus benötigte Lektionen der Lehrpersonen.</p></div>
       <div class="aktionen"><button class="btn" data-aktion="export-matrix">⇩ Matrix (CSV)</button></div></div>
@@ -622,7 +622,7 @@
       const r = rechnung(p.id);
       const u = S.umfrage[p.id];
       const diff = r.soll ? r.soll.diffH : null;
-      return `<tr><td>${esc(p.kuerzel || "")}</td><td><a href="#/person/${p.id}">${esc(p.name)}</a><div class="small muted">${esc(p.art)}</div></td>
+      return `<tr><td>${esc(p.kuerzel || "")}</td><td><a href="#/person/${esc(p.id)}">${esc(p.name)}</a><div class="small muted">${esc(p.art)}</div></td>
         <td class="zahl">${r.festProzent ? "–" : zahl(r.wl, 1)}</td>
         <td class="zahl">${p.bgSoll != null ? zahl(p.bgSoll) + " %" : "–"}</td>
         <td class="zahl">${r.festProzent ? "–" : zahl(r.pensum, 1) + " %"}${r.warnungen.length ? ` <span class="badge warnung" title="${esc(r.warnungen.map((w) => w.text).join(" · "))}"><span aria-hidden="true">△</span>${r.warnungen.length}</span>` : ""}</td>
@@ -647,9 +647,9 @@
     const n = njaz(p);
     const ja = (x) => (x ? "ja" : "nein");
     const zeileDl = (t, w) => `<div class="feldzeile"><span class="muted">${t}</span><span>${w}</span></div>`;
-    const lZeilen = (r.lektionen || []).map((x) => `<tr><td><a href="#/einsatz/${x.l.id}">${esc(eTitel(x.l))}</a>${semF(x.l) < 1 ? ' <span class="small muted">Semester</span>' : ""}</td><td class="small">${x.typ}</td><td class="zahl">${zahl(x.wl, 1)}</td><td class="zahl">${zahl(x.faktor, 1)}</td><td class="zahl">${zahl(x.stunden)}</td></tr>`).join("");
+    const lZeilen = (r.lektionen || []).map((x) => `<tr><td><a href="#/einsatz/${esc(x.l.id)}">${esc(eTitel(x.l))}</a>${semF(x.l) < 1 ? ' <span class="small muted">Semester</span>' : ""}</td><td class="small">${esc(x.typ)}</td><td class="zahl">${zahl(x.wl, 1)}</td><td class="zahl">${zahl(x.faktor, 1)}</td><td class="zahl">${zahl(x.stunden)}</td></tr>`).join("");
     const gZeilen = r.gefaesse.map((x) => `<tr><td>${esc(x.g.name)}</td><td>${esc(x.g.bereich)}</td><td>${x.g.entschaedigt ? '<span class="badge info">entschädigt</span>' : x.g.art === "zusatz" ? '<span class="badge violett">zusätzlich</span>' : '<span class="badge neutral">aus Pauschale</span>'}</td><td class="zahl">${zahl(x.h)}</td></tr>`).join("");
-    const wZeilen = r.weitere.map((w) => `<tr><td><a href="#/einsatz/${w.l.id}">${esc(eTitel(w.l))}</a></td><td class="small">${w.typ}</td><td class="zahl">${fmtE(w.l, w.wert)}</td><td class="zahl">${zahl(w.stunden)} h</td><td class="zahl">${zahl(w.prozent, 1)} %</td></tr>`).join("");
+    const wZeilen = r.weitere.map((w) => `<tr><td><a href="#/einsatz/${esc(w.l.id)}">${esc(eTitel(w.l))}</a></td><td class="small">${esc(w.typ)}</td><td class="zahl">${fmtE(w.l, w.wert)}</td><td class="zahl">${zahl(w.stunden)} h</td><td class="zahl">${zahl(w.prozent, 1)} %</td></tr>`).join("");
     const flex = r.festProzent ? 0 : r.reserve;
     const bereichZeilen = r.festProzent ? "" : Object.entries(r.bereiche).map(([b, x]) => `<tr><td>${R("LPVO", { Schule: "10 a", Zusammenarbeit: "10 b", Weiterbildung: "10 c" }[b])} · ${b}: Pauschale ${PAUSCHALE()[b]} h × ${zahl(r.pensum, 1)} %<div class="small muted">davon in Gefässen verplant ${zahl(x.verplant)} h, frei ${zahl(x.soll - x.verplant)} h</div></td><td class="zahl">${zahl(x.soll)} h</td></tr>`).join("");
     return `
@@ -691,7 +691,7 @@
       <h2 style="margin-top:1rem">Berufsauftrag nach Tätigkeitsbereichen</h2>
       <div class="tabelle-wrap"><table><tbody>
         <tr><td>${R("LPVO", "7", p.berufseinfuehrung ? "Abs. 1 und 4" : "Abs. 1")} · Unterricht: ${zahl(r.wl, 1)} WL (Faktor je Gefäss)</td><td class="zahl">${zahl(r.unterrichtH)} h</td></tr>
-        <tr><td>${R("LPVO", "10 f")} · Klassenlehrperson ${esc(r.klassen.map((k) => `${k.klasse} (${zahl(k.stunden)} h)`).join(", ") || "–")}</td><td class="zahl">${zahl(r.klpH)} h</td></tr>
+        <tr><td>${R("LPVO", "10 f")} · Klassenlehrperson ${esc(r.klassen.map((k) => `${esc(k.klasse)} (${zahl(k.stunden)} h)`).join(", ") || "–")}</td><td class="zahl">${zahl(r.klpH)} h</td></tr>
         <tr><td>${R("LPVO", "2 c", "Abs. 4 lit. a")} · Zusätzliche Aufgaben (Ämter, Kustodien, Projekte)</td><td class="zahl">${zahl(r.zusatzH)} h</td></tr>
         ${bereichZeilen}
         <tr class="summe"><td>Netto-Arbeitszeit = Beschäftigungsgrad × ${zahl(r.njaz)} h</td><td class="zahl">${zahl(r.netto)} h</td></tr>
@@ -715,9 +715,9 @@
       const g = i === 3 ? gespr : [];
       const n = e.length + g.length;
       return `<details class="gefaess"${n ? "" : ""}><summary><span>${esc(k)}</span><span class="badge neutral">${n}</span></summary><div class="inhalt">
-        ${n ? `<ul class="small">${e.map((x) => `<li>${datum(x.datum)} · ${esc(x.titel)}${x.notiz ? ` <span class="muted">– ${esc(x.notiz)}</span>` : ""}${istSL() ? ` <button class="btn klein" data-aktion="dossier-weg" data-id="${p.id}" data-i="${x.id}" aria-label="Eintrag ${esc(x.titel)} entfernen">✕</button>` : ""}</li>`).join("")}${g.map((x) => `<li>${datum(x.datum)} · ${esc(x.art)} <span class="muted">– ${esc(x.status)} (<a href="#/gespraeche">Personalgespräche</a>)</span></li>`).join("")}</ul>` : '<p class="small muted">keine Einträge</p>'}</div></details>`;
+        ${n ? `<ul class="small">${e.map((x) => `<li>${datum(x.datum)} · ${esc(x.titel)}${x.notiz ? ` <span class="muted">– ${esc(x.notiz)}</span>` : ""}${istSL() ? ` <button class="btn klein" data-aktion="dossier-weg" data-id="${esc(p.id)}" data-i="${esc(x.id)}" aria-label="Eintrag ${esc(x.titel)} entfernen">✕</button>` : ""}</li>`).join("")}${g.map((x) => `<li>${datum(x.datum)} · ${esc(x.art)} <span class="muted">– ${esc(x.status)} (<a href="#/gespraeche">Personalgespräche</a>)</span></li>`).join("")}</ul>` : '<p class="small muted">keine Einträge</p>'}</div></details>`;
     }).join("");
-    return `<div class="bereichskopf"><h2>Personaldossier</h2>${istSL() ? `<button class="btn" data-aktion="dossier-neu" data-id="${p.id}">+ Eintrag aus Vorlage</button>` : ""}</div>
+    return `<div class="bereichskopf"><h2>Personaldossier</h2>${istSL() ? `<button class="btn" data-aktion="dossier-neu" data-id="${esc(p.id)}">+ Eintrag aus Vorlage</button>` : ""}</div>
       <p class="small muted">Nur Verweise und Metadaten; die Dokumente selbst liegen später im Dokumentenspeicher von EduKSX. Sichtbar für Schulleitung und Schulverwaltung. Führung, Gliederung, Aufbewahrung und Einsicht: ${RR(["VVO", "21"], ["VVO", "22"], ["VVO", "23"], ["VVO", "27"])}; Mitarbeitendenbeurteilung: ${RR(["LPG", "20"], ["VVO", "136"])}.</p>${gruppen}`;
   }
 
@@ -728,32 +728,32 @@
     const lp = lehrpersonen();
     const dis = istSL() ? "" : "disabled";
     const total = gTotal(g);
-    const teil = g.teilnehmende.map((pid) => `<tr><td><a href="#/person/${pid}">${esc(pname(pid))}</a> <span class="small muted">${esc(kuerzel(pid))}</span></td><td class="zahl">${zahl(wlVon(pid), 1)}</td><td class="zahl">${zahl(gefaessStunden(g, pid))}</td>${istSL() ? `<td><button class="btn klein" data-aktion="teil-weg" data-g="${g.id}" data-p="${pid}" aria-label="${esc(pname(pid))} entfernen">✕</button></td>` : ""}</tr>`).join("");
+    const teil = g.teilnehmende.map((pid) => `<tr><td><a href="#/person/${pid}">${esc(pname(pid))}</a> <span class="small muted">${esc(kuerzel(pid))}</span></td><td class="zahl">${zahl(wlVon(pid), 1)}</td><td class="zahl">${zahl(gefaessStunden(g, pid))}</td>${istSL() ? `<td><button class="btn klein" data-aktion="teil-weg" data-g="${esc(g.id)}" data-p="${pid}" aria-label="${esc(pname(pid))} entfernen">✕</button></td>` : ""}</tr>`).join("");
     const fehlen = lp.filter((p) => !g.teilnehmende.includes(p.id));
-    const num = (f, t, v, ph) => `<label class="feld">${t}<input type="number" min="0" step="0.5" value="${v != null ? v : ""}" ${ph ? `placeholder="${ph}"` : ""} data-aktion="g-feld" data-g="${g.id}" data-feld="${f}" ${dis}></label>`;
-    const txt = (f, t, v) => `<label class="feld">${t}<input type="text" value="${esc(v || "")}" data-aktion="g-feld" data-g="${g.id}" data-feld="${f}" ${dis}></label>`;
+    const num = (f, t, v, ph) => `<label class="feld">${t}<input type="number" min="0" step="0.5" value="${v != null ? v : ""}" ${ph ? `placeholder="${ph}"` : ""} data-aktion="g-feld" data-g="${esc(g.id)}" data-feld="${f}" ${dis}></label>`;
+    const txt = (f, t, v) => `<label class="feld">${t}<input type="text" value="${esc(v || "")}" data-aktion="g-feld" data-g="${esc(g.id)}" data-feld="${f}" ${dis}></label>`;
     const art = g.art === "zusatz" ? '<span class="badge violett">zusätzlich</span>' : '<span class="badge neutral">aus Pauschale</span>';
     return `<details class="gefaess" ${location.hash.includes("g=" + g.id) ? "open" : ""}><summary><span><strong>${esc(g.name)}</strong> ${g.kurz ? `<span class="muted small">${esc(g.kurz)}</span>` : ""} ${art}${g.vorzeichen === "-" ? ' <span class="badge info">Entlastung</span>' : ""}${g.entschaedigt ? ' <span class="badge info">entschädigt</span>' : ""}</span>
         <span class="small">${g.regel === "linear" ? `${zahl(g.stunden)} h bei 100 %` : `${zahl(gefaessBasis(g))} h je Person`} · ${g.teilnehmende.length} Pers. · <strong>${zahl(total)} h</strong></span></summary>
       <div class="inhalt">
         <div class="formzeile">${txt("name", "Name", g.name)}${txt("kurz", "Name kurz", g.kurz)}
-          <label class="feld">Bereich<select data-aktion="g-feld" data-g="${g.id}" data-feld="bereich" ${dis}>${BEREICHE.map((x) => `<option ${x === g.bereich ? "selected" : ""}>${x}</option>`).join("")}</select></label>
-          <label class="feld">Art<select data-aktion="g-feld" data-g="${g.id}" data-feld="art" ${dis}><option value="pauschal" ${g.art === "pauschal" ? "selected" : ""}>aus Pauschale</option><option value="zusatz" ${g.art === "zusatz" ? "selected" : ""}>zusätzlich (erhöht BG)</option></select></label>
-          <label class="feld">Vorzeichen<select data-aktion="g-feld" data-g="${g.id}" data-feld="vorzeichen" ${dis}><option value="+" ${g.vorzeichen !== "-" ? "selected" : ""}>+ Aufgabe</option><option value="-" ${g.vorzeichen === "-" ? "selected" : ""}>− Entlastung</option></select></label></div>
+          <label class="feld">Bereich<select data-aktion="g-feld" data-g="${esc(g.id)}" data-feld="bereich" ${dis}>${BEREICHE.map((x) => `<option ${x === g.bereich ? "selected" : ""}>${x}</option>`).join("")}</select></label>
+          <label class="feld">Art<select data-aktion="g-feld" data-g="${esc(g.id)}" data-feld="art" ${dis}><option value="pauschal" ${g.art === "pauschal" ? "selected" : ""}>aus Pauschale</option><option value="zusatz" ${g.art === "zusatz" ? "selected" : ""}>zusätzlich (erhöht BG)</option></select></label>
+          <label class="feld">Vorzeichen<select data-aktion="g-feld" data-g="${esc(g.id)}" data-feld="vorzeichen" ${dis}><option value="+" ${g.vorzeichen !== "-" ? "selected" : ""}>+ Aufgabe</option><option value="-" ${g.vorzeichen === "-" ? "selected" : ""}>− Entlastung</option></select></label></div>
         <div class="formzeile">
-          <label class="feld">Regel Zeit<select data-aktion="g-feld" data-g="${g.id}" data-feld="regel" ${dis}><option value="fix" ${g.regel !== "linear" ? "selected" : ""}>fix je Person</option><option value="linear" ${g.regel === "linear" ? "selected" : ""}>linear nach WL (Basis ${P().lektionenJeVZE} WL)</option></select></label>
+          <label class="feld">Regel Zeit<select data-aktion="g-feld" data-g="${esc(g.id)}" data-feld="regel" ${dis}><option value="fix" ${g.regel !== "linear" ? "selected" : ""}>fix je Person</option><option value="linear" ${g.regel === "linear" ? "selected" : ""}>linear nach WL (Basis ${P().lektionenJeVZE} WL)</option></select></label>
           ${g.regel === "linear" ? num("stunden", "Stunden bei 100 %", g.stunden) + num("sockel", "Sockel h", g.sockel) + num("sockelBis", "Sockel bis WL", g.sockelBis) + num("gesamtAb", "Gesamte Zeit ab WL", g.gesamtAb) + num("max", "Maximum h", g.max, g.stunden)
             : num("anzahl", "Anzahl pro Jahr", g.anzahl) + num("praesenz", "Präsenz h pro Mal", g.praesenz) + num("vorbereitung", "Vorbereitung h pro Mal", g.vorbereitung) + (g.anzahl == null ? num("stunden", "oder Stunden je Person", g.stunden) : "")}
         </div>
         <div class="formzeile">
-          <label class="feld"><span><input type="checkbox" data-aktion="g-feld" data-g="${g.id}" data-feld="amt" ${g.amt ? "checked" : ""} ${dis}> Amt oder Kustodie (mit Stunden-Soll)</span></label>
-          ${g.amt ? num("soll", "Stunden Soll", g.soll) + `<label class="feld"><span><input type="checkbox" data-aktion="g-feld" data-g="${g.id}" data-feld="kustodie" ${g.kustodie ? "checked" : ""} ${dis}> Kustodie</span></label><label class="feld"><span><input type="checkbox" data-aktion="g-feld" data-g="${g.id}" data-feld="entschaedigt" ${g.entschaedigt ? "checked" : ""} ${dis}> zusätzlich entschädigt (${R("LPVO", "2 f")})</span></label>` : ""}
-          <label class="feld"><span><input type="checkbox" data-aktion="g-feld" data-g="${g.id}" data-feld="ressource" data-wert="pool" ${g.ressource === "pool" ? "checked" : ""} ${dis}> belastet Gestaltungspool</span></label>
+          <label class="feld"><span><input type="checkbox" data-aktion="g-feld" data-g="${esc(g.id)}" data-feld="amt" ${g.amt ? "checked" : ""} ${dis}> Amt oder Kustodie (mit Stunden-Soll)</span></label>
+          ${g.amt ? num("soll", "Stunden Soll", g.soll) + `<label class="feld"><span><input type="checkbox" data-aktion="g-feld" data-g="${esc(g.id)}" data-feld="kustodie" ${g.kustodie ? "checked" : ""} ${dis}> Kustodie</span></label><label class="feld"><span><input type="checkbox" data-aktion="g-feld" data-g="${esc(g.id)}" data-feld="entschaedigt" ${g.entschaedigt ? "checked" : ""} ${dis}> zusätzlich entschädigt (${R("LPVO", "2 f")})</span></label>` : ""}
+          <label class="feld"><span><input type="checkbox" data-aktion="g-feld" data-g="${esc(g.id)}" data-feld="ressource" data-wert="pool" ${g.ressource === "pool" ? "checked" : ""} ${dis}> belastet Gestaltungspool</span></label>
         </div>
         <div class="formzeile">${txt("beschreibung", "Beschreibung", g.beschreibung)}${txt("bemerkung", "Bemerkungen", g.bemerkung)}
-          ${istSL() && fehlen.length ? `<label class="feld">Person hinzufügen<select data-aktion="teil-dazu" data-g="${g.id}"><option value="">wählen …</option>${fehlen.map((p) => `<option value="${p.id}">${esc(p.name)}</option>`).join("")}</select></label>` : ""}
-          ${istSL() && fehlen.length ? `<button class="btn klein" data-aktion="teil-alle" data-g="${g.id}">alle Lehrpersonen</button>` : ""}
-          <button class="btn klein" data-aktion="praesenz" data-g="${g.id}">⇩ Präsenzliste</button>${istSL() ? ` <button class="btn klein gefahr" data-aktion="g-loeschen" data-g="${g.id}">Löschen …</button>` : ""}</div>
+          ${istSL() && fehlen.length ? `<label class="feld">Person hinzufügen<select data-aktion="teil-dazu" data-g="${esc(g.id)}"><option value="">wählen …</option>${fehlen.map((p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("")}</select></label>` : ""}
+          ${istSL() && fehlen.length ? `<button class="btn klein" data-aktion="teil-alle" data-g="${esc(g.id)}">alle Lehrpersonen</button>` : ""}
+          <button class="btn klein" data-aktion="praesenz" data-g="${esc(g.id)}">⇩ Präsenzliste</button>${istSL() ? ` <button class="btn klein gefahr" data-aktion="g-loeschen" data-g="${esc(g.id)}">Löschen …</button>` : ""}</div>
         <div class="tabelle-wrap"><table><thead><tr><th>Teilnehmende</th><th class="zahl">WL</th><th class="zahl">Stunden</th>${istSL() ? "<th></th>" : ""}</tr></thead><tbody>${teil || '<tr><td colspan="4" class="muted">noch niemand</td></tr>'}</tbody></table></div>
       </div></details>`;
   }
@@ -765,7 +765,7 @@
       const aemter = S.gefaesse.filter((g) => g.amt);
       const zeilen = aemter.map((g) => {
         const ist = gTotal(g); const soll = Number(g.soll || 0); const d = ist - soll;
-        return `<tr><td><a href="#/berufsauftrag?g=${g.id}" data-aktion-link>${esc(g.name)}</a>${g.kustodie ? ' <span class="badge neutral">Kustodie</span>' : ""}${g.entschaedigt ? ' <span class="badge info">entschädigt</span>' : ""}${g.beschreibung ? `<div class="small muted">${esc(g.beschreibung)}</div>` : ""}</td>
+        return `<tr><td><a href="#/berufsauftrag?g=${esc(g.id)}" data-aktion-link>${esc(g.name)}</a>${g.kustodie ? ' <span class="badge neutral">Kustodie</span>' : ""}${g.entschaedigt ? ' <span class="badge info">entschädigt</span>' : ""}${g.beschreibung ? `<div class="small muted">${esc(g.beschreibung)}</div>` : ""}</td>
           <td class="zahl">${zahl(soll)} h</td><td>${g.teilnehmende.map((pid) => `<a href="#/person/${pid}" title="${esc(pname(pid))}">${esc(kuerzel(pid))}</a> ${zahl(gefaessStunden(g, pid))}`).join(" · ") || '<span class="muted">–</span>'}</td><td class="zahl">${zahl(ist)} h</td>
           <td>${Math.abs(d) < 0.5 ? '<span class="badge erfolg"><span aria-hidden="true">✓</span>gedeckt</span>' : d < 0 ? `<span class="badge warnung"><span aria-hidden="true">△</span>${zahl(-d)} h offen</span>` : `<span class="badge fehler"><span aria-hidden="true">✕</span>${zahl(d)} h zu viel</span>`}</td><td class="small">${esc(g.bemerkung || "")}</td></tr>`;
       }).join("");
@@ -795,7 +795,7 @@
       const s = b - v.verplant;
       const anteil = b ? (v.verplant / b) * 100 : 0;
       return `<tr><td><details><summary>${esc(r.name)}</summary><ul class="small">${v.posten.map((x) => `<li>${esc(pname(x.pid))}: ${fmt(r, x.wert)}</li>`).join("") || "<li>keine Posten</li>"}</ul></details></td>
-        <td class="zahl">${darf && !r.berechnet ? `<input type="number" min="0" step="0.5" value="${r.budget}" data-aktion="budget" data-r="${r.id}" aria-label="Budget ${esc(r.name)}">` : fmt(r, b)}${r.berechnet ? '<div class="small muted">aus <a href="#/stellenplan">Stellenberechnung</a></div>' : ""}</td>
+        <td class="zahl">${darf && !r.berechnet ? `<input type="number" min="0" step="0.5" value="${esc(r.budget)}" data-aktion="budget" data-r="${esc(r.id)}" aria-label="Budget ${esc(r.name)}">` : fmt(r, b)}${r.berechnet ? '<div class="small muted">aus <a href="#/stellenplan">Stellenberechnung</a></div>' : ""}</td>
         <td class="zahl">${fmt(r, v.bedarf)}</td><td class="zahl">${fmt(r, v.verplant)}</td>
         <td class="zahl">${s < -0.05 ? `<span class="badge fehler"><span aria-hidden="true">✕</span>${fmt(r, s)}</span>` : fmt(r, s)}</td>
         <td><div class="balken ${anteil > 100.5 ? "ueber" : anteil > 95 ? "voll" : ""}" role="img" aria-label="${zahl(anteil)} Prozent verplant"><span style="width:${Math.min(100, anteil)}%"></span></div></td></tr>`;
@@ -819,7 +819,7 @@
         </tbody></table></div>
         <h2 style="margin-top:1rem">Je Ressource</h2>
         <div class="tabelle-wrap" style="max-width:820px"><table><thead><tr><th>Ressource</th><th>Anstellung</th><th class="zahl">Soll VZE</th><th class="zahl">Ist VZE</th><th>Differenz</th></tr></thead><tbody>
-          ${zeilenV.map((x) => `<tr><td>${esc(x.r.name)} <span class="small muted">(${x.r.einheit})</span></td><td class="small">${x.kantonal ? "kantonal" : "kommunal"}</td><td class="zahl">${d3(x.soll)}</td><td class="zahl">${d3(x.ist)}</td><td>${dz(x.soll, x.ist)}</td></tr>`).join("")}
+          ${zeilenV.map((x) => `<tr><td>${esc(x.r.name)} <span class="small muted">(${esc(x.r.einheit)})</span></td><td class="small">${x.kantonal ? "kantonal" : "kommunal"}</td><td class="zahl">${d3(x.soll)}</td><td class="zahl">${d3(x.ist)}</td><td>${dz(x.soll, x.ist)}</td></tr>`).join("")}
         </tbody></table></div>`;
     } else if (sicht === "vergleich") {
       inhalt = `<div class="tabelle-wrap"><table><thead><tr><th>Ressource</th><th class="zahl">Budget</th><th class="zahl">Planung Schulleitung</th><th class="zahl">Freigegeben (Verwaltung)</th><th class="zahl">Differenz</th></tr></thead><tbody>${S.ressourcen.map((r) => {
@@ -833,7 +833,7 @@
     }
     const ueber = S.ressourcen.filter((r) => budget(r) - vSL[r.id].verplant < -0.05);
     return `<div class="seitenkopf"><div><h1>Ressourcen</h1><p class="muted">Budget je Ressourcentyp, Verbrauch aus den Zuweisungen, Saldo und Posten. Kantonale VZE: ${RR(["LPG", "3"], ["LPG", "4"], ["LPVO", "2 c"])}; gemeindeeigene: ${R("LPVO", "2 e")}.</p></div>
-      <div class="aktionen">${istSV() ? `<button class="btn" data-aktion="sperre" aria-pressed="${S.budgetGesperrt}">${S.budgetGesperrt ? "🔒 Budget entsperren" : "🔓 Budget für Schulleitung sperren"}</button>` : (S.budgetGesperrt ? '<span class="badge neutral"><span aria-hidden="true">🔒</span>Budget von der Schulverwaltung gesperrt</span>' : "")}
+      <div class="aktionen">${istSV() ? `<button class="btn" data-aktion="sperre" aria-pressed="${esc(S.budgetGesperrt)}">${S.budgetGesperrt ? "🔒 Budget entsperren" : "🔓 Budget für Schulleitung sperren"}</button>` : (S.budgetGesperrt ? '<span class="badge neutral"><span aria-hidden="true">🔒</span>Budget von der Schulverwaltung gesperrt</span>' : "")}
       <button class="btn" data-aktion="export-ress">⇩ Excel/CSV</button></div></div>
       ${ueber.length ? `<div class="meldung warnung" role="status"><strong>Warnung:</strong> Budget überschritten bei ${ueber.map((r) => esc(r.name)).join(", ")}. Die Planung bleibt möglich; bitte begründen oder umverteilen.</div>` : ""}
       <div class="reiter" role="tablist">${tab("sl", "Sicht Schulleitung")}${tab("vze", "Übersicht in VZE")}${tab("sv", "Sicht Schulverwaltung")}${tab("vergleich", "Vergleich")}</div>${inhalt}`;
@@ -844,20 +844,20 @@
       const st = status(p.id);
       const f = S.freigaben[p.id] || {};
       const jetzt = stand(p.id);
-      const auswahl = istSL() ? `<td><input type="checkbox" data-sammel="${p.id}" aria-label="${esc(p.name)} auswählen" ${st.key === "freigegeben" || st.key === "angestellt" ? "disabled" : ""}></td>` : "";
+      const auswahl = istSL() ? `<td><input type="checkbox" data-sammel="${esc(p.id)}" aria-label="${esc(p.name)} auswählen" ${st.key === "freigegeben" || st.key === "angestellt" ? "disabled" : ""}></td>` : "";
       let aktion = "";
       if (istSL()) {
-        aktion = `${st.key !== "freigegeben" && st.key !== "angestellt" ? `<button class="btn klein primaer" data-aktion="freigeben" data-id="${p.id}">${st.key === "geaendert" ? "Neu freigeben" : "Freigeben"}</button>` : ""}
-          ${f.stand && !f.angestellt ? `<button class="btn klein" data-aktion="zurueckziehen" data-id="${p.id}">Zurückziehen</button>` : ""}`;
+        aktion = `${st.key !== "freigegeben" && st.key !== "angestellt" ? `<button class="btn klein primaer" data-aktion="freigeben" data-id="${esc(p.id)}">${st.key === "geaendert" ? "Neu freigeben" : "Freigeben"}</button>` : ""}
+          ${f.stand && !f.angestellt ? `<button class="btn klein" data-aktion="zurueckziehen" data-id="${esc(p.id)}">Zurückziehen</button>` : ""}`;
       } else if (istSV()) {
-        aktion = `${f.stand && !f.angestellt ? `<button class="btn klein primaer" data-aktion="angestellt" data-id="${p.id}">Als angestellt markieren</button>` : ""}
-          ${f.stand ? `<label class="small"><input type="checkbox" data-aktion="erledigt" data-id="${p.id}" ${f.erledigt ? "checked" : ""}> erledigt</label>` : ""}
-          ${f.aenderungSV ? `<button class="btn klein" data-aktion="quittieren" data-id="${p.id}">Änderung quittieren</button>` : ""}
-          ${f.stand ? `<button class="btn klein" data-aktion="bemerkung" data-id="${p.id}">Bemerkung</button>` : ""}`;
+        aktion = `${f.stand && !f.angestellt ? `<button class="btn klein primaer" data-aktion="angestellt" data-id="${esc(p.id)}">Als angestellt markieren</button>` : ""}
+          ${f.stand ? `<label class="small"><input type="checkbox" data-aktion="erledigt" data-id="${esc(p.id)}" ${f.erledigt ? "checked" : ""}> erledigt</label>` : ""}
+          ${f.aenderungSV ? `<button class="btn klein" data-aktion="quittieren" data-id="${esc(p.id)}">Änderung quittieren</button>` : ""}
+          ${f.stand ? `<button class="btn klein" data-aktion="bemerkung" data-id="${esc(p.id)}">Bemerkung</button>` : ""}`;
       }
-      return `<tr>${auswahl}<td><a href="#/person/${p.id}">${esc(p.name)}</a>${f.bemerkung ? `<div class="small muted">Bemerkung: ${esc(f.bemerkung)}</div>` : ""}</td><td>${badge(st)}${f.aenderungSV ? ' <span class="badge warnung"><span aria-hidden="true">!</span>neu für Verwaltung</span>' : ""}</td>
+      return `<tr>${auswahl}<td><a href="#/person/${esc(p.id)}">${esc(p.name)}</a>${f.bemerkung ? `<div class="small muted">Bemerkung: ${esc(f.bemerkung)}</div>` : ""}</td><td>${badge(st)}${f.aenderungSV ? ' <span class="badge warnung"><span aria-hidden="true">!</span>neu für Verwaltung</span>' : ""}</td>
         <td class="zahl">${zahl(jetzt.pensum, 1)} %</td><td class="zahl">${f.stand ? zahl(f.stand.pensum, 1) + " %" : "–"}</td><td class="small">${f.zeit ? zeit(f.zeit) : "–"}</td>
-        <td>${f.stand ? `<button class="btn klein" data-aktion="vergleich" data-id="${p.id}">Vergleich</button>` : ""} ${aktion}</td></tr>`;
+        <td>${f.stand ? `<button class="btn klein" data-aktion="vergleich" data-id="${esc(p.id)}">Vergleich</button>` : ""} ${aktion}</td></tr>`;
     }).join("");
     const verlauf = S.verlauf.filter((e) => /freigegeben|angestellt|zurückgezogen|quittiert|Bemerkung|erledigt/.test(e.text));
     return `<div class="seitenkopf"><div><h1>Freigaben und Anstellung</h1><p class="muted">Die Schulleitung gibt abgeschlossene Planungen frei; die Schulverwaltung stellt an. Änderungen nach der Freigabe werden erkannt. Grundlage: ${RR(["LPVO", "9", "Abs. 1"], ["LPG", "7"], ["LPVO", "3"], ["LPVO", "4"])}.</p></div>
@@ -869,7 +869,7 @@
 
   function umfrageDetail(u) {
     const z = (t, v) => `<tr><th scope="row" style="background:none">${t}</th><td>${esc(v || "–")}</td></tr>`;
-    return `<table><tbody>${z("Weiterbeschäftigung", u.weiter)}${z("Pensenwunsch", u.wunschProzent != null ? `${u.wunschProzent} % bzw. ${u.wunschWL} WL` : "")}${z("Stufen", u.stufen)}${z("Fächer", u.faecher)}${z("Interesse Klassenlehrperson", u.klp)}${z("Klassen- und Aufgabenwünsche", u.wuensche)}${z("Verbindliche Sperrzeiten", u.sperr)}${z("Bevorzugte freie Zeiten", u.frei)}${z("Bemerkungen", u.bemerkung)}</tbody></table>`;
+    return `<table><tbody>${z("Weiterbeschäftigung", u.weiter)}${z("Pensenwunsch", u.wunschProzent != null ? `${esc(u.wunschProzent)} % bzw. ${esc(u.wunschWL)} WL` : "")}${z("Stufen", u.stufen)}${z("Fächer", u.faecher)}${z("Interesse Klassenlehrperson", u.klp)}${z("Klassen- und Aufgabenwünsche", u.wuensche)}${z("Verbindliche Sperrzeiten", u.sperr)}${z("Bevorzugte freie Zeiten", u.frei)}${z("Bemerkungen", u.bemerkung)}</tbody></table>`;
   }
 
   seiten.umfrage = function () {
@@ -903,12 +903,12 @@
       const naechster = SV_SCHRITTE[i + 1];
       const darfWeiter = naechster && ((istSL() && i < 3) || (istSV() && i === 3));
       const rapport = a.rapport.reduce((x, r) => x + r.lektionen, 0);
-      return `<tr><td>${esc(pname(a.person))}</td><td>${esc(a.grund)}</td><td class="small">${datum(a.von)} – ${datum(a.bis)}</td><td class="zahl">${a.wl}</td>
-        <td>${istSL() && i < 2 ? `<select data-aktion="vertretung" data-id="${a.id}" aria-label="Stellvertretung"><option value="">– wählen –</option>${pool.filter((p) => p.id !== a.person).map((p) => `<option value="${p.id}" ${p.id === a.vertretung ? "selected" : ""}>${esc(p.name)}${p.pool ? " (Pool)" : ""}</option>`).join("")}</select>` : esc(pname(a.vertretung))}</td>
+      return `<tr><td>${esc(pname(a.person))}</td><td>${esc(a.grund)}</td><td class="small">${datum(a.von)} – ${datum(a.bis)}</td><td class="zahl">${esc(a.wl)}</td>
+        <td>${istSL() && i < 2 ? `<select data-aktion="vertretung" data-id="${esc(a.id)}" aria-label="Stellvertretung"><option value="">– wählen –</option>${pool.filter((p) => p.id !== a.person).map((p) => `<option value="${esc(p.id)}" ${p.id === a.vertretung ? "selected" : ""}>${esc(p.name)}${p.pool ? " (Pool)" : ""}</option>`).join("")}</select>` : esc(pname(a.vertretung))}</td>
         <td><div class="ablauf" aria-label="Ablauf, aktueller Schritt ${esc(a.status)}">${kette}</div></td>
         <td class="small">${esc(a.quelle || "–")}${a.quelle === "Gestaltungspool" && wochen(a) > P().vikariatPoolMaxWochen ? ` <span class="badge fehler"><span aria-hidden="true">✕</span>über ${P().vikariatPoolMaxWochen} Schulwochen</span>` : ""}<div>${rapport ? `${rapport} Lektionen rapportiert` : ""}</div></td>
-        <td>${darfWeiter ? `<button class="btn klein primaer" data-aktion="sv-weiter" data-id="${a.id}" ${naechster === "geplant" && !a.vertretung ? "disabled title=\"Zuerst Stellvertretung wählen\"" : ""}>${naechster === "unterschrieben" ? "✍ Unterschreiben" : "→ " + esc(naechster)}</button>` : ""}
-          ${istSL() && i >= 1 ? `<button class="btn klein" data-aktion="rapport" data-id="${a.id}">+ Rapport</button>` : ""}</td></tr>`;
+        <td>${darfWeiter ? `<button class="btn klein primaer" data-aktion="sv-weiter" data-id="${esc(a.id)}" ${naechster === "geplant" && !a.vertretung ? "disabled title=\"Zuerst Stellvertretung wählen\"" : ""}>${naechster === "unterschrieben" ? "✍ Unterschreiben" : "→ " + esc(naechster)}</button>` : ""}
+          ${istSL() && i >= 1 ? `<button class="btn klein" data-aktion="rapport" data-id="${esc(a.id)}">+ Rapport</button>` : ""}</td></tr>`;
     }).join("");
     return `<div class="seitenkopf"><div><h1>Stellvertretungen</h1><p class="muted">Ausfälle erfassen, Vikariate planen, Formulare unterschreiben und weitergeben. Gründe nur als Kategorie, ohne Diagnose. Vikariate aus dem Gestaltungspool höchstens 14 Schulwochen je Einsatz; Kurzvikariate liegen ausserhalb des Berufsauftrags. Grundlage: ${RR(["LPG", "5", "Abs. 2"], ["LPG", "25"], ["LPVO", "30"], ["LPVO", "31"], ["LPVO", "2 c", "Abs. 4 lit. d"], ["LPVO", "27"], ["LPVO", "28"], ["LPVO", "29"])}; Urlaub, Krankheit und Unfall nach allgemeinem Personalrecht: ${RR(["VVO", "84"], ["VVO", "96"], ["VVO", "99"])}.</p></div>
       <div class="aktionen">${istSL() ? '<button class="btn primaer" data-aktion="ausfall-neu">+ Ausfall erfassen</button>' : ""}</div></div>
@@ -920,7 +920,7 @@
     const liste = S.gespraeche.filter((g) => istSL() || g.freigegeben);
     const zeilen = liste.map((g) => `<tr><td>${esc(pname(g.person))}</td><td>${esc(g.art)}</td><td>${datum(g.datum)}</td><td>${esc(g.status)}</td>
       <td>${g.freigegeben ? '<span class="badge info"><span aria-hidden="true">➜</span>an Verwaltung freigegeben</span>' : '<span class="badge neutral"><span aria-hidden="true">🔒</span>nur Schulleitung</span>'}</td>
-      <td>${istSL() ? `<button class="btn klein" data-aktion="formular" data-id="${g.id}">Formular vorausfüllen</button> ${g.freigegeben ? "" : `<button class="btn klein" data-aktion="g-freigeben" data-id="${g.id}">An Verwaltung freigeben</button>`}` : ""}</td></tr>`).join("");
+      <td>${istSL() ? `<button class="btn klein" data-aktion="formular" data-id="${esc(g.id)}">Formular vorausfüllen</button> ${g.freigegeben ? "" : `<button class="btn klein" data-aktion="g-freigeben" data-id="${esc(g.id)}">An Verwaltung freigeben</button>`}` : ""}</td></tr>`).join("");
     return `<div class="seitenkopf"><div><h1>Personalgespräche und Dossier</h1><p class="muted">Mitarbeitendenbeurteilungen, Probezeitgespräche und Unterrichtsbesuche planen und dokumentieren. Grundlage: ${RR(["LPG", "20"], ["LPVO", "23"], ["LPG", "7 a"], ["LPG", "11 b"], ["LPG", "21"])}.</p></div>
       <div class="aktionen">${istSL() ? '<button class="btn primaer" data-aktion="termin-neu">+ Termin</button>' : ""}</div></div>
       <div class="meldung warnung" role="note"><strong>Besonders schützenswerte Personendaten.</strong> Zugriff nur für die zuständige Schulleitung; jede Einsicht wird protokolliert (${R("LPG", "1 a")}). Aufbewahrungs- und Löschfristen je Dokumentart.${istSV() ? " Die Schulverwaltung sieht nur ausdrücklich freigegebene Unterlagen." : ""}</div>
@@ -932,9 +932,9 @@
     const p = P();
     const darf = istBL() || istSL();
     const zeilen = t.zeilen.map((z) => `<tr><td>${esc(z.a.name)}</td><td>${esc(z.a.tag)}</td><td>${esc(z.a.von)}–${esc(z.a.bis)}</td>
-      <td class="zahl">${darf ? `<input type="number" min="0" value="${z.a.kinder}" data-aktion="kinder" data-id="${z.a.id}" aria-label="Angemeldete Kinder ${esc(z.a.name)} ${esc(z.a.tag)}">` : z.a.kinder}</td>
-      <td class="zahl">${z.personal}</td><td class="zahl">${zahl(z.jahresH)}</td></tr>`).join("");
-    const team = t.einsaetze.map((l) => `<tr><td colspan="2"><strong>${esc(eTitel(l))}</strong> <span class="small muted">Soll ${fmtE(l, sollLp(l))}${einheit(l) !== "%" ? ` (${zahl(bgRichtwert(l, sollLp(l)))} %)` : ""}</span></td></tr>` + l.zuteilung.map((z, i) => `<tr><td>${esc(pname(z.person))}</td><td class="zahl">${darf ? `<input type="number" min="0" step="1" value="${z.wl}" data-aktion="zt-wert" data-id="${l.id}" data-i="${i}" aria-label="Umfang ${esc(pname(z.person))}">` : z.wl} ${einheit(l)}</td></tr>`).join("")).join("");
+      <td class="zahl">${darf ? `<input type="number" min="0" value="${esc(z.a.kinder)}" data-aktion="kinder" data-id="${esc(z.a.id)}" aria-label="Angemeldete Kinder ${esc(z.a.name)} ${esc(z.a.tag)}">` : z.a.kinder}</td>
+      <td class="zahl">${esc(z.personal)}</td><td class="zahl">${zahl(z.jahresH)}</td></tr>`).join("");
+    const team = t.einsaetze.map((l) => `<tr><td colspan="2"><strong>${esc(eTitel(l))}</strong> <span class="small muted">Soll ${fmtE(l, sollLp(l))}${einheit(l) !== "%" ? ` (${zahl(bgRichtwert(l, sollLp(l)))} %)` : ""}</span></td></tr>` + l.zuteilung.map((z, i) => `<tr><td>${esc(pname(z.person))}</td><td class="zahl">${darf ? `<input type="number" min="0" step="1" value="${esc(z.wl)}" data-aktion="zt-wert" data-id="${esc(l.id)}" data-i="${i}" aria-label="Umfang ${esc(pname(z.person))}">` : z.wl} ${einheit(l)}</td></tr>`).join("")).join("");
     const diff = t.ist - t.sollProzent;
     const tage = ["Mo", "Di", "Mi", "Do", "Fr"].map((tag) => {
       const n = t.zeilen.filter((z) => z.a.tag === tag).reduce((a, z) => a + z.a.kinder, 0);
@@ -948,7 +948,7 @@
         <div class="karte"><div class="titel">Differenz</div><div class="zahl">${diff >= 0 ? "+" : "−"}${zahl(Math.abs(diff))} %</div><div class="small">${Math.abs(diff) <= 5 ? '<span class="badge erfolg"><span aria-hidden="true">✓</span>gedeckt</span>' : diff < 0 ? '<span class="badge warnung"><span aria-hidden="true">△</span>Unterdeckung</span>' : '<span class="badge info"><span aria-hidden="true">ℹ</span>Überdeckung</span>'}</div></div>
         <div class="karte"><div class="titel">Freigabe</div><div class="zahl" style="font-size:1rem">${S.betreuungFreigabe ? badge({ cls: "info", sym: "➜", text: "freigegeben" }) : badge({ cls: "neutral", sym: "○", text: "Entwurf" })}</div></div>
       </div>
-      <p class="small muted">Parameter (Beispielwerte): Betreuungsschlüssel 1 : ${p.betreuungsschluessel}, Mindestbesetzung ${p.mindestbesetzung}, ${p.schulwochen} Schulwochen, Jahresarbeitszeit ${zahl(p.jahresarbeitszeitBetreuung)} h. Die genaue Berechnungslogik ist offen (ST-K6).</p>
+      <p class="small muted">Parameter (Beispielwerte): Betreuungsschlüssel 1 : ${esc(p.betreuungsschluessel)}, Mindestbesetzung ${esc(p.mindestbesetzung)}, ${esc(p.schulwochen)} Schulwochen, Jahresarbeitszeit ${zahl(p.jahresarbeitszeitBetreuung)} h. Die genaue Berechnungslogik ist offen (ST-K6).</p>
       <div class="spalten">
         <section><h2>Betreuungsangebote</h2><div class="tabelle-wrap"><table><thead><tr><th>Angebot</th><th>Tag</th><th>Zeit</th><th class="zahl">Kinder</th><th class="zahl">Personal</th><th class="zahl">h/Jahr</th></tr></thead><tbody>${zeilen}</tbody></table></div></section>
         <section><h2>Team und Einsätze</h2><p class="small muted">Betreuungs-Anstellungen in Stellenprozent oder Wochenstunden während der Schulwochen; Bearbeitung auch unter <a href="#/unterricht?gruppe=anstellung">Anstellungen</a>.</p><div class="tabelle-wrap"><table><thead><tr><th>Person</th><th class="zahl">Umfang</th></tr></thead><tbody>${team}</tbody></table></div>
@@ -967,12 +967,12 @@
     const klassenZ = S.klassen.map((k) => {
       const g = klassengroesse(k);
       const t = tafel(k);
-      return `<tr><td>${esc(k.id)}</td><td>${esc(t.name)}</td><td class="zahl">${darf ? `<input type="number" min="0" value="${k.schueler}" data-aktion="schueler" data-klasse="${k.id}" aria-label="Schülerzahl ${k.id}">` : k.schueler}</td><td><span class="badge ${g.cls}"><span aria-hidden="true">${g.sym}</span>${esc(g.text)}</span></td><td class="zahl">${zahl(t.vze, 2)}</td><td class="zahl">${t.wlKlasse}${t.kommunal ? ` + ${t.kommunal} kommunal` : ""}</td></tr>`;
+      return `<tr><td>${esc(k.id)}</td><td>${esc(t.name)}</td><td class="zahl">${darf ? `<input type="number" min="0" value="${esc(k.schueler)}" data-aktion="schueler" data-klasse="${esc(k.id)}" aria-label="Schülerzahl ${esc(k.id)}">` : k.schueler}</td><td><span class="badge ${esc(g.cls)}"><span aria-hidden="true">${esc(g.sym)}</span>${esc(g.text)}</span></td><td class="zahl">${zahl(t.vze, 2)}</td><td class="zahl">${esc(t.wlKlasse)}${t.kommunal ? ` + ${esc(t.kommunal)} kommunal` : ""}</td></tr>`;
     }).join("");
     const muts = S.mutationen.map((m) => {
       const tag = new Date(m.start + "T00:00:00").getDay();
-      return `<tr><td>${esc(m.was)}</td><td>${esc(m.warum)}</td><td class="zahl">${m.lektionen}</td><td>${esc(m.quelle)}</td><td>${esc(pname(m.person))}</td><td>${datum(m.start)}${tag !== 1 ? ' <span class="badge fehler"><span aria-hidden="true">✕</span>kein Montag</span>' : ""}</td><td>${esc(m.status)}</td>
-        <td>${istSV() && m.status === "erfasst" ? `<button class="btn klein" data-aktion="mutation-melden" data-id="${m.id}">An VSA melden</button>` : ""}</td></tr>`;
+      return `<tr><td>${esc(m.was)}</td><td>${esc(m.warum)}</td><td class="zahl">${esc(m.lektionen)}</td><td>${esc(m.quelle)}</td><td>${esc(pname(m.person))}</td><td>${datum(m.start)}${tag !== 1 ? ' <span class="badge fehler"><span aria-hidden="true">✕</span>kein Montag</span>' : ""}</td><td>${esc(m.status)}</td>
+        <td>${istSV() && m.status === "erfasst" ? `<button class="btn klein" data-aktion="mutation-melden" data-id="${esc(m.id)}">An VSA melden</button>` : ""}</td></tr>`;
     }).join("");
     const summeKlassen = S.klassen.reduce((a, k) => a + k.schueler, 0);
     return `<div class="seitenkopf"><div><h1>Stellenplan und VZE</h1><p class="muted">Zuteilung der Vollzeiteinheiten (VZE) nach Schülerzahl und Sozialindex, Klassenbildung und Meldungen an das Volksschulamt. Werte nach Weisung 2026/27 (ZU PRÜFEN).</p></div>
@@ -981,24 +981,24 @@
         <div class="formzeile">
           ${ein("schuelerzahl", "Schülerzahl", "1", "Stichtag 15. September des Vorjahres")}
           ${ein("sozialindex", "Sozialindex", "0.1", "100–120, Mittel der drei Vorjahre")}
-          <label class="feld">Korrekturfaktor<input type="number" value="${p.korrekturfaktor}" disabled><span class="small">Sek 2026/27</span></label>
-          <label class="feld">Basiswert<input type="number" value="${p.basiswert}" disabled><span class="small">Sekundarstufe</span></label>
+          <label class="feld">Korrekturfaktor<input type="number" value="${esc(p.korrekturfaktor)}" disabled><span class="small">Sek 2026/27</span></label>
+          <label class="feld">Basiswert<input type="number" value="${esc(p.basiswert)}" disabled><span class="small">Sekundarstufe</span></label>
         </div>
-        <p class="small">VZE = ${st.schuelerzahl} × ${zahl(st.sozialindex, 1)} × ${p.korrekturfaktor} / (${p.basiswert} × 100) = <strong>${zahl(x.vze, 2)} VZE</strong> = ${zahl(x.wlBA, 1)} WL (1 VZE = ${p.lektionenJeVZE} WL). Klassen nach Lektionentafel brauchen ${zahl(x.bedarfKlassenVZE, 2)} VZE.</p>
+        <p class="small">VZE = ${esc(st.schuelerzahl)} × ${zahl(st.sozialindex, 1)} × ${esc(p.korrekturfaktor)} / (${esc(p.basiswert)} × 100) = <strong>${zahl(x.vze, 2)} VZE</strong> = ${zahl(x.wlBA, 1)} WL (1 VZE = ${esc(p.lektionenJeVZE)} WL). Klassen nach Lektionentafel brauchen ${zahl(x.bedarfKlassenVZE, 2)} VZE.</p>
         <p class="small muted">Grundlage: ${RR(["LPG", "3", "Abs. 1"], ["LPVO", "2", "Abs. 1–4"], ["LPVO", "2 a"], ["LPVO", "2 b"], ["LPVO", "2 d"])}</p>
       </section>
       <div class="karten">
         <div class="karte"><div class="titel">VZE Berufsauftrag</div><div class="zahl">${zahl(x.vze, 2)}</div><div class="small muted">${zahl(x.wlBA, 1)} WL · verplant ${zahl(v.ba.verplant, 1)} WL</div></div>
-        <div class="karte"><div class="titel">VZE Schulleitung</div><div class="zahl">${zahl(x.sl, 3)}</div><div class="small muted">${p.slSockel} + ${p.slJeVZE} × VZE BA${x.vze >= 25 ? " + Sockel je 25 VZE" : ""} · ${R("LPVO", "2 c", "Abs. 1–2")}</div></div>
-        <div class="karte"><div class="titel">Gestaltungspool</div><div class="zahl">${zahl(x.pool, 3)} VZE</div><div class="small muted">${zahl(x.wlPool, 1)} WL · ${p.gestaltungspoolJeVZE} × VZE BA · ${R("LPVO", "2 c", "Abs. 4–5")}</div></div>
-        <div class="karte"><div class="titel">Koordination Sek (kommunal)</div><div class="zahl">${zahl(x.koordination, 3)} VZE</div><div class="small muted">${p.koordinationSekJeVZE} × VZE BA, Kosten Gemeinde · ${R("LPVO", "2 e", "Abs. 1")}</div></div>
-        <div class="karte"><div class="titel">Therapien (Höchstangebot)</div><div class="zahl">${zahl(x.therapieMax, 3)} VZE</div><div class="small muted">${p.therapieMaxJe100} VZE je 100 SuS; nicht genutzte in IF umlagerbar (Bewilligung) · ${R("LPVO", "2 e", "Abs. 2 lit. c, e")}</div></div>
-        <div class="karte"><div class="titel">DaZ-Aufnahmeunterricht</div><div class="zahl">${zahl(x.dazWL, 1)} WL</div><div class="small muted">ausserhalb VZE · ${st.dazErstesJahr} SuS 1. Jahr × ${p.dazErstesJahrWL} WL, ${st.dazFolgejahre} SuS Folgejahre</div></div>
+        <div class="karte"><div class="titel">VZE Schulleitung</div><div class="zahl">${zahl(x.sl, 3)}</div><div class="small muted">${esc(p.slSockel)} + ${esc(p.slJeVZE)} × VZE BA${x.vze >= 25 ? " + Sockel je 25 VZE" : ""} · ${R("LPVO", "2 c", "Abs. 1–2")}</div></div>
+        <div class="karte"><div class="titel">Gestaltungspool</div><div class="zahl">${zahl(x.pool, 3)} VZE</div><div class="small muted">${zahl(x.wlPool, 1)} WL · ${esc(p.gestaltungspoolJeVZE)} × VZE BA · ${R("LPVO", "2 c", "Abs. 4–5")}</div></div>
+        <div class="karte"><div class="titel">Koordination Sek (kommunal)</div><div class="zahl">${zahl(x.koordination, 3)} VZE</div><div class="small muted">${esc(p.koordinationSekJeVZE)} × VZE BA, Kosten Gemeinde · ${R("LPVO", "2 e", "Abs. 1")}</div></div>
+        <div class="karte"><div class="titel">Therapien (Höchstangebot)</div><div class="zahl">${zahl(x.therapieMax, 3)} VZE</div><div class="small muted">${esc(p.therapieMaxJe100)} VZE je 100 SuS; nicht genutzte in IF umlagerbar (Bewilligung) · ${R("LPVO", "2 e", "Abs. 2 lit. c, e")}</div></div>
+        <div class="karte"><div class="titel">DaZ-Aufnahmeunterricht</div><div class="zahl">${zahl(x.dazWL, 1)} WL</div><div class="small muted">ausserhalb VZE · ${esc(st.dazErstesJahr)} SuS 1. Jahr × ${esc(p.dazErstesJahrWL)} WL, ${esc(st.dazFolgejahre)} SuS Folgejahre</div></div>
       </div>
       <div class="formzeile">${ein("dazErstesJahr", "DaZ-SuS im 1. Jahr", "1", "2 WL je SuS")}${ein("dazFolgejahre", "DaZ-SuS 2./3. Jahr", "1", "0.5–0.75 WL je SuS")}</div>
       <h2>Klassenbildung</h2>
       <p class="small muted">Die Gemeinde legt im Stellenplan die Aufteilung der VZE auf Abteilungen und Klassen fest (${R("LPG", "3", "Abs. 2")}) und meldet ihn dem Volksschulamt (${R("LPVO", "2", "Abs. 5")}).</p>
-      <p class="small muted">Variante 2 Abteilungen (A/B). Höchstzahlen: A ${p.maxKlassengroesse.A}, B ${p.maxKlassengroesse.B}, C ${p.maxKlassengroesse.C}. Mehr als drei über dem Maximum: Halbklassen-/Teamteaching-Lektionen oder Teilung innerhalb der zugeteilten VZE. Schüler/innen in Klassen: ${summeKlassen} (Stichtag: ${st.schuelerzahl}).</p>
+      <p class="small muted">Variante 2 Abteilungen (A/B). Höchstzahlen: A ${esc(p.maxKlassengroesse.A)}, B ${esc(p.maxKlassengroesse.B)}, C ${esc(p.maxKlassengroesse.C)}. Mehr als drei über dem Maximum: Halbklassen-/Teamteaching-Lektionen oder Teilung innerhalb der zugeteilten VZE. Schüler/innen in Klassen: ${summeKlassen} (Stichtag: ${esc(st.schuelerzahl)}).</p>
       <div class="tabelle-wrap"><table><thead><tr><th>Klasse</th><th>Lektionentafel</th><th class="zahl">Schüler/innen</th><th>Klassengrösse</th><th class="zahl">VZE</th><th class="zahl">WL der Klasse</th></tr></thead><tbody>${klassenZ}
         <tr class="summe"><td colspan="4">Total Klassenlektionen (ohne IF)</td><td class="zahl">${zahl(x.bedarfKlassenVZE, 2)}</td><td class="zahl">${lekBedarf}</td></tr></tbody></table></div>
       <h2 style="margin-top:1.25rem">Mutationen an das Volksschulamt</h2>
@@ -1023,7 +1023,7 @@
     const p = P();
     const dis = istSL() ? "" : "disabled";
     const feld = (k, t, hilfe) => `<label class="feld">${t}<input type="number" step="any" value="${p[k]}" data-aktion="param" data-k="${k}" ${dis}><span class="small">${hilfe}</span></label>`;
-    const tafeln = Object.entries(S.lektionentafeln).map(([id, t]) => `<section class="karte"><h3>${esc(t.name)}</h3><p class="small muted">${t.vze} VZE · ${t.wlKlasse} WL der Klasse · Pflichtlektionen je Schüler/in ${t.pflicht}${t.kommunal ? ` · zusätzlich ${t.kommunal} WL kommunal` : ""}</p><div class="tabelle-wrap"><table><thead><tr><th>Fach</th><th class="zahl">WL</th></tr></thead><tbody>${Object.entries(t.faecher).map(([f, w]) => `<tr><td>${esc(S.faecher[f])}${Array.isArray(w) ? " <span class=\"small muted\">(Halbklassen)</span>" : ""}</td><td class="zahl">${Array.isArray(w) ? w[0] + " × 2" : w}</td></tr>`).join("")}</tbody></table></div></section>`).join("");
+    const tafeln = Object.entries(S.lektionentafeln).map(([id, t]) => `<section class="karte"><h3>${esc(t.name)}</h3><p class="small muted">${esc(t.vze)} VZE · ${esc(t.wlKlasse)} WL der Klasse · Pflichtlektionen je Schüler/in ${esc(t.pflicht)}${t.kommunal ? ` · zusätzlich ${esc(t.kommunal)} WL kommunal` : ""}</p><div class="tabelle-wrap"><table><thead><tr><th>Fach</th><th class="zahl">WL</th></tr></thead><tbody>${Object.entries(t.faecher).map(([f, w]) => `<tr><td>${esc(S.faecher[f])}${Array.isArray(w) ? " <span class=\"small muted\">(Halbklassen)</span>" : ""}</td><td class="zahl">${Array.isArray(w) ? w[0] + " × 2" : w}</td></tr>`).join("")}</tbody></table></div></section>`).join("");
     return `<div class="seitenkopf"><div><h1>Parameter und Lektionentafeln</h1><p class="muted">Kanton Zürich: Berufsauftrag (Handbuch, Stand 1.1.2024) und Lehrerstellenbewilligung (Weisung 2026/27). Werte je Kanton und Schuljahr zu pflegen – im Prototyp änderbar, Änderungen wirken sofort.</p></div></div>
       <h2>Berufsauftrag</h2>
       <div class="formzeile">
@@ -1039,7 +1039,7 @@
         ${feld("klpMindestlektionen", "Klassenlehrperson: Mindest-WL", "Sekundarstufe")}
         ${feld("kustodieMaxStunden", "Kustodie im Berufsauftrag bis h", `darüber Entschädigung · ${R("LPVO", "2 f")}`)}
       </div>
-      <div class="tabelle-wrap" style="max-width:640px"><table><thead><tr><th>Alter</th><th class="zahl">Ferientage</th><th class="zahl">Netto-Jahresarbeitszeit 100 %</th></tr></thead><tbody>${p.nettoJahresarbeitszeit.map((x, i, arr) => `<tr><td>${i === 0 ? "bis 20" : i === arr.length - 1 ? "ab 60" : (arr[i - 1].bisAlter + 1) + "–" + x.bisAlter}</td><td class="zahl">${x.ferientage}</td><td class="zahl">${zahl(x.stunden)} h</td></tr>`).join("")}<tr><td colspan="2">Brutto (52 × 42 h)</td><td class="zahl">${zahl(p.bruttoJahresarbeitszeit)} h</td></tr></tbody></table></div><p class="small muted">Ferienanspruch nach Alter: ${R("VVO", "79")}, für Lehrpersonen ab Beginn des Schuljahres (${R("LPVO", "13")}).</p>
+      <div class="tabelle-wrap" style="max-width:640px"><table><thead><tr><th>Alter</th><th class="zahl">Ferientage</th><th class="zahl">Netto-Jahresarbeitszeit 100 %</th></tr></thead><tbody>${p.nettoJahresarbeitszeit.map((x, i, arr) => `<tr><td>${i === 0 ? "bis 20" : i === arr.length - 1 ? "ab 60" : (arr[i - 1].bisAlter + 1) + "–" + x.bisAlter}</td><td class="zahl">${esc(x.ferientage)}</td><td class="zahl">${zahl(x.stunden)} h</td></tr>`).join("")}<tr><td colspan="2">Brutto (52 × 42 h)</td><td class="zahl">${zahl(p.bruttoJahresarbeitszeit)} h</td></tr></tbody></table></div><p class="small muted">Ferienanspruch nach Alter: ${R("VVO", "79")}, für Lehrpersonen ab Beginn des Schuljahres (${R("LPVO", "13")}).</p>
       <h2 style="margin-top:1.25rem">Lektionentafeln Sekundarstufe</h2><div class="spalten">${tafeln}</div>`;
   };
 
@@ -1148,7 +1148,7 @@
       </section>
       <section class="karte" style="margin-bottom:1rem"><h2>2. Schuleinheit und Optionen</h2>
         <div class="formzeile">
-          <label class="feld">Planung «${esc(S.schulen.find((x) => x.id === S.schule).name)}» eintragen in<select data-aktion="vze-se" ${v ? "" : "disabled"}>${seListe.map((x) => `<option value="${x.index}" ${x.index === se.index ? "selected" : ""}>${esc(x.anzeige)}</option>`).join("")}</select></label>
+          <label class="feld">Planung «${esc(S.schulen.find((x) => x.id === S.schule).name)}» eintragen in<select data-aktion="vze-se" ${v ? "" : "disabled"}>${seListe.map((x) => `<option value="${esc(x.index)}" ${x.index === se.index ? "selected" : ""}>${esc(x.anzeige)}</option>`).join("")}</select></label>
           <label class="feld"><span><input type="checkbox" data-aktion="vze-leeren" ${!VZE || VZE.leeren !== false ? "checked" : ""}> bisherige Eingaben dieser Schuleinheit vorher leeren</span></label>
         </div>
         ${hinweise.length ? `<div class="meldung warnung">${hinweise.map(esc).join("<br>")}</div>` : ""}
@@ -1204,7 +1204,7 @@
           <li><strong>Allgemeines Personalrecht</strong> – wo die LPVO darauf verweist, gilt die Vollzugsverordnung zum Personalgesetz: Ferienanspruch (${R("LPVO", "13")}, ${R("VVO", "79")}), Urlaub (${R("LPVO", "27")}, ${R("VVO", "84")}–${R("VVO", "98")}), Lohnfortzahlung (${R("VVO", "99")}), Personaldossier (${R("VVO", "21")}–${R("VVO", "27")}), Mitarbeiterbeurteilung (${R("VVO", "136")}).</li>
         </ol>
         <p class="small muted">Verweise in der Anwendung (z. B. ${R("LPG", "6", "Abs. 2")}) öffnen die Bestimmung hier in der Hilfe.</p></section>
-        <div class="karten" style="margin-top:1rem">${Object.values(RECHT).map((g) => `<a class="karte" href="#/hilfe/${g.kurz}" style="text-decoration:none;color:inherit"><div class="titel">LS ${esc(g.nummer)} · Stand ${esc(g.stand)}</div><div class="zahl" style="font-size:1.2rem">${esc(g.titel)}</div><div class="small muted">${g.abschnitte.reduce((a, x) => a + x.paragraphen.filter((p) => p.nr && !p.uebergang).length, 0)} Paragraphen</div></a>`).join("")}</div>`;
+        <div class="karten" style="margin-top:1rem">${Object.values(RECHT).map((g) => `<a class="karte" href="#/hilfe/${esc(g.kurz)}" style="text-decoration:none;color:inherit"><div class="titel">LS ${esc(g.nummer)} · Stand ${esc(g.stand)}</div><div class="zahl" style="font-size:1.2rem">${esc(g.titel)}</div><div class="small muted">${g.abschnitte.reduce((a, x) => a + x.paragraphen.filter((p) => p.nr && !p.uebergang).length, 0)} Paragraphen</div></a>`).join("")}</div>`;
     } else {
       const g = RECHT[aktiv];
       let ueb = 0;
@@ -1303,10 +1303,10 @@
         const g = el.dataset.gruppe;
         const einh = g === "anstellung" ? "%" : "WL";
         dialog(g === "anstellung" ? "Neue Anstellung" : "Neues Gefäss", `<div class="formzeile"><label class="feld">Name<input type="text" id="en-name" value=""></label>
-          ${g === "klasse" ? `<label class="feld">Klasse<select id="en-klasse">${S.klassen.map((k) => `<option>${k.id}</option>`).join("")}</select></label><label class="feld">Fach<select id="en-fach">${Object.entries(S.faecher).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join("")}</select></label>` : `<label class="feld">Kategorie<input type="text" id="en-kat" value="${g === "weitere" ? "Freifach" : g === "sp" ? "Integrative Förderung" : "Kommunal"}"></label>`}
+          ${g === "klasse" ? `<label class="feld">Klasse<select id="en-klasse">${S.klassen.map((k) => `<option>${esc(k.id)}</option>`).join("")}</select></label><label class="feld">Fach<select id="en-fach">${Object.entries(S.faecher).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join("")}</select></label>` : `<label class="feld">Kategorie<input type="text" id="en-kat" value="${g === "weitere" ? "Freifach" : g === "sp" ? "Integrative Förderung" : "Kommunal"}"></label>`}
           <label class="feld">Einheit<select id="en-einheit">${Object.entries(EINHEITEN).map(([k, v]) => `<option value="${k}" ${k === einh ? "selected" : ""}>${esc(v)}</option>`).join("")}</select></label>
           <label class="feld">Soll<input type="number" id="en-soll" min="0" value="${einh === "%" ? 10 : 2}"></label>
-          <label class="feld">Ressource<select id="en-r">${S.ressourcen.map((r) => `<option value="${r.id}">${esc(r.name)}</option>`).join("")}</select></label></div>`,
+          <label class="feld">Ressource<select id="en-r">${S.ressourcen.map((r) => `<option value="${esc(r.id)}">${esc(r.name)}</option>`).join("")}</select></label></div>`,
           [{ text: "Anlegen", primaer: true, los: (d) => {
             const name = d.querySelector("#en-name").value.trim();
             const e = d.querySelector("#en-einheit").value; const soll = Number(d.querySelector("#en-soll").value);
@@ -1340,7 +1340,7 @@
       case "dossier-neu": {
         const p = person(id);
         dialog(`Dossier-Eintrag für ${esc(p.name)}`, `<div class="formzeile"><label class="feld">Vorlage<select id="dn-v">${S.dossierVorlagen.map((v, i) => `<option value="${i}">${esc(v.titel)} (${esc(S.dossierKategorien[v.kategorie])})</option>`).join("")}</select></label>
-          <label class="feld">Datum<input type="date" id="dn-d" value="${P().planungsdatum}"></label><label class="feld">Notiz<input type="text" id="dn-n" value=""></label></div>`,
+          <label class="feld">Datum<input type="date" id="dn-d" value="${esc(P().planungsdatum)}"></label><label class="feld">Notiz<input type="text" id="dn-n" value=""></label></div>`,
           [{ text: "Erfassen", primaer: true, los: (d) => { const v = S.dossierVorlagen[Number(d.querySelector("#dn-v").value)]; (S.dossier[id] = S.dossier[id] || []).push({ id: "d" + Date.now(), kategorie: v.kategorie, titel: v.titel, datum: d.querySelector("#dn-d").value, notiz: d.querySelector("#dn-n").value }); protokoll(`Dossier ${p.name}: ${v.titel}`); fertig(); } }]);
         return;
       }
@@ -1399,7 +1399,7 @@
         const alt = S.freigaben[id].stand; const neu = stand(id);
         const weg = alt.posten.filter((x) => !neu.posten.includes(x)); const dazu = neu.posten.filter((x) => !alt.posten.includes(x));
         dialog(`Vergleich mit letzter Freigabe – ${pname(id)}`, `<table><thead><tr><th></th><th class="zahl">freigegeben</th><th class="zahl">jetzt</th></tr></thead><tbody>
-          <tr><td>Wochenlektionen</td><td class="zahl">${alt.wl}</td><td class="zahl">${neu.wl}</td></tr><tr><td>Jahresstunden</td><td class="zahl">${zahl(alt.stunden)}</td><td class="zahl">${zahl(neu.stunden)}</td></tr>
+          <tr><td>Wochenlektionen</td><td class="zahl">${esc(alt.wl)}</td><td class="zahl">${esc(neu.wl)}</td></tr><tr><td>Jahresstunden</td><td class="zahl">${zahl(alt.stunden)}</td><td class="zahl">${zahl(neu.stunden)}</td></tr>
           <tr><td>Pensum</td><td class="zahl">${zahl(alt.pensum, 1)} %</td><td class="zahl">${zahl(neu.pensum, 1)} %</td></tr></tbody></table>
           <h3 style="margin-top:1rem">Änderungen</h3>${weg.length || dazu.length ? `<ul>${weg.map((x) => `<li class="diff-alt">− ${esc(x)}</li>`).join("")}${dazu.map((x) => `<li class="diff-neu">+ ${esc(x)}</li>`).join("")}</ul>` : '<p class="muted">Keine Änderungen.</p>'}`);
         return;
@@ -1412,15 +1412,15 @@
       case "vertretung": { const x = S.ausfaelle.find((y) => y.id === id); x.vertretung = el.value; protokoll(`Stellvertretung für ${pname(x.person)}: ${pname(el.value)}`); break; }
       case "sv-weiter": { const x = S.ausfaelle.find((y) => y.id === id); x.status = SV_SCHRITTE[SV_SCHRITTE.indexOf(x.status) + 1]; protokoll(`Stellvertretung ${pname(x.person)}: ${x.status}`); break; }
       case "rapport":
-        dialog("Rapport erfassen", `<div class="formzeile"><label class="feld">Datum<input type="date" id="rp-d" value="${S.ausfaelle.find((y) => y.id === id).von}"></label><label class="feld">Lektionen<input type="number" id="rp-l" value="4" min="1"></label></div>`,
+        dialog("Rapport erfassen", `<div class="formzeile"><label class="feld">Datum<input type="date" id="rp-d" value="${esc(S.ausfaelle.find((y) => y.id === id).von)}"></label><label class="feld">Lektionen<input type="number" id="rp-l" value="4" min="1"></label></div>`,
           [{ text: "Erfassen", primaer: true, los: (d) => { const x = S.ausfaelle.find((y) => y.id === id); x.rapport.push({ datum: d.querySelector("#rp-d").value, lektionen: Number(d.querySelector("#rp-l").value) }); protokoll(`Rapport für Stellvertretung ${pname(x.person)}`); fertig(); } }]);
         return;
       case "ausfall-neu":
-        dialog("Ausfall erfassen", `<div class="formzeile"><label class="feld">Person<select id="af-p">${lehrpersonen().map((p) => `<option value="${p.id}">${esc(p.name)}</option>`).join("")}</select></label><label class="feld">Grund (Kategorie)<select id="af-g"><option>Krankheit</option><option>Unfall</option><option>Weiterbildung</option><option>Urlaub</option><option>Mutterschaft/Vaterschaft</option><option>anderes</option></select></label><label class="feld">Quelle<select id="af-q"><option>Kurzvikariat (ausserhalb Berufsauftrag)</option><option>Gestaltungspool</option></select></label><label class="feld">Von<input type="date" id="af-v" value="2027-11-15"></label><label class="feld">Bis<input type="date" id="af-b" value="2027-11-19"></label></div>`,
+        dialog("Ausfall erfassen", `<div class="formzeile"><label class="feld">Person<select id="af-p">${lehrpersonen().map((p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("")}</select></label><label class="feld">Grund (Kategorie)<select id="af-g"><option>Krankheit</option><option>Unfall</option><option>Weiterbildung</option><option>Urlaub</option><option>Mutterschaft/Vaterschaft</option><option>anderes</option></select></label><label class="feld">Quelle<select id="af-q"><option>Kurzvikariat (ausserhalb Berufsauftrag)</option><option>Gestaltungspool</option></select></label><label class="feld">Von<input type="date" id="af-v" value="2027-11-15"></label><label class="feld">Bis<input type="date" id="af-b" value="2027-11-19"></label></div>`,
           [{ text: "Erfassen", primaer: true, los: (d) => { const pid = d.querySelector("#af-p").value; S.ausfaelle.unshift({ id: "a" + Date.now(), person: pid, grund: d.querySelector("#af-g").value, von: d.querySelector("#af-v").value, bis: d.querySelector("#af-b").value, wl: wlVon(pid), vertretung: "", quelle: d.querySelector("#af-q").value, status: "erfasst", rapport: [] }); protokoll(`Ausfall ${pname(pid)} erfasst`); fertig(); } }]);
         return;
       case "termin-neu":
-        dialog("Termin planen", `<div class="formzeile"><label class="feld">Person<select id="tm-p">${planbar().map((p) => `<option value="${p.id}">${esc(p.name)}</option>`).join("")}</select></label><label class="feld">Art<select id="tm-a"><option>Mitarbeitendenbeurteilung</option><option>Probezeitgespräch</option><option>Unterrichtsbesuch</option></select></label><label class="feld">Datum<input type="date" id="tm-d" value="2027-12-07"></label></div>`,
+        dialog("Termin planen", `<div class="formzeile"><label class="feld">Person<select id="tm-p">${planbar().map((p) => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join("")}</select></label><label class="feld">Art<select id="tm-a"><option>Mitarbeitendenbeurteilung</option><option>Probezeitgespräch</option><option>Unterrichtsbesuch</option></select></label><label class="feld">Datum<input type="date" id="tm-d" value="2027-12-07"></label></div>`,
           [{ text: "Planen", primaer: true, los: (d) => { S.gespraeche.push({ id: "m" + Date.now(), person: d.querySelector("#tm-p").value, art: d.querySelector("#tm-a").value, datum: d.querySelector("#tm-d").value, status: "geplant", freigegeben: false }); protokoll("Gesprächstermin geplant"); fertig(); } }]);
         return;
       case "formular": { const g = S.gespraeche.find((x) => x.id === id); const p = person(g.person); g.status = "Formular vorbereitet";
@@ -1439,7 +1439,7 @@
       case "schueler": { const k = S.klassen.find((x) => x.id === el.dataset.klasse); k.schueler = Number(el.value); protokoll(`Schülerzahl ${k.id}: ${k.schueler}`); break; }
       case "mutation-melden": { const m = S.mutationen.find((x) => x.id === id); m.status = "an VSA gemeldet"; protokoll(`Mutation «${m.was}» an das Volksschulamt gemeldet`); break; }
       case "mutation-neu":
-        dialog("Mutation erfassen", `<div class="formzeile"><label class="feld">Was<select id="mu-w"><option>IF</option><option>Teamteaching</option><option>Halbklassenunterricht</option><option>Klassenlektionen</option><option>Vikariat</option></select></label><label class="feld">Warum<input type="text" id="mu-g" value="Zuzug von Schüler/innen"></label><label class="feld">Lektionen<input type="number" id="mu-l" value="2" min="1"></label><label class="feld">Quelle<select id="mu-q"><option>Gestaltungspool</option><option>Stellenpool</option></select></label><label class="feld">Person<select id="mu-p">${planbar().concat(S.personen.filter((x) => x.pool)).map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join("")}</select></label><label class="feld">Start (Montag)<input type="date" id="mu-s" value="2027-09-06"></label></div>`,
+        dialog("Mutation erfassen", `<div class="formzeile"><label class="feld">Was<select id="mu-w"><option>IF</option><option>Teamteaching</option><option>Halbklassenunterricht</option><option>Klassenlektionen</option><option>Vikariat</option></select></label><label class="feld">Warum<input type="text" id="mu-g" value="Zuzug von Schüler/innen"></label><label class="feld">Lektionen<input type="number" id="mu-l" value="2" min="1"></label><label class="feld">Quelle<select id="mu-q"><option>Gestaltungspool</option><option>Stellenpool</option></select></label><label class="feld">Person<select id="mu-p">${planbar().concat(S.personen.filter((x) => x.pool)).map((x) => `<option value="${esc(x.id)}">${esc(x.name)}</option>`).join("")}</select></label><label class="feld">Start (Montag)<input type="date" id="mu-s" value="2027-09-06"></label></div>`,
           [{ text: "Erfassen", primaer: true, los: (d) => { S.mutationen.push({ id: "u" + Date.now(), was: d.querySelector("#mu-w").value, warum: d.querySelector("#mu-g").value, lektionen: Number(d.querySelector("#mu-l").value), quelle: d.querySelector("#mu-q").value, person: d.querySelector("#mu-p").value, start: d.querySelector("#mu-s").value, status: "erfasst" }); protokoll("Mutation erfasst"); fertig(); } }]);
         return;
       case "export-stellenplan": { const x = stellenRechnung(); csv("zusammenstellung-vze.csv", [["Position", "Wert"], ["Schülerzahl", S.stellen.schuelerzahl], ["Sozialindex", S.stellen.sozialindex], ["VZE Berufsauftrag", x.vze.toFixed(3)], ["VZE Schulleitung", x.sl.toFixed(3)], ["VZE Gestaltungspool", x.pool.toFixed(3)], ["VZE Koordination Sek (kommunal)", x.koordination.toFixed(3)], ["DaZ WL", x.dazWL.toFixed(1)]].concat(S.klassen.map((k) => [`Klasse ${k.id} (${k.schueler} SuS)`, tafel(k).vze]))); return; }
