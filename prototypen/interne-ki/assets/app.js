@@ -798,8 +798,19 @@
   function route() { const h = (location.hash || "#/chat").slice(2).split("/"); return [h[0] || "chat", h[1], h[2]]; }
   const aktuellerChat = () => chat(route()[1]) || S.chats[0];
   // Feste Zuordnung Adresse → Seite (kein Aufruf per Name aus der Adresse)
-  const VERWALTUNG = new Map([["organisation", seiteOrganisation], ["benutzer", seiteBenutzer], ["rollen", seiteRollen], ["modelle", seiteModelle],
-    ["orte", seiteOrte], ["werkzeuge", seiteWerkzeuge], ["datenschutz", seiteDatenschutz], ["zustand", seiteZustand]]);
+  const VERWALTUNG = ["organisation", "benutzer", "rollen", "modelle", "orte", "werkzeuge", "datenschutz", "zustand"];
+  function seiteVerwaltung(bereich) {
+    switch (bereich) {
+      case "benutzer": return seiteBenutzer();
+      case "rollen": return seiteRollen();
+      case "modelle": return seiteModelle();
+      case "orte": return seiteOrte();
+      case "werkzeuge": return seiteWerkzeuge();
+      case "datenschutz": return seiteDatenschutz();
+      case "zustand": return seiteZustand();
+      default: return seiteOrganisation();
+    }
+  }
   const eigen = (o, k) => (Object.prototype.hasOwnProperty.call(o, k) ? o[k] : null);
   function stoppStill() { if (E.laeuft) { clearInterval(E.laeuft.timer); E.laeuft = null; } }
   function render() {
@@ -809,9 +820,9 @@
       case "assistenten": inhalt = a ? seiteAssistent(a) : seiteAssistenten(); break;
       case "wissen": inhalt = a ? seiteWissenDetail(a) : seiteWissen(); break;
       case "verwaltung": {
-        const seite = VERWALTUNG.get(a) || VERWALTUNG.get("organisation");
-        aktiv = `verwaltung/${VERWALTUNG.has(a) ? a : "organisation"}`;
-        inhalt = seite();
+        const bereich = VERWALTUNG.includes(a) ? a : "organisation";
+        aktiv = `verwaltung/${bereich}`;
+        inhalt = seiteVerwaltung(bereich);
         break;
       }
       default: aktiv = "chat"; breit = true; inhalt = seiteChat(a);
