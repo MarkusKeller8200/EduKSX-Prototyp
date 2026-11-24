@@ -8,6 +8,12 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **EduKSX-Flow 0.8.0 – Einstellungen (24.11.2026):** neue Menügruppe mit Katalogen Kompetenzen (18 Kompetenzarten,
+  E/V/M/C/I bestehend, 13 neu), Funktionen (55, gruppiert nach Führung, Verwaltung, Pädagogik, Weitere), Zeitpunkte
+  (Stichtag, Schuljahres- und Ferientermine), Intervalle (einmalig bis Schultage) und Aufgabenbereiche (23
+  Hauptbereiche mit Unterbereichen) – je Kürzel bzw. Nr., Bezeichnung, Beschreibung, Aktiv; bearbeiten durch SV und RV,
+  verwendete Einträge nur deaktivierbar, Löschen mit Rückfrage. Aktive Funktionen stehen in den Vorlagen zur Wahl,
+  aktive Kompetenzen bilden die Legende des Funktionendiagramms.
 - **EduKSX-Flow 0.7.0 – Stufe 1 der Prozess-Engine (24.11.2026)** nach `docs/KONZEPT-FLOW.md` (aus dem Review vom
   24.11.2026): Arten von Schritten (Aufgabe, Aufruf, Genehmigung, Entscheidung, Nachweis, Termin, Warten,
   Benachrichtigung, Unterprozess); Verzweigung über Ergebnisse früherer Schritte; Unterprozesse mit Kreisprüfung;

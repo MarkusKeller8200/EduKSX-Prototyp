@@ -158,6 +158,20 @@ mit Wiederholungsstrategie und Ablage dauerhaft fehlgeschlagener Aufrufe; Schema
 API-Versionierung; Simulation strikt getrennt von der produktiven Ausführung; Journal (fachlich), Aufrufprotokoll
 (technisch) und Audit-Log (Sicherheit) getrennt.
 
+## 5a. Einstellungen und Funktionendiagramm (0.8.0)
+
+Auftrag im Chat 24.11.2026: Menü «Einstellungen» mit Kompetenzen, Funktionen (gruppiert), Zeitpunkten, Intervallen
+und Aufgabenbereichen (gruppiert nach Hauptbereichen), je mit Kürzel/Nr., Bezeichnung, Beschreibung und Aktiv –
+**BESCHLOSSEN** und im Prototyp umgesetzt. Grundlage ist ein Vorschlag zur Erweiterung des Funktionendiagramms.
+
+| Nr. | Frage | Optionen | Entscheid | Status |
+|---|---|---|---|---|
+| E14 | Kompetenzmerkmale (bedingt, Instanz, Betragsgrenze, kollektiv, delegierbar, befristet, Vier-Augen, Geltungsbereich) | Eigenschaft der Zuweisung / eigene Kompetenzart | Eigenschaft der Zuweisung | EMPFOHLEN |
+| E15 | Wohin gehört das Funktionendiagramm? | Flow / EduKSX-Core / eigenes Modul (EduKSX-Competence bzw. EduKSX-Organization) | – | OFFEN |
+| E16 | Aufgabenbereiche (23 Hauptbereiche) als Nummerierung des Funktionendiagramms | ersetzen / zuordnen | – | OFFEN |
+| E17 | Zeitpunkte und Intervalle steuern die Auswahl der Zeitregeln im Kalender | ja / nein | – | OFFEN |
+| E18 | Plausibilitätsprüfung (fehlender Entscheid, fehlende Ausführung, Konflikt, Funktionstrennung) | Stufe 2 / 3 | Stufe 3 | EMPFOHLEN |
+
 ## 6. Issues
 
 `gh` ist in dieser Umgebung nicht angemeldet; die Issues werden nachgetragen, sobald es geht (OFFEN).
@@ -171,4 +185,5 @@ API-Versionierung; Simulation strikt getrennt von der produktiven Ausführung; J
 
 ## 7. Verlauf
 
+- 2026-11-24: Einstellungen (Kataloge) im Prototyp 0.8.0; Entscheide E14–E18 ergänzt.
 - 2026-11-24: Konzept angelegt aus dem Review; Stufe 1 freigegeben und im Prototyp 0.7.0 umgesetzt.

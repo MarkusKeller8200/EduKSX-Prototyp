@@ -43,7 +43,9 @@ Vorlagen (E1), Stufe 1 umsetzen (E2) – Auftrag im Chat. Umgesetzt: Aufgabentyp
 Auslöser mit Deduplizierung, Fristarten und Eskalation, Eingriffe mit Journal; Datenmodell/API/Pflichtenheft
 nachgeführt. Playwright-Szenarien grün, alle 45 Vorlagen ohne Prüfbefund. Parallel auf `main` entstandene
 Flow-Änderungen (0.6.0–0.6.2: Entwickler-Menü, CodeQL-Escaping, Zurück-Taste) übernommen. Offen: E4–E13; Issues
-nachtragen (`gh` hier nicht angemeldet).
+nachtragen (`gh` hier nicht angemeldet). 0.8.0: Menü «Einstellungen» (Kompetenzen, Funktionen, Zeitpunkte, Intervalle,
+Aufgabenbereiche); offen E15–E17 (Ort des Funktionendiagramms, Verknüpfungen). Hinweis: Push auf `main` umgeht die
+Regel «nur über Pull Request» – künftig Branch + PR, sobald `gh` angemeldet ist.
 
 ### Sitzung 2026-11-24 – GUI-EX 0.6.0: Erscheinungsbild, #100
 
