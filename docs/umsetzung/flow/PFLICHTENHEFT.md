@@ -169,6 +169,6 @@ Zusätzlich zu den gemeinsamen Prüfpunkten in [`../README.md`](../README.md#4-g
 Siehe «Offene Fragen» im README des Prototyps. Zusätzlich:
 
 1. EMPFOHLEN (Konzept E7): Automatischer Start aus Kalenderereignissen, sobald der erste Schritt fällig wird.
-4. OFFEN: Entscheide E4–E13 in [`KONZEPT-FLOW.md`](../../KONZEPT-FLOW.md) (u. a. wer eingreifen darf, Eskalationsstufen).
+4. BESCHLOSSEN 24.11.2026: E5 (Eingreifen je Vorlage), E6 (Eskalation unter Einstellungen), E14 (Kompetenzmerkmale je Zuweisung), E15 (Funktionendiagramm in eigenes Modul EduKSX-Organization; Flow liest es). OFFEN: übrige Entscheide in [`KONZEPT-FLOW.md`](../../KONZEPT-FLOW.md) (u. a. wer eingreifen darf, Eskalationsstufen).
 2. OFFEN: Teilaufgaben im Kalender als eigene Ablaufschritte?
 3. ZU PRÜFEN: Gehört das Aufrufprotokoll zum Personaldossier (digitale Aktenführung ab 2029)?

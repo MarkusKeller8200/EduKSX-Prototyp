@@ -128,8 +128,8 @@ verlangt eine Begründung und steht im **Journal** des Ablaufs.
 | E2 | Stufe 1 im Prototyp | ja / nein | ja, Umfang Kap. 3 | BESCHLOSSEN 24.11.2026 |
 | E3 | Grafischer Prozessdesigner | Drag-and-drop / Tabelle + Bild | Tabelle + automatisches Bild | EMPFOHLEN |
 | E4 | Aufgabentyp «Formular» | eigener Typ / Nachweis + Kontextfelder | vorerst nicht; Bedarf klären | OFFEN |
-| E5 | Wer darf eingreifen (Prozessverantwortung)? | SV, SL, SPr / je Vorlage festlegen | Prototyp: SV, SL, SPr; produktiv je Vorlage (Stufe 3, Metadaten) | OFFEN |
-| E6 | Eskalationsstufen und vorgesetzte Rollen | feste Tabelle / je Vorlage | Prototyp: feste Tabelle (Kap. 3.3) | OFFEN |
+| E5 | Wer darf eingreifen (Prozessverantwortung)? | feste Rollen / je Vorlage / über Kompetenz im FD | je Vorlage festlegen (Prozessverantwortung als Angabe der Vorlage, Vorgabe SV, SL, SPr) | BESCHLOSSEN 24.11.2026 |
+| E6 | Eskalationsstufen und vorgesetzte Rollen | feste Tabelle / unter Einstellungen / je Vorlage | unter Einstellungen pflegbar: Stufen je Fristart, vorgesetzte Rolle je Funktion | BESCHLOSSEN 24.11.2026 |
 | E7 | Kalender-Auslöser: Vorlauf | ab erstem fälligem Schritt / fester Vorlauf | ab erstem fälligem Schritt | EMPFOHLEN |
 | E8 | Unterprozess: Version | Version beim Start des Unterprozesses / beim Start des Hauptablaufs | beim Start des Unterprozesses | EMPFOHLEN |
 | E9 | Kontext ändern im laufenden Ablauf | erlauben / nur Stichtag | vorerst nur Stichtag; Auswirkung auf bereits entschiedene Bedingungen klären | OFFEN |
@@ -166,8 +166,8 @@ und Aufgabenbereichen (gruppiert nach Hauptbereichen), je mit Kürzel/Nr., Bezei
 
 | Nr. | Frage | Optionen | Entscheid | Status |
 |---|---|---|---|---|
-| E14 | Kompetenzmerkmale (bedingt, Instanz, Betragsgrenze, kollektiv, delegierbar, befristet, Vier-Augen, Geltungsbereich) | Eigenschaft der Zuweisung / eigene Kompetenzart | Eigenschaft der Zuweisung | EMPFOHLEN |
-| E15 | Wohin gehört das Funktionendiagramm? | Flow / EduKSX-Core / eigenes Modul (EduKSX-Competence bzw. EduKSX-Organization) | – | OFFEN |
+| E14 | Kompetenzmerkmale (bedingt, Instanz, Betragsgrenze, kollektiv, delegierbar, befristet, Vier-Augen, Geltungsbereich) | Eigenschaft der Zuweisung / eigene Kompetenzart / später | Eigenschaft der Zuweisung (je Zelle im Funktionendiagramm); Flow nutzt sie für Genehmigungen | BESCHLOSSEN 24.11.2026 |
+| E15 | Wohin gehört das Funktionendiagramm? | Flow / EduKSX-Core / eigenes Modul (EduKSX-Competence bzw. EduKSX-Organization) | eigenes Modul **EduKSX-Organization** (Funktionendiagramm, Organigramm, Stellenbeschreibungen); Flow, Staffing, Ident nutzen es. Im Prototyp bleibt es vorerst in Flow; Modulname ZU PRÜFEN | BESCHLOSSEN 24.11.2026 |
 | E16 | Aufgabenbereiche (23 Hauptbereiche) als Nummerierung des Funktionendiagramms | ersetzen / zuordnen | zuordnen: Aufgaben behalten ihre Nr., gruppiert nach Hauptbereich (0.9.0); Zuordnung der Muster-Nummern ZU PRÜFEN | BESCHLOSSEN 24.11.2026 |
 | E17 | Zeitpunkte und Intervalle steuern die Auswahl der Zeitregeln im Kalender | ja / nein | ja (0.9.0) | BESCHLOSSEN 24.11.2026 |
 | E18 | Plausibilitätsprüfung (fehlender Entscheid, fehlende Ausführung, Konflikt, Funktionstrennung) | Stufe 2 / 3 | Stufe 3 | EMPFOHLEN |
@@ -185,6 +185,7 @@ und Aufgabenbereichen (gruppiert nach Hauptbereichen), je mit Kürzel/Nr., Bezei
 
 ## 7. Verlauf
 
+- 2026-11-24: Entscheide E5, E6, E14, E15 beschlossen (Rückfrage im Chat).
 - 2026-11-24: Einstellungen verknüpft (0.9.0): E16, E17 beschlossen; Funktionendiagramm bearbeitbar.
 - 2026-11-24: Einstellungen (Kataloge) im Prototyp 0.8.0; Entscheide E14–E18 ergänzt.
 - 2026-11-24: Konzept angelegt aus dem Review; Stufe 1 freigegeben und im Prototyp 0.7.0 umgesetzt.

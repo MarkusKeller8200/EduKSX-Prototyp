@@ -44,7 +44,7 @@ Auslöser mit Deduplizierung, Fristarten und Eskalation, Eingriffe mit Journal; 
 nachgeführt. Playwright-Szenarien grün, alle 45 Vorlagen ohne Prüfbefund. Parallel auf `main` entstandene
 Flow-Änderungen (0.6.0–0.6.2: Entwickler-Menü, CodeQL-Escaping, Zurück-Taste) übernommen. Offen: E4–E13; Issues
 nachtragen (`gh` hier nicht angemeldet). 0.8.0: Menü «Einstellungen» (Kompetenzen, Funktionen, Zeitpunkte, Intervalle,
-Aufgabenbereiche); 0.9.0: Verknüpfung umgesetzt (E16, E17 beschlossen); offen E15 (Ort des Funktionendiagramms). Hinweis: Push auf `main` umgeht die
+Aufgabenbereiche); 0.9.0: Verknüpfung umgesetzt (E16, E17 beschlossen). Danach beschlossen: E5 je Vorlage, E6 in Einstellungen, E14 Merkmale je Zuweisung, E15 eigenes Modul EduKSX-Organization – im Prototyp noch umzusetzen (E5, E6, E14). Hinweis: Push auf `main` umgeht die
 Regel «nur über Pull Request» – künftig Branch + PR, sobald `gh` angemeldet ist.
 
 ### Sitzung 2026-11-24 – GUI-EX 0.6.0: Erscheinungsbild, #100
