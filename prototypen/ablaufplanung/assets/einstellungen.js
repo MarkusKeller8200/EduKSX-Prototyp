@@ -123,7 +123,7 @@
   // ------------------------------------------------------------ Intervalle
   const INTERVALLE = [
     k("1X", "einmalig", "Nur ein bestimmtes Jahr", { bezug: "jahr" }),
-    k("J", "jährlich", "Einmal pro Jahr (Datum, KW, Quartal oder Schuljahrestermin)"),
+    k("J", "jährlich", "Einmal pro Jahr (Datum, KW, Quartal oder Schuljahrestermin)", { bezug: "jaehrlich" }),
     k("TRI", "trimesterweise", "Jedes Trimester (nicht üblich, der Vollständigkeit halber)", { bezug: "trimester" }),
     k("SEM", "semesterweise", "Jedes Semester", { bezug: "semester" }),
     k("Q", "quartalsweise", "Jedes Quartal", { bezug: "quartal" }),
@@ -175,9 +175,9 @@
   const KATALOGE = {
     kompetenzen: { titel: "Kompetenzen", spalten: ["Kürzel", "Kompetenz"], text: "Kompetenzarten im Funktionendiagramm. Entscheid, Genehmigung und Freigabe sind bewusst getrennt: z. B. entscheidet die Geschäftsleitung über eine Beschaffung, das Finanzwesen prüft die Finanzierung, eine andere Stelle gibt die Bestellung frei. Aktive Kompetenzen erscheinen in der Legende des Funktionendiagramms." },
     funktionen: { titel: "Funktionen", spalten: ["Kürzel", "Funktion"], gruppiert: "gruppe", text: "Organisatorische Funktionen (Rollen). Aktive Funktionen stehen bei «Verantwortlich» und «Informieren» in den Ablaufvorlagen zur Auswahl. Kürzel sind Vorschläge und je Schule anpassbar." },
-    zeitpunkte: { titel: "Zeitpunkte", spalten: ["Kürzel", "Zeitpunkt"], text: "Bezugstermine für Fristen und für die Zeitregeln im Jahreskalender (Schuljahres- und Ferientermine je Schuljahr unter Jahreskalender › Schuljahre)." },
-    intervalle: { titel: "Intervalle", spalten: ["Kürzel", "Intervall"], text: "Wiederholungen für Termine und ToDos im Jahreskalender." },
-    aufgabenbereiche: { titel: "Aufgabenbereiche", spalten: ["Nr.", "Aufgabenbereich"], gruppiert: "haupt", text: "Gliederung des Funktionendiagramms in Hauptbereiche und Unterbereiche (Vorschlag für einen schulübergreifenden Standard)." },
+    zeitpunkte: { titel: "Zeitpunkte", spalten: ["Kürzel", "Zeitpunkt"], text: "Bezugstermine für Fristen und für die Zeitregeln im Jahreskalender (Schuljahres- und Ferientermine je Schuljahr unter Jahreskalender › Schuljahre). Nur aktive Zeitpunkte stehen beim Bearbeiten eines Termins zur Wahl." },
+    intervalle: { titel: "Intervalle", spalten: ["Kürzel", "Intervall"], text: "Wiederholungen für Termine und ToDos im Jahreskalender. Nur aktive Intervalle stehen beim Bearbeiten eines Termins als Art der Zeitregel zur Wahl." },
+    aufgabenbereiche: { titel: "Aufgabenbereiche", spalten: ["Nr.", "Aufgabenbereich"], gruppiert: "haupt", text: "Gliederung des Funktionendiagramms in Hauptbereiche und Unterbereiche (Vorschlag für einen schulübergreifenden Standard). Das Funktionendiagramm ist nach den Hauptbereichen gruppiert." },
   };
 
   window.FLOW_EINSTELLUNGEN = function (X) {
@@ -186,16 +186,28 @@
     const darf = () => ["SV", "RV"].includes(S().rolle);
     const liste = (b) => S().einstellungen[b];
 
-    /** Wie oft wird ein Eintrag in Vorlagen bzw. im Funktionendiagramm verwendet? */
+    const fdListe = () => S().fd || X.D.FUNKTIONENDIAGRAMM;
+    /** Welche Zeitpunkte und Intervalle (Bezug) nutzt eine Zeitregel des Kalenders? */
+    function regelBezuege(z, jahr) {
+      const r = z.regel, out = [];
+      if (!r) { out.push("jaehrlich"); out.push(z.kw ? "kw" : z.am ? "am" : z.von ? "von-bis" : ""); }
+      else if (r === "stichtag") { out.push("jaehrlich", z.anker); }
+      else out.push(r);
+      if (jahr) out.push("jahr");
+      return out;
+    }
+    /** Wie oft wird ein Eintrag verwendet (Vorlagen, Funktionendiagramm, Jahreskalender)? */
     function verwendung(b, e) {
       const D = X.D;
       if (b === "funktionen") {
         let n = 0;
         S().vorlagen.forEach((v) => v.schritte.forEach((s) => { if (s.rolle === e.kuerzel || (s.informiert || []).includes(e.kuerzel)) n++; }));
-        D.FUNKTIONENDIAGRAMM.forEach((fd) => { if (fd.rollen[e.kuerzel]) n++; });
+        fdListe().forEach((fd) => { if (fd.rollen[e.kuerzel]) n++; });
         return n;
       }
-      if (b === "kompetenzen") return D.FUNKTIONENDIAGRAMM.filter((fd) => Object.values(fd.rollen).some((z) => String(z).replace(/[()0-9]/g, "").split("/").includes(e.kuerzel))).length;
+      if (b === "aufgabenbereiche") return e.kuerzel === e.haupt ? fdListe().filter((fd) => fd.bereich === e.kuerzel).length : 0;
+      if (b === "zeitpunkte" || b === "intervalle") return S().ereignisse.filter((ev) => regelBezuege(ev.zeit, ev.jahr).includes(e.bezug)).length;
+      if (b === "kompetenzen") return fdListe().filter((fd) => Object.values(fd.rollen).some((z) => String(z).replace(/[()0-9]/g, "").split("/").includes(e.kuerzel))).length;
       return 0;
     }
 
@@ -219,7 +231,7 @@
       const unter = b === "aufgabenbereiche" && e.kuerzel !== e.haupt;
       return `<tr class="${e.aktiv ? "" : "blass"}">
         <td style="width:7rem"><label class="sr-only" for="es-${b}-${i}-k">${esc(KATALOGE[b].spalten[0])}</label><input id="es-${b}-${i}-k" type="text" value="${esc(e.kuerzel)}" data-aktion="es-feld" data-k="kuerzel" ${d} ${dis} style="width:100%;${unter ? "padding-left:1.2rem" : "font-weight:600"}"></td>
-        <td><label class="sr-only" for="es-${b}-${i}-n">${esc(KATALOGE[b].spalten[1])}</label><input id="es-${b}-${i}-n" type="text" value="${esc(e.name)}" data-aktion="es-feld" data-k="name" ${d} ${dis} style="width:100%">${e.neu ? ` <span class="badge violett" title="Vorschlag zur Erweiterung">neu</span>` : ""}</td>
+        <td><label class="sr-only" for="es-${b}-${i}-n">${esc(KATALOGE[b].spalten[1])}</label><input id="es-${b}-${i}-n" type="text" value="${esc(e.name)}" data-aktion="es-feld" data-k="name" ${d} ${dis} style="width:100%">${e.neu ? ` <span class="badge violett" title="Vorschlag zur Erweiterung">neu</span>` : ""}${e.bezug ? ` <span class="small muted" title="Verknüpfung mit den Zeitregeln des Kalenders">⇢ ${esc(e.bezug)}</span>` : ""}</td>
         <td><label class="sr-only" for="es-${b}-${i}-b">Beschreibung</label><input id="es-${b}-${i}-b" type="text" value="${esc(e.beschreibung)}" data-aktion="es-feld" data-k="beschreibung" ${d} ${dis} style="width:100%"></td>
         <td style="text-align:center"><label class="chip"><input type="checkbox" data-aktion="es-aktiv" ${d} ${e.aktiv ? "checked" : ""} ${dis}> <span class="small">${e.aktiv ? "aktiv" : "inaktiv"}</span></label></td>
         <td class="small muted" style="text-align:right">${n ? `${n}×` : "–"}</td>
@@ -230,7 +242,7 @@
       b = KATALOGE[b] ? b : "kompetenzen";
       const kat = KATALOGE[b];
       const alle = liste(b);
-      const kopf = `<thead><tr><th>${esc(kat.spalten[0])}</th><th>${esc(kat.spalten[1])}</th><th>Beschreibung</th><th>Aktiv</th><th title="Verwendung in Vorlagen und im Funktionendiagramm">verwendet</th><th></th></tr></thead>`;
+      const kopf = `<thead><tr><th>${esc(kat.spalten[0])}</th><th>${esc(kat.spalten[1])}</th><th>Beschreibung</th><th>Aktiv</th><th title="Verwendung in Vorlagen, im Funktionendiagramm bzw. im Jahreskalender">verwendet</th><th></th></tr></thead>`;
       let inhalt;
       if (kat.gruppiert) {
         const gruppen = [...new Set(alle.map((e) => e[kat.gruppiert]))];
@@ -322,6 +334,8 @@
     /** Aktive Funktionen als Auswahl (Kürzel → Name), für Rollenlisten in den Vorlagen. */
     const aktiveFunktionen = () => liste("funktionen").filter((e) => e.aktiv && e.kuerzel);
     const aktiveKompetenzen = () => liste("kompetenzen").filter((e) => e.aktiv && e.kuerzel);
-    return { seite, klick, aenderung, aktiveFunktionen, aktiveKompetenzen, KATALOGE };
+    const aktiveBezuege = (b) => new Set(liste(b).filter((e) => e.aktiv).map((e) => e.bezug || e.kuerzel));
+    const hauptbereiche = () => liste("aufgabenbereiche").filter((e) => e.kuerzel && e.kuerzel === e.haupt);
+    return { seite, klick, aenderung, aktiveFunktionen, aktiveKompetenzen, aktiveBezuege, hauptbereiche, KATALOGE };
   };
 })();

@@ -168,8 +168,8 @@ und Aufgabenbereichen (gruppiert nach Hauptbereichen), je mit Kürzel/Nr., Bezei
 |---|---|---|---|---|
 | E14 | Kompetenzmerkmale (bedingt, Instanz, Betragsgrenze, kollektiv, delegierbar, befristet, Vier-Augen, Geltungsbereich) | Eigenschaft der Zuweisung / eigene Kompetenzart | Eigenschaft der Zuweisung | EMPFOHLEN |
 | E15 | Wohin gehört das Funktionendiagramm? | Flow / EduKSX-Core / eigenes Modul (EduKSX-Competence bzw. EduKSX-Organization) | – | OFFEN |
-| E16 | Aufgabenbereiche (23 Hauptbereiche) als Nummerierung des Funktionendiagramms | ersetzen / zuordnen | – | OFFEN |
-| E17 | Zeitpunkte und Intervalle steuern die Auswahl der Zeitregeln im Kalender | ja / nein | – | OFFEN |
+| E16 | Aufgabenbereiche (23 Hauptbereiche) als Nummerierung des Funktionendiagramms | ersetzen / zuordnen | zuordnen: Aufgaben behalten ihre Nr., gruppiert nach Hauptbereich (0.9.0); Zuordnung der Muster-Nummern ZU PRÜFEN | BESCHLOSSEN 24.11.2026 |
+| E17 | Zeitpunkte und Intervalle steuern die Auswahl der Zeitregeln im Kalender | ja / nein | ja (0.9.0) | BESCHLOSSEN 24.11.2026 |
 | E18 | Plausibilitätsprüfung (fehlender Entscheid, fehlende Ausführung, Konflikt, Funktionstrennung) | Stufe 2 / 3 | Stufe 3 | EMPFOHLEN |
 
 ## 6. Issues
@@ -185,5 +185,6 @@ und Aufgabenbereichen (gruppiert nach Hauptbereichen), je mit Kürzel/Nr., Bezei
 
 ## 7. Verlauf
 
+- 2026-11-24: Einstellungen verknüpft (0.9.0): E16, E17 beschlossen; Funktionendiagramm bearbeitbar.
 - 2026-11-24: Einstellungen (Kataloge) im Prototyp 0.8.0; Entscheide E14–E18 ergänzt.
 - 2026-11-24: Konzept angelegt aus dem Review; Stufe 1 freigegeben und im Prototyp 0.7.0 umgesetzt.

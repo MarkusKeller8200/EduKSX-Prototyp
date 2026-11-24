@@ -107,6 +107,11 @@
   // Benachrichtigung ohne Modulaufruf
   neu("rechnung", { typ: "benachrichtigung", titel: "Schulpflege und Schulleitungen über den Abschluss informieren", rolle: "SV", tage: 15, nach: ["rechnung8"], informiert: ["SPF", "SL"], quelle: "FD 2.2 (SV M/I)" });
 
+  // ------------------------------------------------------------ Funktionendiagramm: Hauptbereich (Einstellungen › Aufgabenbereiche, Konzept E16)
+  const FD_BEREICH = { "1.1.2": "1", "1.1.5": "1", "1.1.10": "14", "1.2.6": "2", "1.2.7": "12", "1.2.8": "12", "1.2.11": "12", "2.1": "3", "2.2": "3", "2.3": "3", "2.6": "3",
+    "3.1": "9", "3.7": "9", "3.8": "9", "3.10": "9", "4.4.1": "4", "5.4.7": "16", "6.1.2": "6", "6.1.4": "5" };
+  D.FUNKTIONENDIAGRAMM.forEach((f) => { f.bereich = FD_BEREICH[f.nr] || (f.nr.startsWith("5.") ? "2" : ""); });
+
   // ------------------------------------------------------------ Weitere Testabläufe (erfundene Angaben)
   D.LAEUFE.push(
     { vorlage: "ictsw", tageBisStichtag: 45, kontext: { person: "Lernplattform Mathematik", daten: "ja" }, erledigt: ["ictsw1", "ictsw2", "ictsw3", "ictsw4"] },

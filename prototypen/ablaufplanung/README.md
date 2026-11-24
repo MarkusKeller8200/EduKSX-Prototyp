@@ -85,7 +85,9 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
 - **Einstellungen** (0.8.0): Kataloge **Kompetenzen**, **Funktionen** (gruppiert), **Zeitpunkte**, **Intervalle**
   und **Aufgabenbereiche** (gruppiert nach Hauptbereichen) mit Kürzel/Nr., Bezeichnung, Beschreibung und Aktiv.
   Grundlage: Vorschlag zur Erweiterung des Funktionendiagramms (24.11.2026); Kürzel sind Vorschläge, je Schule
-  anpassbar. Verwendete Einträge (Vorlagen, Funktionendiagramm) lassen sich nur deaktivieren.
+  anpassbar. Verwendete Einträge (Vorlagen, Funktionendiagramm, Kalender) lassen sich nur deaktivieren. Seit 0.9.0:
+  aktive Intervalle und Zeitpunkte steuern die Zeitregeln im Kalender; das **Funktionendiagramm** ist nach
+  Aufgabenbereichen gruppiert und für SV/RV bearbeitbar (Kompetenzen geprüft, Spalten aus den Funktionen).
 - **Simulation:** simulierter Tag (+1, +7, nächste Frist), Module als «nicht erreichbar» schalten, Rollenwechsel.
 
 ## Grundlagen
@@ -113,8 +115,8 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
   Rechtsberatung. Revision PG § 17 (Kündigungsfristen) hängig.
 - Stufe 1 (Konzept, OFFEN): Wer darf eingreifen (E5)? Eskalationsstufen und vorgesetzte Rollen (E6)? Kontext im
   laufenden Ablauf ändern (E9)? Einstufung gesetzlicher Fristen fachlich prüfen (E12).
-- Einstellungen: Zeitpunkte und Intervalle sind noch nicht mit den Zeitregeln des Kalenders verknüpft; die
-  Aufgabenbereiche ersetzen die Nummern des Muster-Funktionendiagramms noch nicht (Zuordnung OFFEN).
+- Einstellungen (0.9.0 verknüpft): Zuordnung der Muster-Nummern zu den Hauptbereichen ist ein Vorschlag (ZU PRÜFEN);
+  Kompetenzmerkmale (Betragsgrenze, Instanz, Vier-Augen …) noch nicht erfassbar (E14).
 - Digitale Aktenführung ab 1.1.2029: Aufrufprotokoll als Teil des Personaldossiers?
 
 ## Ergebnis

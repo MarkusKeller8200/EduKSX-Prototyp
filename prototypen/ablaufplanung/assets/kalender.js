@@ -558,6 +558,20 @@
         </div></div>`;
     }
     const artVon = (z) => z.regel || (z.q ? "q" : z.kw ? "kw" : z.am ? "am" : "zeitraum");
+    /** Einstellungen › Zeitpunkte und Intervalle: nur aktive Einträge stehen zur Wahl (Konzept E17). */
+    const aktiv = (b) => (X.aktiveBezuege ? X.aktiveBezuege(b) : null);
+    function artErlaubt(v) {
+      const iv = aktiv("intervalle"), zp = aktiv("zeitpunkte");
+      if (!iv || !zp) return true;
+      const jaehrlich = iv.has("jaehrlich") || iv.has("J");
+      if (v === "q") return jaehrlich;
+      if (v === "kw") return jaehrlich && zp.has("kw");
+      if (v === "am") return jaehrlich && zp.has("am");
+      if (v === "zeitraum") return jaehrlich && zp.has("von-bis");
+      if (v === "stichtag") return jaehrlich && Object.keys(ANKER).some((a) => zp.has(a));
+      return iv.has(v);
+    }
+    const ankerErlaubt = (a) => { const zp = aktiv("zeitpunkte"); return !zp || zp.has(a); };
     function formular() {
       const ev = K.ev, z = ev.zeit;
       const art = artVon(z);
@@ -573,7 +587,7 @@
       if (art === "stichtag") params = `<label class="feld">Anzahl<input type="number" min="0" data-k="anzahl" value="${Math.abs(Number(z.versatz || 0))}" style="width:5rem"></label>
         <label class="feld">Einheit${sel("einheit", [["tage", "Tage"], ["wochen", "Wochen"], ["monate", "Monate"]], z.einheit || "tage")}</label>
         <label class="feld">Richtung${sel("richtung", [["vor", "vor"], ["am", "am (genau)"], ["nach", "nach"]], vRichtung)}</label>
-        <label class="feld">Schuljahrestermin${sel("anker", Object.entries(ANKER), z.anker || "schuljahresende")}</label>`;
+        <label class="feld">Schuljahrestermin${sel("anker", Object.entries(ANKER).filter(([a]) => ankerErlaubt(a) || a === z.anker).map(([a, t]) => [a, ankerErlaubt(a) ? t : t + " (inaktiv)"]), z.anker || Object.keys(ANKER).find(ankerErlaubt) || "schuljahresende")}</label>`;
       if (ABSCHNITT[art]) params = `<label class="feld">Bezug${sel("bezug", [["beginn", GRENZE[art][0]], ["ende", GRENZE[art][1]], ["ganz", "ganzer Abschnitt"]], z.bezug || "beginn", true)}</label>
         ${z.bezug === "ganz" ? "" : `<label class="feld">Anzahl Tage<input type="number" min="0" data-k="anzahl" value="${Math.abs(Number(z.versatz || 0))}" style="width:5rem"></label><label class="feld">Richtung${sel("richtung", [["vor", "vorher"], ["am", "am Tag selbst"], ["nach", "nachher"]], vRichtung)}</label>`}`;
       if (art === "monatlich") params = `<label class="feld">Tag im Monat${sel("tag", [...Array(28).keys()].map((i) => [i + 1, `${i + 1}.`]).concat([["letzter", "letzter Tag"]]), z.tag || 1)}</label>`;
@@ -588,13 +602,14 @@
         <label class="feld">Bezeichnung<input type="text" data-k="titel" value="${esc(ev.titel)}" style="width:100%"></label>
         <div class="formzeile" style="margin-top:.6rem">
           <label class="feld">Bereich${sel("bereich", Object.entries(B).map(([b, v]) => [b, v[0]]), ev.bereich)}</label>
-          <label class="feld">Gültig${sel("jahr", [["", "jedes Jahr"], [j0, `nur ${j0}`], [j0 + 1, `nur ${j0 + 1}`]], ev.jahr || "")}</label>
+          <label class="feld">Gültig${sel("jahr", [["", "jedes Jahr"]].concat(artErlaubt("jahr") || (aktiv("intervalle") && aktiv("intervalle").has("jahr")) || ev.jahr ? [[j0, `nur ${j0}`], [j0 + 1, `nur ${j0 + 1}`]] : []), ev.jahr || "")}</label>
         </div>
         <fieldset><legend>Zeitregel</legend><div class="formzeile">
-          <label class="feld">Art<select data-k="art" data-neu-zeichnen="1">${ARTEN.map(([g, l]) => `<optgroup label="${esc(g)}">${l.map(([v, t]) => `<option value="${v}" ${v === art ? "selected" : ""}>${esc(t)}</option>`).join("")}</optgroup>`).join("")}</select></label>
+          <label class="feld">Art<select data-k="art" data-neu-zeichnen="1">${ARTEN.map(([g, l]) => [g, l.filter(([v]) => artErlaubt(v) || v === art)]).filter(([, l]) => l.length).map(([g, l]) => `<optgroup label="${esc(g)}">${l.map(([v, t]) => `<option value="${v}" ${v === art ? "selected" : ""}>${esc(t)}${artErlaubt(v) ? "" : " (inaktiv)"}</option>`).join("")}</optgroup>`).join("")}</select></label>
           ${params}
         </div>
         ${SERIE.includes(art) ? "" : `<div class="formzeile"><label class="feld">Fällt ein Termin auf einen Nicht-Schultag (Ferien, schulfrei, Wochenende, Feiertag)${sel("ferienregel", FERIENREGEL, ev.ferien || "", true)}</label></div>`}
+        <p class="small muted">Zur Wahl stehen die aktiven <a href="#/einstellungen/intervalle" data-aktion="kal-schliessen">Intervalle</a> und <a href="#/einstellungen/zeitpunkte" data-aktion="kal-schliessen">Zeitpunkte</a>.</p>
         <p class="small muted">Vorschau: ${esc(zeitregel(ev))} → <strong>${esc(probe)}</strong> <button class="btn klein" data-aktion="kal-vorschau">↻ aktualisieren</button></p></fieldset>
         <fieldset><legend>Zuständigkeit</legend><div class="rollenraster">${Object.entries(D.KAL_ROLLEN).map(([r, n]) => `<label class="feld" title="${esc(n)}">${esc(r)}<select data-rolle="${r}">${["", "A", "E", "V", "M", "E/V", "M/E", "M/V"].map((w) => `<option ${w === (ev.rollen[r] || "") ? "selected" : ""}>${w}</option>`).join("")}</select></label>`).join("")}</div>
           <p class="small muted">A = Abnahme · E = Entscheid · V = Verantwortung · M = Mitarbeit</p></fieldset>

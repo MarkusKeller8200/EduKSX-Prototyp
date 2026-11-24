@@ -8,6 +8,11 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **EduKSX-Flow 0.9.0 – Einstellungen verknüpft (24.11.2026):** Jahreskalender bietet beim Bearbeiten nur aktive
+  Intervalle und Zeitpunkte als Zeitregel an (inaktive bleiben beim bestehenden Termin markiert); Funktionendiagramm
+  nach Aufgabenbereichen gruppiert, für SV und RV bearbeitbar (Kompetenzen je Zelle gegen die aktiven Kompetenzen
+  geprüft, Spalten aus den aktiven Funktionen, Aufgaben hinzufügen/löschen), Hinweise ohne Entscheid/Verantwortung;
+  Einstellungen zeigen die Verwendung im Kalender und im Funktionendiagramm.
 - EduKSX-Flow 0.8.1: Einstellungen ohne Bearbeitungsrecht als Text statt als gesperrte Eingabefelder.
 - **EduKSX-Flow 0.8.0 – Einstellungen (24.11.2026):** neue Menügruppe mit Katalogen Kompetenzen (18 Kompetenzarten,
   E/V/M/C/I bestehend, 13 neu), Funktionen (55, gruppiert nach Führung, Verwaltung, Pädagogik, Weitere), Zeitpunkte

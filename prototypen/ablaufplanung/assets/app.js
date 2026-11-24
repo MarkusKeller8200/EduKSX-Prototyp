@@ -7,7 +7,7 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v6";
-  const VERSION = "0.8.1";
+  const VERSION = "0.9.0";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
@@ -32,7 +32,9 @@
   const alleVorgaenge = () => D.MODULE.flatMap((m) => m.vorgaenge.map((v) => Object.assign({ modul: m }, v)));
   const vorgang = (id) => alleVorgaenge().find((v) => v.id === id);
   const modulVon = (id) => D.MODULE.find((m) => id && id.startsWith(m.key + "."));
-  const fdEintrag = (nr) => D.FUNKTIONENDIAGRAMM.find((f) => f.nr === nr);
+  const fdListe = () => (S && S.fd) || D.FUNKTIONENDIAGRAMM;
+  const fdEintrag = (nr) => fdListe().find((f) => f.nr === nr);
+  const FD_SPALTEN = ["SPF", "SPr", "RV", "SL", "HD", "SV", "LP", "ICT"];
 
   // ---------------------------------------------------------------- Zustand
   function neuerZustand() {
@@ -46,6 +48,8 @@
       ausloesungen: [],
       ausgeloest: {},
       einstellungen: kopie(window.FLOW_EINSTELLUNGEN_DATEN),
+      fd: kopie(D.FUNKTIONENDIAGRAMM),
+      fdSpalten: FD_SPALTEN.slice(),
       erreichbar: Object.fromEntries(D.MODULE.map((m) => [m.key, true])),
       ereignisse: kopie(D.EREIGNISSE),
       kalErledigt: {},
@@ -1111,15 +1115,51 @@
       <p class="meldung info"><strong>Zwei Antwortarten:</strong> «sofort» – der Schritt ist mit dem Aufruf erledigt. «Mit Rückmeldung» – das Modul nimmt den Auftrag an und meldet später (z. B. Unterschrift eingegangen, Lieferung da); bis dahin wartet der Schritt.</p>${karten}`;
   }
 
+  /** Kompetenz-Eintrag prüfen: Kürzel (mit «/», Klammern und Instanzziffern wie «E1») gegen die aktiven Kompetenzen. */
+  function fdUnbekannt(w) {
+    const ok = new Set(ES.aktiveKompetenzen().map((e) => e.kuerzel));
+    return String(w || "").split("/").map((x) => x.replace(/[()\s0-9]/g, "")).filter((x) => x && !ok.has(x));
+  }
+  const darfFd = () => ["SV", "RV"].includes(S.rolle);
   function seiteFunktionendiagramm() {
-    const sp = ["SPF", "SPr", "RV", "SL", "HD", "SV", "LP", "ICT"];
+    const darf = darfFd();
+    const sp = S.fdSpalten;
     const verwendung = {};
     S.vorlagen.forEach((v) => v.schritte.forEach((s) => { if (s.fd) (verwendung[s.fd] = verwendung[s.fd] || []).push(`${v.titel}: ${s.titel} (${s.rolle})`); }));
-    const zeilen = D.FUNKTIONENDIAGRAMM.map((f) => `<tr><td>${esc(f.nr)}</td><td>${esc(f.titel)}</td>${sp.map((r) => `<td class="fd ${f.rollen[r] && /[EV]/.test(f.rollen[r]) ? "lead" : ""}">${esc(f.rollen[r] || "")}</td>`).join("")}<td class="small">${(verwendung[f.nr] || []).map(esc).join("<br>") || `<span class="muted">–</span>`}</td></tr>`).join("");
-    return `<div class="seitenkopf"><div><h1>Funktionendiagramm</h1><p class="muted">Auszug (Muster) mit den Aufgaben, die Abläufe im Personalbereich berühren. Ist einem Schritt eine Nummer zugeordnet, schlägt ${wordmark("Flow")} die Rolle mit «V» als verantwortlich und die Rollen mit «I» als zu informieren vor und warnt bei Abweichungen.</p></div></div>
-      <p class="small muted">${ES.aktiveKompetenzen().map((e) => `${esc(e.kuerzel)} = ${esc(e.name)}`).join(" · ")} <a href="#/einstellungen/kompetenzen">Kompetenzen</a></p>
-      <div class="tabelle-wrap"><table><thead><tr><th>Nr.</th><th>Aufgabe</th>${sp.map((r) => `<th title="${esc(ROLLEN[r])}">${esc(r)}</th>`).join("")}<th>Verwendet in Schritten</th></tr></thead><tbody>${zeilen}</tbody></table></div>`;
+    const haupt = ES.hauptbereiche();
+    const nrSort = (a, b) => a.nr.split(".").map(Number).reduce((r, x, i) => r || x - (Number(b.nr.split(".")[i]) || 0), 0) || a.nr.length - b.nr.length;
+    const befunde = [];
+    fdListe().forEach((f) => {
+      Object.entries(f.rollen).forEach(([r, w]) => { const u = fdUnbekannt(w); if (u.length) befunde.push(`${f.nr} ${f.titel}: «${w}» bei ${r} – ${u.join(", ")} ist keine aktive Kompetenz.`); });
+      if (!Object.values(f.rollen).some((w) => /[EV]/.test(w))) befunde.push(`${f.nr} ${f.titel}: weder Entscheid (E) noch Verantwortung (V) vergeben.`);
+    });
+    const inaktivSp = sp.filter((r) => !ES.aktiveFunktionen().some((e) => e.kuerzel === r));
+    const zelle = (f, r) => {
+      const w = f.rollen[r] || "";
+      const fehlerhaft = fdUnbekannt(w).length;
+      if (!darf) return `<td class="fd ${/[EV]/.test(w) ? "lead" : ""}">${esc(w)}${fehlerhaft ? " ⚠" : ""}</td>`;
+      return `<td class="fd ${/[EV]/.test(w) ? "lead" : ""}"><label class="sr-only" for="fd-${esc(f.nr)}-${esc(r)}">${esc(f.nr)} ${esc(r)}</label><input id="fd-${esc(f.nr)}-${esc(r)}" class="fdzelle ${fehlerhaft ? "ungueltig" : ""}" data-aktion="fd-zelle" data-nr="${esc(f.nr)}" data-rolle="${esc(r)}" value="${esc(w)}" title="${fehlerhaft ? "Unbekannte Kompetenz" : esc(ROLLEN[r] || r)}" ${fehlerhaft ? 'aria-invalid="true"' : ""}></td>`;
+    };
+    const zeile = (f) => `<tr><td>${esc(f.nr)}</td><td>${darf ? `<label class="sr-only" for="fdt-${esc(f.nr)}">Aufgabe ${esc(f.nr)}</label><input id="fdt-${esc(f.nr)}" data-aktion="fd-titel" data-nr="${esc(f.nr)}" value="${esc(f.titel)}" style="width:100%;min-width:14rem">` : esc(f.titel)}</td>${sp.map((r) => zelle(f, r)).join("")}<td class="small">${(verwendung[f.nr] || []).map(esc).join("<br>") || `<span class="muted">–</span>`}</td><td>${darf && !(verwendung[f.nr] || []).length ? `<button class="btn klein gefahr" data-aktion="fd-loeschen" data-nr="${esc(f.nr)}" aria-label="Aufgabe ${esc(f.nr)} löschen">✕</button>` : ""}</td></tr>`;
+    const kopf = `<thead><tr><th>Nr.</th><th>Aufgabe</th>${sp.map((r) => `<th title="${esc(ROLLEN[r] || r)}">${esc(r)}${darf ? ` <button class="link small" data-aktion="fd-spalte-weg" data-rolle="${esc(r)}" aria-label="Spalte ${esc(r)} ausblenden" title="Spalte ausblenden (Einträge bleiben)">×</button>` : ""}</th>`).join("")}<th>Verwendet in Schritten</th><th></th></tr></thead>`;
+    const gruppen = haupt.map((h) => [h.kuerzel, `${h.kuerzel} ${h.name}`, h.aktiv]).concat([["", "Ohne Aufgabenbereich", true]]);
+    const inhalt = gruppen.map(([nr, titel, aktiv]) => {
+      const fs = fdListe().filter((f) => (nr ? f.bereich === nr : !haupt.some((h) => h.kuerzel === f.bereich))).sort(nrSort);
+      if (!fs.length && (!darf || !nr)) return "";
+      if (!fs.length && !aktiv) return "";
+      return `<details class="gefaess" ${fs.length ? "open" : ""} style="margin-top:.75rem"><summary><span><strong>${esc(titel)}</strong>${aktiv ? "" : ' <span class="badge neutral">inaktiv</span>'}</span><span class="small muted">${fs.length} Aufgaben</span></summary><div class="inhalt">
+        ${fs.length ? `<div class="tabelle-wrap"><table>${kopf}<tbody>${fs.map(zeile).join("")}</tbody></table></div>` : `<p class="small muted">Noch keine Aufgaben.</p>`}
+        ${darf && nr ? `<button class="btn klein" data-aktion="fd-neu" data-bereich="${esc(nr)}">＋ Aufgabe in «${esc(titel)}»</button>` : ""}</div></details>`;
+    }).join("");
+    const freie = ES.aktiveFunktionen().filter((e) => !sp.includes(e.kuerzel));
+    return `<div class="seitenkopf"><div><h1>Funktionendiagramm</h1><p class="muted">Muster mit den Aufgaben, die Abläufe berühren, gruppiert nach den <a href="#/einstellungen/aufgabenbereiche">Aufgabenbereichen</a>. Ist einem Schritt eine Nummer zugeordnet, schlägt ${wordmark("Flow")} die Rolle mit «V» als verantwortlich und die Rollen mit «I» als zu informieren vor und warnt bei Abweichungen.</p></div></div>
+      <p class="small muted">${ES.aktiveKompetenzen().map((e) => `${esc(e.kuerzel)} = ${esc(e.name)}`).join(" · ")} · <a href="#/einstellungen/kompetenzen">Kompetenzen</a> · Mehrere mit «/» trennen, Instanz als Ziffer (z. B. E1/E2), Klammern für bedingt.</p>
+      ${darf ? `<div class="formzeile"><label class="feld">Spalte (Funktion) einblenden<select id="fd-spalte-neu"><option value="">– Funktion wählen –</option>${[...new Set(freie.map((e) => e.gruppe || "Weitere"))].map((g) => `<optgroup label="${esc(g)}">${freie.filter((e) => (e.gruppe || "Weitere") === g).map((e) => `<option value="${esc(e.kuerzel)}">${esc(e.name)} (${esc(e.kuerzel)})</option>`).join("")}</optgroup>`).join("")}</select></label><button class="btn" data-aktion="fd-spalte" style="align-self:end">＋ Spalte</button></div>` : `<p class="meldung info">Ändern können die Schulverwaltung und der Ressortvorstand – Rolle oben rechts wechseln.</p>`}
+      ${inaktivSp.length ? `<p class="meldung warnung">⚠ Spalten mit inaktiver Funktion: ${inaktivSp.map(esc).join(", ")} – unter <a href="#/einstellungen/funktionen">Funktionen</a> aktivieren oder Spalte ausblenden.</p>` : ""}
+      ${befunde.length ? `<details class="meldung warnung"><summary>⚠ ${befunde.length} Hinweise zur Prüfung</summary><ul>${befunde.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>` : ""}
+      ${inhalt}`;
   }
+
 
   function protokollTabelle(liste) {
     if (!liste.length) return `<p class="muted">Noch keine Aufrufe.</p>`;
@@ -1173,7 +1213,7 @@
         </div>
         <fieldset><legend>Zuständigkeit</legend>
           <div class="formzeile">
-            <label class="feld">Funktionendiagramm<select data-e="fd"><option value="">– keine Zuordnung –</option>${D.FUNKTIONENDIAGRAMM.map((f) => `<option value="${esc(f.nr)}" ${f.nr === s.fd ? "selected" : ""}>${esc(f.nr + " " + f.titel)}</option>`).join("")}</select></label>
+            <label class="feld">Funktionendiagramm<select data-e="fd"><option value="">– keine Zuordnung –</option>${fdListe().map((f) => `<option value="${esc(f.nr)}" ${f.nr === s.fd ? "selected" : ""}>${esc(f.nr + " " + f.titel)}</option>`).join("")}</select></label>
             <label class="feld">Verantwortlich<select data-e="rolle">${rollenOptionen(s.rolle, (k) => (fd && fd.rollen[k] ? " – FD " + fd.rollen[k] : ""))}</select></label>
           </div>
           ${fd ? `<p class="small muted">FD ${esc(fd.nr)}: ${Object.entries(fd.rollen).map(([r, z]) => `${esc(r)} ${esc(z)}`).join(" · ")} – Vorschlag übernommen: V → verantwortlich, I → informieren.</p>` : ""}
@@ -1471,6 +1511,23 @@
       case "ausfuehren": ausfuehren(l, s, ROLLEN[S.rolle]); weiter(); ansage(`«${s.titel}»: ${STATUS[s.status][2]}.`); break;
       case "jetzt": ausfuehren(l, s, ROLLEN[S.rolle] + ", vorgezogen"); weiter(); break;
       case "erledigen": erledigenDialog(l, s); break;
+      case "fd-spalte": { const w = (document.getElementById("fd-spalte-neu") || {}).value; if (w && darfFd() && !S.fdSpalten.includes(w)) { S.fdSpalten.push(w); speichern(); render(); } break; }
+      case "fd-spalte-weg": if (darfFd()) { S.fdSpalten = S.fdSpalten.filter((r) => r !== el.dataset.rolle); speichern(); render(); ansage(`Spalte ${el.dataset.rolle} ausgeblendet – Einträge bleiben erhalten.`); } break;
+      case "fd-neu": {
+        if (!darfFd()) break;
+        const b = el.dataset.bereich;
+        const vorhanden = fdListe().filter((f) => f.bereich === b).map((f) => f.nr);
+        formular("Aufgabe im Funktionendiagramm", `Aufgabenbereich ${b}`, [{ key: "nr", label: "Nr.", typ: "text", pflicht: true, wert: `${b}.${vorhanden.length + 1}` }, { key: "titel", label: "Aufgabe", typ: "text", pflicht: true }], "Hinzufügen", (w) => {
+          if (fdEintrag(w.nr)) { ansage(`Nr. ${w.nr} gibt es schon.`); return; }
+          S.fd.push({ nr: w.nr, titel: w.titel, rollen: {}, bereich: b }); speichern(); render(); ansage("Aufgabe hinzugefügt.");
+        });
+        break;
+      }
+      case "fd-loeschen": {
+        const f = fdEintrag(el.dataset.nr);
+        if (f && darfFd()) frage(`Aufgabe «${f.nr} ${f.titel}» aus dem Funktionendiagramm löschen?`, "Löschen", () => { S.fd = S.fd.filter((x) => x !== f); speichern(); render(); ansage("Aufgabe gelöscht."); });
+        break;
+      }
       case "ein-pause": case "ein-abbrechen": case "ein-stichtag": case "ein-einfuegen": case "ein-ueberspringen": case "ein-rolle": case "ein-oeffnen": eingriff(ak, l, s); break;
       case "ereignis-senden": {
         const neu = ausloeserEreignis(el.dataset.ev, EREIGNIS_EINGABE[el.dataset.ev] || {});
@@ -1538,6 +1595,14 @@
     if (ak === "rolle") { S.rolle = el.value; speichern(); render(); ansage("Rolle: " + ROLLEN[S.rolle]); }
     if (ak === "erreichbar") { S.erreichbar[el.dataset.key] = el.checked; weiter(); }
     if (ak === "start-vorlage") location.hash = "#/neu/" + el.value;
+    if ((ak === "fd-zelle" || ak === "fd-titel") && darfFd()) {
+      const f = fdEintrag(el.dataset.nr);
+      if (!f) return;
+      if (ak === "fd-titel") { if (el.value.trim()) f.titel = el.value.trim(); }
+      else { const w = el.value.trim().toUpperCase().replace(/\s+/g, ""); if (w) f.rollen[el.dataset.rolle] = w; else delete f.rollen[el.dataset.rolle]; }
+      speichern(); render();
+      if (ak === "fd-zelle" && fdUnbekannt(f.rollen[el.dataset.rolle]).length) ansage(`«${f.rollen[el.dataset.rolle]}»: unbekannte Kompetenz.`);
+    }
     if (ak === "ereignis-feld") { const E = EREIGNIS_EINGABE[el.dataset.ev]; E[el.dataset.key] = el.value; render(); }
     if (ak === "ausl-art") { AUSL_ART = el.value; render(); }
     if (ak === "start-feld") {
@@ -1553,11 +1618,13 @@
 
   const KAL = window.FLOW_KALENDER({
     D, esc, addTage, tageZwischen, datumKurz, kopie, rolleBadge, ansage, frage, ROLLEN,
-    S: () => S, vorlageVon, fortschritt, speichern, render, startVorbereiten,
+    S: () => S, vorlageVon, fortschritt, speichern, render, startVorbereiten, aktiveBezuege: (b) => ES.aktiveBezuege(b),
   });
   const ES = window.FLOW_EINSTELLUNGEN({ D, esc, ansage, frage, speichern, render: () => render(), S: () => S });
   S = laden() || neuerZustand();
   if (!S.einstellungen) S.einstellungen = kopie(window.FLOW_EINSTELLUNGEN_DATEN);
+  if (!S.fd) S.fd = kopie(D.FUNKTIONENDIAGRAMM);
+  if (!S.fdSpalten) S.fdSpalten = FD_SPALTEN.slice();
   rollenAbgleichen();
   try { if (localStorage.getItem("eduksx-thema") === "dunkel") document.documentElement.classList.add("dark"); } catch (e) { /* */ }
   motor();
