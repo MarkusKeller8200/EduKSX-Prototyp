@@ -172,3 +172,99 @@ html[data-stil="clay"] .zelle, html[data-stil="clay"] .tagkopf { border-color: r
 html[data-stil="glas"] .ex-suche { background: var(--glas-stark); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); }
 html[data-stil="clay"] .ex-suche { box-shadow: var(--clay); border-radius: var(--clay-rund); border-color: transparent; }
 html[data-stil="neo"] .ex-suche { box-shadow: var(--flaeche-schatten); }
+
+/* ===================================================================================================
+ * Weitere Stile (24.11.2026, #98): Aurora, Neubrutalismus, Papier, Spielerisch, Hoher Kontrast.
+ * Gleiche Gruppen wie oben: Flächen (Karten, Fenster, Blätter) und Bedienelemente (Knöpfe, Felder).
+ * =================================================================================================== */
+
+/* ---------- Aurora: dunkles Glas über Farbschleiern (immer dunkel) ---------- */
+html[data-stil="aurora"] {
+  --background: #0e1220; --card: rgb(22 28 46 / .58); --muted: rgb(255 255 255 / .06); --sidebar: rgb(14 18 32 / .55);
+  --border: rgb(255 255 255 / .13); --input: rgb(255 255 255 / .22); --radius: 16px; --stil-rand: rgb(255 255 255 / .13);
+  --flaeche-schatten: 0 12px 40px rgb(0 0 0 / .45);
+}
+html[data-stil="aurora"] body { background:
+  radial-gradient(60% 50% at 12% 18%, rgb(121 82 179 / .55), transparent 70%),
+  radial-gradient(50% 45% at 88% 22%, rgb(0 126 187 / .45), transparent 70%),
+  radial-gradient(55% 50% at 60% 100%, rgb(255 138 0 / .32), transparent 70%), #0e1220 fixed !important; }
+html[data-stil="aurora"] :is(.tisch, .flaeche, .ansicht, .rahmen-t) { background: transparent; background-image: none; }
+html[data-stil="aurora"] :is(.kachel:not(.stempel):not(.lila), .fenster, .treffer, .zeile, .v-karte, .bisher, .ex-leiste, .dock, .seite table, .klein-hinweis, .karte-d, .symbol .ico, .liste, .tipp, .filter label, .segment, .knopf, .zurueck, .suche input, .dossier-kopf, .abschnitte) {
+  background: rgb(22 28 46 / .55); -webkit-backdrop-filter: blur(22px) saturate(1.4); backdrop-filter: blur(22px) saturate(1.4); box-shadow: var(--flaeche-schatten); border-color: var(--stil-rand); }
+html[data-stil="aurora"] :is(.blatt .innen, .detail, .ex-dialog, .ex-stilmenue, .ex-suche, .zuletzt .menue) { background: rgb(18 22 38 / .86); -webkit-backdrop-filter: blur(26px); backdrop-filter: blur(26px); }
+html[data-stil="aurora"] :is(.ecke, .tagkopf, .bahnkopf, .senkrecht h3, .leiste-oben, .filter, .task, .tabzeile, .kopf-t, .werkzeug, .raster thead th, .raster tfoot td) { background: rgb(14 18 32 / .6); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+html[data-stil="aurora"] .raster :is(th, td) { background: rgb(22 28 46 / .45); }
+html[data-stil="aurora"] .kachel.lila { background: linear-gradient(140deg, #5b3a8f, #1f4f8f); }
+html[data-stil="aurora"] .fenster .titelbalken { background: rgb(255 255 255 / .04); }
+html[data-stil="aurora"] :is(.dock button[aria-pressed="true"], .ex-leiste a[aria-current="page"], .segment button[aria-pressed="true"]) { background: var(--brand-orange); color: #222222; box-shadow: 0 0 18px rgb(255 138 0 / .5); }
+
+/* ---------- Neubrutalismus: dicke Rahmen, harte versetzte Schatten ---------- */
+html[data-stil="brutal"] {
+  --background: #fffaf0; --card: #ffffff; --muted: #fff3c4; --sidebar: #fff7dc; --border: #111111; --input: #111111; --radius: 6px;
+  --brutal: #111111; --stil-rand: #111111;
+}
+html.dark[data-stil="brutal"] { --background: #15171c; --card: #1f2229; --muted: #2a2d35; --sidebar: #1a1d23; --border: #f2f5f8; --input: #f2f5f8; --brutal: #f2f5f8; --stil-rand: #f2f5f8; }
+html[data-stil="brutal"] body { background: var(--background) !important; }
+html[data-stil="brutal"] .tisch { background-color: var(--background); background-image: radial-gradient(var(--brutal) 1px, transparent 1px); background-size: 26px 26px; }
+html[data-stil="brutal"] :is(.kachel, .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .klein-hinweis, .karte-d, .ex-suche, .ex-stilmenue, .ex-leiste, .dock, .liste, .zuletzt .menue) {
+  border: 2px solid var(--brutal) !important; box-shadow: 5px 5px 0 var(--brutal) !important; border-radius: 6px; }
+html[data-stil="brutal"] :is(.suche input, .tipp, .knopf, .wk, .segment, .zurueck, .filter label, .zeile button, .koerper .knopf, .blatt .zu, .detail .zu, .detail .knoepfe button, .blatt .aktionen button, .symbol .ico, .ex-dialog button, .ex-skala label, .stil-wahl, .eintrag, .status, .werkzeug input, .werkzeug select) {
+  border: 2px solid var(--brutal) !important; box-shadow: 3px 3px 0 var(--brutal); border-radius: 6px; }
+html[data-stil="brutal"] :is(button, a):active { transform: translate(2px, 2px); }
+html[data-stil="brutal"] .kachel.m-violet:not(.lila) { background: #e6d9ff; } html[data-stil="brutal"] .kachel.m-blue { background: #cdeeff; } html[data-stil="brutal"] .kachel.m-orange:not(.stempel) { background: #ffe2b8; }
+html.dark[data-stil="brutal"] .kachel:is(.m-violet, .m-blue, .m-orange):not(.stempel):not(.lila) { background: var(--card); }
+html[data-stil="brutal"] :is(h1, h2, .kachel .name, .titel) { font-weight: 800; letter-spacing: -.01em; }
+html[data-stil="brutal"] .fenster .titelbalken { background: var(--muted); border-bottom: 2px solid var(--brutal); }
+
+/* ---------- Papier: ruhig wie Gedrucktes, Überschriften mit Serifen ---------- */
+html[data-stil="papier"] {
+  --background: #f6f1e7; --card: #fffdf8; --muted: #f1ebde; --sidebar: #f3ecdf; --border: #e0d5bf; --input: #c9bb9c; --radius: 4px;
+  --shadow: 0 1px 0 rgb(80 60 20 / .08); --flaeche-schatten: var(--shadow); --serif: Georgia, "Iowan Old Style", "Source Serif 4", "Times New Roman", serif;
+}
+html.dark[data-stil="papier"] { --background: #1d1a15; --card: #25211b; --muted: #2c271f; --sidebar: #221e18; --border: #3d362a; --input: #57503f; }
+html[data-stil="papier"] body { background: var(--background) !important; }
+html[data-stil="papier"] .tisch { background-color: var(--background); background-image: none; }
+html[data-stil="papier"] :is(h1, h2, h3, .gruss, .kachel .name, .kachel .gross, .zeit, .eintrag.aufgabe .z1, .bahnkopf b) { font-family: var(--serif); font-weight: 600; letter-spacing: 0; }
+html[data-stil="papier"] .wm { font-family: var(--font-sans); }
+html[data-stil="papier"] :is(.kachel, .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .liste) { box-shadow: var(--shadow) !important; border-radius: 4px; }
+html[data-stil="papier"] :is(.suche input, .tipp, .knopf, .segment, .zurueck, .filter label, .eintrag, .symbol .ico) { border-radius: 4px; box-shadow: none; }
+html[data-stil="papier"] .suche input { border-width: 0 0 2px; border-radius: 0; background: transparent; box-shadow: none; }
+html[data-stil="papier"] .kachel.lila { background: #3f2d63; }
+
+/* ---------- Spielerisch (Primar): kräftig, gross, freundlich ---------- */
+html[data-stil="spiel"] {
+  --background: #fff7ef; --card: #ffffff; --muted: #fff0e0; --sidebar: #fff4e8; --radius: 18px;
+  --font-sans: "Nunito", "Quicksand", ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+}
+html.dark[data-stil="spiel"] { --background: #1b1630; --card: #251e40; --muted: #2e2650; --sidebar: #201a38; }
+html[data-stil="spiel"] body { background: var(--background) radial-gradient(circle at 10% 10%, rgb(255 138 0 / .12), transparent 30%), radial-gradient(circle at 90% 30%, rgb(121 82 179 / .12), transparent 30%) fixed !important; font-weight: 500; }
+html[data-stil="spiel"] .tisch { background-color: transparent; }
+html[data-stil="spiel"] :is(.kachel, .fenster, .treffer, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .liste, .blatt .innen) {
+  border: 3px solid color-mix(in srgb, var(--m, var(--brand-violet)) 40%, transparent) !important; border-radius: 18px; box-shadow: 0 6px 0 color-mix(in srgb, var(--m, var(--brand-violet)) 30%, transparent) !important; }
+html[data-stil="spiel"] .kachel:not(.stempel):not(.lila) { background: var(--m-soft, var(--card)); }
+html[data-stil="spiel"] :is(.suche input, .tipp, .knopf, .wk, .zurueck, .filter label, .zeile button, .koerper .knopf, .detail .knoepfe button, .blatt .aktionen button, .ex-dialog button, .stil-wahl) { border-radius: 999px; border-width: 2px; font-weight: 700; }
+html[data-stil="spiel"] :is(h1, h2, .kachel .name) { font-weight: 800; }
+html[data-stil="spiel"] .symbol .ico { border-radius: 16px; border: 2px solid var(--brand-violet); }
+
+/* ---------- Hoher Kontrast: keine Transparenz, keine Schatten, deutliche Fokusrahmen ---------- */
+html[data-stil="kontrast"] {
+  --background: #ffffff; --foreground: #000000; --card: #ffffff; --muted: #ffffff; --muted-foreground: #1a1a1a; --sidebar: #ffffff;
+  --border: #000000; --input: #000000; --accent: #dbe9ff; --accent-foreground: #000000; --secondary: #ffd9a8; --secondary-foreground: #000000;
+  --link: #0037a6; --ring: #000000; --shadow: none; --flaeche-schatten: none; --radius: 4px;
+  --violet-soft: #efe6ff; --violet-text: #2c1259; --success: #0b5a26; --warning: #6e3c00; --destructive: #9b0000;
+}
+html.dark[data-stil="kontrast"] {
+  --background: #000000; --foreground: #ffffff; --card: #000000; --muted: #000000; --muted-foreground: #f0f0f0; --sidebar: #000000;
+  --border: #ffffff; --input: #ffffff; --accent: #00305c; --accent-foreground: #ffffff; --secondary: #4a2a00; --secondary-foreground: #ffffff;
+  --link: #9fd3ff; --ring: #ffd400; --violet-soft: #2a1452; --violet-text: #ffffff; --success: #7dffad; --warning: #ffd37a; --destructive: #ff9e9e;
+}
+html[data-stil="kontrast"] body { background: var(--background) !important; }
+html[data-stil="kontrast"] * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; box-shadow: none !important; text-shadow: none !important; filter: none !important; }
+html[data-stil="kontrast"] :is(.tisch, .flaeche, .ansicht, .rahmen-t) { background: var(--background); background-image: none; }
+html[data-stil="kontrast"] :is(.kachel:not(.stempel):not(.lila), .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .ex-leiste, .dock, .liste, .eintrag, .symbol .ico) { background: var(--card); border: 2px solid var(--border) !important; }
+html[data-stil="kontrast"] .kachel:not(.stempel):not(.lila) .ico { background: var(--card); border: 1px solid var(--border); }
+html[data-stil="kontrast"] :focus-visible { outline: 3px solid var(--ring) !important; outline-offset: 2px !important; }
+html[data-stil="kontrast"] a { text-decoration: underline; }
+html[data-stil="kontrast"] :is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [aria-selected="true"]) { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 4px; font-weight: 700; }
+html[data-stil="kontrast"] :is(.zelle.we, .tagkopf.we) { background-image: none; }
+html[data-stil="kontrast"] .muted { color: var(--muted-foreground); }

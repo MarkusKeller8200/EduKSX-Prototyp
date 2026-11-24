@@ -16,7 +16,13 @@
     { key: "neo", name: "Neo-Dunkel", text: "weiche Tiefe, Orange leuchtet", muster: "linear-gradient(135deg,#2a313b,#1b2027)" },
     { key: "glas", name: "Glas", text: "durchscheinend auf Pastell", muster: "linear-gradient(135deg,#c8d5f6,#f9dfe8,#fde6d2)" },
     { key: "clay", name: "Clay", text: "weich und plastisch", muster: "linear-gradient(135deg,#ffffff,#dfe3f5)" },
+    { key: "aurora", name: "Aurora", text: "dunkles Glas über Farbschleiern", muster: "radial-gradient(circle at 25% 30%,#7952b3,transparent 60%),radial-gradient(circle at 80% 70%,#ff8a00,transparent 55%),#0e1220" },
+    { key: "brutal", name: "Neubrutalismus", text: "dicke Rahmen, harte Schatten", muster: "linear-gradient(135deg,#fff3c4 0 60%,#222 60% 64%,#fff3c4 64%)" },
+    { key: "papier", name: "Papier", text: "ruhig wie Gedrucktes, Serifen", muster: "linear-gradient(#fbf7ef,#efe6d4)" },
+    { key: "spiel", name: "Spielerisch", text: "kräftig und gross (Primar)", muster: "linear-gradient(135deg,#ffd6e8,#d6ecff,#fff0c2)" },
+    { key: "kontrast", name: "Hoher Kontrast", text: "Barrierefreiheit, keine Transparenz", muster: "linear-gradient(135deg,#fff 50%,#000 50%)" },
   ];
+  const IMMER_DUNKEL = ["neo", "aurora"];
   const SPEICHER = "eduksx-ex-bewertung";
 
   function lesen(k, standard) { try { const v = localStorage.getItem(k); return v === null ? standard : JSON.parse(v); } catch (e) { return standard; } }
@@ -33,7 +39,7 @@
     const stil = festerStil() || stilJetzt;
     html.dataset.stil = stil;
     // Neo-Dunkel ist immer dunkel; sonst gilt die eigene Wahl
-    html.classList.toggle("dark", stil === "neo" || lesen("eduksx-ex-dunkel", window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches));
+    html.classList.toggle("dark", IMMER_DUNKEL.includes(stil) || lesen("eduksx-ex-dunkel", window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches));
   }
   function stil(key) { stilJetzt = key; schreiben("eduksx-ex-stil", key); anwenden(); document.dispatchEvent(new CustomEvent("ex-stil", { detail: key })); }
   anwenden();
@@ -119,7 +125,7 @@
     const themaKnopf = nav.querySelector('[data-ex="thema"]');
     if (festerStil() === "neo") themaKnopf.remove();
     else themaKnopf.addEventListener("click", () => {
-      if ((festerStil() || stilJetzt) === "neo") { toast("Neo-Dunkel ist immer dunkel"); return; }
+      if (IMMER_DUNKEL.includes(festerStil() || stilJetzt)) { toast("Dieser Stil ist immer dunkel"); return; }
       thema(!html.classList.contains("dark"));
     });
     nav.querySelector('[data-ex="bewerten"]').addEventListener("click", () => bewerten(aktuell));
@@ -131,7 +137,7 @@
     const X = window.EX, liste = [];
     VARIANTEN.forEach((v) => liste.push({ art: "aktion", gruppe: "Aktionen", titel: `Variante ${v.buchstabe} – ${v.name} öffnen`, worte: "variante wechseln " + v.name, tun: () => { location.href = v.datei; } }));
     if (!festerStil()) STILE.forEach((x) => liste.push({ art: "aktion", gruppe: "Aktionen", titel: `Stil: ${x.name}`, worte: "stil aussehen theme " + x.text, tun: () => { stil(x.key); toast("Stil: " + x.name); } }));
-    liste.push({ art: "aktion", gruppe: "Aktionen", titel: "Hell/Dunkel umschalten", worte: "dunkel hell modus thema", tun: () => { if ((festerStil() || stilJetzt) === "neo") toast("Neo-Dunkel ist immer dunkel"); else thema(!html.classList.contains("dark")); } });
+    liste.push({ art: "aktion", gruppe: "Aktionen", titel: "Hell/Dunkel umschalten", worte: "dunkel hell modus thema", tun: () => { if (IMMER_DUNKEL.includes(festerStil() || stilJetzt)) toast("Dieser Stil ist immer dunkel"); else thema(!html.classList.contains("dark")); } });
     if (!X) return liste;
     X.AUFGABEN.forEach((a) => liste.push({ art: "aufgabe", id: a.id, gruppe: "Aufgaben", titel: a.titel, neben: X.fmtRelativ(a.faellig), modul: a.modul, worte: a.text + " " + X.modul(a.modul).titel + " " + X.STATUS[a.status].text }));
     X.TERMINE.forEach((t) => liste.push({ art: "termin", id: t.id, gruppe: "Termine", titel: t.titel, neben: X.fmtRelativ(t.start), modul: t.modul, worte: "termin " + t.ort }));
