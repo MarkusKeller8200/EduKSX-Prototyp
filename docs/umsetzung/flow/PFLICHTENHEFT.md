@@ -51,6 +51,10 @@ Core/Mitteilung), Rechtsauskunft (Quellen verweisen auf EduKSX-Codex).
 | FLW-F-27 | Fristarten gesetzlich (Quelle mit Paragraf Pflicht), intern, Empfehlung; Eskalationsstufen je Fristart (Erinnerung, überfällig, vorgesetzte Stelle, Leitung); blockierte Schritte mit abgelaufener Frist als «Frist gefährdet». | MUSS | Fristen, Eskalation |
 | FLW-F-28 | Eingriffe durch Prozessverantwortliche mit Begründung: pausieren/fortsetzen, abbrechen (Unterprozesse mit, Kompensationshinweis für ausgeführte Aufrufe), Stichtag verschieben, Schritt überspringen, wieder öffnen (ohne automatische Wiederholung), Zuständigkeit ändern, Schritt einfügen. | MUSS | Eingriffe |
 | FLW-F-29 | Journal je Ablauf (Start, Entscheide, Unterprozesse, Eskalationen ab Stufe 3, Eingriffe) getrennt vom Aufrufprotokoll. | MUSS | Journal |
+| FLW-F-32 | Stellvertretung während Abwesenheiten (Aufgaben, Hinweise, Eskalationen an die Vertretung) und Delegation einzelner Schritte (Verantwortung bleibt; Merkmal «nicht delegierbar» beachtet). | MUSS | Stellvertretungen, Delegieren |
+| FLW-F-33 | Vier-Augen-Prinzip: nach einer Genehmigung zweite Prüfung durch eine andere Funktion; Mehrfachgenehmigung mit Quorum (alle, Mehrheit, mindestens n). | MUSS | Genehmigung |
+| FLW-F-34 | Rollenbasierte Übersicht (Entscheide, Eskalationen, gesetzliche Fristen, Fehler, Belastung je Funktion). | SOLL | Übersicht |
+| FLW-F-35 | Kalender: Monats- und Wochenansicht mit Fristen offener Schritte; ICS-Export (Abo mit fester Adresse im Betrieb, FLW-F-22). | SOLL | Kalender |
 | FLW-F-31 | Einstellungen: Kataloge Kompetenzen, Funktionen (gruppiert), Zeitpunkte, Intervalle, Aufgabenbereiche (Haupt- und Unterbereiche) mit Kürzel, Bezeichnung, Beschreibung, Aktiv; verwendete Einträge nur deaktivieren. Datenmodell ZU PRÜFEN: in EduKSX-Core bzw. eigenem Modul (Konzept E15). | SOLL | Einstellungen |
 | FLW-F-30 | Auslöseprotokoll mit Quelle, Vorlage, Ergebnis (gestartet, doppelt, ohne Ablauf). | SOLL | Auslöser |
 

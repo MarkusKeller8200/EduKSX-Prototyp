@@ -7,7 +7,7 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v6";
-  const VERSION = "0.10.0";
+  const VERSION = "0.11.0";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
@@ -49,6 +49,7 @@
       ausgeloest: {},
       einstellungen: kopie(window.FLOW_EINSTELLUNGEN_DATEN),
       fd: kopie(D.FUNKTIONENDIAGRAMM),
+      vertretungen: kopie(D.VERTRETUNGEN || []).map((v) => Object.assign(v, { von: addTage(isoHeute(), v.vonTage), bis: addTage(isoHeute(), v.bisTage) })),
       fdSpalten: FD_SPALTEN.slice(),
       erreichbar: Object.fromEntries(D.MODULE.map((m) => [m.key, true])),
       ereignisse: kopie(D.EREIGNISSE),
@@ -227,8 +228,26 @@
     });
   }
 
+  /** Stellvertretungen, die heute gelten (Stufe 2). */
+  const vertretungenHeute = () => (S.vertretungen || []).filter((v) => v.von <= S.heute && S.heute <= v.bis);
+  const vertretungVon = (r) => vertretungenHeute().filter((v) => v.rolle === r).map((v) => v.vertretung);
+  const vertritt = (r) => vertretungenHeute().some((v) => v.rolle === r && v.vertretung === S.rolle);
+  /** Wer muss bei einem Schritt jetzt handeln? Mehrfachgenehmigung: alle ohne Stimme; Delegation: ausführende Rolle. */
+  function handelnde(s) {
+    if (typVon(s) === "genehmigung" && s.mehrfach && (s.mehrfach.rollen || []).length) return s.mehrfach.rollen.filter((r) => !(s.stimmen || {})[r]);
+    return [s.ausfuehrend || s.rolle];
+  }
+  /** Für welche Rolle handelt die angemeldete Rolle bei diesem Schritt (selbst oder in Vertretung)? */
+  function handeltFuer(s) {
+    const h = handelnde(s);
+    if (h.includes(S.rolle)) return S.rolle;
+    return h.find((r) => vertritt(r)) || ((D.EXTERN || []).find((r) => h.includes(r)) || null);
+  }
   function hinweis(rollen, lauf, text) {
-    [...new Set(rollen || [])].forEach((r) => S.hinweise.unshift({ rolle: r, tag: S.heute, lauf: lauf.id, text }));
+    [...new Set(rollen || [])].forEach((r) => {
+      S.hinweise.unshift({ rolle: r, tag: S.heute, lauf: lauf.id, text });
+      vertretungVon(r).forEach((v) => S.hinweise.unshift({ rolle: v, tag: S.heute, lauf: lauf.id, text: `In Vertretung für ${ROLLEN[r] || r}: ${text}` }));
+    });
     S.hinweise = S.hinweise.slice(0, 300);
   }
 
@@ -246,6 +265,7 @@
    */
   function ausfuehren(lauf, sch, durch, eingabe) {
     const t = typVon(sch);
+    if (t === "genehmigung" && eingabe && eingabe.entscheid && genehmigungStimme(lauf, sch, durch, eingabe)) return;
     if (t !== "aufruf") {
       if (t === "benachrichtigung") { benachrichtigen(lauf, sch, durch); return; }
       sch.ergebnis = eingabe && Object.keys(eingabe).length ? kopie(eingabe) : { erledigt: "ja" };
@@ -274,6 +294,45 @@
       aufrufProtokoll(lauf, sch, "ok", sch.ergebnis);
       abschliessen(lauf, sch, durch);
     }
+  }
+
+  /**
+   * Stufe 2: Mehrfachgenehmigung (Quorum) und Vier-Augen-Prinzip. Gibt true zurück, wenn der Schritt noch offen bleibt
+   * oder hier abgeschlossen wurde; false = normal abschliessen.
+   */
+  function genehmigungStimme(lauf, sch, durch, e) {
+    const wer = handeltFuer(sch) || S.rolle;
+    if (sch.mehrfach && (sch.mehrfach.rollen || []).length) {
+      sch.stimmen = sch.stimmen || {};
+      sch.stimmen[wer] = { entscheid: e.entscheid, begruendung: e.begruendung || "", am: S.heute, durch };
+      journal(lauf, "Entscheid", `«${sch.titel}»: ${ROLLEN[wer] || wer} – ${e.entscheid}${wer !== S.rolle ? ` (in Vertretung durch ${ROLLEN[S.rolle]})` : ""}.`, e.begruendung, durch);
+      const n = sch.mehrfach.rollen.length, noetig = quorumZahl(sch.mehrfach);
+      const ja = Object.values(sch.stimmen).filter((x) => x.entscheid === "genehmigt").length;
+      const nein = Object.values(sch.stimmen).filter((x) => x.entscheid === "abgelehnt").length;
+      const fertig = ja >= noetig ? "genehmigt" : nein > n - noetig ? "abgelehnt" : null;
+      if (!fertig) { hinweis(handelnde(sch), lauf, `«${sch.titel}» (${lauf.kontext.person}): Ihre Stimme fehlt noch (${ja} von ${noetig} Genehmigungen).`); return true; }
+      sch.ergebnis = { entscheid: fertig, begruendung: Object.entries(sch.stimmen).map(([r, x]) => `${r}: ${x.entscheid}${x.begruendung ? " – " + x.begruendung : ""}`).join("; "), stimmen: `${ja} ja, ${nein} nein` };
+      abschliessen(lauf, sch, durch);
+      journal(lauf, "Entscheid", `«${sch.titel}»: ${fertig} (${quorumText(sch.mehrfach)}; ${ja} ja, ${nein} nein).`, "", "Flow");
+      return true;
+    }
+    const f = sch.fd && fdEintrag(sch.fd);
+    const m = f ? (f.merkmale || {})[(sch.vierAugen && sch.vierAugen.erst) ? sch.vierAugen.erst.rolle : sch.rolle] : null;
+    if (m && m.vierAugen === "ja" && e.entscheid === "genehmigt" && !(sch.vierAugen && sch.vierAugen.erst)) {
+      const erst = sch.rolle;
+      const pruef = (f && Object.entries(f.rollen).find(([r, c]) => r !== erst && /[PFGZ]/.test(String(c).replace(/[()0-9]/g, ""))) || [])[0] || vorgesetztVon(erst) || D.LEITUNG;
+      sch.vierAugen = { erst: { rolle: erst, entscheid: e.entscheid, begruendung: e.begruendung || "", am: S.heute, durch }, zweit: pruef };
+      sch.rolle = pruef; sch.ausfuehrend = null; sch.eskaliert = [];
+      journal(lauf, "Entscheid", `«${sch.titel}»: erste Genehmigung durch ${ROLLEN[erst] || erst}; Vier-Augen-Prinzip – zweite Prüfung durch ${ROLLEN[pruef] || pruef}.`, e.begruendung, durch);
+      hinweis([pruef], lauf, `«${sch.titel}» (${lauf.kontext.person}): zweite Prüfung nach dem Vier-Augen-Prinzip (genehmigt durch ${ROLLEN[erst] || erst}).`);
+      return true;
+    }
+    if (sch.vierAugen && sch.vierAugen.erst) {
+      if (sch.vierAugen.erst.durch === durch && S.rolle === sch.vierAugen.erst.rolle) return true; // gleiche Person: nicht zulässig (UI verhindert es)
+      e.begruendung = [sch.vierAugen.erst.begruendung && `1. ${sch.vierAugen.erst.rolle}: ${sch.vierAugen.erst.begruendung}`, e.begruendung && `2. ${S.rolle}: ${e.begruendung}`].filter(Boolean).join("; ");
+      journal(lauf, "Entscheid", `«${sch.titel}»: zweite Prüfung (Vier-Augen) durch ${ROLLEN[S.rolle] || S.rolle} – ${e.entscheid}.`, "", durch);
+    }
+    return false;
   }
 
   function rueckmeldung(lauf, sch) {
@@ -651,6 +710,7 @@
     protokoll: ico('<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h6M9 16h6"/>'),
     kalender: ico('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M7 14h3M14 14h3M7 17.5h3"/>'),
     ausloeser: ico('<path d="M13 2L4.5 13.5H12L11 22l8.5-11.5H12z"/>'),
+    vertretungen: ico('<circle cx="8" cy="8" r="3"/><path d="M3 19c.5-3 2.6-5 5-5"/><path d="M14 13h7M18 10l3 3-3 3"/>'),
     "einstellungen/kompetenzen": ico('<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="1.8" fill="currentColor"/><circle cx="15" cy="12" r="1.8" fill="currentColor"/><circle cx="10" cy="18" r="1.8" fill="currentColor"/>'),
     "einstellungen/funktionen": ico('<circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3 2.8-5 5.5-5s4.9 2 5.5 5"/><circle cx="17" cy="9" r="2.3"/><path d="M15.5 14.2c2.3.2 4 1.9 4.5 4.8"/>'),
     "einstellungen/zeitpunkte": ico('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
@@ -664,6 +724,7 @@
     ["gruppe", "Abläufe"],
     ["laeufe", "Laufende Abläufe"],
     ["neu", "Ablauf starten"],
+    ["vertretungen", "Stellvertretungen"],
     ["gruppe", "Planung"],
     ["kalender", "Jahreskalender"],
     ["vorlagen", "Ablaufvorlagen"],
@@ -825,7 +886,7 @@
 
   // ---------------------------------------------------------------- Rahmen
   function rahmen(seite, inhalt) {
-    const aufgaben = offeneAufgaben(S.rolle).length;
+    const aufgaben = offeneAufgaben(S.rolle, true).length;
     const navi = NAVI.map((n) => {
       if (n[0] === "gruppe") return `<li class="gruppe" aria-hidden="true">${esc(n[1])}</li>`;
       const unter = route()[1] || "kompetenzen";
@@ -860,17 +921,18 @@
       <div class="sr-only" aria-live="polite" id="ansage"></div>`;
   }
 
-  function offeneAufgaben(rolle) {
+  function offeneAufgaben(rolle, mitVertretung) {
     const out = [];
-    S.laeufe.forEach((l) => { if (l.pausiert || l.abgebrochen) return; l.schritte.forEach((s) => { if ((!rolle || s.rolle === rolle) && ["bereit", "laeuft", "fehler"].includes(s.status) && !(s.status === "laeuft" && typVon(s) === "unterprozess")) out.push([l, s]); }); });
+    const rollen = rolle ? [rolle].concat(mitVertretung ? vertretungenHeute().filter((v) => v.vertretung === rolle).map((v) => v.rolle) : []) : null;
+    S.laeufe.forEach((l) => { if (l.pausiert || l.abgebrochen) return; l.schritte.forEach((s) => { if ((!rollen || handelnde(s).some((r) => rollen.includes(r))) && ["bereit", "laeuft", "fehler"].includes(s.status) && !(s.status === "laeuft" && typVon(s) === "unterprozess")) out.push([l, s]); }); });
     return out.sort((a, b) => fristVon(a[0], a[1]).localeCompare(fristVon(b[0], b[1])));
   }
 
   function aktionKnopf(l, s) {
     if (l.abgebrochen) return "";
     if (l.pausiert) return `<span class="small muted">⏸ pausiert</span>`;
-    const meine = s.rolle === S.rolle || (D.EXTERN || []).includes(s.rolle);
-    const titel = meine ? "" : `title="Nur ${esc(ROLLEN[s.rolle])} – Rolle oben rechts wechseln"`;
+    const meine = !!handeltFuer(s);
+    const titel = meine ? "" : `title="Nur ${esc(handelnde(s).map((r) => ROLLEN[r] || r).join(", "))} – Rolle oben rechts wechseln"`;
     const dis = meine ? "" : "disabled";
     const d = `data-lauf="${esc(l.id)}" data-id="${esc(s.id)}"`;
     const t = typVon(s);
@@ -887,6 +949,16 @@
     if (s.status === "geplant") return `<button class="btn klein" data-aktion="jetzt" ${d} ${dis} ${titel} title="Automatischen Schritt vor der Frist auslösen">▶ Jetzt auslösen</button>`;
     return "";
   }
+  /** Delegieren bzw. zurücknehmen (Stufe 2); gesperrt, wenn die Kompetenz laut Funktionendiagramm nicht delegierbar ist. */
+  function delegationKnopf(l, s) {
+    if (l.abgebrochen || l.pausiert || s.status !== "bereit" || (s.mehrfach && (s.mehrfach.rollen || []).length)) return "";
+    const d = `data-lauf="${esc(l.id)}" data-id="${esc(s.id)}"`;
+    if (s.ausfuehrend && (S.rolle === s.rolle || vertritt(s.rolle))) return ` <button class="btn klein" data-aktion="delegation-zurueck" ${d} title="Delegation an ${esc(ROLLEN[s.ausfuehrend] || s.ausfuehrend)} zurücknehmen">↩ zurücknehmen</button>`;
+    if (s.ausfuehrend || !(S.rolle === s.rolle || vertritt(s.rolle))) return "";
+    const m = s.fd && fdEintrag(s.fd) ? (fdEintrag(s.fd).merkmale || {})[s.rolle] : null;
+    if (m && m.delegierbar === "nein") return ` <button class="btn klein" disabled title="Laut Funktionendiagramm ${esc(s.fd)} nicht delegierbar">↪ Delegieren</button>`;
+    return ` <button class="btn klein" data-aktion="delegieren" ${d} title="Ausführung an eine andere Funktion übertragen – die Verantwortung bleibt">↪ Delegieren</button>`;
+  }
   /** Eingriffe je Schritt für Prozessverantwortliche (überspringen, Zuständigkeit, wieder öffnen). */
   function eingriffKnoepfe(l, s) {
     if (!darfEingreifen(l) || l.abgebrochen) return "";
@@ -899,6 +971,17 @@
     if (["erledigt", "uebersprungen"].includes(s.status)) k.push(`<button class="btn klein" data-aktion="ein-oeffnen" ${d} title="Schritt wieder öffnen (mit Begründung)" aria-label="Wieder öffnen">↺</button>`);
     return k.length ? `<div class="eingriff">${k.join(" ")}</div>` : "";
   }
+  /** Zusätze zur Zuständigkeit: Delegation, Vertretung, Vier-Augen, Mehrfachgenehmigung. */
+  function zustaendigText(s) {
+    const t = [];
+    if (s.ausfuehrend) t.push(`↪ ausgeführt durch ${esc(s.ausfuehrend)}`);
+    if (!ERLEDIGT.includes(s.status)) handelnde(s).forEach((r) => vertretungVon(r).forEach((v) => t.push(`abwesend – Vertretung ${esc(v)}`)));
+    if (s.vierAugen && s.vierAugen.erst) t.push(`4A: 1. ${esc(s.vierAugen.erst.rolle)} ✓${s.status !== "erledigt" ? ", 2. Prüfung offen" : ""}`);
+    if (s.mehrfach && (s.mehrfach.rollen || []).length) t.push(`${esc(quorumText(s.mehrfach))}: ${s.mehrfach.rollen.map((r) => `${esc(r)} ${(s.stimmen || {})[r] ? ((s.stimmen[r].entscheid === "genehmigt") ? "✓" : "✕") : "…"}`).join(" · ")}`);
+    return t.map((x) => `<div class="small">${x}</div>`).join("");
+  }
+  const quorumText = (m) => (m.quorum === "mehrheit" ? "Mehrheit" : m.quorum === "alle" || !m.quorum ? "alle" : `mind. ${m.quorum}`) + ` von ${m.rollen.length}`;
+  const quorumZahl = (m) => (m.quorum === "mehrheit" ? Math.floor(m.rollen.length / 2) + 1 : m.quorum === "alle" || !m.quorum ? m.rollen.length : Math.min(Number(m.quorum), m.rollen.length));
   const laufStatus = (l) => (l.abgebrochen ? `<span class="badge neutral">⊘ abgebrochen ${datumKurz(l.abgebrochen)}</span>` : l.abgeschlossen ? `<span class="badge erfolg">✓ abgeschlossen</span>` : l.pausiert ? `<span class="badge warnung">⏸ pausiert</span>` : "");
 
   // ---------------------------------------------------------------- Seiten
@@ -920,6 +1003,7 @@
     }).join("");
     const jeRolle = Object.keys(ROLLEN).map((r) => [r, offeneAufgaben(r).length]).filter(([, n]) => n);
     return `
+      ${fuerSie()}
       <div class="seitenkopf"><div><h1>Übersicht</h1><p class="muted">Abläufe bestehen aus geplanten Schritten. Jeder Schritt ruft einen Vorgang in einem anderen Modul auf – ${wordmark("Flow")} plant, verteilt die Aufgaben und hält fest, was wann geschehen ist.</p></div>
         <div class="aktionen"><a class="btn primaer" href="#/neu">▶ Ablauf starten</a></div></div>
       <div class="karten">
@@ -938,15 +1022,19 @@
   }
 
   function seiteAufgaben() {
-    const meine = offeneAufgaben(S.rolle);
+    const meine = offeneAufgaben(S.rolle, true);
+    const vertr = vertretungenHeute().filter((v) => v.vertretung === S.rolle);
+    const abwesend = vertretungenHeute().filter((v) => v.rolle === S.rolle);
     const bald = [];
     S.laeufe.forEach((l) => l.schritte.forEach((s) => { if (s.rolle === S.rolle && ["wartet", "geplant"].includes(s.status) && tageZwischen(S.heute, fristVon(l, s)) <= 21) bald.push([l, s]); }));
     bald.sort((a, b) => fristVon(a[0], a[1]).localeCompare(fristVon(b[0], b[1])));
     const info = S.hinweise.filter((h) => h.rolle === S.rolle).slice(0, 12);
-    const zeile = ([l, s], mitAktion) => `<tr><td>${badge(s.status, s)}${fristBadge(l, s)}</td><td><strong>${esc(s.titel)}</strong><div class="small muted"><a href="#/lauf/${esc(l.id)}">${esc(l.kontext.person)} · ${esc(l.titel)}</a>${s.fd ? ` · FD ${esc(s.fd)}` : ""}</div>${s.fehler ? `<div class="small" style="color:var(--destructive)">✕ ${esc(s.fehler)}</div>` : ""}</td>
-      <td>${datumKurz(fristVon(l, s))}</td><td>${aufrufText(s)}</td><td>${mitAktion ? aktionKnopf(l, s) : (s.status === "wartet" ? `<span class="small muted">nach ${esc((s.nach || []).map((n) => (l.schritte.find((x) => x.id === n) || {}).titel).join(", "))}</span>` : `<span class="small muted">läuft automatisch am ${datumKurz(fristVon(l, s))}</span>`)}</td></tr>`;
+    const zeile = ([l, s], mitAktion) => `<tr><td>${badge(s.status, s)}${fristBadge(l, s)}</td><td><strong>${esc(s.titel)}</strong>${mitAktion && handeltFuer(s) && handeltFuer(s) !== S.rolle && !(D.EXTERN || []).includes(handeltFuer(s)) ? ` <span class="badge violett">in Vertretung für ${esc(handeltFuer(s))}</span>` : ""}${s.ausfuehrend === S.rolle ? ` <span class="badge info">delegiert von ${esc(s.delegiertVon || s.rolle)}</span>` : ""}<div class="small muted"><a href="#/lauf/${esc(l.id)}">${esc(l.kontext.person)} · ${esc(l.titel)}</a>${s.fd ? ` · FD ${esc(s.fd)}` : ""}</div>${s.fehler ? `<div class="small" style="color:var(--destructive)">✕ ${esc(s.fehler)}</div>` : ""}</td>
+      <td>${datumKurz(fristVon(l, s))}</td><td>${aufrufText(s)}</td><td>${mitAktion ? aktionKnopf(l, s) + delegationKnopf(l, s) : (s.status === "wartet" ? `<span class="small muted">nach ${esc((s.nach || []).map((n) => (l.schritte.find((x) => x.id === n) || {}).titel).join(", "))}</span>` : `<span class="small muted">läuft automatisch am ${datumKurz(fristVon(l, s))}</span>`)}</td></tr>`;
     return `
       <div class="seitenkopf"><div><h1>Meine Aufgaben</h1><p class="muted">Rolle: ${rolleBadge(S.rolle)} ${esc(ROLLEN[S.rolle])}. Aufgaben entstehen, sobald die Vorgänger eines Schritts erledigt sind. Automatische Schritte erscheinen hier nur, wenn ein Aufruf fehlschlägt.</p></div></div>
+      ${vertr.length ? `<p class="meldung info">Sie vertreten heute: ${vertr.map((v) => `<strong>${esc(ROLLEN[v.rolle] || v.rolle)}</strong> bis ${datumKurz(v.bis)}`).join(", ")} – deren Aufgaben stehen unten mit «in Vertretung».</p>` : ""}
+      ${abwesend.length ? `<p class="meldung warnung">Für Ihre Funktion ist eine Abwesenheit erfasst (bis ${datumKurz(abwesend[0].bis)}); Ihre Aufgaben erscheinen auch bei ${abwesend.map((v) => esc(ROLLEN[v.vertretung] || v.vertretung)).join(", ")}.</p>` : ""}
       <section><h2>Zu erledigen (${meine.length})</h2><div class="tabelle-wrap"><table><thead><tr><th>Status</th><th>Schritt</th><th>Frist</th><th>Aufruf</th><th></th></tr></thead><tbody>${meine.map((x) => zeile(x, true)).join("") || `<tr><td colspan="5" class="muted">Nichts zu erledigen. 🎉</td></tr>`}</tbody></table></div></section>
       <section style="margin-top:1.25rem"><h2>Demnächst (21 Tage)</h2><div class="tabelle-wrap"><table><thead><tr><th>Status</th><th>Schritt</th><th>Frist</th><th>Aufruf</th><th></th></tr></thead><tbody>${bald.map((x) => zeile(x, false)).join("") || `<tr><td colspan="5" class="muted">Keine anstehenden Schritte.</td></tr>`}</tbody></table></div></section>
       <section style="margin-top:1.25rem"><h2>Termine aus dem Jahreskalender</h2><p class="small muted">Ereignisse der nächsten 4 Wochen (und überfällige), bei denen ${esc(ROLLEN[S.rolle])} laut Jahresplanung entscheidet oder verantwortlich ist.</p>${kalListe(KAL.demnaechst(28, true))}</section>
@@ -976,11 +1064,11 @@
     const zeilen = l.schritte.map((s, i) => `<tr class="${["uebersprungen", "abgebrochen"].includes(s.status) ? "blass" : ""}">
       <td class="zahl">${i + 1}</td>
       <td><strong>${esc(s.titel)}</strong>${s.zusatz ? ` <span class="badge violett" title="Im laufenden Ablauf eingefügt">＋ eingefügt</span>` : ""}${s.quelle ? `<div class="quelle">📖 ${quelleHtml(s.quelle)}</div>` : ""}${s.bedingung && s.bedingung.feld ? `<div class="small muted">${istRef(s.bedingung) ? "Zweig" : "Bedingung"}: ${esc(bedingungText(s.bedingung, l.schritte))}${s.erzwungen ? " (aufgehoben)" : ""}</div>` : ""}${s.status === "uebersprungen" && s.grund ? `<div class="small muted">↷ ${esc(s.grund)}</div>` : ""}${s.fehler && s.status === "fehler" ? `<div class="small" style="color:var(--destructive)">✕ ${esc(s.fehler)}</div>` : ""}</td>
-      <td>${rolleBadge(s.rolle)}${s.fd ? `<div class="small muted">FD ${esc(s.fd)}</div>` : ""}${s.fd && fdEintrag(s.fd) ? merkmalHtml((fdEintrag(s.fd).merkmale || {})[s.rolle]) : ""}${s.instanzwechsel ? `<div class="small" title="${esc(s.instanzwechsel.grund)}">↑ statt ${esc(s.instanzwechsel.von)}${s.instanzwechsel.offen ? " – keine Instanz" : ""}</div>` : ""}</td>
+      <td>${rolleBadge(s.rolle)}${zustaendigText(s)}${s.fd ? `<div class="small muted">FD ${esc(s.fd)}</div>` : ""}${s.fd && fdEintrag(s.fd) ? merkmalHtml((fdEintrag(s.fd).merkmale || {})[s.rolle]) : ""}${s.instanzwechsel ? `<div class="small" title="${esc(s.instanzwechsel.grund)}">↑ statt ${esc(s.instanzwechsel.von)}${s.instanzwechsel.offen ? " – keine Instanz" : ""}</div>` : ""}</td>
       <td>${datumKurz(fristVon(l, s))}${fristartBadge(s)}<div class="small muted">${tKurz(s.tage)}</div></td>
       <td>${aufrufText(s)}${s.param ? `<div class="param">${Object.entries(s.param).map(([k, w]) => `${esc(k)}: ${esc(w)}`).join("<br>")}</div>` : ""}</td>
       <td>${badge(s.status, s)}${fristBadge(l, s)}${s.ergebnis ? `<div class="param">${Object.entries(s.ergebnis).map(([k, w]) => `→ ${esc(k)}: ${k === "ablauf" ? `<a href="#/lauf/${esc(w)}">${esc(w)}</a>` : esc(w)}`).join("<br>")}</div>` : ""}${s.erledigtAm ? `<div class="small muted">${datumKurz(s.erledigtAm)}</div>` : ""}</td>
-      <td>${aktionKnopf(l, s)}${eingriffKnoepfe(l, s)}</td></tr>`).join("");
+      <td>${aktionKnopf(l, s)}${delegationKnopf(l, s)}${eingriffKnoepfe(l, s)}</td></tr>`).join("");
     const aufrufe = S.aufrufe.filter((a) => a.lauf === l.id);
     const kinder = S.laeufe.filter((x) => x.eltern && x.eltern.lauf === l.id);
     const offen = !l.abgeschlossen && !l.abgebrochen;
@@ -1138,6 +1226,53 @@
       <ul class="infoliste">${liste || `<li class="muted">Nur Start von Hand.</li>`}</ul>${neu}`;
   }
   let AUSL_ART = "ereignis";
+
+  const darfVertretung = () => ["SV", "SL", "SPr"].includes(S.rolle);
+  function seiteVertretungen() {
+    const h = S.heute;
+    const stand = (v) => (v.bis < h ? ["neutral", "vorbei"] : v.von > h ? ["info", "geplant"] : ["erfolg", "gilt heute"]);
+    const betroffen = (v) => v.von <= h && h <= v.bis ? offeneAufgaben(v.rolle).length : 0;
+    const zeilen = (S.vertretungen || []).slice().sort((a, b) => a.von.localeCompare(b.von)).map((v) => `<tr class="${v.bis < h ? "blass" : ""}">
+      <td>${rolleBadge(v.rolle)} ${esc(ROLLEN[v.rolle] || v.rolle)}</td><td>${datumKurz(v.von)} – ${datumKurz(v.bis)}</td><td>${rolleBadge(v.vertretung)} ${esc(ROLLEN[v.vertretung] || v.vertretung)}</td>
+      <td class="small">${esc(v.grund)}</td><td><span class="badge ${stand(v)[0]}">${stand(v)[1]}</span>${betroffen(v) ? ` <span class="small muted">${betroffen(v)} Aufgaben</span>` : ""}</td>
+      <td>${darfVertretung() ? `<button class="btn klein gefahr" data-aktion="vertretung-weg" data-id="${esc(v.id)}" aria-label="Stellvertretung löschen">✕</button>` : ""}</td></tr>`).join("");
+    return `<div class="seitenkopf"><div><h1>Stellvertretungen</h1><p class="muted">Während einer Abwesenheit erscheinen die Aufgaben der abwesenden Funktion bei der Stellvertretung unter «Meine Aufgaben» («in Vertretung»); Hinweise und Eskalationen gehen zusätzlich an sie. Die Verantwortung bleibt bei der abwesenden Funktion; das Journal hält fest, wer in Vertretung gehandelt hat.</p></div>
+        <div class="aktionen"><button class="btn primaer" data-aktion="vertretung-neu" ${darfVertretung() ? "" : 'disabled title="Schulverwaltung, Schulleitung oder Schulpräsidium"'}>＋ Stellvertretung</button></div></div>
+      <p class="small muted">Im Betrieb kommen Abwesenheiten aus EduKSX-Staffing bzw. EduKSX-Time; im Prototyp werden sie hier erfasst. Delegation einzelner Aufgaben: Knopf «↪ Delegieren» beim Schritt.</p>
+      <div class="tabelle-wrap"><table><thead><tr><th>Abwesend</th><th>Zeitraum</th><th>Stellvertretung</th><th>Grund</th><th>Stand</th><th></th></tr></thead><tbody>${zeilen || `<tr><td colspan="6" class="muted">Keine Stellvertretungen.</td></tr>`}</tbody></table></div>`;
+  }
+  /** Rollenbezogener Teil der Übersicht (Stufe 2). */
+  function fuerSie() {
+    const r = S.rolle, h = S.heute;
+    const meine = offeneAufgaben(r, true);
+    const ueber = meine.filter(([l, x]) => ueberfaellig(l, x));
+    const entscheide = meine.filter(([, x]) => ["genehmigung", "entscheidung"].includes(typVon(x)));
+    const vertretung = meine.filter(([, x]) => !handelnde(x).includes(r));
+    const delegiert = meine.filter(([, x]) => x.ausfuehrend === r);
+    const liste = (l, leer) => (l.length ? `<ul class="infoliste">${l.slice(0, 6).map(([lf, x]) => `<li><a href="#/lauf/${esc(lf.id)}">${esc(x.titel)}</a> <span class="small muted">${esc(lf.kontext.person)} · ${datumKurz(fristVon(lf, x))}</span>${fristBadge(lf, x)}</li>`).join("")}</ul>` : `<p class="small muted">${leer}</p>`);
+    let teil = "";
+    if (["SPF", "SPr", "RV"].includes(r)) {
+      const esk = []; S.laeufe.forEach((l) => { if (!l.abgeschlossen && !l.abgebrochen) l.schritte.forEach((x) => { if (eskStufe(x) >= 3 && !ERLEDIGT.includes(x.status)) esk.push([l, x]); }); });
+      const ges = []; S.laeufe.forEach((l) => { if (!l.abgeschlossen && !l.abgebrochen) l.schritte.forEach((x) => { const d = tageZwischen(h, fristVon(l, x)); if (x.fristart === "gesetzlich" && !ERLEDIGT.includes(x.status) && d >= 0 && d <= 30) ges.push([l, x]); }); });
+      teil = `<div class="spalten"><div class="karte"><h3>Wartet auf Ihren Entscheid</h3>${liste(entscheide, "Keine Genehmigungen offen.")}</div><div class="karte"><h3>Eskalationen (ab Stufe 3)</h3>${liste(esk, "Keine Eskalationen.")}</div><div class="karte"><h3>Gesetzliche Fristen (30 Tage)</h3>${liste(ges.sort((a, b) => fristVon(a[0], a[1]).localeCompare(fristVon(b[0], b[1]))), "Keine gesetzlichen Fristen.")}</div></div>`;
+    } else if (r === "ICT") {
+      const fehl = offeneAufgaben(null).filter(([, x]) => x.status === "fehler");
+      const auto = []; S.laeufe.forEach((l) => { if (!l.abgeschlossen && !l.abgebrochen && !l.pausiert) l.schritte.forEach((x) => { if (x.status === "geplant" && tageZwischen(h, fristVon(l, x)) <= 7) auto.push([l, x]); }); });
+      teil = `<div class="spalten"><div class="karte"><h3>Fehlgeschlagene Aufrufe</h3>${liste(fehl, "Keine Fehler.")}</div><div class="karte"><h3>Automatische Schritte (7 Tage)</h3>${liste(auto, "Keine geplanten Aufrufe.")}</div><div class="karte"><h3>Heute ausgelöst</h3><p class="zahl">${S.ausloesungen.filter((x) => x.tag === h && x.ergebnis === "gestartet").length}</p><p class="small"><a href="#/ausloeser">Auslöseprotokoll</a></p></div></div>`;
+    } else {
+      const last = {}; S.laeufe.forEach((l) => { if (!l.abgeschlossen && !l.abgebrochen) l.schritte.forEach((x) => { const d = tageZwischen(h, fristVon(l, x)); if (!ERLEDIGT.includes(x.status) && d <= 30) handelnde(x).forEach((q) => { last[q] = (last[q] || 0) + 1; }); }); });
+      const max = Math.max(1, ...Object.values(last));
+      const balkenListe = Object.entries(last).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([q, n]) => `<div class="lastzeile"><span>${rolleBadge(q)}</span><span class="lastbalken" style="width:${Math.round((n / max) * 100)}%" role="img" aria-label="${n} Schritte"></span><span class="small">${n}</span></div>`).join("");
+      teil = `<div class="spalten"><div class="karte"><h3>Meine nächsten Aufgaben</h3>${liste(meine, "Nichts zu erledigen.")}</div><div class="karte"><h3>Belastung je Funktion (fällig in 30 Tagen inkl. überfällig)</h3>${balkenListe || '<p class="small muted">Keine.</p>'}</div></div>`;
+    }
+    return `<section class="fuersie" style="margin-bottom:1.25rem"><h2>Für ${esc(ROLLEN[r] || r)}</h2>
+      <div class="karten">
+        <a class="karte" href="#/aufgaben"><div class="zahl">${meine.length}</div><div class="titel">meine offenen Aufgaben</div></a>
+        <div class="karte"><div class="zahl">${ueber.length}</div><div class="titel">${ueber.length ? "⚠ " : ""}davon überfällig</div></div>
+        <div class="karte"><div class="zahl">${entscheide.length}</div><div class="titel">Genehmigungen und Entscheide</div></div>
+        <div class="karte"><div class="zahl">${vertretung.length}</div><div class="titel">in Vertretung${delegiert.length ? ` · ${delegiert.length} an mich delegiert` : ""}</div></div>
+      </div>${teil}</section>`;
+  }
 
   function seiteAusloeser() {
     const karten = D.MODULEREIGNISSE.map((me) => {
@@ -1299,6 +1434,9 @@
             <label class="small"><input type="checkbox" data-e="auto" ${s.auto ? "checked" : ""}> Automatisch aufrufen, sobald Vorgänger erledigt und Frist erreicht (sonst bestätigt die verantwortliche Rolle)</label>` : `<p class="small muted">Modul wählen, dann den Vorgang.</p>`}
         </fieldset>` : ""}
         ${t === "entscheidung" ? `<fieldset><legend>Möglichkeiten</legend><label class="feld">Möglichkeiten, mit Komma getrennt<input type="text" data-e="optionen" value="${esc((s.optionen || []).join(", "))}" placeholder="z. B. verfügbar, nicht verfügbar" style="width:100%"></label><p class="small muted">Spätere Schritte können über die Bedingung «Ergebnis: Wahl» davon abhängen (Verzweigung).</p></fieldset>` : ""}
+        ${t === "genehmigung" ? `<fieldset><legend>Mehrfachgenehmigung (optional)</legend>
+          <div class="small">Genehmigen müssen zusätzlich zur verantwortlichen Rolle: ${ES.aktiveFunktionen().map((e) => e.kuerzel).filter((k) => k !== s.rolle).map((k) => `<label class="chip"><input type="checkbox" data-e="mehrfach" value="${esc(k)}" ${((s.mehrfach || {}).rollen || []).includes(k) ? "checked" : ""}> ${esc(k)}</label>`).join(" ")}</div>
+          <div class="formzeile"><label class="feld">Nötig<select data-e="quorum">${[["alle", "alle"], ["mehrheit", "Mehrheit"], ["1", "mindestens 1"], ["2", "mindestens 2"], ["3", "mindestens 3"]].map(([v, x]) => `<option value="${v}" ${String((s.mehrfach || {}).quorum || "alle") === v ? "selected" : ""}>${x}</option>`).join("")}</select></label></div></fieldset>` : ""}
         ${t === "genehmigung" ? `<p class="small muted">Ergebnis <code>{${esc(s.id)}.entscheid}</code> = genehmigt oder abgelehnt, <code>{${esc(s.id)}.begruendung}</code>. Spätere Schritte können über eine Bedingung davon abhängen.</p>` : ""}
         ${t === "unterprozess" ? `<fieldset><legend>Unterprozess</legend><div class="formzeile">
             <label class="feld">Vorlage<select data-e="unter">${S.vorlagen.filter((x) => x.id !== v.id).map((x) => `<option value="${esc(x.id)}" ${s.unter && s.unter.vorlage === x.id ? "selected" : ""}>${esc(x.titel)}${x.status === "entwurf" ? " (Entwurf)" : ""}</option>`).join("")}</select></label>
@@ -1342,6 +1480,10 @@
     if (s.typ === "unterprozess") s.unter = { vorlage: q("unter") ? q("unter").value : (S.vorlagen.find((x) => x.id !== EDIT.vid) || {}).id, versatz: q("versatz") ? Number(q("versatz").value || 0) : 0 };
     else delete s.unter;
     if (s.typ === "entscheidung" && !s.optionen) s.optionen = ["ja", "nein"];
+    if (s.typ === "genehmigung" && dlg.querySelector('[data-e="quorum"]')) {
+      const weitere = [...dlg.querySelectorAll('[data-e="mehrfach"]:checked')].map((x) => x.value);
+      s.mehrfach = weitere.length ? { rollen: [s.rolle, ...weitere.filter((r) => r !== s.rolle)], quorum: q("quorum").value } : undefined;
+    } else if (s.typ !== "genehmigung") delete s.mehrfach;
     const modul = q("modul") ? q("modul").value : "";
     if (s.typ !== "aufruf" || !modul) { s.aktion = null; s.auto = false; }
     else {
@@ -1450,7 +1592,7 @@
     const fertig = (eingabe) => { ausfuehren(l, s, durch, eingabe); weiter(); ansage(`«${s.titel}»: ${STATUS[s.status][2]}.`); };
     const mm = s.fd && fdEintrag(s.fd) ? (fdEintrag(s.fd).merkmale || {})[s.rolle] : null;
     const mmText = merkmalText(mm).map(([, x]) => x).join(" · ");
-    if (t === "genehmigung") return formular(s.titel, `${l.kontext.person} · ${l.titel}${s.instanzwechsel ? `\nZuständig als nächste Instanz: ${s.instanzwechsel.grund}.` : ""}${mmText ? `\nKompetenz laut Funktionendiagramm ${s.fd}: ${mmText}.` : ""}${mm && mm.vierAugen === "ja" ? "\nVier-Augen-Prinzip: Eine zweite, unabhängige Prüfung ist nötig (Ablauf dafür folgt in Stufe 2)." : ""}`, [{ key: "entscheid", label: "Entscheid", typ: "auswahl", werte: ["genehmigt", "abgelehnt"] }, { key: "begruendung", label: "Begründung (bei Ablehnung Pflicht)", typ: "textarea", pflichtWenn: (w) => w.entscheid === "abgelehnt" }], "Entscheid festhalten", fertig);
+    if (t === "genehmigung") return formular(s.titel, `${l.kontext.person} · ${l.titel}${s.instanzwechsel ? `\nZuständig als nächste Instanz: ${s.instanzwechsel.grund}.` : ""}${mmText ? `\nKompetenz laut Funktionendiagramm ${s.fd}: ${mmText}.` : ""}${mm && mm.vierAugen === "ja" && !(s.vierAugen && s.vierAugen.erst) ? "\nVier-Augen-Prinzip: Nach einer Genehmigung folgt eine zweite, unabhängige Prüfung." : ""}${s.vierAugen && s.vierAugen.erst ? `\nZweite Prüfung (Vier-Augen): genehmigt durch ${ROLLEN[s.vierAugen.erst.rolle] || s.vierAugen.erst.rolle}${s.vierAugen.erst.begruendung ? " – " + s.vierAugen.erst.begruendung : ""}.` : ""}${s.mehrfach && (s.mehrfach.rollen || []).length ? `\nMehrfachgenehmigung (${quorumText(s.mehrfach)}). Sie stimmen für ${ROLLEN[handeltFuer(s)] || handeltFuer(s)}.` : ""}${handeltFuer(s) && handeltFuer(s) !== S.rolle && !(D.EXTERN || []).includes(handeltFuer(s)) ? `\nIn Vertretung für ${ROLLEN[handeltFuer(s)] || handeltFuer(s)}.` : ""}`, [{ key: "entscheid", label: "Entscheid", typ: "auswahl", werte: ["genehmigt", "abgelehnt"] }, { key: "begruendung", label: "Begründung (bei Ablehnung Pflicht)", typ: "textarea", pflichtWenn: (w) => w.entscheid === "abgelehnt" }], "Entscheid festhalten", fertig);
     if (t === "entscheidung") return formular(s.titel, `${l.kontext.person} · ${l.titel}`, [{ key: "wahl", label: "Entscheid", typ: "auswahl", werte: s.optionen || ["ja", "nein"] }], "Entscheid festhalten", fertig);
     if (t === "nachweis") return formular(s.titel, "Dokument bzw. Referenz hinterlegen (z. B. Dossiernummer). Im Prototyp wird nichts hochgeladen.", [{ key: "nachweis", label: "Nachweis", typ: "text", pflicht: true, wert: "" }], "Nachweis ablegen", fertig);
     if (t === "termin") return formular(s.titel, "", [{ key: "termin", label: "Datum", typ: "datum", pflicht: true, wert: fristVon(l, s) }, { key: "ort", label: "Ort", typ: "text" }], "Termin festhalten", (w) => fertig({ termin: datumKurz(w.termin), ort: w.ort }));
@@ -1544,6 +1686,7 @@
         case "funktionendiagramm": return seiteFunktionendiagramm();
         case "protokoll": return seiteProtokoll();
         case "ausloeser": return seiteAusloeser();
+        case "vertretungen": return seiteVertretungen();
         case "einstellungen": return ES.seite(a);
         default: return seiteUebersicht();
       }
@@ -1576,6 +1719,39 @@
       case "ausfuehren": ausfuehren(l, s, ROLLEN[S.rolle]); weiter(); ansage(`«${s.titel}»: ${STATUS[s.status][2]}.`); break;
       case "jetzt": ausfuehren(l, s, ROLLEN[S.rolle] + ", vorgezogen"); weiter(); break;
       case "erledigen": erledigenDialog(l, s); break;
+      case "delegieren": {
+        if (!s) break;
+        formular("Aufgabe delegieren", `«${s.titel}» (${l.kontext.person})\nDie Ausführung geht an die gewählte Funktion, die Verantwortung bleibt bei ${ROLLEN[s.rolle] || s.rolle}.`, [
+          { key: "an", label: "Delegieren an", typ: "auswahl", werte: rollenWerte().filter(([k]) => k !== s.rolle) }, GRUND], "Delegieren", (w) => {
+          s.ausfuehrend = w.an; s.delegiertVon = S.rolle; s.eskaliert = [];
+          journal(l, "Eingriff", `«${s.titel}» delegiert an ${ROLLEN[w.an] || w.an}${S.rolle !== s.rolle ? ` (in Vertretung für ${ROLLEN[s.rolle]})` : ""}.`, w.grund);
+          hinweis([w.an], l, `An Sie delegiert: «${s.titel}» (${l.kontext.person}), Frist ${datumKurz(fristVon(l, s))}.`);
+          weiter(); ansage("Aufgabe delegiert.");
+        });
+        break;
+      }
+      case "delegation-zurueck": if (s) { journal(l, "Eingriff", `Delegation von «${s.titel}» an ${ROLLEN[s.ausfuehrend] || s.ausfuehrend} zurückgenommen.`); s.ausfuehrend = null; weiter(); ansage("Delegation zurückgenommen."); } break;
+      case "vertretung-neu": {
+        if (!darfVertretung()) break;
+        formular("Stellvertretung erfassen", "Abwesenheit einer Funktion mit Stellvertretung.", [
+          { key: "rolle", label: "Abwesend", typ: "auswahl", werte: rollenWerte() },
+          { key: "vertretung", label: "Stellvertretung", typ: "auswahl", werte: rollenWerte() },
+          { key: "von", label: "von", typ: "datum", pflicht: true, wert: S.heute },
+          { key: "bis", label: "bis", typ: "datum", pflicht: true, wert: addTage(S.heute, 7) },
+          { key: "grund", label: "Grund", typ: "text", wert: "Abwesenheit" },
+        ], "Erfassen", (w) => {
+          if (w.rolle === w.vertretung) { ansage("Abwesend und Stellvertretung müssen verschieden sein."); return; }
+          if (w.bis < w.von) { ansage("«bis» liegt vor «von»."); return; }
+          S.vertretungen.push({ id: "V" + S.zaehler++, rolle: w.rolle, vertretung: w.vertretung, von: w.von, bis: w.bis, grund: w.grund });
+          weiter(); ansage("Stellvertretung erfasst.");
+        });
+        break;
+      }
+      case "vertretung-weg": {
+        const v = (S.vertretungen || []).find((x) => x.id === el.dataset.id);
+        if (v && darfVertretung()) frage(`Stellvertretung ${v.rolle} → ${v.vertretung} (${datumKurz(v.von)}–${datumKurz(v.bis)}) löschen?`, "Löschen", () => { S.vertretungen = S.vertretungen.filter((x) => x !== v); weiter(); ansage("Stellvertretung gelöscht."); });
+        break;
+      }
       case "fd-spalte": { const w = (document.getElementById("fd-spalte-neu") || {}).value; if (w && darfFd() && !S.fdSpalten.includes(w)) { S.fdSpalten.push(w); speichern(); render(); } break; }
       case "fd-spalte-weg": if (darfFd()) { S.fdSpalten = S.fdSpalten.filter((r) => r !== el.dataset.rolle); speichern(); render(); ansage(`Spalte ${el.dataset.rolle} ausgeblendet – Einträge bleiben erhalten.`); } break;
       case "fd-neu": {
@@ -1716,6 +1892,7 @@
   S = laden() || neuerZustand();
   if (!S.einstellungen) S.einstellungen = kopie(window.FLOW_EINSTELLUNGEN_DATEN);
   if (!S.fd) S.fd = kopie(D.FUNKTIONENDIAGRAMM);
+  if (!S.vertretungen) S.vertretungen = [];
   if (!S.einstellungen.eskalation) S.einstellungen.eskalation = kopie(window.FLOW_EINSTELLUNGEN_DATEN.eskalation);
   S.einstellungen.funktionen.forEach((e) => { if (e.vorgesetzt === undefined) { const v = window.FLOW_EINSTELLUNGEN_DATEN.funktionen.find((x) => x.kuerzel === e.kuerzel); e.vorgesetzt = v ? v.vorgesetzt : ""; } });
   S.vorlagen.forEach((v) => { if (!v.prozessverantwortlich) { const d = D.VORLAGEN.find((x) => x.id === v.id); v.prozessverantwortlich = kopie((d && d.prozessverantwortlich) || D.PROZESSVERANTWORTLICH); } });

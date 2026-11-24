@@ -3620,6 +3620,248 @@
         }
       }
     },
+    "/api/v1/org/runs/{id}/steps/{code}/delegation": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "name": "code",
+          "in": "path",
+          "required": true,
+          "description": "Kürzel des Schritts",
+          "schema": {
+            "type": "string",
+            "title": "Schritt"
+          },
+          "example": "o1"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "operationId": "delegateRunStep",
+        "summary": "Schritt delegieren bzw. zurücknehmen",
+        "description": "Schritt delegieren bzw. zurücknehmen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "flow:runs.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "runs.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Schritt delegieren bzw. zurücknehmen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StepDelegation"
+              },
+              "example": {
+                "role_code": "Beispiel",
+                "reason": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Run"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/substitutions": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "get": {
+        "tags": [
+          "tasks"
+        ],
+        "operationId": "listSubstitutions",
+        "summary": "Stellvertretungen",
+        "description": "Stellvertretungen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "flow:tasks.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "tasks.read",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Stellvertretungen",
+        "parameters": [
+          {
+            "name": "valid_on",
+            "in": "query",
+            "required": false,
+            "description": "nur an diesem Tag gültige",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Gültig am"
+            },
+            "example": "2027-08-23"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Substitution"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "tasks"
+        ],
+        "operationId": "createSubstitution",
+        "summary": "Stellvertretung erfassen",
+        "description": "Stellvertretung erfassen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "flow:tasks.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "tasks.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Stellvertretung erfassen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Substitution"
+              },
+              "example": {
+                "role_code": "Beispiel",
+                "substitute_role_code": "Beispiel",
+                "valid_from": "2027-08-23",
+                "valid_until": "2027-08-23",
+                "reason": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Substitution"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
     "/api/v1/org/module-events": {
       "parameters": [
         {
@@ -4931,6 +5173,7 @@
               "flow:tasks.read": "Meine Aufgaben und Übersicht – lesen",
               "flow:templates.admin": "Ablaufvorlagen – verwalten",
               "flow:runs.write": "Laufende Abläufe – schreiben",
+              "flow:tasks.write": "Meine Aufgaben und Übersicht – schreiben",
               "flow:triggers.write": "Auslöser und Modul-Ereignisse – schreiben",
               "flow:triggers.read": "Auslöser und Modul-Ereignisse – lesen",
               "flow:operation-calls.read": "Aufrufprotokoll – lesen",
@@ -4965,6 +5208,7 @@
               "flow:tasks.read": "Meine Aufgaben und Übersicht – lesen",
               "flow:templates.admin": "Ablaufvorlagen – verwalten",
               "flow:runs.write": "Laufende Abläufe – schreiben",
+              "flow:tasks.write": "Meine Aufgaben und Übersicht – schreiben",
               "flow:triggers.write": "Auslöser und Modul-Ereignisse – schreiben",
               "flow:triggers.read": "Auslöser und Modul-Ereignisse – lesen",
               "flow:operation-calls.read": "Aufrufprotokoll – lesen",
@@ -6394,6 +6638,36 @@
             "title": "Unterprozess",
             "description": "Kürzel der Vorlage"
           },
+          "approval_roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Mehrfachgenehmigung",
+            "description": "weitere genehmigende Rollen"
+          },
+          "approval_quorum": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "all",
+              "majority",
+              "1",
+              "2",
+              "3"
+            ],
+            "x-eduksx-labels": {
+              "all": "alle",
+              "majority": "Mehrheit",
+              "1": "mindestens 1",
+              "2": "mindestens 2",
+              "3": "mindestens 3"
+            },
+            "title": "Nötig",
+            "description": "Quorum"
+          },
           "sub_offset_days": {
             "type": "integer",
             "format": "int32",
@@ -6606,6 +6880,34 @@
             ],
             "title": "Instanzwechsel von",
             "description": "Genehmigung an nächste Instanz wegen Betragsgrenze oder Befristung",
+            "readOnly": true
+          },
+          "delegated_to_role": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Delegiert an",
+            "description": "ausführende Funktion"
+          },
+          "approval_votes": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true,
+            "title": "Stimmen",
+            "description": "Mehrfachgenehmigung",
+            "readOnly": true
+          },
+          "four_eyes_first": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true,
+            "title": "Vier-Augen: erste Genehmigung",
+            "description": "Rolle und Begründung",
             "readOnly": true
           },
           "due_on": {
@@ -6920,6 +7222,79 @@
             "description": "Freitext"
           }
         }
+      },
+      "StepDelegation": {
+        "type": "object",
+        "title": "Schritt delegieren",
+        "description": "Ausführung an eine andere Funktion; gesperrt, wenn die Kompetenz nicht delegierbar ist",
+        "properties": {
+          "role_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Delegieren an",
+            "description": "Funktion; leer = zurücknehmen"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Begründung",
+            "description": "Pflicht"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "Substitution": {
+        "type": "object",
+        "title": "Stellvertretung",
+        "description": "Abwesenheit einer Funktion mit Stellvertretung",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "ID",
+            "description": "UUID v7",
+            "readOnly": true
+          },
+          "role_code": {
+            "type": "string",
+            "title": "Abwesend",
+            "description": "Funktion"
+          },
+          "substitute_role_code": {
+            "type": "string",
+            "title": "Stellvertretung",
+            "description": "Funktion"
+          },
+          "valid_from": {
+            "type": "string",
+            "format": "date",
+            "title": "von",
+            "description": "erster Tag"
+          },
+          "valid_until": {
+            "type": "string",
+            "format": "date",
+            "title": "bis",
+            "description": "letzter Tag"
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Grund",
+            "description": "z. B. Ferien"
+          }
+        },
+        "required": [
+          "role_code",
+          "substitute_role_code",
+          "valid_from",
+          "valid_until"
+        ]
       },
       "StepReopen": {
         "type": "object",

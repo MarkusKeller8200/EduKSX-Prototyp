@@ -281,6 +281,8 @@ CREATE TABLE template_steps (
     options             text[],                          -- Möglichkeiten | bei Art «Entscheidung»
     sub_template_id     uuid REFERENCES templates(id),   -- Unterprozess | Vorlage, die gestartet wird (aktuell freigegebene Version)
     sub_offset_days     integer NOT NULL DEFAULT 0,      -- Stichtag Unterprozess | Tage zum eigenen Stichtag
+    approval_roles      text[],                          -- Mehrfachgenehmigung | weitere genehmigende Rollen (Stufe 2)
+    approval_quorum     text CHECK (approval_quorum IN ('all','majority','1','2','3')),   -- Nötig | Quorum der Mehrfachgenehmigung | intern | all=alle; majority=Mehrheit; 1=mindestens 1; 2=mindestens 2; 3=mindestens 3
     condition           jsonb,                           -- Bedingung | Kontextfeld oder Ergebnis eines früheren Schritts (Verzweigung), z. B. {"field":"s5.decision","op":"=","value":"approved"}
     responsibility_task_id uuid REFERENCES responsibility_tasks(id),   -- Funktionendiagramm | Nummer der Aufgabe
     source_id           uuid REFERENCES sources(id),     -- Quelle | Pflicht (Quelle oder Stelle)
@@ -416,6 +418,10 @@ CREATE TABLE run_steps (
     is_added            boolean NOT NULL DEFAULT false,  -- Eingefügt | im laufenden Ablauf ergänzt, nicht aus der Vorlage
     is_manual_only      boolean NOT NULL DEFAULT false,  -- Nur von Hand | nach «wieder öffnen»: Aufruf wird nicht automatisch wiederholt
     escalated_from_role text,                            -- Instanzwechsel von | Genehmigung ging wegen Betragsgrenze oder Befristung an die nächste Instanz (Konzept E14)
+    delegated_to_role   text,                            -- Delegiert an | Ausführung übertragen, Verantwortung bleibt (Stufe 2)
+    delegated_by_id     uuid,                            -- Delegiert von | Person (ohne Constraint)
+    approval_votes      jsonb,                           -- Stimmen | Mehrfachgenehmigung je Rolle mit Entscheid und Begründung
+    four_eyes_first     jsonb,                           -- Vier-Augen: erste Genehmigung | Rolle, Person, Begründung; zweite Prüfung durch eine andere Funktion
     operation_key       text,                            -- Vorgang | Schlüssel im Register
     parameter_template  jsonb NOT NULL DEFAULT '{}'::jsonb,   -- Parameter (Vorlage) | mit Platzhaltern
     parameters          jsonb,                           -- Parameter (aufgelöst) | beim Aufruf | personenbezogen
@@ -495,6 +501,24 @@ CREATE TABLE trigger_events (
     outcome             text NOT NULL CHECK (outcome IN ('started','duplicate','no_template','failed')),   -- Ergebnis | was geschah | intern | started=gestartet; duplicate=doppelt, nicht gestartet; no_template=ohne Ablauf; failed=Fehler
     payload             jsonb,                           -- Gelieferte Werte | aus dem Ereignis | personenbezogen
     correlation_id      uuid                             -- Korrelations-ID | Verfolgung über Module
+);
+
+-- Stellvertretung während einer Abwesenheit (Stufe 2)
+-- Geltungsbereich: Organisation · Datenklasse: personenbezogen
+-- Herkunft/Verwendung: «Stellvertretungen»; im Betrieb aus EduKSX-Staffing bzw. EduKSX-Time; Aufgaben und Hinweise gehen zusätzlich an die Vertretung
+CREATE TABLE substitutions (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    role_id             uuid NOT NULL REFERENCES roles(id),   -- Abwesend | Funktion
+    absent_user_id      uuid REFERENCES users(id) ON DELETE SET NULL,   -- Abwesende Person | wenn bekannt
+    substitute_role_id  uuid NOT NULL REFERENCES roles(id),   -- Stellvertretung | Funktion
+    substitute_user_id  uuid REFERENCES users(id) ON DELETE SET NULL,   -- Stellvertretende Person | wenn bekannt
+    valid_from          date NOT NULL,                   -- von | erster Tag
+    valid_until         date NOT NULL,                   -- bis | letzter Tag
+    reason              text,                            -- Grund | z. B. Ferien | besonders schützenswert
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1,
+    CHECK (role_id <> substitute_role_id),
+    CHECK (valid_until >= valid_from)
 );
 
 -- ------------------------------------------------------------------ Jahreskalender
@@ -614,6 +638,11 @@ CREATE INDEX run_journal_entries_run_step_id_index ON run_journal_entries (run_s
 CREATE INDEX trigger_events_organization_id_index ON trigger_events (organization_id);
 CREATE INDEX trigger_events_template_id_index ON trigger_events (template_id);
 CREATE INDEX trigger_events_run_id_index ON trigger_events (run_id);
+CREATE INDEX substitutions_organization_id_index ON substitutions (organization_id);
+CREATE INDEX substitutions_role_id_index ON substitutions (role_id);
+CREATE INDEX substitutions_absent_user_id_index ON substitutions (absent_user_id);
+CREATE INDEX substitutions_substitute_role_id_index ON substitutions (substitute_role_id);
+CREATE INDEX substitutions_substitute_user_id_index ON substitutions (substitute_user_id);
 CREATE INDEX calendar_events_calendar_area_id_index ON calendar_events (calendar_area_id);
 CREATE INDEX calendar_events_source_id_index ON calendar_events (source_id);
 CREATE INDEX calendar_event_roles_organization_id_index ON calendar_event_roles (organization_id);
@@ -813,6 +842,8 @@ COMMENT ON COLUMN template_steps.is_automatic IS 'Automatisch – ohne Bestätig
 COMMENT ON COLUMN template_steps.options IS 'Möglichkeiten – bei Art «Entscheidung»';
 COMMENT ON COLUMN template_steps.sub_template_id IS 'Unterprozess – Vorlage, die gestartet wird (aktuell freigegebene Version)';
 COMMENT ON COLUMN template_steps.sub_offset_days IS 'Stichtag Unterprozess – Tage zum eigenen Stichtag';
+COMMENT ON COLUMN template_steps.approval_roles IS 'Mehrfachgenehmigung – weitere genehmigende Rollen (Stufe 2)';
+COMMENT ON COLUMN template_steps.approval_quorum IS 'Nötig – Quorum der Mehrfachgenehmigung';
 COMMENT ON COLUMN template_steps.condition IS 'Bedingung';
 COMMENT ON COLUMN template_steps.responsibility_task_id IS 'Funktionendiagramm – Nummer der Aufgabe';
 COMMENT ON COLUMN template_steps.source_id IS 'Quelle – Pflicht (Quelle oder Stelle)';
@@ -904,6 +935,10 @@ COMMENT ON COLUMN run_steps.is_branch_skipped IS 'Zweig entfällt – übersprun
 COMMENT ON COLUMN run_steps.is_added IS 'Eingefügt – im laufenden Ablauf ergänzt, nicht aus der Vorlage';
 COMMENT ON COLUMN run_steps.is_manual_only IS 'Nur von Hand – nach «wieder öffnen»: Aufruf wird nicht automatisch wiederholt';
 COMMENT ON COLUMN run_steps.escalated_from_role IS 'Instanzwechsel von – Genehmigung ging wegen Betragsgrenze oder Befristung an die nächste Instanz (Konzept E14)';
+COMMENT ON COLUMN run_steps.delegated_to_role IS 'Delegiert an – Ausführung übertragen, Verantwortung bleibt (Stufe 2)';
+COMMENT ON COLUMN run_steps.delegated_by_id IS 'Delegiert von – Person (ohne Constraint)';
+COMMENT ON COLUMN run_steps.approval_votes IS 'Stimmen – Mehrfachgenehmigung je Rolle mit Entscheid und Begründung';
+COMMENT ON COLUMN run_steps.four_eyes_first IS 'Vier-Augen: erste Genehmigung – Rolle, Person, Begründung; zweite Prüfung durch eine andere Funktion';
 COMMENT ON COLUMN run_steps.operation_key IS 'Vorgang – Schlüssel im Register';
 COMMENT ON COLUMN run_steps.parameter_template IS 'Parameter (Vorlage) – mit Platzhaltern';
 COMMENT ON COLUMN run_steps.parameters IS 'Parameter (aufgelöst) – beim Aufruf';
@@ -961,6 +996,21 @@ COMMENT ON COLUMN trigger_events.run_id IS 'Ablauf – gestartet bzw. bereits vo
 COMMENT ON COLUMN trigger_events.outcome IS 'Ergebnis – was geschah';
 COMMENT ON COLUMN trigger_events.payload IS 'Gelieferte Werte – aus dem Ereignis';
 COMMENT ON COLUMN trigger_events.correlation_id IS 'Korrelations-ID – Verfolgung über Module';
+COMMENT ON TABLE substitutions IS 'Stellvertretung während einer Abwesenheit (Stufe 2) – «Stellvertretungen»; im Betrieb aus EduKSX-Staffing bzw. EduKSX-Time; Aufgaben und Hinweise gehen zusätzlich an die Vertretung';
+COMMENT ON COLUMN substitutions.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN substitutions.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN substitutions.role_id IS 'Abwesend – Funktion';
+COMMENT ON COLUMN substitutions.absent_user_id IS 'Abwesende Person – wenn bekannt';
+COMMENT ON COLUMN substitutions.substitute_role_id IS 'Stellvertretung – Funktion';
+COMMENT ON COLUMN substitutions.substitute_user_id IS 'Stellvertretende Person – wenn bekannt';
+COMMENT ON COLUMN substitutions.valid_from IS 'von – erster Tag';
+COMMENT ON COLUMN substitutions.valid_until IS 'bis – letzter Tag';
+COMMENT ON COLUMN substitutions.reason IS 'Grund – z. B. Ferien';
+COMMENT ON COLUMN substitutions.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN substitutions.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN substitutions.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN substitutions.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN substitutions.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
 COMMENT ON TABLE calendar_areas IS 'Themenbereich des Jahreskalenders – Jahresplanung ICT-Prozesse; Zeilen der Zeitleiste';
 COMMENT ON COLUMN calendar_areas.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN calendar_areas.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';

@@ -126,6 +126,10 @@
   neu("hwb", { titel: "Ablehnung mitteilen", rolle: "ICT", tage: -29, nach: ["hwb4"], aktion: { vorgang: "core.mitteilung.senden", param: { an: "Antragsteller", vorlage: "Beschaffung {person} abgelehnt: {hwb4.begruendung}" } },
     bedingung: wenn("hwb4.entscheid", "abgelehnt"), quelle: "FD 3.7 (RV E1, SPF E2)" });
 
+  // ------------------------------------------------------------ Stufe 2: Mehrfachgenehmigung, Stellvertretung (Testdaten)
+  setze("ictsw", 5, { titel: "Entscheid Ressort und Schulleitung (beide)", mehrfach: { rollen: ["RV", "SL"], quorum: "alle" } });
+  D.VERTRETUNGEN = [{ id: "V1", rolle: "RV", vertretung: "SPr", vonTage: -2, bisTage: 5, grund: "Ferien (erfunden)" }];
+
   // ------------------------------------------------------------ Weitere Testabläufe (erfundene Angaben)
   D.LAEUFE.push(
     { vorlage: "ictsw", tageBisStichtag: 45, kontext: { person: "Lernplattform Mathematik", daten: "ja" }, erledigt: ["ictsw1", "ictsw2", "ictsw3", "ictsw4"] },

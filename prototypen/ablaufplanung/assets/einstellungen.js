@@ -257,6 +257,8 @@
       const werte = x.typ === "empfaenger" ? [["zustaendig", "zuständige Rolle"], ["vorgesetzt", "vorgesetzte Stelle"]].concat(funk) : [["", "–"]].concat(funk.filter(([kk]) => kk !== e.kuerzel));
       return `${lab}<select ${d} style="max-width:12rem">${werte.map(([v, t]) => `<option value="${esc(v)}" ${String(v) === String(w) ? "selected" : ""}>${esc(t)}</option>`).join("")}</select>`;
     }
+    /** Breite der Verknüpfungshinweise nach dem längsten Text im Katalog, damit die Felder bündig sind. */
+    const bezugBreite = (b) => Math.max(0, ...liste(b).map((e) => String(e.bezug || "").length)) + 2.5;
     function zeile(b, e, i) {
       const dis = darf() ? "" : "disabled";
       const d = `data-bereich="${esc(b)}" data-i="${i}"`;
@@ -264,7 +266,7 @@
       const unter = b === "aufgabenbereiche" && e.kuerzel !== e.haupt;
       return `<tr class="${e.aktiv ? "" : "blass"}">
         <td style="width:7rem"><label class="sr-only" for="es-${b}-${i}-k">${esc(KATALOGE[b].spalten[0])}</label><input id="es-${b}-${i}-k" type="text" value="${esc(e.kuerzel)}" data-aktion="es-feld" data-k="kuerzel" ${d} ${dis} style="width:100%;${unter ? "padding-left:1.2rem" : "font-weight:600"}"></td>
-        <td><label class="sr-only" for="es-${b}-${i}-n">${esc(KATALOGE[b].spalten[1])}</label><input id="es-${b}-${i}-n" type="text" value="${esc(e.name)}" data-aktion="es-feld" data-k="name" ${d} ${dis} style="width:100%">${e.neu ? ` <span class="badge violett" title="Vorschlag zur Erweiterung">neu</span>` : ""}${e.bezug ? ` <span class="small muted" title="Verknüpfung mit den Zeitregeln des Kalenders">⇢ ${esc(e.bezug)}</span>` : ""}</td>
+        <td><div class="es-name"><label class="sr-only" for="es-${b}-${i}-n">${esc(KATALOGE[b].spalten[1])}</label><input id="es-${b}-${i}-n" type="text" value="${esc(e.name)}" data-aktion="es-feld" data-k="name" ${d} ${dis}>${e.neu ? `<span class="badge violett" title="Vorschlag zur Erweiterung">neu</span>` : ""}${e.bezug ? `<span class="small muted es-bezug" style="width:${bezugBreite(b)}ch" title="Verknüpfung mit den Zeitregeln des Kalenders">⇢ ${esc(e.bezug)}</span>` : ""}</div></td>
         <td><label class="sr-only" for="es-${b}-${i}-b">Beschreibung</label><input id="es-${b}-${i}-b" type="text" value="${esc(e.beschreibung)}" data-aktion="es-feld" data-k="beschreibung" ${d} ${dis} style="width:100%"></td>
         ${(KATALOGE[b].extra || []).map((x) => `<td>${extraFeld(b, e, i, x, dis)}</td>`).join("")}
         <td style="text-align:center"><label class="chip"><input type="checkbox" data-aktion="es-aktiv" ${d} ${e.aktiv ? "checked" : ""} ${dis}> <span class="small">${e.aktiv ? "aktiv" : "inaktiv"}</span></label></td>

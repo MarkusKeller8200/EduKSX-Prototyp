@@ -327,6 +327,102 @@
       </div>`;
     }
 
+    // ------------------------------------------------------------ Monats- und Wochenansicht (Stufe 2)
+    const MONATE = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+    const montagVon = (iso) => addTage(iso, 1 - wochentag(iso));
+    /** Einträge je Tag: Kalendervorkommen (gefiltert) und Fristen offener Ablaufschritte. */
+    function tagesEintraege(von, bis) {
+      const k = S().kal, tage = {};
+      const add = (d, e) => { (tage[d] = tage[d] || []).push(e); };
+      S().ereignisse.filter(passt).forEach((ev) => vorkommenZwischen(ev, von, bis).forEach((o) => {
+        if (k.nurOffen && erledigt(o)) return;
+        const start = o.von < von ? von : o.von;
+        add(start, { art: "ev", o, mehr: o.bis !== o.von ? o.bis : "" });
+      }));
+      if (k.mitFristen !== false) S().laeufe.forEach((l) => {
+        if (l.abgeschlossen || l.abgebrochen) return;
+        l.schritte.forEach((sch) => {
+          if (["erledigt", "uebersprungen", "abgebrochen"].includes(sch.status)) return;
+          const f = addTage(l.kontext.stichtag, sch.tage);
+          if (f >= von && f <= bis) add(f, { art: "frist", l, sch });
+        });
+      });
+      return tage;
+    }
+    function eintragHtml(e) {
+      if (e.art === "frist") return `<a class="kt kt-frist ${e.sch.fristart === "gesetzlich" ? "kt-gesetz" : ""}" href="#/lauf/${esc(e.l.id)}" title="${esc(e.sch.titel)} – ${esc(e.l.titel)}: ${esc(e.l.kontext.person)} (${esc(e.sch.rolle)})">⏱ ${esc(e.sch.titel)}</a>`;
+      const o = e.o, b = (B[o.ev.bereich] || ["", "neutral"])[1];
+      return `<button class="kt b-${b} ${erledigt(o) ? "kt-erledigt" : ""}" data-aktion="kal-oeffnen" data-id="${esc(o.ev.id)}" data-von="${esc(o.von)}" title="${esc(o.ev.titel)}${e.mehr ? " bis " + datumKurz(e.mehr) : ""}">${erledigt(o) ? "✓ " : ""}${esc(o.ev.titel)}${e.mehr ? " →" : ""}</button>`;
+    }
+    function tagZelle(d, liste, max, aktuellerMonat) {
+      const h = S().heute;
+      const frei = !istSchultag(d);
+      const g = frei ? grund(d) : "";
+      const zeigen = max ? liste.slice(0, max) : liste;
+      return `<div class="ktag ${d === h ? "heute" : ""} ${frei ? "frei" : ""} ${aktuellerMonat === false ? "fremd" : ""}" title="${esc(g)}">
+        <div class="ktag-kopf"><span>${Number(d.slice(8))}${max ? "" : "." + Number(d.slice(5, 7)) + "."}</span>${g && g !== "Wochenende" ? `<span class="small muted">${esc(kuerzenK(g, 14))}</span>` : ""}</div>
+        ${zeigen.map(eintragHtml).join("")}${max && liste.length > max ? `<button class="link small" data-aktion="kal-woche-zu" data-tag="${esc(d)}">+${liste.length - max} weitere</button>` : ""}</div>`;
+    }
+    const kuerzenK = (t, n) => (t.length > n ? t.slice(0, n - 1) + "…" : t);
+    function steuerung(text, art) {
+      return `<div class="formzeile" style="align-items:center;margin:.5rem 0">
+        <button class="btn klein" data-aktion="kal-blaettern" data-art="${art}" data-schritt="-1" aria-label="zurück">‹</button>
+        <strong style="min-width:14rem;text-align:center">${esc(text)}</strong>
+        <button class="btn klein" data-aktion="kal-blaettern" data-art="${art}" data-schritt="1" aria-label="weiter">›</button>
+        <button class="btn klein" data-aktion="kal-blaettern" data-art="${art}" data-schritt="0">Heute</button>
+        <label class="small"><input type="checkbox" data-aktion="kal-filter" data-f="mitFristen" ${S().kal.mitFristen !== false ? "checked" : ""}> Fristen der Abläufe (⏱)</label>
+        <button class="btn klein" data-aktion="kal-ics" title="Termine des gewählten Zeitraums als iCalendar-Datei (für Outlook, Apple Kalender u. a.)">⤓ ICS</button>
+      </div>`;
+    }
+    function monatsAnsicht() {
+      const m = S().kal.monat || S().heute.slice(0, 7);
+      const erster = `${m}-01`;
+      const start = montagVon(erster), ende = addTage(start, 41);
+      const tage = tagesEintraege(start, ende);
+      const kopf = WOCHENTAGE.slice(1).map((t) => `<div class="kwt">${t.slice(0, 2)}</div>`).join("");
+      let zellen = "";
+      for (let i = 0; i < 42; i++) { const d = addTage(start, i); zellen += tagZelle(d, tage[d] || [], 4, d.slice(0, 7) === m); }
+      return steuerung(`${MONATE[Number(m.slice(5)) - 1]} ${m.slice(0, 4)}`, "monat") + `<div class="kmonat">${kopf}${zellen}</div>
+        <p class="small muted">Schraffiert: Ferien, schulfreie Tage, Feiertage, Wochenende. ⏱ = Frist eines offenen Ablaufschritts (§ rot umrandet = gesetzlich). Filter oben gelten auch hier.</p>`;
+    }
+    function wochenAnsicht() {
+      const w = S().kal.woche || montagVon(S().heute);
+      const tage = tagesEintraege(w, addTage(w, 6));
+      let zellen = "";
+      for (let i = 0; i < 7; i++) { const d = addTage(w, i); zellen += tagZelle(d, tage[d] || [], 0); }
+      return steuerung(`KW ${kwVon(w)} · ${datumKurz(w)} – ${datumKurz(addTage(w, 6))}`, "woche") + `<div class="kwoche">${WOCHENTAGE.slice(1).map((t) => `<div class="kwt">${t}</div>`).join("")}${zellen}</div>`;
+    }
+    /** iCalendar-Export (RFC 5545) der gefilterten Termine eines Zeitraums – ganztägig. */
+    function icsErzeugen(von, bis) {
+      const z = (iso) => iso.replace(/-/g, "");
+      const txt = (t) => String(t).replace(/\\/g, "\\\\").replace(/[,;]/g, (c) => "\\" + c).replace(/\n/g, "\\n");
+      const stempel = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+      const zeilen = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//EduKSX//EduKSX-Flow Prototyp//DE", "CALSCALE:GREGORIAN", "X-WR-CALNAME:EduKSX-Flow Jahreskalender"];
+      S().ereignisse.filter(passt).forEach((ev) => vorkommenZwischen(ev, von, bis).forEach((o) => {
+        if (S().kal.nurOffen && erledigt(o)) return;
+        zeilen.push("BEGIN:VEVENT", `UID:${ev.id}-${z(o.von)}@flow.eduksx.example`, `DTSTAMP:${stempel}`, `DTSTART;VALUE=DATE:${z(o.von)}`, `DTEND;VALUE=DATE:${z(addTage(o.bis, 1))}`,
+          `SUMMARY:${txt(ev.titel)}`, `DESCRIPTION:${txt(zeitregel(ev) + (ev.notiz ? " – " + ev.notiz : ""))}`, `CATEGORIES:${txt((B[ev.bereich] || [ev.bereich])[0])}`, "END:VEVENT");
+      }));
+      zeilen.push("END:VCALENDAR");
+      return zeilen.join("\r\n");
+    }
+    function icsHerunterladen() {
+      const k = S().kal, a = S().kal.ansicht;
+      let von, bis, name;
+      if (a === "woche") { von = k.woche || montagVon(S().heute); bis = addTage(von, 6); name = `kw-${kwVon(von)}`; }
+      else if (a === "monat") { const m = k.monat || S().heute.slice(0, 7); von = `${m}-01`; bis = `${m}-${String(new Date(Number(m.slice(0, 4)), Number(m.slice(5)), 0).getDate()).padStart(2, "0")}`; name = m; }
+      else { const p = periode(); von = p.von; bis = p.bis; name = p.name.replace(/\s+/g, "-").replace(/\//g, "-"); }
+      const ics = icsErzeugen(von, bis);
+      const n = (ics.match(/BEGIN:VEVENT/g) || []).length;
+      try {
+        const url = URL.createObjectURL(new Blob([ics], { type: "text/calendar;charset=utf-8" }));
+        const l = document.createElement("a"); l.href = url; l.download = `eduksx-flow-${name}.ics`; document.body.appendChild(l); l.click(); l.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        ansage(`${n} Termine als iCalendar-Datei exportiert.`);
+      } catch (e) { ansage("Herunterladen ist in dieser Ansicht nicht möglich."); }
+      return ics;
+    }
+
     function seite(ansicht) {
       ansicht = ansicht || "zeitleiste";
       const p = periode();
@@ -337,7 +433,8 @@
       const verkn = new Set(liste.filter((o) => o.ev.flow).map((o) => o.ev.id));
       const darf = ["SV", "SL", "ICT"].includes(S().rolle);
       const naechste = demnaechst(28, false).slice(0, 6);
-      const inhalt = ansicht === "liste" ? listenAnsicht(liste, p) : ansicht === "quartale" ? quartalsAnsicht(liste) : ansicht === "schuljahre" ? schuljahresAnsicht() : zeitleiste(liste, p);
+      S().kal.ansicht = ansicht;
+      const inhalt = ansicht === "liste" ? listenAnsicht(liste, p) : ansicht === "quartale" ? quartalsAnsicht(liste) : ansicht === "schuljahre" ? schuljahresAnsicht() : ansicht === "monat" ? monatsAnsicht() : ansicht === "woche" ? wochenAnsicht() : zeitleiste(liste, p);
       return `
         <div class="seitenkopf"><div><h1>Jahreskalender</h1><p class="muted">Termine und ToDos im Jahreslauf – einmal pro Jahr, auf Schuljahrestermine bezogen (z. B. 2 Monate vor Schuljahresende) oder wiederkehrend vom Trimester bis zum Arbeitstag. Ereignisse lassen sich mit einer Ablaufvorlage verknüpfen; der Ablauf startet dann mit dem Datum des Vorkommens als Stichtag.</p></div>
           <div class="aktionen"><button class="btn primaer" data-aktion="kal-neu" ${darf ? "" : 'disabled title="Schulverwaltung, Schulleitung oder ICT-Support"'}>＋ Ereignis</button></div></div>
@@ -350,6 +447,8 @@
         ${naechste.length && ansicht !== "schuljahre" ? `<div class="karte demnaechst"><h2>Als Nächstes</h2><ul class="infoliste">${naechste.map((o) => `<li><button class="link" data-aktion="kal-oeffnen" data-id="${o.ev.id}" data-von="${o.von}">${esc(o.ev.titel)}</button> <span class="small muted">${istSerie(o.ev) ? datumKurz(o.von) + " · " + esc(regelKurz(o.ev)) : wann(o)}</span> ${statusBadge(o)} ${o.ev.flow ? `<span class="badge violett" title="Mit Ablaufvorlage verknüpft">⇢ Ablauf</span>` : ""}</li>`).join("")}</ul></div>` : ""}
         ${ansicht === "schuljahre" ? "" : filterLeiste()}
         <div class="reiter" role="tablist">
+          <button role="tab" aria-selected="${ansicht === "monat"}" data-aktion="reiter" data-ziel="#/kalender/monat">Monat</button>
+          <button role="tab" aria-selected="${ansicht === "woche"}" data-aktion="reiter" data-ziel="#/kalender/woche">Woche</button>
           <button role="tab" aria-selected="${ansicht === "zeitleiste"}" data-aktion="reiter" data-ziel="#/kalender/zeitleiste">Zeitleiste</button>
           <button role="tab" aria-selected="${ansicht === "liste"}" data-aktion="reiter" data-ziel="#/kalender/liste">Liste (${liste.length})</button>
           <button role="tab" aria-selected="${ansicht === "quartale"}" data-aktion="reiter" data-ziel="#/kalender/quartale">Quartale</button>
@@ -664,6 +763,16 @@
       const st = S();
       switch (ak) {
         case "kal-oeffnen": oeffnen(el.dataset.id, el.dataset.von); return true;
+        case "kal-blaettern": {
+          const n = Number(el.dataset.schritt);
+          if (el.dataset.art === "monat") {
+            if (!n) st.kal.monat = st.heute.slice(0, 7);
+            else { const m = st.kal.monat || st.heute.slice(0, 7); const d = new Date(Date.UTC(Number(m.slice(0, 4)), Number(m.slice(5)) - 1 + n, 1)); st.kal.monat = d.toISOString().slice(0, 7); }
+          } else st.kal.woche = n ? addTage(st.kal.woche || montagVon(st.heute), 7 * n) : montagVon(st.heute);
+          X.speichern(); X.render(); return true;
+        }
+        case "kal-woche-zu": st.kal.woche = montagVon(el.dataset.tag); X.speichern(); location.hash = "#/kalender/woche"; return true;
+        case "kal-ics": icsHerunterladen(); return true;
         case "kal-neu": neu(); return true;
         case "kal-schliessen": { const d = document.getElementById("kal-dlg"); if (d) d.close(); K = null; return true; }
         case "kal-bearbeiten": K.bearbeiten = true; K.ev = kopie(st.ereignisse.find((x) => x.id === K.id)); zeichnen(); return true;
@@ -759,6 +868,6 @@
       });
     }
 
-    return { seite, klick, vorbelegen, aenderung, demnaechst, wann, statusBadge, bereichBadge, kwVon, zustaendig, zeitregel, vorkommenZwischen };
+    return { seite, klick, vorbelegen, aenderung, demnaechst, wann, statusBadge, bereichBadge, kwVon, zustaendig, zeitregel, vorkommenZwischen, icsErzeugen };
   };
 })();

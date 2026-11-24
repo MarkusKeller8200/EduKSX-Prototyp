@@ -8,6 +8,15 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **EduKSX-Flow 0.11.0 – Stufe 2 der Prozess-Engine (24.11.2026):** Stellvertretungen (Seite «Stellvertretungen»;
+  Aufgaben, Hinweise und Eskalationen gehen während der Abwesenheit auch an die Vertretung, Journal vermerkt «in
+  Vertretung»); Delegation einzelner Schritte (Ausführung an andere Funktion, Verantwortung bleibt; gesperrt bei
+  «nicht delegierbar» im Funktionendiagramm); Vier-Augen-Prinzip mit zweiter Prüfung durch eine andere Funktion
+  (Prüfung P/F/G/Z laut Funktionendiagramm, sonst vorgesetzte Stelle); Mehrfachgenehmigung mit Quorum (alle,
+  Mehrheit, mindestens n); rollenbasierter Teil der Übersicht («Für …»: Entscheide, Eskalationen, gesetzliche
+  Fristen, Fehler, Belastung je Funktion); Jahreskalender mit Monats- und Wochenansicht (inkl. Fristen offener
+  Ablaufschritte) und ICS-Export. Einstellungen: Verknüpfungshinweise neben der Bezeichnung, bündig. Datenmodell
+  (`substitutions`, Delegation, Stimmen, Vier-Augen) und API nachgeführt.
 - **EduKSX-Flow 0.10.0 – Entscheide E5, E6, E14 umgesetzt (24.11.2026):** Prozessverantwortung je Vorlage (wer in
   laufende Abläufe eingreifen darf; Vorgabe je Gruppe, z. B. ICT-Vorlagen ICT/SV/SL; der Ablauf übernimmt sie beim
   Start); Einstellungen › Eskalation (Stufen je Fristart mit Tagen und Empfänger) und «Vorgesetzt» je Funktion, der

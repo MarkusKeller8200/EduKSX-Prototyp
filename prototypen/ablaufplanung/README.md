@@ -92,6 +92,8 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
   «Vorgesetzt» je Funktion (E6); **Kompetenzmerkmale** je Zuweisung im Funktionendiagramm (E14) mit Wirkung auf
   Genehmigungen (Betragsgrenze → nächste Instanz E1 → E2). Vier-Augen wird angezeigt, der zweite Prüfschritt folgt in
   Stufe 2.
+- **Stufe 2** (0.11.0): Stellvertretungen, Delegation, Vier-Augen-Prinzip (zweite Prüfung), Mehrfachgenehmigung mit
+  Quorum, rollenbasierte Übersicht («Für …»), Kalender mit Monats- und Wochenansicht sowie ICS-Export.
 - **Simulation:** simulierter Tag (+1, +7, nächste Frist), Module als «nicht erreichbar» schalten, Rollenwechsel.
 
 ## Grundlagen
