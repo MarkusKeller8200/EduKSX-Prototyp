@@ -36,16 +36,30 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
-### Sitzung 2026-11-24 (02:10–04:00) – EduKSX-Flow 0.7.0: Stufe 1 der Prozess-Engine
+### Sitzung 2026-11-24 (02:10–04:30) – EduKSX-Flow 0.7.0 bis 0.16.0 (Engine Stufen 1–3, Einstellungen)
 
-Externes Review gewichtet → `docs/KONZEPT-FLOW.md` (Stufen 1–4, E1–E13). Entscheid 2026-11-24: Engine vor weiteren
-Vorlagen (E1), Stufe 1 umsetzen (E2) – Auftrag im Chat. Umgesetzt: Aufgabentypen, Verzweigung, Unterprozesse,
-Auslöser mit Deduplizierung, Fristarten und Eskalation, Eingriffe mit Journal; Datenmodell/API/Pflichtenheft
-nachgeführt. Playwright-Szenarien grün, alle 45 Vorlagen ohne Prüfbefund. Parallel auf `main` entstandene
-Flow-Änderungen (0.6.0–0.6.2: Entwickler-Menü, CodeQL-Escaping, Zurück-Taste) übernommen. Offen: E4–E13; Issues
-nachtragen (`gh` hier nicht angemeldet). 0.8.0: Menü «Einstellungen» (Kompetenzen, Funktionen, Zeitpunkte, Intervalle,
-Aufgabenbereiche); 0.9.0: Verknüpfung umgesetzt (E16, E17 beschlossen). Danach beschlossen: E5 je Vorlage, E6 in Einstellungen, E14 Merkmale je Zuweisung, E15 eigenes Modul EduKSX-Organization – E5, E6, E14 in 0.10.0 umgesetzt. Stufe 2 in 0.11.0 umgesetzt. Nächster Schritt: Stufe 3 (Prozesslandkarte, Prozesslenkung mit Reviews, Rechtssammlung, Vorlagenbibliothek) nach Freigabe; Prüfliste für die fachliche Kontrolle. Hinweis: Push auf `main` umgeht die
-Regel «nur über Pull Request» – künftig Branch + PR, sobald `gh` angemeldet ist.
+**Stand:** Prototyp `prototypen/ablaufplanung` 0.16.0 auf `main` und GitHub Pages. Konzept `docs/KONZEPT-FLOW.md`
+(E1–E19), Prüfliste `prototypen/ablaufplanung/PRUEFLISTE.md` (erzeugt mit `node werkzeuge/pruefliste.js`).
+
+- **Stufe 1 (0.7.0):** Aufgabentypen, Verzweigung, Unterprozesse, Auslöser mit Deduplizierung, Fristarten und
+  Eskalation, Eingriffe mit Journal.
+- **Einstellungen (0.8.0–0.13.0):** Kompetenzen, Funktionen, Zeitpunkte, Intervalle, Periode, Aufgabenbereiche,
+  Eskalation – je mit Tooltip und Farbe/Label; mit Kalender und Funktionendiagramm verknüpft (E16, E17).
+- **Entscheide 24.11.2026:** E5 Eingreifen je Vorlage, E6 Eskalation in Einstellungen, E14 Kompetenzmerkmale je
+  Zuweisung, E15 Funktionendiagramm später in eigenes Modul EduKSX-Organization (Name ZU PRÜFEN) – umgesetzt in 0.10.0.
+- **Stufe 2 (0.11.0):** Stellvertretung, Delegation, Vier-Augen, Mehrfachgenehmigung, rollenbasierte Übersicht,
+  Kalender Monat/Woche mit ICS-Export.
+- **Selbständig während Abwesenheit der Projektleitung (zur Abnahme):** 0.14.0 mehrjährige Termine (E19),
+  0.15.0 Prozesslenkung/Reviews/Prozesslandkarte, 0.16.0 Rechtsgrundlagen/Versionsvergleich/Vorlagenbibliothek,
+  Prüfliste. Datenmodell, API und Pflichtenheft (FLW-F-24–38, FLW-P-10–11) nachgeführt.
+- **Infrastruktur:** `seite.yml` wiederholt das Bereitstellen einmal nach 60 s (zeitweise «No artifacts named
+  github-pages»). Pushes gingen direkt auf `main` und umgingen die Regel «nur über Pull Request» – `gh` war nicht
+  angemeldet; künftig Branch + PR.
+- **Offen:** Issues für 0.7–0.16 nachtragen (sobald `gh` angemeldet); fachliche Prüfung gemäss PRUEFLISTE.md;
+  Stufe 4 (Kennzahlen) erst mit Personalvertretung und Datenschutz; Organisationseinheiten, Funktionspostfächer,
+  ICS-Abo mit fester Adresse (braucht Server); Prototyp EduKSX-Organization (E15) nach Freigabe.
+- **Testen:** Playwright-Szenarien liegen nicht im Repo (nur in der Sitzung); `python3 tools/pruefen.py` grün
+  (braucht EduKSX-UI neben dem Repo für die Icons).
 
 ### Sitzung 2026-11-24 – GUI-EX 0.6.0: Erscheinungsbild, #100
 

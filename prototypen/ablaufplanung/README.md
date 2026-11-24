@@ -115,6 +115,9 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
 
 ## Offene Fragen (ZU PRÜFEN)
 
+Alle prüfbedürftigen Punkte stehen in [`PRUEFLISTE.md`](PRUEFLISTE.md) (aus den Daten erzeugt: `node werkzeuge/pruefliste.js`).
+
+
 - Ab wann dürfen Logins erstellt werden (Prozessliste: offen)? Im Prototyp T−21 bzw. gültig ab T−14.
 - Regeln, wann was gesperrt wird (Offboarding): im Prototyp Sperre am Tag nach dem letzten Arbeitstag.
 - Welches Modul führt Schlüssel und Geräte (im Prototyp EduKSX-Shop)?
