@@ -6,8 +6,8 @@
 (function () {
   "use strict";
 
-  const SPEICHER = "eduksx-flow-prototyp-v5";
-  const VERSION = "0.6.2";
+  const SPEICHER = "eduksx-flow-prototyp-v6";
+  const VERSION = "0.7.0";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
@@ -42,6 +42,8 @@
       laeufe: [],
       aufrufe: [],
       hinweise: [],
+      ausloesungen: [],
+      ausgeloest: {},
       erreichbar: Object.fromEntries(D.MODULE.map((m) => [m.key, true])),
       ereignisse: kopie(D.EREIGNISSE),
       kalErledigt: {},
@@ -52,7 +54,9 @@
     S = st;
     D.LAEUFE.forEach((l) => {
       const v = st.vorlagen.find((x) => x.id === l.vorlage);
-      const lauf = laufAnlegen(v, Object.assign({ stichtag: addTage(st.heute, l.tageBisStichtag) }, l.kontext), true);
+      const lauf = laufAnlegen(v, Object.assign(startVorgabe(v), l.kontext, { stichtag: addTage(st.heute, l.tageBisStichtag) }), true);
+      st.ausgeloest[startSchluessel(v, lauf.kontext)] = lauf.id;
+      journal(lauf, "Start", "Testablauf (Vorgeschichte nachgebildet).", "", "Flow");
       // Vorgeschichte: erledigte Schritte ohne Protokoll-Rauschen nachbilden
       l.erledigt.forEach((sid) => {
         const sch = lauf.schritte.find((x) => x.id === sid);
@@ -64,6 +68,8 @@
     });
     motor();
     KAL.vorbelegen();
+    ausloeserKalender();
+    motor();
     return st;
   }
   let S = null;
@@ -77,6 +83,30 @@
   // ---------------------------------------------------------------- Ablauf-Motor
   const ERLEDIGT = ["erledigt", "uebersprungen"];
   const fristVon = (lauf, sch) => addTage(lauf.kontext.stichtag, sch.tage);
+  const uhr = () => new Date().toLocaleTimeString("de-CH", { hour: "2-digit", minute: "2-digit" });
+
+  // Aufgabentypen (Konzept 3.1). Ohne Angabe: mit Vorgang = Aufruf, sonst Aufgabe.
+  const TYPEN = {
+    aufgabe: ["✋", "Aufgabe", "Die zuständige Rolle meldet die Aufgabe als erledigt."],
+    aufruf: ["⚙", "Aufruf an Modul", "Flow ruft einen Vorgang eines anderen Moduls auf."],
+    genehmigung: ["⚖", "Genehmigung", "Die zuständige Rolle genehmigt oder lehnt ab (Ablehnung mit Begründung)."],
+    entscheidung: ["◇", "Entscheidung", "Die zuständige Rolle wählt eine der Möglichkeiten; spätere Schritte können davon abhängen."],
+    nachweis: ["📎", "Nachweis", "Ein Dokument bzw. eine Referenz muss hinterlegt werden."],
+    termin: ["📅", "Termin", "Termin festhalten (Datum, Ort)."],
+    warten: ["⏳", "Warten bis Frist", "Flow wartet bis zur Frist (z. B. Rekursfrist); niemand muss handeln."],
+    benachrichtigung: ["✉", "Benachrichtigung", "Flow informiert die Rollen zur Frist, ohne Modulaufruf."],
+    unterprozess: ["⧉", "Unterprozess", "Flow startet eine andere freigegebene Vorlage und wartet auf deren Abschluss."],
+  };
+  const TYP_ERGEBNIS = { aufgabe: [], genehmigung: ["entscheid", "begruendung"], entscheidung: ["wahl"], nachweis: ["nachweis"], termin: ["termin", "ort"], warten: [], benachrichtigung: [], unterprozess: ["ablauf"] };
+  const typVon = (s) => s.typ || (s.aktion ? "aufruf" : "aufgabe");
+  function ergebnisFelder(s) {
+    const t = typVon(s);
+    if (t === "aufruf") { const v = s.aktion && vorgang(s.aktion.vorgang); return v ? v.ergebnis : []; }
+    return TYP_ERGEBNIS[t] || [];
+  }
+  const FRISTARTEN = { intern: ["", "interne Frist"], gesetzlich: ["§", "gesetzliche Frist"], empfehlung: ["≈", "Empfehlung"] };
+  const istRef = (b) => !!(b && b.feld && b.feld.includes("."));
+  let NOCHMALS = false; // ein weiterer Motorlauf ist nötig (neuer Unterprozess, Abschluss)
 
   /** Platzhalter auflösen: {person}, {stichtag}, {stichtag-14}, {o5.benutzername} */
   function aufloesen(text, lauf, roh) {
@@ -98,9 +128,18 @@
     });
   }
 
+  function bedingungWert(b, lauf) {
+    if (istRef(b)) {
+      const [sid, f] = b.feld.split(".");
+      const q = lauf.schritte.find((x) => x.id === sid);
+      return q && q.ergebnis ? q.ergebnis[f] : undefined;
+    }
+    return lauf.kontext[b.feld];
+  }
   function bedingungErfuellt(b, lauf) {
     if (!b || !b.feld) return true;
-    const ist = lauf.kontext[b.feld];
+    const ist = bedingungWert(b, lauf);
+    if (ist === undefined && istRef(b)) return false;
     const soll = aufloesen(b.wert, lauf, true);
     const num = (x) => Number(String(x).replace(",", "."));
     switch (b.op) {
@@ -112,14 +151,28 @@
       default: return true;
     }
   }
-  const bedingungText = (b) => (b && b.feld ? `${b.feld} ${b.op === "in" ? "ist eines von" : b.op} ${b.wert}` : "");
+  /** Lesbare Bedingung; mit Schrittliste wird ein Verweis auf ein Ergebnis mit dem Schritttitel gezeigt. */
+  function bedingungText(b, schritte) {
+    if (!b || !b.feld) return "";
+    let feld = b.feld;
+    if (istRef(b) && schritte) {
+      const [sid, f] = b.feld.split(".");
+      const q = schritte.find((x) => x.id === sid);
+      if (q) feld = `${{ entscheid: "Entscheid", wahl: "Wahl" }[f] || f} «${q.titel}»`;
+    }
+    return `${feld} ${b.op === "in" ? "ist eines von" : b.op} ${b.wert}`;
+  }
+
+  function journal(lauf, art, text, grund, wer) {
+    (lauf.journal = lauf.journal || []).unshift({ tag: S.heute, uhr: uhr(), wer: wer || ROLLEN[S.rolle], art, text, grund: grund || "" });
+  }
 
   function laufAnlegen(v, kontext, still) {
     const lauf = {
       id: "L" + String(S.zaehler++).padStart(3, "0"),
       vorlage: v.id, version: v.version, titel: v.titel, stichtagName: v.stichtag,
-      kontext: kopie(kontext), gestartet: S.heute, abgeschlossen: null,
-      schritte: kopie(v.schritte).map((x) => Object.assign(x, { status: "wartet", ergebnis: null, erledigtAm: null, param: null })),
+      kontext: kopie(kontext), gestartet: S.heute, abgeschlossen: null, abgebrochen: null, pausiert: false, journal: [],
+      schritte: kopie(v.schritte).map((x) => Object.assign(x, { status: "wartet", ergebnis: null, erledigtAm: null, param: null, eskaliert: [] })),
     };
     S.laeufe.unshift(lauf);
     if (!still) hinweis(["SV", "SL"], lauf, `Ablauf «${lauf.titel}» für ${lauf.kontext.person} gestartet (Version ${lauf.version}).`);
@@ -161,34 +214,46 @@
 
   function aufrufProtokoll(lauf, sch, status, antwort) {
     S.aufrufe.unshift({
-      id: "A" + String(S.aufrufe.length + 1).padStart(4, "0"), tag: S.heute, uhr: new Date().toLocaleTimeString("de-CH", { hour: "2-digit", minute: "2-digit" }),
+      id: "A" + String(S.aufrufe.length + 1).padStart(4, "0"), tag: S.heute, uhr: uhr(),
       lauf: lauf.id, schritt: sch.id, titel: sch.titel, person: lauf.kontext.person,
       vorgang: sch.aktion ? sch.aktion.vorgang : "", param: sch.param || {}, status, antwort,
     });
   }
 
   function hinweis(rollen, lauf, text) {
-    (rollen || []).forEach((r) => S.hinweise.unshift({ rolle: r, tag: S.heute, lauf: lauf.id, text }));
-    S.hinweise = S.hinweise.slice(0, 200);
+    [...new Set(rollen || [])].forEach((r) => S.hinweise.unshift({ rolle: r, tag: S.heute, lauf: lauf.id, text }));
+    S.hinweise = S.hinweise.slice(0, 300);
   }
 
   function abschliessen(lauf, sch, durch) {
     sch.status = "erledigt";
     sch.erledigtAm = S.heute;
+    sch.fehler = null;
     if (!sch.ergebnis) sch.ergebnis = ergebnisErzeugen(lauf, sch);
     if (sch.informiert && sch.informiert.length) hinweis(sch.informiert, lauf, `${lauf.kontext.person}: «${sch.titel}» erledigt${durch ? " (" + durch + ")" : ""}.`);
   }
 
-  /** Schritt ausführen: Vorgang im Zielmodul aufrufen (simuliert) bzw. Aufgabe von Hand als erledigt melden. */
-  function ausfuehren(lauf, sch, durch) {
-    if (!sch.aktion) { abschliessen(lauf, sch, durch); return; }
+  /**
+   * Schritt ausführen. Aufruf: Vorgang im Zielmodul aufrufen (simuliert). Andere Arten: mit den Angaben aus dem
+   * Erledigen-Dialog abschliessen (Entscheid, Wahl, Nachweis, Termin).
+   */
+  function ausfuehren(lauf, sch, durch, eingabe) {
+    const t = typVon(sch);
+    if (t !== "aufruf") {
+      if (t === "benachrichtigung") { benachrichtigen(lauf, sch, durch); return; }
+      sch.ergebnis = eingabe && Object.keys(eingabe).length ? kopie(eingabe) : { erledigt: "ja" };
+      abschliessen(lauf, sch, durch);
+      if (t === "genehmigung" || t === "entscheidung") journal(lauf, "Entscheid", `«${sch.titel}»: ${sch.ergebnis.entscheid || sch.ergebnis.wahl}`, sch.ergebnis.begruendung, durch);
+      return;
+    }
+    if (!sch.aktion) { sch.status = "fehler"; sch.fehler = "Kein Vorgang hinterlegt."; return; }
     const v = vorgang(sch.aktion.vorgang);
     sch.param = Object.fromEntries(Object.entries(sch.aktion.param || {}).map(([k, w]) => [k, aufloesen(w, lauf, k === "datum" || k === "ab" || k === "gueltigAb" || k === "per")]));
     if (!v) { sch.status = "fehler"; sch.fehler = "Vorgang ist im Register nicht (mehr) vorhanden."; aufrufProtokoll(lauf, sch, "fehler", sch.fehler); return; }
     if (!S.erreichbar[v.modul.key]) {
       sch.status = "fehler"; sch.fehler = `EduKSX-${v.modul.name} nicht erreichbar.`;
       aufrufProtokoll(lauf, sch, "fehler", sch.fehler);
-      hinweis(["ICT"], lauf, `Aufruf ${v.id} für ${lauf.kontext.person} fehlgeschlagen – EduKSX-${v.modul.name} nicht erreichbar.`);
+      hinweis(["ICT"], lauf, `Aufruf ${esc(v.id)} für ${lauf.kontext.person} fehlgeschlagen – EduKSX-${v.modul.name} nicht erreichbar.`);
       return;
     }
     const fehlt = Object.values(sch.param).some((w) => String(w).includes("fehlt⟩"));
@@ -210,31 +275,205 @@
     abschliessen(lauf, sch, "Rückmeldung " + (modulVon(sch.aktion.vorgang) ? "EduKSX-" + modulVon(sch.aktion.vorgang).name : ""));
   }
 
+  /** Benachrichtigung ohne Modulaufruf: zuständige und zu informierende Rollen erhalten eine Mitteilung. */
+  function benachrichtigen(lauf, sch, durch) {
+    const an = [sch.rolle, ...(sch.informiert || [])];
+    hinweis(an, lauf, `${lauf.kontext.person}: ${sch.titel}.`);
+    sch.ergebnis = { versandt: [...new Set(an)].join(", ") };
+    sch.status = "erledigt";
+    sch.erledigtAm = S.heute;
+    journal(lauf, "Benachrichtigung", `«${sch.titel}» an ${[...new Set(an)].map((r) => ROLLEN[r] || r).join(", ")}.`, "", durch || "Flow");
+  }
+
+  /** Unterprozess: andere freigegebene Vorlage mit übernommenen Kontextfeldern starten (Konzept E8). */
+  function unterStarten(lauf, sch) {
+    const u = sch.unter || {};
+    const vk = vorlageVon(u.vorlage);
+    if (!vk || vk.status !== "freigegeben") {
+      sch.status = "fehler";
+      sch.fehler = vk ? `Unterprozess «${vk.titel}» ist nicht freigegeben.` : "Unterprozess-Vorlage fehlt.";
+      return;
+    }
+    const k = startVorgabe(vk);
+    vk.felder.forEach((f) => { const w = lauf.kontext[f.key]; if (w != null && w !== "") k[f.key] = w; });
+    k.stichtag = addTage(lauf.kontext.stichtag, Number(u.versatz || 0));
+    const kind = laufAnlegen(vk, k, true);
+    kind.eltern = { lauf: lauf.id, schritt: sch.id };
+    journal(kind, "Start", `Als Unterprozess von ${lauf.id} «${lauf.titel}» gestartet.`, "", "Flow");
+    journal(lauf, "Unterprozess", `«${sch.titel}»: ${esc(kind.id)} «${kind.titel}» (Version ${esc(kind.version)}) gestartet.`, "", "Flow");
+    sch.kind = kind.id;
+    sch.status = "laeuft";
+    sch.fehler = null;
+    NOCHMALS = true;
+  }
+  function unterPruefen(lauf, sch) {
+    const kind = laufVon(sch.kind);
+    if (!kind) { sch.status = "fehler"; sch.fehler = "Unterprozess nicht gefunden."; return true; }
+    if (kind.abgeschlossen) {
+      sch.ergebnis = { ablauf: kind.id };
+      abschliessen(lauf, sch, "Unterprozess abgeschlossen");
+      journal(lauf, "Unterprozess", `${esc(kind.id)} «${kind.titel}» abgeschlossen.`, "", "Flow");
+      return true;
+    }
+    if (kind.abgebrochen) { sch.status = "fehler"; sch.fehler = `Unterprozess ${esc(kind.id)} wurde abgebrochen.`; return true; }
+    return false;
+  }
+
+  /** Eskalation (Konzept 3.3): bei Stufenwechsel nur die höchste neu erreichte Stufe melden. */
+  function eskalieren(lauf) {
+    lauf.schritte.forEach((sch) => {
+      if (!["bereit", "laeuft", "fehler"].includes(sch.status)) return;
+      if (sch.status === "laeuft" && typVon(sch) === "unterprozess") return;
+      const regel = D.ESKALATION[sch.fristart === "gesetzlich" ? "gesetzlich" : "normal"];
+      const d = tageZwischen(fristVon(lauf, sch), S.heute);
+      sch.eskaliert = sch.eskaliert || [];
+      const neu = regel.filter((st) => d >= st.tage && !sch.eskaliert.includes(st.stufe));
+      if (!neu.length) return;
+      neu.forEach((st) => sch.eskaliert.push(st.stufe));
+      const st = neu[neu.length - 1];
+      const an = st.an === "zustaendig" ? sch.rolle : st.an === "vorgesetzt" ? (D.VORGESETZT[sch.rolle] || D.LEITUNG) : D.LEITUNG;
+      hinweis([an], lauf, `${st.text}: «${sch.titel}» (${lauf.kontext.person}, Frist ${datumKurz(fristVon(lauf, sch))}, zuständig ${ROLLEN[sch.rolle] || sch.rolle}).`);
+      if (st.stufe >= 3) journal(lauf, "Eskalation", `Stufe ${st.stufe} – ${st.text}: «${sch.titel}» an ${ROLLEN[an] || an}.`, "", "Flow");
+    });
+  }
+  const eskStufe = (sch) => Math.max(0, ...(sch.eskaliert || []));
+
   /** Status aller offenen Schritte neu bestimmen; automatische Schritte ausführen, sobald Vorgänger erledigt und Frist erreicht. */
   function motor() {
-    S.laeufe.forEach((lauf) => {
-      if (lauf.abgeschlossen) return;
-      let geaendert = true, runden = 0;
-      while (geaendert && runden++ < 50) {
-        geaendert = false;
-        lauf.schritte.forEach((sch) => {
-          if (["erledigt", "uebersprungen", "laeuft", "fehler"].includes(sch.status)) return;
-          const vorher = sch.status;
-          if (!bedingungErfuellt(sch.bedingung, lauf)) { sch.status = "uebersprungen"; geaendert = true; return; }
-          const offen = (sch.nach || []).filter((n) => { const v = lauf.schritte.find((x) => x.id === n); return v && !ERLEDIGT.includes(v.status); });
-          if (offen.length) { sch.status = "wartet"; }
-          else if (sch.auto && sch.aktion) {
-            if (S.heute >= fristVon(lauf, sch)) { ausfuehren(lauf, sch, "automatisch"); geaendert = true; return; }
-            sch.status = "geplant";
-          } else sch.status = "bereit";
-          if (vorher !== sch.status) geaendert = true;
-        });
-      }
-      if (lauf.schritte.every((x) => ERLEDIGT.includes(x.status))) {
-        lauf.abgeschlossen = S.heute;
-        hinweis(["SV", "SL"], lauf, `Ablauf «${lauf.titel}» für ${lauf.kontext.person} abgeschlossen.`);
-      }
+    let runde = 0;
+    NOCHMALS = true;
+    while (NOCHMALS && runde++ < 10) {
+      NOCHMALS = false;
+      [...S.laeufe].forEach((lauf) => {
+        if (lauf.abgeschlossen || lauf.abgebrochen || lauf.pausiert) return;
+        let geaendert = true, runden = 0;
+        while (geaendert && runden++ < 50) {
+          geaendert = false;
+          lauf.schritte.forEach((sch) => {
+            if (["erledigt", "uebersprungen", "fehler", "abgebrochen"].includes(sch.status)) return;
+            if (sch.status === "laeuft") { if (typVon(sch) === "unterprozess" && unterPruefen(lauf, sch)) geaendert = true; return; }
+            const vorher = sch.status;
+            const b = sch.erzwungen ? null : sch.bedingung;
+            if (b && b.feld && !istRef(b) && !bedingungErfuellt(b, lauf)) { sch.status = "uebersprungen"; sch.grund = "Bedingung: " + bedingungText(b); geaendert = true; return; }
+            const vor = (sch.nach || []).map((n) => lauf.schritte.find((x) => x.id === n)).filter(Boolean);
+            if (!sch.erzwungen && vor.length && vor.every((v) => v.status === "uebersprungen" && v.zweig)) { sch.status = "uebersprungen"; sch.zweig = true; sch.grund = "Zweig entfällt"; geaendert = true; return; }
+            if (vor.some((v) => !ERLEDIGT.includes(v.status))) { sch.status = "wartet"; if (vorher !== sch.status) geaendert = true; return; }
+            if (istRef(b)) {
+              const q = lauf.schritte.find((x) => x.id === b.feld.split(".")[0]);
+              if (q && !ERLEDIGT.includes(q.status)) { sch.status = "wartet"; if (vorher !== sch.status) geaendert = true; return; }
+              if (!bedingungErfuellt(b, lauf)) { sch.status = "uebersprungen"; sch.zweig = true; sch.grund = "Zweig: " + bedingungText(b, lauf.schritte); geaendert = true; return; }
+            }
+            const t = typVon(sch);
+            const faellig = S.heute >= fristVon(lauf, sch);
+            if (t === "aufruf" && sch.auto && sch.aktion && !sch.manuell) {
+              if (faellig) { ausfuehren(lauf, sch, "automatisch"); geaendert = true; return; }
+              sch.status = "geplant";
+            } else if (t === "warten") {
+              if (faellig) { sch.ergebnis = { erreicht: datumKurz(fristVon(lauf, sch)) }; abschliessen(lauf, sch, "Frist erreicht"); journal(lauf, "Frist", `«${sch.titel}»: Frist ${datumKurz(fristVon(lauf, sch))} erreicht.`, "", "Flow"); geaendert = true; return; }
+              sch.status = "geplant";
+            } else if (t === "benachrichtigung" && !sch.manuell) {
+              if (faellig) { benachrichtigen(lauf, sch, "Flow"); geaendert = true; return; }
+              sch.status = "geplant";
+            } else if (t === "unterprozess") { unterStarten(lauf, sch); geaendert = true; return; }
+            else sch.status = "bereit";
+            if (vorher !== sch.status) geaendert = true;
+          });
+        }
+        eskalieren(lauf);
+        if (lauf.schritte.every((x) => ERLEDIGT.includes(x.status))) {
+          lauf.abgeschlossen = S.heute;
+          journal(lauf, "Abschluss", "Ablauf abgeschlossen.", "", "Flow");
+          hinweis(["SV", "SL"], lauf, `Ablauf «${lauf.titel}» für ${lauf.kontext.person} abgeschlossen.`);
+          ausloeserAbschluss(lauf);
+          NOCHMALS = true;
+        }
+      });
+    }
+  }
+
+  // ---------------------------------------------------------------- Auslöser (Konzept 3.2)
+  function ausloesung(e) {
+    S.ausloesungen.unshift(Object.assign({ tag: S.heute, uhr: uhr() }, e));
+    S.ausloesungen = S.ausloesungen.slice(0, 300);
+  }
+  const startSchluessel = (v, k) => `${v.id}|${k.person}|${k.stichtag}`;
+  /** Ablauf aus einem Auslöser starten – doppelte Starts werden nicht ausgeführt, sondern protokolliert. */
+  function ausloesen(v, kontext, quelle, schluessel) {
+    const key = schluessel || startSchluessel(v, kontext);
+    const da = S.ausgeloest[key] && laufVon(S.ausgeloest[key]);
+    if (da && !da.abgebrochen) { ausloesung({ quelle, vorlage: v.id, lauf: da.id, ergebnis: "doppelt", text: `Bereits als ${da.id} gestartet – nicht erneut gestartet.` }); return null; }
+    const lauf = laufAnlegen(v, kontext);
+    lauf.ausloeser = quelle;
+    S.ausgeloest[key] = lauf.id;
+    S.ausgeloest[startSchluessel(v, kontext)] = lauf.id;
+    journal(lauf, "Start", `Automatisch gestartet – ${quelle}.`, "", "Flow");
+    ausloesung({ quelle, vorlage: v.id, lauf: lauf.id, ergebnis: "gestartet", text: `${lauf.id} für ${kontext.person}` });
+    NOCHMALS = true;
+    return lauf;
+  }
+  const mitAusloeser = (art) => S.vorlagen.filter((v) => v.status === "freigegeben").flatMap((v) => (v.ausloeser || []).filter((a) => a.art === art).map((a) => [v, a]));
+  /** Kalender: Start, sobald der erste Schritt fällig wird (Vorlauf = frühester Schritt, Konzept E7). */
+  function ausloeserKalender() {
+    mitAusloeser("kalender").forEach(([v, a]) => {
+      const ev = S.ereignisse.find((e) => e.id === a.ereignis);
+      if (!ev) return;
+      const vorlauf = Math.max(0, -Math.min(0, ...v.schritte.map((s) => s.tage)));
+      KAL.vorkommenZwischen(ev, addTage(S.heute, -7), addTage(S.heute, vorlauf)).forEach((o) => {
+        if (o.von < addTage(S.heute, -7) || addTage(o.von, -vorlauf) > S.heute) return;
+        const key = `kal|${v.id}|${o.key}`;
+        if (S.ausgeloest[key]) return;
+        const k = startVorgabe(v);
+        k.person = `${ev.titel} ${datumKurz(o.von)}`;
+        k.stichtag = o.von;
+        const lauf = ausloesen(v, k, `Jahreskalender «${ev.titel}» am ${datumKurz(o.von)}`, key);
+        if (lauf) { lauf.ereignis = o.key; lauf.ereignisTitel = ev.titel; }
+      });
     });
+  }
+  /** Modul-Ereignis (simuliert): alle Vorlagen starten, die das Ereignis abonniert haben. */
+  function ausloeserEreignis(eid, daten) {
+    const me = D.MODULEREIGNISSE.find((x) => x.id === eid);
+    const m = D.MODULE.find((x) => x.key === me.modul);
+    const quelle = `EduKSX-${m ? m.name : me.modul}: ${me.titel}`;
+    const ziele = mitAusloeser("ereignis").filter(([, a]) => a.ereignis === eid);
+    if (!ziele.length) { ausloesung({ quelle, vorlage: "", lauf: "", ergebnis: "ohne Ablauf", text: "Keine freigegebene Vorlage hat dieses Ereignis abonniert." }); return []; }
+    return ziele.map(([v]) => {
+      const k = Object.assign(startVorgabe(v), me.fest || {});
+      v.felder.forEach((f) => { const w = daten[f.key]; if (w != null && w !== "") k[f.key] = f.typ === "zahl" ? Number(w) : w; });
+      return ausloesen(v, k, quelle);
+    }).filter(Boolean);
+  }
+  /** Abschluss eines Ablaufs startet nachgelagerte Abläufe. */
+  function ausloeserAbschluss(lauf) {
+    mitAusloeser("abschluss").filter(([, a]) => a.vorlage === lauf.vorlage).forEach(([v, a]) => {
+      const k = startVorgabe(v);
+      v.felder.forEach((f) => { const w = lauf.kontext[f.key]; if (w != null && w !== "" && f.key !== "stichtag") k[f.key] = w; });
+      k.stichtag = addTage(lauf.kontext.stichtag, Number(a.versatz || 0));
+      ausloesen(v, k, `Abschluss ${lauf.id} «${lauf.titel}»`, `ab|${v.id}|${lauf.id}`);
+    });
+  }
+  function ausloeserText(a) {
+    if (a.art === "kalender") { const ev = S.ereignisse.find((e) => e.id === a.ereignis); return `📅 Jahreskalender: ${ev ? ev.titel : "Ereignis fehlt"} (automatisch, sobald der erste Schritt fällig wird)`; }
+    if (a.art === "ereignis") { const me = D.MODULEREIGNISSE.find((x) => x.id === a.ereignis); const m = me && D.MODULE.find((x) => x.key === me.modul); return `⚡ ${me ? `EduKSX-${m ? m.name : me.modul}: ${me.titel} (${me.art})` : a.ereignis}`; }
+    if (a.art === "abschluss") { const q = vorlageVon(a.vorlage); return `✓ Abschluss von «${q ? q.titel : a.vorlage}»${a.versatz ? `, Stichtag ${a.versatz > 0 ? "+" : ""}${a.versatz} Tage` : ""}`; }
+    return a.art;
+  }
+
+  // ---------------------------------------------------------------- Eingriffe in laufende Abläufe (Konzept 3.4)
+  const darfEingreifen = () => (D.PROZESSVERANTWORTLICH || []).includes(S.rolle);
+  function abbrechen(lauf, grund, wer) {
+    lauf.abgebrochen = S.heute;
+    const ausgefuehrt = lauf.schritte.filter((x) => x.status === "erledigt" && typVon(x) === "aufruf");
+    lauf.schritte.forEach((x) => {
+      if (typVon(x) === "unterprozess" && x.kind) { const k = laufVon(x.kind); if (k && !k.abgeschlossen && !k.abgebrochen) abbrechen(k, "Hauptablauf abgebrochen: " + grund, wer); }
+      if (!ERLEDIGT.includes(x.status)) x.status = "abgebrochen";
+    });
+    journal(lauf, "Abbruch", "Ablauf abgebrochen.", grund, wer);
+    if (ausgefuehrt.length) {
+      journal(lauf, "Kompensation", `Bereits ausgeführte Aufrufe wurden nicht rückgängig gemacht: ${ausgefuehrt.map((x) => x.titel).join("; ")}. Prüfen, ob sie in den Modulen zurückzunehmen sind.`, "", "Flow");
+      hinweis(["SV"], lauf, `Abbruch ${lauf.id} (${lauf.kontext.person}): ${ausgefuehrt.length} bereits ausgeführte Aufrufe prüfen (Kompensation).`);
+    }
+    hinweis(["SV", "SL"], lauf, `Ablauf «${lauf.titel}» für ${lauf.kontext.person} abgebrochen: ${grund}`);
   }
 
   // ---------------------------------------------------------------- Prüfung einer Vorlage
@@ -244,18 +483,43 @@
     (s ? s.nach : []).forEach((n) => { if (!seen.has(n)) { seen.add(n); vorfahren(v, n, seen); } });
     return seen;
   }
+  /** Vorlagen, die eine Vorlage über Unterprozesse (auch indirekt) aufruft. */
+  function unterVorlagen(v, seen) {
+    seen = seen || new Set();
+    v.schritte.forEach((s) => {
+      if (typVon(s) !== "unterprozess" || !s.unter || seen.has(s.unter.vorlage)) return;
+      seen.add(s.unter.vorlage);
+      const q = vorlageVon(s.unter.vorlage);
+      if (q) unterVorlagen(q, seen);
+    });
+    return seen;
+  }
   function pruefen(v) {
     const m = [];
     const ids = new Set(v.schritte.map((x) => x.id));
     const felder = new Set(v.felder.map((f) => f.key));
     v.schritte.forEach((s) => {
       const name = `«${s.titel}»`;
+      const t = typVon(s);
+      if (!TYPEN[t]) m.push(["fehler", `${name}: unbekannte Art «${t}».`]);
       if (!s.rolle) m.push(["fehler", `${name}: keine verantwortliche Rolle.`]);
       if (!String(s.quelle || "").trim()) m.push(["warnung", `${name}: Quellenangabe fehlt.`]);
+      if (s.fristart === "gesetzlich" && !/§|Art\./.test(s.quelle || "")) m.push(["warnung", `${name}: gesetzliche Frist ohne Paragraf bzw. Artikel in der Quelle.`]);
       (s.nach || []).forEach((n) => { if (!ids.has(n)) m.push(["fehler", `${name}: Vorgänger ${n} gibt es nicht.`]); });
       if (vorfahren(v, s.id).has(s.id)) m.push(["fehler", `${name}: Kreis in der Reihenfolge – der Schritt hängt von sich selbst ab.`]);
       (s.nach || []).forEach((n) => { const p = v.schritte.find((x) => x.id === n); if (p && p.tage > s.tage) m.push(["warnung", `${name} (${tKurz(s.tage)}) ist früher fällig als sein Vorgänger «${p.titel}» (${tKurz(p.tage)}).`]); });
-      if (s.aktion) {
+      if (t !== "aufruf" && s.aktion) m.push(["fehler", `${name}: nur Schritte der Art «Aufruf an Modul» rufen einen Vorgang auf.`]);
+      if (t === "aufruf" && !s.aktion) m.push(["fehler", `${name}: Aufruf ohne Vorgang.`]);
+      if (t === "entscheidung" && (s.optionen || []).filter(Boolean).length < 2) m.push(["fehler", `${name}: eine Entscheidung braucht mindestens zwei Möglichkeiten.`]);
+      if (t === "unterprozess") {
+        const q = s.unter && vorlageVon(s.unter.vorlage);
+        if (!q) m.push(["fehler", `${name}: Vorlage für den Unterprozess fehlt.`]);
+        else {
+          if (q.id === v.id || unterVorlagen(q).has(v.id)) m.push(["fehler", `${name}: Unterprozess ruft diese Vorlage wieder auf (Kreis).`]);
+          if (q.status !== "freigegeben") m.push(["warnung", `${name}: Unterprozess «${q.titel}» ist noch nicht freigegeben.`]);
+        }
+      }
+      if (s.aktion && t === "aufruf") {
         const vg = vorgang(s.aktion.vorgang);
         if (!vg) { m.push(["fehler", `${name}: Vorgang ${s.aktion.vorgang} ist nicht registriert.`]); return; }
         vg.parameter.forEach((p) => { if (!String((s.aktion.param || {})[p] || "").trim()) m.push(["fehler", `${name}: Parameter «${p}» für ${vg.id} fehlt.`]); });
@@ -266,20 +530,39 @@
           if (k.includes(".")) {
             const [sid, feld] = k.split(".");
             const q = v.schritte.find((x) => x.id === sid);
-            const qv = q && q.aktion ? vorgang(q.aktion.vorgang) : null;
-            if (!q || !qv || !qv.ergebnis.includes(feld)) m.push(["fehler", `${name}: Platzhalter {${k}} – Schritt ${sid} liefert kein «${feld}».`]);
+            if (!q || !ergebnisFelder(q).includes(feld)) m.push(["fehler", `${name}: Platzhalter {${k}} – Schritt ${sid} liefert kein «${feld}».`]);
             else if (!vf.has(sid)) m.push(["warnung", `${name}: nutzt das Ergebnis von «${q.titel}», ist aber nicht danach eingeplant.`]);
           } else if (!felder.has(k)) m.push(["fehler", `${name}: Platzhalter {${k}} ist kein Kontextfeld.`]);
           return g;
         }));
-      } else if (s.auto) m.push(["warnung", `${name}: Aufgaben von Hand können nicht automatisch laufen.`]);
+      } else if (s.auto) m.push(["warnung", `${name}: nur Aufrufe an Module können automatisch laufen.`]);
       if (s.fd) {
         const f = fdEintrag(s.fd);
         const z = f && f.rollen[s.rolle];
         if (!f) m.push(["warnung", `${name}: Funktionendiagramm ${s.fd} unbekannt.`]);
         else if (!z || !/[EV]/.test(z)) m.push(["warnung", `${name}: Laut Funktionendiagramm ${s.fd} hat ${ROLLEN[s.rolle]} hier «${z || "–"}» – Lead (V) liegt bei ${Object.entries(f.rollen).filter(([, x]) => /V/.test(x)).map(([r]) => ROLLEN[r]).join(", ") || "–"}.`]);
       }
-      if (s.bedingung && s.bedingung.feld && !felder.has(s.bedingung.feld)) m.push(["fehler", `${name}: Bedingung nutzt unbekanntes Feld «${s.bedingung.feld}».`]);
+      if (s.bedingung && s.bedingung.feld) {
+        if (istRef(s.bedingung)) {
+          const [sid, f] = s.bedingung.feld.split(".");
+          const q = v.schritte.find((x) => x.id === sid);
+          if (!q || !ergebnisFelder(q).includes(f)) m.push(["fehler", `${name}: Bedingung nutzt «${s.bedingung.feld}» – diesen Wert liefert kein Schritt.`]);
+          else if (!vorfahren(v, s.id).has(sid)) m.push(["fehler", `${name}: Bedingung hängt von «${q.titel}» ab, der Schritt ist aber nicht danach eingeplant.`]);
+          else if (typVon(q) === "entscheidung" && f === "wahl" && !(q.optionen || []).includes(s.bedingung.wert) && s.bedingung.op === "=") m.push(["warnung", `${name}: «${s.bedingung.wert}» ist keine Möglichkeit von «${q.titel}».`]);
+        } else if (!felder.has(s.bedingung.feld)) m.push(["fehler", `${name}: Bedingung nutzt unbekanntes Feld «${s.bedingung.feld}».`]);
+      }
+    });
+    (v.ausloeser || []).forEach((a) => {
+      if (a.art === "kalender" && !S.ereignisse.some((e) => e.id === a.ereignis)) m.push(["fehler", `Auslöser: Ereignis im Jahreskalender fehlt.`]);
+      if (a.art === "abschluss" && !vorlageVon(a.vorlage)) m.push(["fehler", `Auslöser: Vorlage ${a.vorlage} fehlt.`]);
+      if (a.art === "ereignis") {
+        const me = D.MODULEREIGNISSE.find((x) => x.id === a.ereignis);
+        if (!me) m.push(["fehler", `Auslöser: Modul-Ereignis ${a.ereignis} ist nicht registriert.`]);
+        else {
+          const fehlt = v.felder.filter((f) => !me.felder.some((x) => x.key === f.key) && !(me.fest || {})[f.key]).map((f) => f.label);
+          if (fehlt.length) m.push(["warnung", `Auslöser «${me.titel}» liefert nicht: ${fehlt.join(", ")} – es gilt die Vorgabe der Vorlage.`]);
+        }
+      }
     });
     return m;
   }
@@ -303,6 +586,7 @@
     funktionendiagramm: ico('<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/><path d="M13 13l2 2 3-3"/>'),
     protokoll: ico('<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h6M9 16h6"/>'),
     kalender: ico('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M7 14h3M14 14h3M7 17.5h3"/>'),
+    ausloeser: ico('<path d="M13 2L4.5 13.5H12L11 22l8.5-11.5H12z"/>'),
   };
   const NAVI = [
     ["uebersicht", "Übersicht"],
@@ -313,8 +597,10 @@
     ["gruppe", "Planung"],
     ["kalender", "Jahreskalender"],
     ["vorlagen", "Ablaufvorlagen"],
-    ["vorgaenge", "Vorgänge der Module"],
     ["funktionendiagramm", "Funktionendiagramm"],
+    ["gruppe", "Automatisierung"],
+    ["ausloeser", "Auslöser"],
+    ["vorgaenge", "Vorgänge der Module"],
     ["gruppe", "Nachvollziehen"],
     ["protokoll", "Aufrufprotokoll"],
   ];
@@ -327,19 +613,34 @@
     laeuft: ["warnung", "⧗", "wartet auf Rückmeldung"],
     wartet: ["neutral", "…", "wartet auf Vorgänger"],
     fehler: ["fehler", "✕", "Fehler"],
+    abgebrochen: ["neutral", "⊘", "abgebrochen"],
   };
-  const badge = (st) => { const b = STATUS[st] || STATUS.wartet; return `<span class="badge ${b[0]}">${b[1]} ${b[2]}</span>`; };
+  const badge = (st, sch) => {
+    if (sch && st === "laeuft" && typVon(sch) === "unterprozess") return `<span class="badge warnung">⧉ Unterprozess läuft</span>`;
+    if (sch && st === "geplant" && typVon(sch) === "warten") return `<span class="badge violett">⏳ wartet bis Frist</span>`;
+    const b = STATUS[st] || STATUS.wartet; return `<span class="badge ${b[0]}">${b[1]} ${b[2]}</span>`;
+  };
   const ueberfaellig = (lauf, sch) => ["bereit", "laeuft", "fehler"].includes(sch.status) && S.heute > fristVon(lauf, sch);
   const fristBadge = (lauf, sch) => {
-    if (ERLEDIGT.includes(sch.status)) return "";
+    if (ERLEDIGT.includes(sch.status) || sch.status === "abgebrochen" || lauf.abgebrochen) return "";
     const d = tageZwischen(S.heute, fristVon(lauf, sch));
-    if (d < 0 && ["bereit", "laeuft", "fehler"].includes(sch.status)) return ` <span class="badge fehler">! ${-d} T überfällig</span>`;
+    const esk = eskStufe(sch) >= 3 ? ` <span class="badge fehler" title="Eskalationsstufe ${eskStufe(sch)}">↑ Eskalation ${eskStufe(sch)}</span>` : "";
+    if (d < 0 && ["bereit", "laeuft", "fehler"].includes(sch.status)) return ` <span class="badge fehler">! ${-d} T überfällig</span>${esk}`;
+    if (d < 0 && ["wartet", "geplant"].includes(sch.status) && typVon(sch) !== "warten") return ` <span class="badge warnung" title="Die Frist ist vorbei, der Schritt ist aber noch blockiert">⚠ Frist gefährdet</span>`;
     if (d <= 3 && ["bereit", "laeuft"].includes(sch.status)) return ` <span class="badge warnung">! ${d === 0 ? "heute" : "in " + d + " T"}</span>`;
     return "";
   };
+  const gefaehrdet = (lauf, sch) => ["wartet", "geplant"].includes(sch.status) && typVon(sch) !== "warten" && S.heute > fristVon(lauf, sch);
+  const fristartBadge = (s) => (s.fristart === "gesetzlich" ? ` <span class="badge info" title="Gesetzliche Frist – nicht frei verschiebbar">§ gesetzlich</span>` : s.fristart === "empfehlung" ? ` <span class="badge neutral" title="Empfohlener Zeitpunkt">≈ Empfehlung</span>` : "");
+  const typHtml = (s) => { const t = TYPEN[typVon(s)] || TYPEN.aufgabe; return `<span class="typ" title="${esc(t[2])}">${t[0]} ${esc(t[1])}</span>`; };
   const rolleBadge = (r) => `<span class="rolle" title="${esc(ROLLEN[r] || r)}">${esc(r)}</span>`;
   function aufrufText(s) {
-    if (!s.aktion) return `<span class="muted">von Hand</span>`;
+    const t = typVon(s);
+    if (t === "unterprozess") { const u = s.unter && vorlageVon(s.unter.vorlage); return `${typHtml(s)}<div class="small">${u ? `<a href="#/vorlage/${u.id}">${esc(u.titel)}</a>` : `<span class="badge fehler">✕ Vorlage fehlt</span>`}</div>`; }
+    if (t === "entscheidung") return `${typHtml(s)}<div class="small muted">${esc((s.optionen || []).join(" / "))}</div>`;
+    if (t === "benachrichtigung") return `${typHtml(s)}<div class="small muted">an ${esc([s.rolle, ...(s.informiert || [])].join(", "))}</div>`;
+    if (t !== "aufruf") return typHtml(s);
+    if (!s.aktion) return `<span class="badge fehler">✕ Vorgang fehlt</span>`;
     const m = modulVon(s.aktion.vorgang);
     const v = vorgang(s.aktion.vorgang);
     return `<span class="aufruf"><span class="modul">${m ? "EduKSX-" + esc(m.name) : "?"}</span> ${esc(v ? v.titel : s.aktion.vorgang)}</span>`;
@@ -414,9 +715,12 @@
       const p = pos[s.id];
       const st = opt.lauf ? s.status : null;
       const zeilen = umbrechen(s.titel, 24, 2);
-      const unten = opt.lauf ? `${(STATUS[st] || STATUS.wartet)[1]} ${(STATUS[st] || STATUS.wartet)[2]} · ${datumKurz(fristVon(opt.lauf, s))}` : `${tKurz(s.tage)} · ${s.aktion ? (modulVon(s.aktion.vorgang) || { name: "?" }).name : "von Hand"}${s.auto ? " · auto" : ""}${s.bedingung && s.bedingung.feld ? " · bedingt" : ""}`;
+      const tp = typVon(s);
+      const wozu = tp === "aufruf" ? (s.aktion ? (modulVon(s.aktion.vorgang) || { name: "?" }).name : "?") : TYPEN[tp] ? TYPEN[tp][1] : tp;
+      const zweig = istRef(s.bedingung) ? ` · wenn ${s.bedingung.wert}` : s.bedingung && s.bedingung.feld ? " · bedingt" : "";
+      const unten = opt.lauf ? `${(STATUS[st] || STATUS.wartet)[1]} ${(STATUS[st] || STATUS.wartet)[2]} · ${datumKurz(fristVon(opt.lauf, s))}` : `${TYPEN[tp] ? TYPEN[tp][0] : ""} ${tKurz(s.tage)}${s.fristart === "gesetzlich" ? " §" : ""} · ${wozu}${s.auto ? " · auto" : ""}${zweig}`;
       const ziel = opt.lauf ? "" : `data-aktion="schritt-bearbeiten" data-id="${esc(s.id)}" tabindex="0" role="button" aria-label="${esc(s.titel)} bearbeiten"`;
-      svg += `<g class="knoten ${st ? "st-" + esc(st) : ""} ${s.bedingung && s.bedingung.feld ? "bedingt" : ""}" ${ziel}><title>${esc(s.titel)}${s.fd ? " – Funktionendiagramm " + esc(s.fd) : ""}</title>`;
+      svg += `<g class="knoten typ-${esc(tp)} ${st ? "st-" + esc(st) : ""} ${s.bedingung && s.bedingung.feld ? "bedingt" : ""}" ${ziel}><title>${esc(s.titel)}${s.fd ? " – Funktionendiagramm " + esc(s.fd) : ""}</title>`;
       svg += `<rect x="${esc(p.x)}" y="${esc(p.y)}" width="${W}" height="${H}" rx="8"/>`;
       svg += `<text x="${esc(p.x + 10)}" y="${esc(p.y + 18)}" class="nr">${idx + 1}</text>`;
       zeilen.forEach((z, i) => { svg += `<text x="${esc(p.x + 28)}" y="${esc(p.y + 18 + i * 15)}" class="t">${esc(z)}</text>`; });
@@ -470,37 +774,61 @@
 
   function offeneAufgaben(rolle) {
     const out = [];
-    S.laeufe.forEach((l) => l.schritte.forEach((s) => { if ((!rolle || s.rolle === rolle) && ["bereit", "laeuft", "fehler"].includes(s.status)) out.push([l, s]); }));
+    S.laeufe.forEach((l) => { if (l.pausiert || l.abgebrochen) return; l.schritte.forEach((s) => { if ((!rolle || s.rolle === rolle) && ["bereit", "laeuft", "fehler"].includes(s.status) && !(s.status === "laeuft" && typVon(s) === "unterprozess")) out.push([l, s]); }); });
     return out.sort((a, b) => fristVon(a[0], a[1]).localeCompare(fristVon(b[0], b[1])));
   }
 
   function aktionKnopf(l, s) {
+    if (l.abgebrochen) return "";
+    if (l.pausiert) return `<span class="small muted">⏸ pausiert</span>`;
     const meine = s.rolle === S.rolle || (D.EXTERN || []).includes(s.rolle);
     const titel = meine ? "" : `title="Nur ${esc(ROLLEN[s.rolle])} – Rolle oben rechts wechseln"`;
     const dis = meine ? "" : "disabled";
     const d = `data-lauf="${esc(l.id)}" data-id="${esc(s.id)}"`;
-    if (s.status === "bereit") return s.aktion
-      ? `<button class="btn klein primaer" data-aktion="ausfuehren" ${d} ${dis} ${titel}>▶ Aufruf an EduKSX-${esc((modulVon(s.aktion.vorgang) || { name: "?" }).name)}</button>`
-      : `<button class="btn klein primaer" data-aktion="ausfuehren" ${d} ${dis} ${titel}>${(D.EXTERN || []).includes(s.rolle) ? "✓ Eingang bestätigen" : "✓ Erledigt melden"}</button>`;
+    const t = typVon(s);
+    if (s.status === "bereit") {
+      if (t === "aufruf") return `<button class="btn klein primaer" data-aktion="ausfuehren" ${d} ${dis} ${titel}>▶ Aufruf an EduKSX-${esc((modulVon(s.aktion && s.aktion.vorgang) || { name: "?" }).name)}</button>`;
+      const text = { genehmigung: "⚖ Entscheiden", entscheidung: "◇ Entscheiden", nachweis: "📎 Nachweis ablegen", termin: "📅 Termin festhalten" }[t];
+      if (text) return `<button class="btn klein primaer" data-aktion="erledigen" ${d} ${dis} ${titel}>${text}</button>`;
+      return `<button class="btn klein primaer" data-aktion="ausfuehren" ${d} ${dis} ${titel}>${(D.EXTERN || []).includes(s.rolle) ? "✓ Eingang bestätigen" : "✓ Erledigt melden"}</button>`;
+    }
+    if (s.status === "laeuft" && t === "unterprozess") return s.kind ? `<a class="btn klein" href="#/lauf/${esc(s.kind)}">⧉ Zum Unterprozess ${esc(s.kind)}</a>` : "";
     if (s.status === "laeuft") return `<button class="btn klein" data-aktion="rueckmeldung" ${d} title="Simuliert die Rückmeldung des Moduls (z. B. Unterschrift eingegangen)">↩ Rückmeldung simulieren</button>`;
     if (s.status === "fehler") return `<button class="btn klein" data-aktion="nochmals" ${d}>↻ Erneut versuchen</button>`;
+    if (s.status === "geplant" && t === "warten") return `<span class="small muted">wartet bis ${datumKurz(fristVon(l, s))}</span>`;
     if (s.status === "geplant") return `<button class="btn klein" data-aktion="jetzt" ${d} ${dis} ${titel} title="Automatischen Schritt vor der Frist auslösen">▶ Jetzt auslösen</button>`;
     return "";
   }
+  /** Eingriffe je Schritt für Prozessverantwortliche (überspringen, Zuständigkeit, wieder öffnen). */
+  function eingriffKnoepfe(l, s) {
+    if (!darfEingreifen() || l.abgebrochen) return "";
+    const d = `data-lauf="${esc(l.id)}" data-id="${esc(s.id)}"`;
+    const k = [];
+    if (["wartet", "bereit", "geplant", "fehler", "laeuft"].includes(s.status) && !(s.status === "laeuft" && typVon(s) === "unterprozess")) {
+      k.push(`<button class="btn klein" data-aktion="ein-ueberspringen" ${d} title="Schritt überspringen (mit Begründung)" aria-label="Überspringen">↷</button>`);
+      k.push(`<button class="btn klein" data-aktion="ein-rolle" ${d} title="Zuständigkeit ändern" aria-label="Zuständigkeit ändern">👤</button>`);
+    }
+    if (["erledigt", "uebersprungen"].includes(s.status)) k.push(`<button class="btn klein" data-aktion="ein-oeffnen" ${d} title="Schritt wieder öffnen (mit Begründung)" aria-label="Wieder öffnen">↺</button>`);
+    return k.length ? `<div class="eingriff">${k.join(" ")}</div>` : "";
+  }
+  const laufStatus = (l) => (l.abgebrochen ? `<span class="badge neutral">⊘ abgebrochen ${datumKurz(l.abgebrochen)}</span>` : l.abgeschlossen ? `<span class="badge erfolg">✓ abgeschlossen</span>` : l.pausiert ? `<span class="badge warnung">⏸ pausiert</span>` : "");
 
   // ---------------------------------------------------------------- Seiten
   function seiteUebersicht() {
-    const aktiv = S.laeufe.filter((l) => !l.abgeschlossen);
+    const aktiv = S.laeufe.filter((l) => !l.abgeschlossen && !l.abgebrochen);
     const alle = offeneAufgaben(null);
+    const gef = []; aktiv.forEach((l) => { if (!l.pausiert) l.schritte.forEach((x) => { if (gefaehrdet(l, x)) gef.push([l, x]); }); });
+    const pausiert = aktiv.filter((l) => l.pausiert).length;
+    const heuteAusg = S.ausloesungen.filter((x) => x.tag === S.heute && x.ergebnis === "gestartet").length;
     const ueber = alle.filter(([l, s]) => ueberfaellig(l, s));
     const fehler = alle.filter(([, s]) => s.status === "fehler");
     const zeilen = S.laeufe.map((l) => {
       const [e, n, p] = fortschritt(l);
       const naechste = l.schritte.filter((s) => ["bereit", "laeuft", "fehler", "geplant"].includes(s.status)).sort((a, b) => a.tage - b.tage)[0];
-      return `<tr><td><a href="#/lauf/${esc(l.id)}">${esc(l.kontext.person)}</a><div class="small muted">${esc(l.kontext.funktion || "")}</div></td><td>${esc(l.titel)} <span class="small muted">v${esc(l.version)}</span></td>
+      return `<tr><td><a href="#/lauf/${esc(l.id)}">${esc(l.kontext.person)}</a><div class="small muted">${esc(l.kontext.funktion || "")}${l.eltern ? ` · ⧉ Unterprozess von ${esc(l.eltern.lauf)}` : ""}${l.ausloeser ? " · ⚡ automatisch" : ""}</div></td><td>${esc(l.titel)} <span class="small muted">v${esc(l.version)}</span></td>
         <td>${esc(l.stichtagName)}: ${datumKurz(l.kontext.stichtag)}<div class="small muted">${relTage(tageZwischen(l.kontext.stichtag, S.heute)).replace("vorher", "bis dahin").replace("nachher", "her")}</div></td>
         <td>${balken(p)}<div class="small muted">${e} von ${n} Schritten</div></td>
-        <td>${l.abgeschlossen ? `<span class="badge erfolg">✓ abgeschlossen</span>` : naechste ? `${badge(naechste.status)}${fristBadge(l, naechste)}<div class="small">${esc(naechste.titel)} · ${rolleBadge(naechste.rolle)}</div>` : ""}</td></tr>`;
+        <td>${l.abgeschlossen || l.abgebrochen ? laufStatus(l) : naechste ? `${l.pausiert ? laufStatus(l) + " " : ""}${badge(naechste.status, naechste)}${fristBadge(l, naechste)}<div class="small">${esc(naechste.titel)} · ${rolleBadge(naechste.rolle)}</div>` : ""}</td></tr>`;
     }).join("");
     const jeRolle = Object.keys(ROLLEN).map((r) => [r, offeneAufgaben(r).length]).filter(([, n]) => n);
     return `
@@ -511,6 +839,9 @@
         <div class="karte"><div class="zahl">${alle.length}</div><div class="titel">offene Aufgaben (alle Rollen)</div></div>
         <div class="karte"><div class="zahl">${ueber.length}</div><div class="titel">${ueber.length ? "⚠ " : ""}überfällig</div></div>
         <div class="karte"><div class="zahl">${fehler.length}</div><div class="titel">${fehler.length ? "✕ " : ""}fehlgeschlagene Aufrufe</div></div>
+        <div class="karte"><div class="zahl">${gef.length}</div><div class="titel">${gef.length ? "⚠ " : ""}Frist gefährdet (blockiert)</div></div>
+        <div class="karte"><div class="zahl">${pausiert}</div><div class="titel">${pausiert ? "⏸ " : ""}pausierte Abläufe</div></div>
+        <div class="karte"><a href="#/ausloeser" class="zahl">${heuteAusg}</a><div class="titel">⚡ heute automatisch gestartet</div></div>
       </div>
       <section><h2>Abläufe</h2><div class="tabelle-wrap"><table><thead><tr><th>Person</th><th>Ablauf</th><th>Stichtag</th><th>Fortschritt</th><th>Nächster Schritt</th></tr></thead><tbody>${zeilen || `<tr><td colspan="5" class="muted">Noch keine Abläufe.</td></tr>`}</tbody></table></div></section>
       <section style="margin-top:1.25rem"><h2>Jahreskalender: als Nächstes</h2>${kalListe(KAL.demnaechst(28, false).slice(0, 6))}<p class="small"><a href="#/kalender">Zum Jahreskalender</a></p></section>
@@ -524,7 +855,7 @@
     S.laeufe.forEach((l) => l.schritte.forEach((s) => { if (s.rolle === S.rolle && ["wartet", "geplant"].includes(s.status) && tageZwischen(S.heute, fristVon(l, s)) <= 21) bald.push([l, s]); }));
     bald.sort((a, b) => fristVon(a[0], a[1]).localeCompare(fristVon(b[0], b[1])));
     const info = S.hinweise.filter((h) => h.rolle === S.rolle).slice(0, 12);
-    const zeile = ([l, s], mitAktion) => `<tr><td>${badge(s.status)}${fristBadge(l, s)}</td><td><strong>${esc(s.titel)}</strong><div class="small muted"><a href="#/lauf/${esc(l.id)}">${esc(l.kontext.person)} · ${esc(l.titel)}</a>${s.fd ? ` · FD ${esc(s.fd)}` : ""}</div>${s.fehler ? `<div class="small" style="color:var(--destructive)">✕ ${esc(s.fehler)}</div>` : ""}</td>
+    const zeile = ([l, s], mitAktion) => `<tr><td>${badge(s.status, s)}${fristBadge(l, s)}</td><td><strong>${esc(s.titel)}</strong><div class="small muted"><a href="#/lauf/${esc(l.id)}">${esc(l.kontext.person)} · ${esc(l.titel)}</a>${s.fd ? ` · FD ${esc(s.fd)}` : ""}</div>${s.fehler ? `<div class="small" style="color:var(--destructive)">✕ ${esc(s.fehler)}</div>` : ""}</td>
       <td>${datumKurz(fristVon(l, s))}</td><td>${aufrufText(s)}</td><td>${mitAktion ? aktionKnopf(l, s) : (s.status === "wartet" ? `<span class="small muted">nach ${esc((s.nach || []).map((n) => (l.schritte.find((x) => x.id === n) || {}).titel).join(", "))}</span>` : `<span class="small muted">läuft automatisch am ${datumKurz(fristVon(l, s))}</span>`)}</td></tr>`;
     return `
       <div class="seitenkopf"><div><h1>Meine Aufgaben</h1><p class="muted">Rolle: ${rolleBadge(S.rolle)} ${esc(ROLLEN[S.rolle])}. Aufgaben entstehen, sobald die Vorgänger eines Schritts erledigt sind. Automatische Schritte erscheinen hier nur, wenn ein Aufruf fehlschlägt.</p></div></div>
@@ -543,7 +874,7 @@
   function seiteLaeufe() {
     const karten = S.laeufe.map((l) => {
       const [e, n, p] = fortschritt(l);
-      return `<a class="karte laufkarte" href="#/lauf/${esc(l.id)}"><div class="small muted">${esc(l.id)} · ${esc(l.titel)} v${esc(l.version)}</div><h3>${esc(l.kontext.person)}</h3><div class="small">${esc(l.kontext.funktion || "")} · ${esc(l.stichtagName)} ${datumKurz(l.kontext.stichtag)}</div>${balken(p)}<div class="small muted">${l.abgeschlossen ? "✓ abgeschlossen am " + datumKurz(l.abgeschlossen) : `${e} von ${n} Schritten erledigt`}</div></a>`;
+      return `<a class="karte laufkarte" href="#/lauf/${esc(l.id)}"><div class="small muted">${esc(l.id)} · ${esc(l.titel)} v${esc(l.version)}</div><h3>${esc(l.kontext.person)}</h3><div class="small">${esc(l.kontext.funktion || "")} · ${esc(l.stichtagName)} ${datumKurz(l.kontext.stichtag)}</div>${balken(p)}<div class="small muted">${l.abgebrochen ? "⊘ abgebrochen am " + datumKurz(l.abgebrochen) : l.abgeschlossen ? "✓ abgeschlossen am " + datumKurz(l.abgeschlossen) : `${l.pausiert ? "⏸ pausiert · " : ""}${e} von ${n} Schritten erledigt`}${l.eltern ? ` · ⧉ Unterprozess von ${esc(l.eltern.lauf)}` : ""}${l.ausloeser ? " · ⚡ " + esc(l.ausloeser) : ""}</div></a>`;
     }).join("");
     return `<div class="seitenkopf"><div><h1>Laufende Abläufe</h1><p class="muted">Jeder Ablauf arbeitet mit einer Kopie der Vorlage in der Version beim Start – spätere Änderungen an der Vorlage verändern laufende Abläufe nicht.</p></div><div class="aktionen"><a class="btn primaer" href="#/neu">▶ Ablauf starten</a></div></div><div class="karten">${karten}</div>`;
   }
@@ -554,30 +885,44 @@
     const [e, n, p] = fortschritt(l);
     reiter = reiter || "schritte";
     const kontext = Object.entries(l.kontext).map(([k, w]) => `<div class="feldzeile"><span class="muted">${esc(k)}</span><span>${esc(k === "stichtag" ? datum(w) : w)}</span></div>`).join("");
-    const zeilen = l.schritte.map((s, i) => `<tr class="${s.status === "uebersprungen" ? "blass" : ""}">
+    const zeilen = l.schritte.map((s, i) => `<tr class="${["uebersprungen", "abgebrochen"].includes(s.status) ? "blass" : ""}">
       <td class="zahl">${i + 1}</td>
-      <td><strong>${esc(s.titel)}</strong>${s.quelle ? `<div class="quelle">📖 ${quelleHtml(s.quelle)}</div>` : ""}${s.bedingung && s.bedingung.feld ? `<div class="small muted">Bedingung: ${esc(bedingungText(s.bedingung))}</div>` : ""}${s.fehler && s.status === "fehler" ? `<div class="small" style="color:var(--destructive)">✕ ${esc(s.fehler)}</div>` : ""}</td>
+      <td><strong>${esc(s.titel)}</strong>${s.zusatz ? ` <span class="badge violett" title="Im laufenden Ablauf eingefügt">＋ eingefügt</span>` : ""}${s.quelle ? `<div class="quelle">📖 ${quelleHtml(s.quelle)}</div>` : ""}${s.bedingung && s.bedingung.feld ? `<div class="small muted">${istRef(s.bedingung) ? "Zweig" : "Bedingung"}: ${esc(bedingungText(s.bedingung, l.schritte))}${s.erzwungen ? " (aufgehoben)" : ""}</div>` : ""}${s.status === "uebersprungen" && s.grund ? `<div class="small muted">↷ ${esc(s.grund)}</div>` : ""}${s.fehler && s.status === "fehler" ? `<div class="small" style="color:var(--destructive)">✕ ${esc(s.fehler)}</div>` : ""}</td>
       <td>${rolleBadge(s.rolle)}${s.fd ? `<div class="small muted">FD ${esc(s.fd)}</div>` : ""}</td>
-      <td>${datumKurz(fristVon(l, s))}<div class="small muted">${tKurz(s.tage)}</div></td>
+      <td>${datumKurz(fristVon(l, s))}${fristartBadge(s)}<div class="small muted">${tKurz(s.tage)}</div></td>
       <td>${aufrufText(s)}${s.param ? `<div class="param">${Object.entries(s.param).map(([k, w]) => `${esc(k)}: ${esc(w)}`).join("<br>")}</div>` : ""}</td>
-      <td>${badge(s.status)}${fristBadge(l, s)}${s.ergebnis ? `<div class="param">${Object.entries(s.ergebnis).map(([k, w]) => `→ ${esc(k)}: ${esc(w)}`).join("<br>")}</div>` : ""}${s.erledigtAm ? `<div class="small muted">${datumKurz(s.erledigtAm)}</div>` : ""}</td>
-      <td>${aktionKnopf(l, s)}</td></tr>`).join("");
+      <td>${badge(s.status, s)}${fristBadge(l, s)}${s.ergebnis ? `<div class="param">${Object.entries(s.ergebnis).map(([k, w]) => `→ ${esc(k)}: ${k === "ablauf" ? `<a href="#/lauf/${esc(w)}">${esc(w)}</a>` : esc(w)}`).join("<br>")}</div>` : ""}${s.erledigtAm ? `<div class="small muted">${datumKurz(s.erledigtAm)}</div>` : ""}</td>
+      <td>${aktionKnopf(l, s)}${eingriffKnoepfe(l, s)}</td></tr>`).join("");
     const aufrufe = S.aufrufe.filter((a) => a.lauf === l.id);
+    const kinder = S.laeufe.filter((x) => x.eltern && x.eltern.lauf === l.id);
+    const offen = !l.abgeschlossen && !l.abgebrochen;
+    const d = `data-lauf="${esc(l.id)}"`;
+    const eingriffe = darfEingreifen() && offen ? `<div class="aktionen">
+        <button class="btn" data-aktion="ein-pause" ${d}>${l.pausiert ? "▶ Fortsetzen" : "⏸ Pausieren"}</button>
+        <button class="btn" data-aktion="ein-stichtag" ${d}>📅 Stichtag verschieben</button>
+        <button class="btn" data-aktion="ein-einfuegen" ${d}>＋ Schritt einfügen</button>
+        <button class="btn gefahr" data-aktion="ein-abbrechen" ${d}>⊘ Abbrechen</button></div>` : "";
+    const journalHtml = (l.journal || []).length ? `<div class="tabelle-wrap"><table><thead><tr><th>Wann</th><th>Wer</th><th>Art</th><th>Was</th><th>Begründung</th></tr></thead><tbody>${l.journal.map((j) => `<tr><td class="small">${datumKurz(j.tag)}<div class="muted">${esc(j.uhr)}</div></td><td class="small">${esc(j.wer)}</td><td><span class="badge ${["Abbruch", "Eskalation", "Kompensation"].includes(j.art) ? "warnung" : j.art === "Eingriff" ? "violett" : "neutral"}">${esc(j.art)}</span></td><td class="small">${esc(j.text)}</td><td class="small">${esc(j.grund)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">Noch keine Einträge.</p>`;
     return `
-      <div class="seitenkopf"><div><div class="small muted"><a href="#/laeufe">Laufende Abläufe</a> › ${esc(l.id)}</div><h1>${esc(l.titel)}: ${esc(l.kontext.person)}</h1>
-        <p class="muted">Vorlage Version ${esc(l.version)}, gestartet ${datumKurz(l.gestartet)} · ${esc(l.stichtagName)}: ${datum(l.kontext.stichtag)}${l.ereignisTitel ? ` · aus dem <a href="#/kalender/liste">Jahreskalender</a>: ${esc(l.ereignisTitel)}` : ""}</p></div></div>
+      <div class="seitenkopf"><div><div class="small muted"><a href="#/laeufe">Laufende Abläufe</a> › ${esc(l.id)}</div><h1>${esc(l.titel)}: ${esc(l.kontext.person)} ${laufStatus(l)}</h1>
+        <p class="muted">Vorlage Version ${esc(l.version)}, gestartet ${datumKurz(l.gestartet)} · ${esc(l.stichtagName)}: ${datum(l.kontext.stichtag)}${l.ereignisTitel ? ` · aus dem <a href="#/kalender/liste">Jahreskalender</a>: ${esc(l.ereignisTitel)}` : ""}${l.ausloeser ? ` · ⚡ ${esc(l.ausloeser)}` : ""}${l.eltern ? ` · ⧉ Unterprozess von <a href="#/lauf/${esc(l.eltern.lauf)}">${esc(l.eltern.lauf)}</a>` : ""}</p></div>${eingriffe}</div>
+      ${l.pausiert ? `<p class="meldung warnung">⏸ Pausiert: Es laufen keine automatischen Schritte, Fristen werden nicht eskaliert, Aufgaben erscheinen nicht unter «Meine Aufgaben».</p>` : ""}
+      ${l.abgebrochen ? `<p class="meldung info">⊘ Abgebrochen am ${datumKurz(l.abgebrochen)}. Bereits ausgeführte Aufrufe stehen im Journal (Kompensation).</p>` : ""}
+      ${darfEingreifen() || !offen ? "" : `<p class="small muted">Eingriffe (pausieren, abbrechen, Stichtag verschieben, Schritte überspringen oder einfügen) dürfen Prozessverantwortliche: ${(D.PROZESSVERANTWORTLICH || []).map((r) => esc(ROLLEN[r])).join(", ")}.</p>`}
       <div class="spalten" style="grid-template-columns: 2fr 1fr; margin-bottom:1rem">
-        <div class="karte"><div class="titel muted small">Fortschritt</div><div class="zahl">${p} %</div>${balken(p)}<div class="small muted">${e} von ${n} Schritten erledigt oder übersprungen${l.abgeschlossen ? " · ✓ abgeschlossen am " + datumKurz(l.abgeschlossen) : ""}</div></div>
+        <div class="karte"><div class="titel muted small">Fortschritt</div><div class="zahl">${p} %</div>${balken(p)}<div class="small muted">${e} von ${n} Schritten erledigt oder übersprungen${l.abgeschlossen ? " · ✓ abgeschlossen am " + datumKurz(l.abgeschlossen) : ""}</div>${kinder.length ? `<div class="small" style="margin-top:.5rem">Unterprozesse: ${kinder.map((k) => `<a href="#/lauf/${esc(k.id)}">${esc(k.id)} ${esc(k.titel)}</a> ${laufStatus(k) || `(${fortschritt(k)[2]} %)`}`).join(" · ")}</div>` : ""}</div>
         <div class="karte"><div class="titel muted small">Kontext (Eingaben beim Start)</div><div class="feldliste">${kontext}</div></div>
       </div>
       <div class="reiter" role="tablist">
         <button role="tab" aria-selected="${reiter === "schritte"}" data-aktion="reiter" data-ziel="#/lauf/${esc(l.id)}/schritte">Schritte</button>
         <button role="tab" aria-selected="${reiter === "bild"}" data-aktion="reiter" data-ziel="#/lauf/${esc(l.id)}/bild">Ablaufbild</button>
+        <button role="tab" aria-selected="${reiter === "journal"}" data-aktion="reiter" data-ziel="#/lauf/${esc(l.id)}/journal">Journal (${(l.journal || []).length})</button>
         <button role="tab" aria-selected="${reiter === "protokoll"}" data-aktion="reiter" data-ziel="#/lauf/${esc(l.id)}/protokoll">Aufrufe (${aufrufe.length})</button>
       </div>
       ${reiter === "bild" ? legende() + ablaufbild(l.schritte, { lauf: l })
         : reiter === "protokoll" ? protokollTabelle(aufrufe)
-        : `<div class="tabelle-wrap"><table><thead><tr><th class="zahl">#</th><th>Schritt</th><th>Wer</th><th>Frist</th><th>Aufruf und Parameter</th><th>Status und Ergebnis</th><th></th></tr></thead><tbody>${zeilen}</tbody></table></div>`}`;
+        : reiter === "journal" ? `<p class="small muted">Fachliches Journal: Start, Entscheide, Unterprozesse, Eskalationen ab Stufe 3 und alle Eingriffe mit Begründung. Technische Aufrufe stehen unter «Aufrufe».</p>${journalHtml}`
+        : `<div class="tabelle-wrap"><table><thead><tr><th class="zahl">#</th><th>Schritt</th><th>Wer</th><th>Frist</th><th>Art bzw. Aufruf</th><th>Status und Ergebnis</th><th></th></tr></thead><tbody>${zeilen}</tbody></table></div>`}`;
   }
   const legende = () => `<p class="small muted legende">${Object.keys(STATUS).map((k) => badge(k)).join(" ")}</p>`;
 
@@ -592,19 +937,25 @@
       return `<label class="feld">${esc(f.label)}<input type="${f.typ === "datum" ? "date" : f.typ === "zahl" ? "number" : "text"}" value="${esc(w)}" data-aktion="start-feld" data-key="${esc(f.key)}"></label>`;
     };
     const probe = { kontext: E, schritte: v.schritte.map((s) => Object.assign({}, s, { ergebnis: null })) };
+    const zweigHaengt = new Set();
+    v.schritte.forEach((s) => { if (istRef(s.bedingung) || (s.nach || []).some((n) => zweigHaengt.has(n) && (s.nach || []).every((m) => zweigHaengt.has(m)))) zweigHaengt.add(s.id); });
     const zeilen = v.schritte.map((s, i) => {
+      if (zweigHaengt.has(s.id)) return `<tr><td class="zahl">${i + 1}</td><td>${esc(s.titel)}</td><td>${rolleBadge(s.rolle)}</td><td>${E.stichtag ? datumKurz(addTage(E.stichtag, s.tage)) : "–"}${fristartBadge(s)}</td><td>${aufrufText(s)}</td><td><span class="badge violett">◇ entscheidet sich im Ablauf</span>${istRef(s.bedingung) ? `<div class="small muted">${esc(bedingungText(s.bedingung, v.schritte))}</div>` : ""}</td></tr>`;
       const ok = bedingungErfuellt(s.bedingung, probe);
       const frist = E.stichtag ? addTage(E.stichtag, s.tage) : "";
       const vergangen = frist && frist < S.heute;
-      return `<tr class="${ok ? "" : "blass"}"><td class="zahl">${i + 1}</td><td>${esc(s.titel)}</td><td>${rolleBadge(s.rolle)}</td><td>${datumKurz(frist)}${vergangen && ok ? ` <span class="badge warnung">! schon vorbei</span>` : ""}</td><td>${aufrufText(s)}${s.auto ? ` <span class="badge violett">auto</span>` : ""}</td><td>${ok ? `<span class="badge info">● wird geplant</span>` : `<span class="badge neutral">– entfällt</span><div class="small muted">${esc(bedingungText(s.bedingung))}</div>`}</td></tr>`;
+      return `<tr class="${ok ? "" : "blass"}"><td class="zahl">${i + 1}</td><td>${esc(s.titel)}</td><td>${rolleBadge(s.rolle)}</td><td>${datumKurz(frist)}${fristartBadge(s)}${vergangen && ok ? ` <span class="badge warnung">! schon vorbei</span>` : ""}</td><td>${aufrufText(s)}${s.auto ? ` <span class="badge violett">auto</span>` : ""}</td><td>${ok ? `<span class="badge info">● wird geplant</span>` : `<span class="badge neutral">– entfällt</span><div class="small muted">${esc(bedingungText(s.bedingung))}</div>`}</td></tr>`;
     }).join("");
-    const knapp = E.stichtag && v.schritte.some((s) => bedingungErfuellt(s.bedingung, probe) && addTage(E.stichtag, s.tage) < S.heute);
+    const knapp = E.stichtag && v.schritte.some((s) => !istRef(s.bedingung) && bedingungErfuellt(s.bedingung, probe) && addTage(E.stichtag, s.tage) < S.heute);
+    const doppel = S.ausgeloest[startSchluessel(v, E)] && laufVon(S.ausgeloest[startSchluessel(v, E)]);
     return `
       <div class="seitenkopf"><div><h1>Ablauf starten</h1><p class="muted">Vorlage wählen, Angaben erfassen – ${wordmark("Flow")} rechnet die Fristen vom Stichtag aus und lässt Schritte weg, deren Bedingung nicht zutrifft.</p></div></div>
       ${START_EREIGNIS[v.id] ? `<p class="meldung info">Aus dem Jahreskalender: <strong>${esc(START_EREIGNIS[v.id].titel)}</strong> – Stichtag vom Ereignis übernommen.</p>` : ""}
       <div class="formzeile"><label class="feld">Vorlage<select data-aktion="start-vorlage">${[...new Set(frei.map((x) => x.gruppe || "Weitere"))].map((g) => `<optgroup label="${esc(g)}">${frei.filter((x) => (x.gruppe || "Weitere") === g).map((x) => `<option value="${esc(x.id)}" ${x.id === v.id ? "selected" : ""}>${esc(x.titel)} (v${esc(x.version)})</option>`).join("")}</optgroup>`).join("")}</select></label></div>
       <div class="karte" style="margin-bottom:1rem"><p class="small muted">${esc(v.beschreibung)}</p><div class="formzeile">${v.felder.map(feld).join("")}</div>
         ${knapp ? `<p class="meldung warnung">⚠ Einzelne Fristen liegen schon in der Vergangenheit – diese Schritte sind ab Start überfällig.</p>` : ""}
+        ${doppel && !doppel.abgebrochen ? `<p class="meldung warnung">⚠ Mit gleicher Bezeichnung und gleichem Stichtag läuft bereits <a href="#/lauf/${esc(doppel.id)}">${esc(doppel.id)}</a>. Ein zweiter Start ist möglich, aber vermutlich doppelt.</p>` : ""}
+        ${(v.ausloeser || []).length ? `<p class="small muted">Diese Vorlage startet auch automatisch: ${v.ausloeser.map((a) => esc(ausloeserText(a))).join(" · ")}</p>` : ""}
         <button class="btn primaer" data-aktion="starten" data-vorlage="${esc(v.id)}" ${E.person && E.stichtag ? "" : "disabled"}>▶ Ablauf starten</button></div>
       <h2>Vorschau</h2><div class="tabelle-wrap"><table><thead><tr><th class="zahl">#</th><th>Schritt</th><th>Wer</th><th>Frist</th><th>Aufruf</th><th>Plan</th></tr></thead><tbody>${zeilen}</tbody></table></div>`;
   }
@@ -634,7 +985,7 @@
       const f = m.filter((x) => x[0] === "fehler").length, w = m.filter((x) => x[0] === "warnung").length;
       const laufend = S.laeufe.filter((l) => l.vorlage === v.id && !l.abgeschlossen).length;
       return `<div class="karte"><div class="small muted">Version ${esc(v.version)} · ${v.schritte.length} Schritte · ${laufend} laufend</div><h3><a href="#/vorlage/${esc(v.id)}">${esc(v.titel)}</a></h3><p class="small">${esc(v.beschreibung)}</p>
-        <div>${v.status === "freigegeben" ? `<span class="badge erfolg">✓ freigegeben</span>` : `<span class="badge warnung">✎ Entwurf</span>`} ${f ? `<span class="badge fehler">✕ ${f} Fehler</span>` : ""} ${w ? `<span class="badge warnung">⚠ ${w} Hinweise</span>` : ""}</div></div>`;
+        <div>${v.status === "freigegeben" ? `<span class="badge erfolg">✓ freigegeben</span>` : `<span class="badge warnung">✎ Entwurf</span>`} ${f ? `<span class="badge fehler">✕ ${f} Fehler</span>` : ""} ${w ? `<span class="badge warnung">⚠ ${w} Hinweise</span>` : ""} ${(v.ausloeser || []).length ? `<span class="badge violett" title="${esc(v.ausloeser.map(ausloeserText).join(" · "))}">⚡ ${v.ausloeser.length} Auslöser</span>` : ""} ${v.schritte.some((x) => typVon(x) === "unterprozess") ? `<span class="badge neutral">⧉ mit Unterprozess</span>` : ""}</div></div>`;
     };
     const karten = gruppen.map((g) => `<h2 class="gruppenkopf">${esc(g)} <span class="small muted">${S.vorlagen.filter((v) => (v.gruppe || "Weitere") === g).length}</span></h2><div class="karten">${S.vorlagen.filter((v) => (v.gruppe || "Weitere") === g).map(karte).join("")}</div>`).join("");
     return `<div class="seitenkopf"><div><h1>Ablaufvorlagen</h1><p class="muted">Vorlagen beschreiben, welche Schritte in welcher Reihenfolge nötig sind, wer zuständig ist und welchen Vorgang jeder Schritt aufruft. Prozessbeschriebe: Schulverwaltung bereitet vor (V), Ressortvorstand gibt frei (E) – Funktionendiagramm 1.1.5.</p></div>
@@ -652,12 +1003,12 @@
     const meldungen = m.length ? `<div class="meldung ${fehler.length ? "fehler" : "warnung"}"><strong>${fehler.length ? "✕ Prüfung: nicht freigabebereit" : "⚠ Prüfung: Hinweise"}</strong><ul>${m.map((x) => `<li>${x[0] === "fehler" ? "✕" : "⚠"} ${esc(x[1])}</li>`).join("")}</ul></div>` : `<div class="meldung info">✓ Prüfung ohne Befund: Reihenfolge, Parameter, Platzhalter und Zuständigkeiten passen.</div>`;
     const zeilen = v.schritte.map((s, i) => `<tr>
       <td class="zahl">${i + 1}</td>
-      <td><strong>${esc(s.titel)}</strong><div class="small muted">${esc(s.id)}${s.bedingung && s.bedingung.feld ? " · nur wenn " + esc(bedingungText(s.bedingung)) : ""}</div></td>
+      <td><strong>${esc(s.titel)}</strong><div class="small muted">${esc(s.id)}${s.bedingung && s.bedingung.feld ? " · nur wenn " + esc(bedingungText(s.bedingung, v.schritte)) : ""}</div></td>
       <td>${rolleBadge(s.rolle)}${s.fd ? `<div class="small muted">FD ${esc(s.fd)}</div>` : ""}${(s.informiert || []).length ? `<div class="small muted">I: ${s.informiert.map(esc).join(", ")}</div>` : ""}</td>
-      <td>${esc(tKurz(s.tage))}<div class="small muted">${esc(relTage(s.tage))}</div></td>
+      <td>${tKurz(s.tage)}${fristartBadge(s)}<div class="small muted">${relTage(s.tage)}</div></td>
       <td class="small">${(s.nach || []).map((n) => { const q = v.schritte.findIndex((x) => x.id === n); return q >= 0 ? "#" + (q + 1) : esc(n); }).join(", ") || "–"}</td>
       <td>${aufrufText(s)}${s.aktion ? `<div class="param">${Object.entries(s.aktion.param || {}).map(([k, w]) => `${esc(k)}: ${esc(w)}`).join("<br>")}</div>` : ""}</td>
-      <td>${s.aktion ? (s.auto ? `<span class="badge violett">◷ automatisch</span>` : `<span class="badge info">● bestätigen</span>`) : `<span class="badge neutral">✋ von Hand</span>`}</td>
+      <td>${typVon(s) === "aufruf" ? (s.auto ? `<span class="badge violett">◷ automatisch</span>` : `<span class="badge info">● bestätigen</span>`) : ["warten", "benachrichtigung", "unterprozess"].includes(typVon(s)) ? `<span class="badge violett">◷ durch Flow</span>` : `<span class="badge neutral">✋ von Hand</span>`}</td>
       <td class="quelle">${quelleHtml(s.quelle)}</td>
       <td style="white-space:nowrap">${darf ? `<button class="btn klein" data-aktion="schritt-bearbeiten" data-id="${esc(s.id)}" aria-label="Bearbeiten">✎</button> <button class="btn klein" data-aktion="schritt-hoch" data-id="${esc(s.id)}" aria-label="Nach oben" ${i ? "" : "disabled"}>↑</button> <button class="btn klein" data-aktion="schritt-runter" data-id="${esc(s.id)}" aria-label="Nach unten" ${i < v.schritte.length - 1 ? "" : "disabled"}>↓</button> <button class="btn klein gefahr" data-aktion="schritt-loeschen" data-id="${esc(s.id)}" aria-label="Löschen">✕</button>` : ""}</td></tr>`).join("");
     const felder = v.felder.map((f) => `<tr><td><code>{${esc(f.key)}}</code></td><td>${esc(f.label)}</td><td>${esc(f.typ)}${f.werte ? `<div class="small muted">${esc(f.werte.join(", "))}</div>` : ""}</td></tr>`).join("");
@@ -675,11 +1026,51 @@
         <button role="tab" aria-selected="${reiter === "bild"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/bild">Ablaufbild</button>
         <button role="tab" aria-selected="${reiter === "liste"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/liste">Schritte (${v.schritte.length})</button>
         <button role="tab" aria-selected="${reiter === "felder"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/felder">Kontextfelder</button>
+        <button role="tab" aria-selected="${reiter === "ausloeser"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/ausloeser">Auslöser (${(v.ausloeser || []).length})</button>
       </div>
       ${reiter === "bild" ? `${quellenVerzeichnis(v.schritte)}<p class="small muted">Bahnen = verantwortliche Rolle, von links nach rechts = Reihenfolge (Pfeil = «nach»). ${darf ? "Schritt anklicken zum Bearbeiten." : ""} Gestrichelt = nur unter Bedingung.</p>${ablaufbild(v.schritte)}`
+        : reiter === "ausloeser" ? vorlageAusloeser(v, darf)
         : reiter === "felder" ? `<p class="small muted">Angaben beim Start eines Ablaufs. Sie stehen als Platzhalter in den Parametern zur Verfügung, dazu <code>{stichtag+N}</code>/<code>{stichtag-N}</code> und Ergebnisse früherer Schritte wie <code>{o5.benutzername}</code>.</p><div class="tabelle-wrap"><table><thead><tr><th>Platzhalter</th><th>Bezeichnung</th><th>Typ</th></tr></thead><tbody>${felder}</tbody></table></div>`
         : `<div class="tabelle-wrap"><table><thead><tr><th class="zahl">#</th><th>Schritt</th><th>Wer</th><th>Frist</th><th>Nach</th><th>Aufruf</th><th>Ausführung</th><th>Quelle</th><th></th></tr></thead><tbody>${zeilen}</tbody></table></div>${quellenVerzeichnis(v.schritte)}`}`;
   }
+
+  function vorlageAusloeser(v, darf) {
+    const liste = (v.ausloeser || []).map((a, i) => `<li>${esc(ausloeserText(a))} ${darf ? `<button class="btn klein gefahr" data-aktion="ausl-weg" data-i="${i}" aria-label="Auslöser entfernen">✕</button>` : ""}</li>`).join("");
+    const evs = S.ereignisse.filter((e) => !e.flow || e.flow === v.id).slice().sort((a, b) => a.titel.localeCompare(b.titel));
+    const neu = darf ? `<div class="karte" style="margin-top:1rem"><h3>Auslöser hinzufügen</h3><div class="formzeile">
+        <label class="feld">Art<select id="ausl-art" data-aktion="ausl-art"><option value="ereignis" ${AUSL_ART === "ereignis" ? "selected" : ""}>Modul-Ereignis (Datensatz, Status)</option><option value="kalender" ${AUSL_ART === "kalender" ? "selected" : ""}>Jahreskalender (automatisch)</option><option value="abschluss" ${AUSL_ART === "abschluss" ? "selected" : ""}>Abschluss eines Ablaufs</option></select></label>
+        <label class="feld">Quelle<select id="ausl-quelle">${AUSL_ART === "ereignis" ? D.MODULEREIGNISSE.map((e) => `<option value="${e.id}">${esc(e.titel)} (${esc(e.art)})</option>`).join("")
+          : AUSL_ART === "kalender" ? evs.map((e) => `<option value="${e.id}">${esc(e.titel)}</option>`).join("")
+          : S.vorlagen.filter((x) => x.id !== v.id).map((x) => `<option value="${esc(x.id)}">${esc(x.titel)}</option>`).join("")}</select></label>
+        ${AUSL_ART === "abschluss" ? `<label class="feld">Stichtag + Tage<input type="number" id="ausl-versatz" value="0"></label>` : ""}
+        <button class="btn" data-aktion="ausl-neu" style="align-self:end">＋ Hinzufügen</button></div>
+        <p class="small muted">Eine Änderung macht aus der Vorlage einen Entwurf; ausgelöst werden nur freigegebene Vorlagen.</p></div>` : "";
+    return `<p class="small muted">Neben dem Start von Hand kann eine Vorlage automatisch starten. Doppelte Starts (gleiche Bezeichnung, gleicher Stichtag) werden nicht ausgeführt, sondern protokolliert. <a href="#/ausloeser">Alle Auslöser und Simulation</a></p>
+      <ul class="infoliste">${liste || `<li class="muted">Nur Start von Hand.</li>`}</ul>${neu}`;
+  }
+  let AUSL_ART = "ereignis";
+
+  function seiteAusloeser() {
+    const karten = D.MODULEREIGNISSE.map((me) => {
+      const m = D.MODULE.find((x) => x.key === me.modul);
+      const ziele = mitAusloeser("ereignis").filter(([, a]) => a.ereignis === me.id).map(([v]) => v);
+      const E = EREIGNIS_EINGABE[me.id] || (EREIGNIS_EINGABE[me.id] = Object.fromEntries(me.felder.map((f) => [f.key, f.typ === "auswahl" ? f.werte[0] : f.typ === "datum" ? addTage(S.heute, 45) : f.typ === "zahl" ? (f.key === "pensumAlt" ? 100 : 80) : ""])));
+      const feld = (f) => f.typ === "auswahl"
+        ? `<label class="feld">${esc(f.label)}<select data-aktion="ereignis-feld" data-ev="${esc(me.id)}" data-key="${esc(f.key)}">${f.werte.map((x) => `<option ${x === E[f.key] ? "selected" : ""}>${esc(x)}</option>`).join("")}</select></label>`
+        : `<label class="feld">${esc(f.label)}<input type="${f.typ === "datum" ? "date" : f.typ === "zahl" ? "number" : "text"}" value="${esc(E[f.key])}" data-aktion="ereignis-feld" data-ev="${esc(me.id)}" data-key="${esc(f.key)}"></label>`;
+      return `<div class="karte"><div class="small muted">${wordmark(m ? m.name : me.modul)} · ${esc(me.art)}</div><h3>⚡ ${esc(me.titel)}</h3>
+        <p class="small">Startet: ${ziele.map((v) => `<a href="#/vorlage/${esc(v.id)}/ausloeser">${esc(v.titel)}</a>`).join(", ") || `<span class="muted">keine freigegebene Vorlage</span>`}</p>
+        <div class="formzeile">${me.felder.map(feld).join("")}</div>
+        <button class="btn primaer" data-aktion="ereignis-senden" data-ev="${esc(me.id)}" ${E.person ? "" : "disabled title=\"Name fehlt\""}>⚡ Ereignis simulieren</button></div>`;
+    }).join("");
+    const alle = S.vorlagen.flatMap((v) => (v.ausloeser || []).map((a) => [v, a]));
+    const st = { gestartet: "erfolg", doppelt: "warnung", "ohne Ablauf": "neutral" };
+    return `<div class="seitenkopf"><div><h1>Auslöser</h1><p class="muted">Abläufe starten nicht nur von Hand: ein Ereignis eines Moduls (Datensatz erstellt oder geändert, Status geändert), ein Termin im Jahreskalender oder der Abschluss eines anderen Ablaufs kann sie auslösen. ${wordmark("Flow")} hört nur zu – die Module melden ihre Ereignisse.</p></div></div>
+      <section><h2>Modul-Ereignisse simulieren</h2><p class="small muted">Im Prototyp gibt es die Module nicht; hier wird ein Ereignis so ausgelöst, als käme es aus dem Modul.</p><div class="karten">${karten}</div></section>
+      <section style="margin-top:1.25rem"><h2>Alle Auslöser (${alle.length})</h2><div class="tabelle-wrap"><table><thead><tr><th>Vorlage</th><th>Auslöser</th><th>Stand</th></tr></thead><tbody>${alle.map(([v, a]) => `<tr><td><a href="#/vorlage/${esc(v.id)}/ausloeser">${esc(v.titel)}</a></td><td>${esc(ausloeserText(a))}</td><td>${v.status === "freigegeben" ? `<span class="badge erfolg">✓ aktiv</span>` : `<span class="badge warnung">✎ Entwurf – inaktiv</span>`}</td></tr>`).join("")}</tbody></table></div></section>
+      <section style="margin-top:1.25rem"><h2>Auslöseprotokoll</h2>${S.ausloesungen.length ? `<div class="tabelle-wrap"><table><thead><tr><th>Wann</th><th>Quelle</th><th>Vorlage</th><th>Ergebnis</th></tr></thead><tbody>${S.ausloesungen.map((x) => `<tr><td class="small">${datumKurz(x.tag)}<div class="muted">${esc(x.uhr)}</div></td><td class="small">${esc(x.quelle)}</td><td class="small">${x.vorlage ? esc((vorlageVon(x.vorlage) || { titel: x.vorlage }).titel) : "–"}</td><td><span class="badge ${st[x.ergebnis] || "neutral"}">${esc(x.ergebnis)}</span> <span class="small">${x.lauf ? `<a href="#/lauf/${esc(x.lauf)}">${esc(x.text)}</a>` : esc(x.text)}</span></td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">Noch keine Auslösungen.</p>`}</section>`;
+  }
+  const EREIGNIS_EINGABE = {};
 
   function seiteVorgaenge() {
     const verwendung = {};
@@ -723,7 +1114,8 @@
   function editorOeffnen(vid, sid) {
     const v = vorlageVon(vid);
     if (S.rolle !== "SV") { ansage("Bearbeiten nur als Schulverwaltung."); return; }
-    const s = sid ? kopie(v.schritte.find((x) => x.id === sid)) : { id: neueId(v), titel: "", rolle: "SV", tage: 0, nach: [], aktion: null, auto: false, informiert: [], bedingung: null, fd: "", quelle: "" };
+    const s = sid ? kopie(v.schritte.find((x) => x.id === sid)) : { id: neueId(v), typ: "aufgabe", titel: "", rolle: "SV", tage: 0, nach: [], aktion: null, auto: false, informiert: [], bedingung: null, fd: "", quelle: "" };
+    if (!s.typ) s.typ = typVon(s);
     EDIT = { vid, neu: !sid, s };
     dialogZeichnen();
   }
@@ -741,13 +1133,20 @@
     const vg = s.aktion ? vorgang(s.aktion.vorgang) : null;
     const fd = fdEintrag(s.fd);
     const andere = v.schritte.filter((x) => x.id !== s.id);
-    const platzhalter = ["{" + v.felder.map((f) => f.key).join("} {") + "}", "{stichtag-7}", ...andere.filter((x) => x.aktion && vorgang(x.aktion.vorgang)).flatMap((x) => vorgang(x.aktion.vorgang).ergebnis.map((e) => `{${x.id}.${e}}`))];
+    const platzhalter = ["{" + v.felder.map((f) => f.key).join("} {") + "}", "{stichtag-7}", ...andere.flatMap((x) => ergebnisFelder(x).map((e) => `{${esc(x.id)}.${e}}`))];
     const b = s.bedingung || { feld: "", op: "=", wert: "" };
+    const t = typVon(s);
+    const verzweiger = andere.filter((x) => ["genehmigung", "entscheidung"].includes(typVon(x)));
+    const refWerte = istRef(b) ? (() => { const q = v.schritte.find((x) => x.id === b.feld.split(".")[0]); return q ? (typVon(q) === "genehmigung" ? ["genehmigt", "abgelehnt"] : q.optionen || []) : []; })() : [];
     dlg.innerHTML = `
       <form method="dialog" class="editor" data-glossary-ignore>
         <h2>${EDIT.neu ? "Neuer Schritt" : "Schritt bearbeiten"} <span class="small muted">${esc(s.id)} · ${esc(v.titel)}</span></h2>
         <label class="feld">Bezeichnung<input type="text" data-e="titel" value="${esc(s.titel)}" required style="width:100%"></label>
         <label class="feld" style="margin-top:.5rem">Quelle (Gesetz, Paragraf, Merkblatt, interne Grundlage)<input type="text" data-e="quelle" value="${esc(s.quelle || "")}" placeholder="z. B. GG § 18 Abs. 2; Checkliste GV" style="width:100%"></label>
+        <div class="formzeile" style="margin-top:.5rem">
+          <label class="feld">Art des Schritts<select data-e="typ">${Object.entries(TYPEN).map(([k, x]) => `<option value="${k}" ${k === t ? "selected" : ""}>${x[0]} ${esc(x[1])}</option>`).join("")}</select></label>
+          <span class="small muted" style="align-self:center;max-width:24rem">${esc(TYPEN[t][2])}</span>
+        </div>
         <fieldset><legend>Zuständigkeit</legend>
           <div class="formzeile">
             <label class="feld">Funktionendiagramm<select data-e="fd"><option value="">– keine Zuordnung –</option>${D.FUNKTIONENDIAGRAMM.map((f) => `<option value="${esc(f.nr)}" ${f.nr === s.fd ? "selected" : ""}>${esc(f.nr + " " + f.titel)}</option>`).join("")}</select></label>
@@ -757,25 +1156,33 @@
           <div class="small">Informieren (I): ${Object.keys(ROLLEN).map((r) => `<label class="chip"><input type="checkbox" data-e="informiert" value="${r}" ${(s.informiert || []).includes(r) ? "checked" : ""}> ${esc(r)}</label>`).join(" ")}</div>
         </fieldset>
         <fieldset><legend>Zeitpunkt und Reihenfolge</legend>
-          <div class="formzeile"><label class="feld">Frist in Tagen zum Stichtag (${esc(v.stichtag)})<input type="number" data-e="tage" value="${esc(s.tage)}"></label><span class="small muted" style="align-self:center">${relTage(Number(s.tage))} · negativ = vorher</span></div>
+          <div class="formzeile"><label class="feld">Frist in Tagen zum Stichtag (${esc(v.stichtag)})<input type="number" data-e="tage" value="${s.tage}"></label><span class="small muted" style="align-self:center">${relTage(Number(s.tage))} · negativ = vorher</span>
+            <label class="feld">Fristart<select data-e="fristart">${Object.entries(FRISTARTEN).map(([k, x]) => `<option value="${k}" ${k === (s.fristart || "intern") ? "selected" : ""}>${esc(x[1])}</option>`).join("")}</select></label></div>
+          <p class="small muted">Gesetzliche Fristen brauchen eine Quelle mit Paragraf und werden früher eskaliert (Erinnerung 7 Tage vorher, vorgesetzte Stelle am Fristtag).</p>
           <div class="small">Erst nach: ${andere.map((x) => `<label class="chip"><input type="checkbox" data-e="nach" value="${esc(x.id)}" ${(s.nach || []).includes(x.id) ? "checked" : ""}> ${esc(kuerzen(x.titel, 34))}</label>`).join(" ") || "–"}</div>
         </fieldset>
-        <fieldset><legend>Aufruf</legend>
+        ${t === "aufruf" ? `<fieldset><legend>Aufruf</legend>
           <div class="formzeile">
-            <label class="feld">Modul<select data-e="modul"><option value="">✋ von Hand (kein Aufruf)</option>${D.MODULE.map((m) => `<option value="${esc(m.key)}" ${m.key === modul ? "selected" : ""}>EduKSX-${esc(m.name)}</option>`).join("")}</select></label>
+            <label class="feld">Modul<select data-e="modul"><option value="">– Modul wählen –</option>${D.MODULE.map((m) => `<option value="${esc(m.key)}" ${m.key === modul ? "selected" : ""}>EduKSX-${esc(m.name)}</option>`).join("")}</select></label>
             ${modul ? `<label class="feld">Vorgang<select data-e="vorgang">${D.MODULE.find((m) => m.key === modul).vorgaenge.map((x) => `<option value="${esc(x.id)}" ${vg && x.id === vg.id ? "selected" : ""}>${esc(x.titel)}</option>`).join("")}</select></label>` : ""}
           </div>
           ${vg ? `<div class="formzeile">${vg.parameter.map((p) => `<label class="feld">${esc(p)}<input type="text" data-e="param" data-p="${p}" value="${esc((s.aktion.param || {})[p] || "")}" list="ph-liste"></label>`).join("")}</div>
             <datalist id="ph-liste">${platzhalter.map((p) => `<option value="${esc(p)}">`).join("")}</datalist>
             <p class="small muted">Platzhalter: ${platzhalter.map((p) => `<code>${esc(p)}</code>`).join(" ")} · Ergebnis: ${vg.ergebnis.map((e) => `<code>{${esc(s.id)}.${esc(e)}}</code>`).join(" ")} · Antwort ${vg.art === "sofort" ? "sofort" : "mit Rückmeldung"}</p>
-            <label class="small"><input type="checkbox" data-e="auto" ${s.auto ? "checked" : ""}> Automatisch aufrufen, sobald Vorgänger erledigt und Frist erreicht (sonst bestätigt die verantwortliche Rolle)</label>` : `<p class="small muted">Aufgabe ohne Aufruf: Die verantwortliche Rolle meldet sie als erledigt.</p>`}
-        </fieldset>
+            <label class="small"><input type="checkbox" data-e="auto" ${s.auto ? "checked" : ""}> Automatisch aufrufen, sobald Vorgänger erledigt und Frist erreicht (sonst bestätigt die verantwortliche Rolle)</label>` : `<p class="small muted">Modul wählen, dann den Vorgang.</p>`}
+        </fieldset>` : ""}
+        ${t === "entscheidung" ? `<fieldset><legend>Möglichkeiten</legend><label class="feld">Möglichkeiten, mit Komma getrennt<input type="text" data-e="optionen" value="${esc((s.optionen || []).join(", "))}" placeholder="z. B. verfügbar, nicht verfügbar" style="width:100%"></label><p class="small muted">Spätere Schritte können über die Bedingung «Ergebnis: Wahl» davon abhängen (Verzweigung).</p></fieldset>` : ""}
+        ${t === "genehmigung" ? `<p class="small muted">Ergebnis <code>{${esc(s.id)}.entscheid}</code> = genehmigt oder abgelehnt, <code>{${esc(s.id)}.begruendung}</code>. Spätere Schritte können über eine Bedingung davon abhängen.</p>` : ""}
+        ${t === "unterprozess" ? `<fieldset><legend>Unterprozess</legend><div class="formzeile">
+            <label class="feld">Vorlage<select data-e="unter">${S.vorlagen.filter((x) => x.id !== v.id).map((x) => `<option value="${esc(x.id)}" ${s.unter && s.unter.vorlage === x.id ? "selected" : ""}>${esc(x.titel)}${x.status === "entwurf" ? " (Entwurf)" : ""}</option>`).join("")}</select></label>
+            <label class="feld">Stichtag des Unterprozesses: Tage zum eigenen Stichtag<input type="number" data-e="versatz" value="${esc(s.unter ? s.unter.versatz || 0 : 0)}"></label></div>
+            <p class="small muted">Gleichnamige Kontextfelder werden übernommen. Der Schritt ist erledigt, wenn der Unterprozess abgeschlossen ist.</p></fieldset>` : ""}
         <fieldset><legend>Bedingung (optional)</legend>
           <div class="formzeile">
-            <label class="feld">Feld<select data-e="b-feld"><option value="">– immer ausführen –</option>${v.felder.map((f) => `<option value="${esc(f.key)}" ${f.key === b.feld ? "selected" : ""}>${esc(f.label)}</option>`).join("")}</select></label>
+            <label class="feld">Feld<select data-e="b-feld"><option value="">– immer ausführen –</option><optgroup label="Kontextfelder">${v.felder.map((f) => `<option value="${esc(f.key)}" ${f.key === b.feld ? "selected" : ""}>${esc(f.label)}</option>`).join("")}</optgroup>${verzweiger.length ? `<optgroup label="Ergebnis eines früheren Schritts (Verzweigung)">${verzweiger.map((x) => { const k = x.id + (typVon(x) === "genehmigung" ? ".entscheid" : ".wahl"); return `<option value="${k}" ${k === b.feld ? "selected" : ""}>${esc(kuerzen(x.titel, 40))}: ${typVon(x) === "genehmigung" ? "Entscheid" : "Wahl"}</option>`; }).join("")}</optgroup>` : ""}</select></label>
             <label class="feld">Vergleich<select data-e="b-op">${["=", "≠", "<", ">", "in"].map((o) => `<option ${o === b.op ? "selected" : ""}>${o}</option>`).join("")}</select></label>
-            <label class="feld">Wert<input type="text" data-e="b-wert" value="${esc(b.wert)}" placeholder="z. B. Klassenlehrperson"></label>
-          </div><p class="small muted">«in»: Werte mit Komma trennen. Wert kann ein Platzhalter sein, z. B. <code>{pensumAlt}</code>.</p>
+            <label class="feld">Wert<input type="text" data-e="b-wert" value="${esc(b.wert)}" placeholder="z. B. Klassenlehrperson" ${refWerte.length ? 'list="ref-werte"' : ""}></label>${refWerte.length ? `<datalist id="ref-werte">${refWerte.map((w) => `<option value="${esc(w)}">`).join("")}</datalist>` : ""}
+          </div><p class="small muted">«in»: Werte mit Komma trennen. Wert kann ein Platzhalter sein, z. B. <code>{pensumAlt}</code>. Bei einer Verzweigung wartet der Schritt auf den Entscheid; entfällt er, entfallen auch die Schritte, die nur auf ihn warten. Der Schritt muss nach dem entscheidenden Schritt eingeplant sein.</p>
         </fieldset>
         <div class="formzeile" style="justify-content:flex-end;margin-top:1rem">
           <button class="btn" value="abbrechen" data-aktion="dlg-abbrechen">Abbrechen</button>
@@ -802,8 +1209,14 @@
       s.informiert = Object.entries(f.rollen).filter(([, z]) => /I/.test(z) && !/V/.test(z)).map(([r]) => r);
     }
     s.fd = fdNeu;
-    const modul = q("modul").value;
-    if (!modul) { s.aktion = null; s.auto = false; }
+    s.typ = q("typ").value;
+    s.fristart = q("fristart").value === "intern" ? undefined : q("fristart").value;
+    if (q("optionen")) s.optionen = q("optionen").value.split(",").map((x) => x.trim()).filter(Boolean);
+    if (s.typ === "unterprozess") s.unter = { vorlage: q("unter") ? q("unter").value : (S.vorlagen.find((x) => x.id !== EDIT.vid) || {}).id, versatz: q("versatz") ? Number(q("versatz").value || 0) : 0 };
+    else delete s.unter;
+    if (s.typ === "entscheidung" && !s.optionen) s.optionen = ["ja", "nein"];
+    const modul = q("modul") ? q("modul").value : "";
+    if (s.typ !== "aufruf" || !modul) { s.aktion = null; s.auto = false; }
     else {
       const m = D.MODULE.find((x) => x.key === modul);
       let vid = q("vorgang") && ausloeser !== "modul" ? q("vorgang").value : m.vorgaenge[0].id;
@@ -828,7 +1241,7 @@
     return true;
   }
   function entwurfMachen(v) {
-    if (v.status === "freigegeben") { v.status = "entwurf"; v.version += 1; ansage(`Vorlage ist jetzt Entwurf Version ${v.version}.`); }
+    if (v.status === "freigegeben") { v.status = "entwurf"; v.version += 1; ansage(`Vorlage ist jetzt Entwurf Version ${esc(v.version)}.`); }
   }
 
   // ---------------------------------------------------------------- EduKSX-Glossary (feste Version mit Prüfsumme, wie EduKSX-Staffing)
@@ -870,6 +1283,120 @@
     d.onclick = (ev) => { const b = ev.target.closest("[data-frage]"); if (!b) return; d.close(); if (b.dataset.frage === "ja") ja(); };
     d.showModal();
   }
+  /**
+   * Eingabe im eigenen Dialog. felder: [{ key, label, typ: text|textarea|datum|zahl|auswahl, werte, wert, pflicht, pflichtWenn }]
+   * pflichtWenn: (werte) => bool. Rückgabe an ok(werte).
+   */
+  function formular(titel, text, felder, okText, ok) {
+    let d = document.getElementById("formular");
+    if (!d) { d = document.createElement("dialog"); d.id = "formular"; document.body.appendChild(d); }
+    const feld = (f) => {
+      const w = f.wert == null ? "" : f.wert;
+      const id = "frm-" + f.key;
+      if (f.typ === "auswahl") return `<label class="feld" for="${id}">${esc(f.label)}<select id="${id}" data-f="${esc(f.key)}">${f.werte.map((x) => { const [v, l] = Array.isArray(x) ? x : [x, x]; return `<option value="${esc(v)}" ${String(v) === String(w) ? "selected" : ""}>${esc(l)}</option>`; }).join("")}</select></label>`;
+      if (f.typ === "textarea") return `<label class="feld" for="${id}" style="width:100%">${esc(f.label)}${f.pflicht ? " *" : ""}<textarea id="${id}" data-f="${esc(f.key)}" rows="3" style="width:100%">${esc(w)}</textarea></label>`;
+      return `<label class="feld" for="${id}">${esc(f.label)}${f.pflicht ? " *" : ""}<input id="${id}" type="${f.typ === "datum" ? "date" : f.typ === "zahl" ? "number" : "text"}" data-f="${esc(f.key)}" value="${esc(w)}"></label>`;
+    };
+    d.innerHTML = `<div class="editor" data-glossary-ignore><h2>${esc(titel)}</h2>${text ? `<p class="small" style="white-space:pre-line">${esc(text)}</p>` : ""}<div class="formzeile">${felder.map(feld).join("")}</div><p class="small" id="frm-fehler" role="alert" style="color:var(--destructive)"></p>
+      <div class="formzeile" style="justify-content:flex-end;margin-top:.75rem"><button class="btn" data-frm="nein">Abbrechen</button><button class="btn primaer" data-frm="ja">${esc(okText)}</button></div></div>`;
+    d.onclick = (ev) => {
+      const b = ev.target.closest("[data-frm]");
+      if (!b) return;
+      if (b.dataset.frm === "nein") { d.close(); return; }
+      const werte = {};
+      felder.forEach((f) => { const el = d.querySelector(`[data-f="${esc(f.key)}"]`); werte[f.key] = el ? el.value.trim() : ""; });
+      const fehlt = felder.filter((f) => (f.pflicht || (f.pflichtWenn && f.pflichtWenn(werte))) && !werte[f.key]);
+      if (fehlt.length) { d.querySelector("#frm-fehler").textContent = "Bitte ausfüllen: " + fehlt.map((f) => f.label).join(", "); return; }
+      d.close();
+      ok(werte);
+    };
+    d.showModal();
+    const erstes = d.querySelector("[data-f]");
+    if (erstes) erstes.focus();
+  }
+  const GRUND = { key: "grund", label: "Begründung", typ: "textarea", pflicht: true };
+
+  /** Erledigen-Dialog je Aufgabentyp. */
+  function erledigenDialog(l, s) {
+    const t = typVon(s);
+    const durch = ROLLEN[S.rolle];
+    const fertig = (eingabe) => { ausfuehren(l, s, durch, eingabe); weiter(); ansage(`«${s.titel}»: ${STATUS[s.status][2]}.`); };
+    if (t === "genehmigung") return formular(s.titel, `${l.kontext.person} · ${l.titel}`, [{ key: "entscheid", label: "Entscheid", typ: "auswahl", werte: ["genehmigt", "abgelehnt"] }, { key: "begruendung", label: "Begründung (bei Ablehnung Pflicht)", typ: "textarea", pflichtWenn: (w) => w.entscheid === "abgelehnt" }], "Entscheid festhalten", fertig);
+    if (t === "entscheidung") return formular(s.titel, `${l.kontext.person} · ${l.titel}`, [{ key: "wahl", label: "Entscheid", typ: "auswahl", werte: s.optionen || ["ja", "nein"] }], "Entscheid festhalten", fertig);
+    if (t === "nachweis") return formular(s.titel, "Dokument bzw. Referenz hinterlegen (z. B. Dossiernummer). Im Prototyp wird nichts hochgeladen.", [{ key: "nachweis", label: "Nachweis", typ: "text", pflicht: true, wert: "" }], "Nachweis ablegen", fertig);
+    if (t === "termin") return formular(s.titel, "", [{ key: "termin", label: "Datum", typ: "datum", pflicht: true, wert: fristVon(l, s) }, { key: "ort", label: "Ort", typ: "text" }], "Termin festhalten", (w) => fertig({ termin: datumKurz(w.termin), ort: w.ort }));
+    return fertig();
+  }
+
+  /** Eingriffe in laufende Abläufe (Konzept 3.4), jeweils mit Begründung und Journal. */
+  function eingriff(ak, l, s) {
+    const wer = ROLLEN[S.rolle];
+    if (!darfEingreifen()) { ansage("Eingriffe nur für Prozessverantwortliche."); return; }
+    if (ak === "ein-pause") {
+      if (l.pausiert) return formular("Ablauf fortsetzen", `${esc(l.id)} · ${l.titel}: ${l.kontext.person}`, [GRUND], "Fortsetzen", (w) => { l.pausiert = false; journal(l, "Eingriff", "Ablauf fortgesetzt.", w.grund, wer); weiter(); ansage("Ablauf fortgesetzt."); });
+      return formular("Ablauf pausieren", "Während der Pause laufen keine automatischen Schritte und Fristen werden nicht eskaliert.", [GRUND], "Pausieren", (w) => { l.pausiert = true; journal(l, "Eingriff", "Ablauf pausiert.", w.grund, wer); weiter(); ansage("Ablauf pausiert."); });
+    }
+    if (ak === "ein-abbrechen") {
+      const aus = l.schritte.filter((x) => x.status === "erledigt" && typVon(x) === "aufruf");
+      return formular("Ablauf abbrechen", `${esc(l.id)} · ${l.titel}: ${l.kontext.person}\n\nOffene Schritte und laufende Unterprozesse werden abgebrochen.${aus.length ? `\nBereits ausgeführt und NICHT automatisch rückgängig gemacht:\n– ${aus.map((x) => x.titel).join("\n– ")}` : ""}`, [GRUND], "Ablauf abbrechen", (w) => { abbrechen(l, w.grund, wer); weiter(); ansage("Ablauf abgebrochen."); });
+    }
+    if (ak === "ein-stichtag") {
+      const ges = l.schritte.filter((x) => x.fristart === "gesetzlich" && !ERLEDIGT.includes(x.status));
+      return formular(`${l.stichtagName} verschieben`, `Offene Fristen verschieben sich mit; erledigte Schritte bleiben.${ges.length ? `\n⚠ Gesetzliche Fristen betroffen: ${ges.map((x) => x.titel).join("; ")} – prüfen, ob die Verschiebung zulässig ist.` : ""}`, [{ key: "datum", label: "Neuer Stichtag", typ: "datum", pflicht: true, wert: l.kontext.stichtag }, GRUND], "Verschieben", (w) => {
+        const alt = l.kontext.stichtag;
+        if (w.datum === alt) return;
+        l.kontext.stichtag = w.datum;
+        l.schritte.forEach((x) => { if (!ERLEDIGT.includes(x.status)) x.eskaliert = []; });
+        journal(l, "Eingriff", `Stichtag von ${datumKurz(alt)} auf ${datumKurz(w.datum)} verschoben.`, w.grund, wer);
+        weiter(); ansage("Stichtag verschoben.");
+      });
+    }
+    if (ak === "ein-einfuegen") {
+      const nachWerte = [["", "– sofort (ohne Vorgänger) –"], ...l.schritte.map((x) => [x.id, kuerzen(x.titel, 50)])];
+      return formular("Schritt einfügen", "Der Schritt gilt nur für diesen Ablauf, nicht für die Vorlage.", [
+        { key: "titel", label: "Bezeichnung", typ: "text", pflicht: true },
+        { key: "typ", label: "Art", typ: "auswahl", werte: ["aufgabe", "nachweis", "termin", "genehmigung"].map((k) => [k, TYPEN[k][0] + " " + TYPEN[k][1]]) },
+        { key: "rolle", label: "Verantwortlich", typ: "auswahl", werte: Object.entries(ROLLEN), wert: S.rolle },
+        { key: "frist", label: "Frist", typ: "datum", pflicht: true, wert: addTage(S.heute, 7) },
+        { key: "nach", label: "Erst nach", typ: "auswahl", werte: nachWerte },
+        GRUND,
+      ], "Einfügen", (w) => {
+        let n = 1; while (l.schritte.some((x) => x.id === `${l.id}z${n}`)) n++;
+        const neu = { id: `${l.id}z${n}`, typ: w.typ, titel: w.titel, rolle: w.rolle, tage: tageZwischen(l.kontext.stichtag, w.frist), nach: w.nach ? [w.nach] : [], aktion: null, auto: false, informiert: [], bedingung: null, fd: "", quelle: "Eingriff im laufenden Ablauf: " + w.grund, status: "wartet", ergebnis: null, erledigtAm: null, param: null, eskaliert: [], zusatz: true, erzwungen: true };
+        const i = w.nach ? l.schritte.findIndex((x) => x.id === w.nach) + 1 : l.schritte.length;
+        l.schritte.splice(i, 0, neu);
+        if (l.abgeschlossen) l.abgeschlossen = null;
+        journal(l, "Eingriff", `Schritt «${w.titel}» eingefügt (${ROLLEN[w.rolle]}, Frist ${datumKurz(w.frist)}).`, w.grund, wer);
+        weiter(); ansage("Schritt eingefügt.");
+      });
+    }
+    if (!s) return;
+    if (ak === "ein-ueberspringen") return formular("Schritt überspringen", `«${s.titel}»\nNachfolgende Schritte laufen weiter.`, [GRUND], "Überspringen", (w) => {
+      if (s.status === "laeuft" && typVon(s) === "aufruf") aufrufProtokoll(l, s, "fehler", "Rückmeldung nicht mehr erwartet (übersprungen).");
+      s.status = "uebersprungen"; s.zweig = false; s.grund = "übersprungen: " + w.grund; s.erledigtAm = S.heute;
+      journal(l, "Eingriff", `Schritt «${s.titel}» übersprungen.`, w.grund, wer);
+      weiter(); ansage("Schritt übersprungen.");
+    });
+    if (ak === "ein-rolle") return formular("Zuständigkeit ändern", `«${s.titel}» – bisher ${ROLLEN[s.rolle] || s.rolle}`, [{ key: "rolle", label: "Neu verantwortlich", typ: "auswahl", werte: Object.entries(ROLLEN), wert: s.rolle }, GRUND], "Ändern", (w) => {
+      if (w.rolle === s.rolle) return;
+      journal(l, "Eingriff", `Zuständigkeit «${s.titel}»: ${ROLLEN[s.rolle]} → ${ROLLEN[w.rolle]}.`, w.grund, wer);
+      s.rolle = w.rolle; s.eskaliert = [];
+      hinweis([w.rolle], l, `Neu zuständig: «${s.titel}» (${l.kontext.person}).`);
+      weiter(); ansage("Zuständigkeit geändert.");
+    });
+    if (ak === "ein-oeffnen") {
+      const t = typVon(s);
+      const warn = t === "aufruf" && s.status === "erledigt" ? "\nDer bereits ausgeführte Aufruf wird NICHT automatisch wiederholt; die zuständige Rolle löst ihn bei Bedarf von Hand erneut aus." : t === "unterprozess" ? "\nEin neuer Unterprozess wird gestartet." : "";
+      return formular("Schritt wieder öffnen", `«${s.titel}»${warn}\nBereits erledigte Nachfolger bleiben erledigt.`, [GRUND], "Wieder öffnen", (w) => {
+        s.frueher = { status: s.status, ergebnis: s.ergebnis, erledigtAm: s.erledigtAm };
+        s.status = "wartet"; s.ergebnis = null; s.erledigtAm = null; s.manuell = true; s.erzwungen = true; s.zweig = false; s.grund = ""; s.eskaliert = [];
+        if (l.abgeschlossen) l.abgeschlossen = null;
+        journal(l, "Eingriff", `Schritt «${s.titel}» wieder geöffnet.`, w.grund, wer);
+        weiter(); ansage("Schritt wieder geöffnet.");
+      });
+    }
+  }
+
   function route() { return (location.hash || "#/uebersicht").slice(2).split("/"); }
   function render() {
     const [seite, a, b] = route();
@@ -886,6 +1413,7 @@
         case "vorgaenge": return seiteVorgaenge();
         case "funktionendiagramm": return seiteFunktionendiagramm();
         case "protokoll": return seiteProtokoll();
+        case "ausloeser": return seiteAusloeser();
         default: return seiteUebersicht();
       }
     };
@@ -893,7 +1421,7 @@
     document.title = "EduKSX-Flow (Prototyp)";
     glossarErklaeren();
   }
-  function weiter() { motor(); speichern(); render(); }
+  function weiter() { ausloeserKalender(); motor(); speichern(); render(); }
 
   document.addEventListener("click", (ev) => {
     const el = ev.target.closest("[data-aktion]");
@@ -906,7 +1434,7 @@
       case "zeit": S.heute = addTage(S.heute, Number(el.dataset.tage)); weiter(); ansage("Simulierter Tag: " + datum(S.heute)); break;
       case "naechste-frist": {
         const kandidaten = [];
-        S.laeufe.forEach((x) => x.schritte.forEach((y) => { if (!ERLEDIGT.includes(y.status)) { const f = fristVon(x, y); if (f > S.heute) kandidaten.push(f); } }));
+        S.laeufe.forEach((x) => { if (x.pausiert || x.abgebrochen || x.abgeschlossen) return; x.schritte.forEach((y) => { if (!ERLEDIGT.includes(y.status) && y.status !== "abgebrochen") { const f = fristVon(x, y); if (f > S.heute) kandidaten.push(f); } }); });
         if (!kandidaten.length) { ansage("Keine weitere Frist."); break; }
         S.heute = kandidaten.sort()[0]; weiter(); ansage("Simulierter Tag: " + datum(S.heute)); break;
       }
@@ -916,12 +1444,29 @@
       case "reiter": location.hash = el.dataset.ziel; break;
       case "ausfuehren": ausfuehren(l, s, ROLLEN[S.rolle]); weiter(); ansage(`«${s.titel}»: ${STATUS[s.status][2]}.`); break;
       case "jetzt": ausfuehren(l, s, ROLLEN[S.rolle] + ", vorgezogen"); weiter(); break;
+      case "erledigen": erledigenDialog(l, s); break;
+      case "ein-pause": case "ein-abbrechen": case "ein-stichtag": case "ein-einfuegen": case "ein-ueberspringen": case "ein-rolle": case "ein-oeffnen": eingriff(ak, l, s); break;
+      case "ereignis-senden": {
+        const neu = ausloeserEreignis(el.dataset.ev, EREIGNIS_EINGABE[el.dataset.ev] || {});
+        delete EREIGNIS_EINGABE[el.dataset.ev];
+        weiter();
+        ansage(neu.length ? `${neu.length} Ablauf/Abläufe gestartet: ${neu.map((x) => x.id).join(", ")}.` : "Kein Ablauf gestartet – siehe Auslöseprotokoll.");
+        break;
+      }
+      case "ausl-neu": {
+        const v = vorlageVon(a); const q = document.getElementById("ausl-quelle"); if (!q || !q.value) break;
+        const neu = AUSL_ART === "abschluss" ? { art: "abschluss", vorlage: q.value, versatz: Number((document.getElementById("ausl-versatz") || {}).value || 0) } : { art: AUSL_ART, ereignis: q.value };
+        entwurfMachen(v); v.ausloeser = (v.ausloeser || []).concat([neu]); speichern(); render(); break;
+      }
+      case "ausl-weg": { const v = vorlageVon(a); entwurfMachen(v); v.ausloeser.splice(Number(el.dataset.i), 1); speichern(); render(); break; }
       case "rueckmeldung": rueckmeldung(l, s); weiter(); ansage(`Rückmeldung zu «${s.titel}» eingegangen.`); break;
-      case "nochmals": s.fehler = null; s.status = "wartet"; if (!s.auto) ausfuehren(l, s, ROLLEN[S.rolle] + ", erneut"); weiter(); ansage(`«${s.titel}»: ${STATUS[s.status][2]}.`); break;
+      case "nochmals": s.fehler = null; s.status = "wartet"; if (typVon(s) === "aufruf" && !s.auto) ausfuehren(l, s, ROLLEN[S.rolle] + ", erneut"); weiter(); ansage(`«${s.titel}»: ${STATUS[s.status][2]}.`); break;
       case "starten": {
         const v = vorlageVon(el.dataset.vorlage);
         const lauf = laufAnlegen(v, START_EINGABE[v.id]);
         if (START_EREIGNIS[v.id]) { lauf.ereignis = START_EREIGNIS[v.id].key; lauf.ereignisTitel = START_EREIGNIS[v.id].titel; }
+        S.ausgeloest[startSchluessel(v, lauf.kontext)] = lauf.id;
+        journal(lauf, "Start", `Von Hand gestartet${lauf.ereignisTitel ? " aus dem Jahreskalender (" + lauf.ereignisTitel + ")" : ""}.`);
         delete START_EINGABE[v.id];
         delete START_EREIGNIS[v.id];
         motor(); speichern(); location.hash = "#/lauf/" + lauf.id; ansage("Ablauf gestartet."); break;
@@ -947,7 +1492,7 @@
         });
         break;
       }
-      case "freigeben": { const v = vorlageVon(a); v.status = "freigegeben"; speichern(); render(); ansage(`Version ${v.version} freigegeben.`); break; }
+      case "freigeben": { const v = vorlageVon(a); v.status = "freigegeben"; speichern(); render(); ansage(`Version ${esc(v.version)} freigegeben.`); break; }
       case "dlg-abbrechen": ev.preventDefault(); document.getElementById("dlg").close(); EDIT = null; break;
       case "dlg-speichern": ev.preventDefault(); if (dialogSpeichern()) { document.getElementById("dlg").close(); speichern(); render(); } break;
       default: KAL.klick(ak, el); break;
@@ -959,13 +1504,15 @@
   });
   document.addEventListener("change", (ev) => {
     const el = ev.target;
-    if (el.dataset.e && EDIT && ["fd", "modul", "vorgang", "b-feld"].includes(el.dataset.e)) { dialogLesen(el.dataset.e); dialogZeichnen(); return; }
+    if (el.dataset.e && EDIT && ["fd", "modul", "vorgang", "b-feld", "typ", "unter"].includes(el.dataset.e)) { dialogLesen(el.dataset.e); dialogZeichnen(); return; }
     if (el.dataset.e === "tage" && EDIT) { dialogLesen(); dialogZeichnen(); return; }
     const ak = el.dataset.aktion;
     if ((ak && ak.startsWith("kal-")) || el.dataset.neuZeichnen) { KAL.aenderung(ak || "", el); return; }
     if (ak === "rolle") { S.rolle = el.value; speichern(); render(); ansage("Rolle: " + ROLLEN[S.rolle]); }
     if (ak === "erreichbar") { S.erreichbar[el.dataset.key] = el.checked; weiter(); }
     if (ak === "start-vorlage") location.hash = "#/neu/" + el.value;
+    if (ak === "ereignis-feld") { const E = EREIGNIS_EINGABE[el.dataset.ev]; E[el.dataset.key] = el.value; render(); }
+    if (ak === "ausl-art") { AUSL_ART = el.value; render(); }
     if (ak === "start-feld") {
       const [, vid] = route();
       const v = vorlageVon(vid) || S.vorlagen.find((x) => x.status === "freigegeben");

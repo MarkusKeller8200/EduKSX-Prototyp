@@ -78,6 +78,11 @@
       "name": "calendar-areas",
       "x-displayName": "Bereiche des Kalenders",
       "description": "Bereiche des Kalenders"
+    },
+    {
+      "name": "triggers",
+      "x-displayName": "Auslöser und Modul-Ereignisse",
+      "description": "Auslöser und Modul-Ereignisse"
     }
   ],
   "paths": {
@@ -236,6 +241,9 @@
                   "Beispiel"
                 ],
                 "steps": [
+                  "Beispiel"
+                ],
+                "triggers": [
                   "Beispiel"
                 ]
               }
@@ -535,11 +543,13 @@
               "type": "string",
               "x-extensible-enum": [
                 "running",
+                "paused",
                 "completed",
                 "cancelled"
               ],
               "x-eduksx-labels": {
                 "running": "läuft",
+                "paused": "pausiert",
                 "completed": "abgeschlossen",
                 "cancelled": "abgebrochen"
               },
@@ -858,7 +868,9 @@
               "example": {
                 "code": "Beispiel",
                 "name": "Beispiel",
-                "role_scope": "workflow"
+                "role_scope": "workflow",
+                "superior_role_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "may_intervene": false
               }
             }
           }
@@ -3177,6 +3189,611 @@
         }
       }
     },
+    "/api/v1/org/runs/{id}/pause": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "operationId": "pauseRun",
+        "summary": "Ablauf pausieren",
+        "description": "Nur Prozessverantwortliche; keine automatischen Schritte und keine Eskalation während der Pause.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "flow:runs.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "runs.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Ablauf pausieren",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunIntervention"
+              },
+              "example": {
+                "reason": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Run"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/runs/{id}/resume": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "operationId": "resumeRun",
+        "summary": "Ablauf fortsetzen",
+        "description": "Ablauf fortsetzen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "flow:runs.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "runs.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Ablauf fortsetzen",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunIntervention"
+              },
+              "example": {
+                "reason": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Run"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/runs/{id}/reference-date": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "operationId": "rescheduleRun",
+        "summary": "Stichtag verschieben",
+        "description": "Offene Fristen verschieben sich; Warnung, wenn gesetzliche Fristen betroffen sind.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "flow:runs.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "runs.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Stichtag verschieben",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunReschedule"
+              },
+              "example": {
+                "reference_on": "2027-08-23",
+                "reason": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Run"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/runs/{id}/steps": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "operationId": "insertRunStep",
+        "summary": "Schritt einfügen",
+        "description": "Schritt einfügen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "flow:runs.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "runs.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Schritt einfügen",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfMatch"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunStepInsert"
+              },
+              "example": {
+                "title": "Beispiel",
+                "step_type": "task",
+                "role_code": "Beispiel",
+                "due_on": "2027-08-23",
+                "after_code": "Beispiel",
+                "reason": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Run"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/runs/{id}/steps/{code}/reopen": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "name": "code",
+          "in": "path",
+          "required": true,
+          "description": "Kürzel des Schritts",
+          "schema": {
+            "type": "string",
+            "title": "Schritt"
+          },
+          "example": "o1"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "post": {
+        "tags": [
+          "runs"
+        ],
+        "operationId": "reopenRunStep",
+        "summary": "Schritt wieder öffnen",
+        "description": "Schritt wieder öffnen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "flow:runs.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "runs.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Schritt wieder öffnen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StepReopen"
+              },
+              "example": {
+                "reason": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Run"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/module-events": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "post": {
+        "tags": [
+          "triggers"
+        ],
+        "operationId": "receiveModuleEvent",
+        "summary": "Ereignis eines Moduls empfangen",
+        "description": "Startet alle freigegebenen Vorlagen mit passendem Auslöser; doppelte Starts werden protokolliert. Nur für Servicekonten der Module.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "flow:triggers.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "triggers.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Ereignis eines Moduls empfangen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModuleEvent"
+              },
+              "example": {
+                "event_key": "Beispiel",
+                "correlation_id": "01937c6e-8f2a-7b3c-9d4e-5f6a7b8c9d0e",
+                "payload": {}
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Liste",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/TriggerEvent"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/trigger-events": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "get": {
+        "tags": [
+          "triggers"
+        ],
+        "operationId": "listTriggerEvents",
+        "summary": "Auslöseprotokoll",
+        "description": "Auslöseprotokoll.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "flow:triggers.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "triggers.read",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Auslöseprotokoll",
+        "parameters": [
+          {
+            "name": "outcome",
+            "in": "query",
+            "required": false,
+            "description": "z. B. duplicate",
+            "schema": {
+              "type": "string",
+              "title": "Ergebnis"
+            },
+            "example": "Beispiel"
+          },
+          {
+            "name": "occurred_since",
+            "in": "query",
+            "required": false,
+            "description": "Zeitpunkt (ISO 8601 mit Zone)",
+            "schema": {
+              "type": "string",
+              "format": "date-time",
+              "title": "Seit"
+            },
+            "example": "2027-08-23T07:30:00Z"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/TriggerEvent"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
     "/api/v1/org/runs/{id}/steps/{code}/completion": {
       "parameters": [
         {
@@ -3224,6 +3841,12 @@
                 "$ref": "#/components/schemas/StepCompletion"
               },
               "example": {
+                "decision": "approved",
+                "reason": "Beispiel",
+                "choice": "Beispiel",
+                "evidence": "Beispiel",
+                "appointment_on": "2027-08-23",
+                "location": "Beispiel",
                 "result": {},
                 "remark": "Beispiel"
               }
@@ -4304,6 +4927,8 @@
               "flow:tasks.read": "Meine Aufgaben und Übersicht – lesen",
               "flow:templates.admin": "Ablaufvorlagen – verwalten",
               "flow:runs.write": "Laufende Abläufe – schreiben",
+              "flow:triggers.write": "Auslöser und Modul-Ereignisse – schreiben",
+              "flow:triggers.read": "Auslöser und Modul-Ereignisse – lesen",
               "flow:operation-calls.read": "Aufrufprotokoll – lesen",
               "flow:operation-calls.write": "Aufrufprotokoll – schreiben",
               "flow:notices.read": "Hinweise – lesen",
@@ -4336,6 +4961,8 @@
               "flow:tasks.read": "Meine Aufgaben und Übersicht – lesen",
               "flow:templates.admin": "Ablaufvorlagen – verwalten",
               "flow:runs.write": "Laufende Abläufe – schreiben",
+              "flow:triggers.write": "Auslöser und Modul-Ereignisse – schreiben",
+              "flow:triggers.read": "Auslöser und Modul-Ereignisse – lesen",
               "flow:operation-calls.read": "Aufrufprotokoll – lesen",
               "flow:operation-calls.write": "Aufrufprotokoll – schreiben",
               "flow:notices.read": "Hinweise – lesen",
@@ -4786,7 +5413,19 @@
               ]
             },
             "title": "Schritte",
-            "description": "mit Rolle, Frist, Vorgang, Bedingung und Quelle"
+            "description": "mit Art, Rolle, Frist, Vorgang, Bedingung und Quelle"
+          },
+          "triggers": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/TemplateTrigger"
+                }
+              ]
+            },
+            "title": "Auslöser",
+            "description": "Modul-Ereignis, Jahreskalender oder Abschluss eines Ablaufs"
           }
         },
         "required": [
@@ -4868,11 +5507,13 @@
             "type": "string",
             "x-extensible-enum": [
               "running",
+              "paused",
               "completed",
               "cancelled"
             ],
             "x-eduksx-labels": {
               "running": "läuft",
+              "paused": "pausiert",
               "completed": "abgeschlossen",
               "cancelled": "abgebrochen"
             },
@@ -4919,8 +5560,66 @@
               "null"
             ],
             "title": "Auslöser",
-            "description": "«manuell», Ereignis eines Moduls oder Kalender",
+            "description": "«manuell», Ereignis eines Moduls, Kalender oder Abschluss",
             "x-eduksx-data-class": "internal"
+          },
+          "template_trigger_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Auslöser (Verweis)",
+            "description": "gestartet in «Ablauf starten», aus dem Kalender oder durch ein Ereignis eines Moduls",
+            "x-eduksx-data-class": "internal"
+          },
+          "dedup_key": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Doppelstart-Schlüssel",
+            "description": "Vorlage, Bezeichnung und Stichtag bzw. Vorkommen; zweiter Start wird protokolliert statt ausgeführt",
+            "x-eduksx-data-class": "internal"
+          },
+          "parent_run_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Hauptablauf",
+            "description": "bei Unterprozessen",
+            "x-eduksx-data-class": "internal"
+          },
+          "parent_run_step_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Schritt im Hauptablauf",
+            "description": "bei Unterprozessen (Verweis auf run_steps)",
+            "x-eduksx-data-class": "internal"
+          },
+          "cancelled_on": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "title": "Abgebrochen am",
+            "description": "Eingriff",
+            "x-eduksx-data-class": "internal"
+          },
+          "cancel_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Grund des Abbruchs",
+            "description": "Pflicht beim Abbruch",
+            "x-eduksx-data-class": "personal"
           },
           "lock_version": {
             "type": "integer",
@@ -4951,6 +5650,18 @@
             },
             "title": "Schritte",
             "description": "mit Frist und Status"
+          },
+          "journal": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/JournalEntry"
+                }
+              ]
+            },
+            "title": "Journal",
+            "description": "Start, Entscheide, Eskalationen, Eingriffe"
           }
         },
         "required": [
@@ -5009,6 +5720,22 @@
             "readOnly": true,
             "title": "Verwendung (Text)",
             "description": "deutsches Label zu «role_scope» in der gewählten Sprache"
+          },
+          "superior_role_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Vorgesetzte Rolle",
+            "description": "Empfänger der Eskalation Stufe 3 (Konzept E6 OFFEN)",
+            "x-eduksx-data-class": "internal"
+          },
+          "may_intervene": {
+            "type": "boolean",
+            "title": "Prozessverantwortlich",
+            "description": "darf in laufende Abläufe eingreifen (Konzept E5 OFFEN)",
+            "x-eduksx-data-class": "internal"
           },
           "created_at": {
             "type": "string",
@@ -5579,6 +6306,70 @@
             "title": "Verantwortlich",
             "description": "Rolle"
           },
+          "step_type": {
+            "type": "string",
+            "x-extensible-enum": [
+              "task",
+              "call",
+              "approval",
+              "decision",
+              "evidence",
+              "appointment",
+              "wait",
+              "notification",
+              "subprocess"
+            ],
+            "x-eduksx-labels": {
+              "task": "Aufgabe",
+              "call": "Aufruf an Modul",
+              "approval": "Genehmigung",
+              "decision": "Entscheidung",
+              "evidence": "Nachweis",
+              "appointment": "Termin",
+              "wait": "Warten bis Frist",
+              "notification": "Benachrichtigung",
+              "subprocess": "Unterprozess"
+            },
+            "title": "Art",
+            "description": "Aufgabentyp"
+          },
+          "deadline_type": {
+            "type": "string",
+            "x-extensible-enum": [
+              "statutory",
+              "internal",
+              "recommendation"
+            ],
+            "x-eduksx-labels": {
+              "statutory": "gesetzliche Frist",
+              "internal": "interne Frist",
+              "recommendation": "Empfehlung"
+            },
+            "title": "Fristart",
+            "description": "bestimmt die Eskalation"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Möglichkeiten",
+            "description": "bei Entscheidung"
+          },
+          "sub_template_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Unterprozess",
+            "description": "Kürzel der Vorlage"
+          },
+          "sub_offset_days": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Stichtag Unterprozess",
+            "description": "Tage zum eigenen Stichtag"
+          },
           "offset_days": {
             "type": "integer",
             "format": "int32",
@@ -5699,6 +6490,85 @@
             "title": "Zuständige Person",
             "description": "wenn zugewiesen"
           },
+          "step_type": {
+            "type": "string",
+            "x-extensible-enum": [
+              "task",
+              "call",
+              "approval",
+              "decision",
+              "evidence",
+              "appointment",
+              "wait",
+              "notification",
+              "subprocess"
+            ],
+            "x-eduksx-labels": {
+              "task": "Aufgabe",
+              "call": "Aufruf an Modul",
+              "approval": "Genehmigung",
+              "decision": "Entscheidung",
+              "evidence": "Nachweis",
+              "appointment": "Termin",
+              "wait": "Warten bis Frist",
+              "notification": "Benachrichtigung",
+              "subprocess": "Unterprozess"
+            },
+            "title": "Art",
+            "description": "aus der Vorlage",
+            "readOnly": true
+          },
+          "deadline_type": {
+            "type": "string",
+            "x-extensible-enum": [
+              "statutory",
+              "internal",
+              "recommendation"
+            ],
+            "x-eduksx-labels": {
+              "statutory": "gesetzliche Frist",
+              "internal": "interne Frist",
+              "recommendation": "Empfehlung"
+            },
+            "title": "Fristart",
+            "description": "aus der Vorlage",
+            "readOnly": true
+          },
+          "child_run_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Unterprozess (Ablauf)",
+            "description": "gestarteter Ablauf",
+            "readOnly": true
+          },
+          "escalation_level": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Eskalationsstufe",
+            "description": "höchste erreichte Stufe",
+            "readOnly": true
+          },
+          "is_branch_skipped": {
+            "type": "boolean",
+            "title": "Zweig entfällt",
+            "description": "wegen eines Entscheids übersprungen",
+            "readOnly": true
+          },
+          "is_added": {
+            "type": "boolean",
+            "title": "Eingefügt",
+            "description": "im laufenden Ablauf ergänzt",
+            "readOnly": true
+          },
+          "is_at_risk": {
+            "type": "boolean",
+            "title": "Frist gefährdet",
+            "description": "Frist vorbei, Schritt noch blockiert",
+            "readOnly": true
+          },
           "due_on": {
             "type": "string",
             "format": "date",
@@ -5723,7 +6593,8 @@
               "running",
               "done",
               "skipped",
-              "failed"
+              "failed",
+              "cancelled"
             ],
             "x-eduksx-labels": {
               "waiting": "wartet",
@@ -5732,7 +6603,8 @@
               "running": "läuft",
               "done": "erledigt",
               "skipped": "übersprungen",
-              "failed": "Fehler"
+              "failed": "Fehler",
+              "cancelled": "abgebrochen"
             },
             "title": "Status",
             "description": "Zustand des Schritts",
@@ -5932,8 +6804,65 @@
       "StepCompletion": {
         "type": "object",
         "title": "Schritt erledigen",
-        "description": "manueller Abschluss bzw. Auslösen des Vorgangs",
+        "description": "manueller Abschluss, Entscheid, Nachweis, Termin bzw. Auslösen des Vorgangs",
         "properties": {
+          "decision": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "x-extensible-enum": [
+              "approved",
+              "rejected"
+            ],
+            "x-eduksx-labels": {
+              "approved": "genehmigt",
+              "rejected": "abgelehnt"
+            },
+            "title": "Entscheid",
+            "description": "bei Genehmigung"
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Begründung",
+            "description": "Pflicht bei Ablehnung"
+          },
+          "choice": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Wahl",
+            "description": "bei Entscheidung, eine der Möglichkeiten"
+          },
+          "evidence": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Nachweis",
+            "description": "Dokument bzw. Referenz"
+          },
+          "appointment_on": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "title": "Termin",
+            "description": "Datum"
+          },
+          "location": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Ort",
+            "description": "bei Termin"
+          },
           "result": {
             "type": [
               "object",
@@ -5941,7 +6870,7 @@
             ],
             "additionalProperties": true,
             "title": "Ergebnis",
-            "description": "bei Schritten ohne Vorgang"
+            "description": "bei Aufgaben ohne Vorgang"
           },
           "remark": {
             "type": [
@@ -5950,6 +6879,378 @@
             ],
             "title": "Bemerkung",
             "description": "Freitext"
+          }
+        }
+      },
+      "StepReopen": {
+        "type": "object",
+        "title": "Schritt wieder öffnen",
+        "description": "mit Begründung; ein ausgeführter Aufruf wird nicht automatisch wiederholt",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "title": "Begründung",
+            "description": "Pflicht"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "RunIntervention": {
+        "type": "object",
+        "title": "Eingriff",
+        "description": "Ablauf pausieren oder fortsetzen, mit Begründung",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "title": "Begründung",
+            "description": "Pflicht"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "RunReschedule": {
+        "type": "object",
+        "title": "Stichtag verschieben",
+        "description": "offene Fristen verschieben sich mit",
+        "properties": {
+          "reference_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Neuer Stichtag",
+            "description": "Datum"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Begründung",
+            "description": "Pflicht"
+          }
+        },
+        "required": [
+          "reference_on",
+          "reason"
+        ]
+      },
+      "RunStepInsert": {
+        "type": "object",
+        "title": "Schritt einfügen",
+        "description": "nur für diesen Ablauf",
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Schritt",
+            "description": "Bezeichnung"
+          },
+          "step_type": {
+            "type": "string",
+            "x-extensible-enum": [
+              "task",
+              "evidence",
+              "appointment",
+              "approval"
+            ],
+            "x-eduksx-labels": {
+              "task": "Aufgabe",
+              "evidence": "Nachweis",
+              "appointment": "Termin",
+              "approval": "Genehmigung"
+            },
+            "title": "Art",
+            "description": "Aufgabentyp"
+          },
+          "role_code": {
+            "type": "string",
+            "title": "Verantwortlich",
+            "description": "Rolle"
+          },
+          "due_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Frist",
+            "description": "Datum"
+          },
+          "after_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Erst nach",
+            "description": "Kürzel des Vorgängers"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Begründung",
+            "description": "Pflicht"
+          }
+        },
+        "required": [
+          "title",
+          "step_type",
+          "role_code",
+          "due_on",
+          "reason"
+        ]
+      },
+      "JournalEntry": {
+        "type": "object",
+        "title": "Journaleintrag",
+        "description": "fachliches Journal eines Ablaufs",
+        "properties": {
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Zeitpunkt",
+            "description": "wann"
+          },
+          "actor_label": {
+            "type": "string",
+            "title": "Wer",
+            "description": "Person oder «Flow»"
+          },
+          "entry_type": {
+            "type": "string",
+            "x-extensible-enum": [
+              "start",
+              "decision",
+              "subprocess",
+              "deadline",
+              "notification",
+              "escalation",
+              "intervention",
+              "cancellation",
+              "compensation",
+              "completion"
+            ],
+            "x-eduksx-labels": {
+              "start": "Start",
+              "decision": "Entscheid",
+              "subprocess": "Unterprozess",
+              "deadline": "Frist",
+              "notification": "Benachrichtigung",
+              "escalation": "Eskalation",
+              "intervention": "Eingriff",
+              "cancellation": "Abbruch",
+              "compensation": "Kompensation",
+              "completion": "Abschluss"
+            },
+            "title": "Art",
+            "description": "Art des Eintrags"
+          },
+          "step_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Schritt",
+            "description": "Kürzel"
+          },
+          "text": {
+            "type": "string",
+            "title": "Was",
+            "description": "Beschreibung"
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Begründung",
+            "description": "bei Eingriffen"
+          }
+        }
+      },
+      "TemplateTrigger": {
+        "type": "object",
+        "title": "Auslöser",
+        "description": "automatischer Start einer freigegebenen Vorlage",
+        "properties": {
+          "trigger_type": {
+            "type": "string",
+            "x-extensible-enum": [
+              "module_event",
+              "calendar",
+              "run_completed"
+            ],
+            "x-eduksx-labels": {
+              "module_event": "Ereignis eines Moduls",
+              "calendar": "Jahreskalender",
+              "run_completed": "Abschluss eines Ablaufs"
+            },
+            "title": "Art",
+            "description": "Herkunft"
+          },
+          "event_key": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Modul-Ereignis",
+            "description": "Schlüssel"
+          },
+          "calendar_event_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Termin",
+            "description": "im Jahreskalender"
+          },
+          "source_template_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Vorlage (Abschluss)",
+            "description": "Kürzel"
+          },
+          "offset_days": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Stichtag (Tage)",
+            "description": "relativ zum abgeschlossenen Ablauf"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Aktiv",
+            "description": "wird ausgewertet"
+          }
+        },
+        "required": [
+          "trigger_type"
+        ]
+      },
+      "ModuleEvent": {
+        "type": "object",
+        "title": "Modul-Ereignis",
+        "description": "Ereignis eines Moduls (Datensatz erstellt/geändert, Status geändert)",
+        "properties": {
+          "event_key": {
+            "type": "string",
+            "title": "Ereignis",
+            "description": "Schlüssel, z. B. «staffing.anstellung.genehmigt»"
+          },
+          "correlation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Korrelations-ID",
+            "description": "Verfolgung über Module"
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": true,
+            "title": "Werte",
+            "description": "Startwerte, z. B. Name, Funktion, Stichtag"
+          }
+        },
+        "required": [
+          "event_key",
+          "correlation_id",
+          "payload"
+        ]
+      },
+      "TriggerEvent": {
+        "type": "object",
+        "title": "Auslösung",
+        "description": "Eintrag im Auslöseprotokoll",
+        "properties": {
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Zeitpunkt",
+            "description": "wann"
+          },
+          "source_text": {
+            "type": "string",
+            "title": "Quelle",
+            "description": "Herkunft"
+          },
+          "template_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Vorlage",
+            "description": "Kürzel"
+          },
+          "run_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "title": "Ablauf",
+            "description": "gestartet bzw. vorhanden"
+          },
+          "outcome": {
+            "type": "string",
+            "x-extensible-enum": [
+              "started",
+              "duplicate",
+              "no_template",
+              "failed"
+            ],
+            "x-eduksx-labels": {
+              "started": "gestartet",
+              "duplicate": "doppelt, nicht gestartet",
+              "no_template": "ohne Ablauf",
+              "failed": "Fehler"
+            },
+            "title": "Ergebnis",
+            "description": "was geschah"
+          }
+        }
+      },
+      "EscalationEvent": {
+        "type": "object",
+        "title": "Eskalation",
+        "description": "Schritt hat eine Eskalationsstufe erreicht",
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Ablauf",
+            "description": "Verweis"
+          },
+          "step_code": {
+            "type": "string",
+            "title": "Schritt",
+            "description": "Kürzel"
+          },
+          "level": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Stufe",
+            "description": "1–4"
+          },
+          "role_code": {
+            "type": "string",
+            "title": "Empfänger",
+            "description": "Rolle"
+          },
+          "due_on": {
+            "type": "string",
+            "format": "date",
+            "title": "Frist",
+            "description": "Datum"
+          },
+          "deadline_type": {
+            "type": "string",
+            "x-extensible-enum": [
+              "statutory",
+              "internal",
+              "recommendation"
+            ],
+            "x-eduksx-labels": {
+              "statutory": "gesetzliche Frist",
+              "internal": "interne Frist",
+              "recommendation": "Empfehlung"
+            },
+            "title": "Fristart",
+            "description": "der Frist"
           }
         }
       },
@@ -6004,7 +7305,7 @@
       "RunCancel": {
         "type": "object",
         "title": "Ablauf abbrechen",
-        "description": "mit Begründung",
+        "description": "mit Begründung; laufende Unterprozesse werden mit abgebrochen, ausgeführte Aufrufe als Kompensationshinweis gemeldet",
         "properties": {
           "reason": {
             "type": "string",
@@ -6044,6 +7345,24 @@
             "format": "int32",
             "title": "Fehlgeschlagene Aufrufe",
             "description": "Anzahl"
+          },
+          "at_risk_steps": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Frist gefährdet",
+            "description": "blockierte Schritte mit abgelaufener Frist"
+          },
+          "paused_runs": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Pausiert",
+            "description": "Anzahl Abläufe"
+          },
+          "triggered_today": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Heute ausgelöst",
+            "description": "automatisch gestartete Abläufe"
           }
         }
       },
@@ -6491,6 +7810,26 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/RunEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Empfangen"
+          }
+        }
+      }
+    },
+    "flow.step.escalated": {
+      "post": {
+        "summary": "Schritt hat eine Eskalationsstufe erreicht (für das Benachrichtigungszentrum)",
+        "description": "Ereignis «flow.step.escalated» an Abonnenten (B7).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EscalationEvent"
               }
             }
           }

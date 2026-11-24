@@ -110,6 +110,8 @@ CREATE TABLE roles (
     code                text NOT NULL,                   -- Kürzel | z. B. «SV»
     name                text NOT NULL,                   -- Rolle | z. B. «Schulverwaltung»
     role_scope          text NOT NULL DEFAULT 'workflow' CHECK (role_scope IN ('workflow','calendar','both')),   -- Verwendung | Abläufe, Kalender oder beides | intern | workflow=Abläufe; calendar=Jahreskalender; both=beides
+    superior_role_id    uuid REFERENCES roles(id),       -- Vorgesetzte Rolle | Empfänger der Eskalation Stufe 3 (Konzept E6 OFFEN)
+    may_intervene       boolean NOT NULL DEFAULT false,  -- Prozessverantwortlich | darf in laufende Abläufe eingreifen (Konzept E5 OFFEN)
     created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), lock_version integer NOT NULL DEFAULT 1,
     UNIQUE (organization_id, code)
 );
@@ -195,6 +197,22 @@ CREATE TABLE module_operations (
     UNIQUE (organization_id, operation_key)
 );
 
+-- Ereignis, das ein Modul meldet (Datensatz erstellt/geändert, Status geändert)
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Seite «Auslöser»; Module melden ihre Ereignisse wie ihre Vorgänge
+CREATE TABLE module_events (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    module_id           uuid NOT NULL REFERENCES modules(id) ON DELETE CASCADE,   -- Modul | meldet das Ereignis
+    event_key           text NOT NULL,                   -- Ereignis | Schlüssel, z. B. «staffing.anstellung.genehmigt»
+    title               text NOT NULL,                   -- Bezeichnung | z. B. «Anstellung genehmigt»
+    event_type          text NOT NULL CHECK (event_type IN ('record_created','record_changed','status_changed')),   -- Art | was geschieht | intern | record_created=Datensatz erstellt; record_changed=Datensatz geändert; status_changed=Status geändert
+    payload_fields      jsonb NOT NULL DEFAULT '[]'::jsonb,   -- Felder | gelieferte Werte mit Schlüssel und Bezeichnung
+    is_active           boolean NOT NULL DEFAULT true,   -- Aktiv | wird ausgewertet
+    created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), lock_version integer NOT NULL DEFAULT 1,
+    UNIQUE (organization_id, event_key)
+);
+
 -- ------------------------------------------------------------------ Ablaufvorlagen
 
 -- Ablaufvorlage; Änderungen nach der Freigabe ergeben eine neue Version
@@ -244,15 +262,22 @@ CREATE TABLE template_steps (
     title               text NOT NULL,                   -- Schritt | Bezeichnung
     role_id             uuid NOT NULL REFERENCES roles(id),   -- Verantwortlich | Rolle
     offset_days         integer NOT NULL DEFAULT 0,      -- Frist (Tage) | relativ zum Stichtag, negativ = vorher
-    module_operation_id uuid REFERENCES module_operations(id),   -- Vorgang | leer = Aufgabe ohne Modulaufruf
+    step_type           text NOT NULL DEFAULT 'task' CHECK (step_type IN ('task','call','approval','decision','evidence','appointment','wait','notification','subprocess')),   -- Art | Aufgabentyp (Konzept Flow 3.1) | intern | task=Aufgabe; call=Aufruf an Modul; approval=Genehmigung; decision=Entscheidung; evidence=Nachweis; appointment=Termin; wait=Warten bis Frist; notification=Benachrichtigung; subprocess=Unterprozess
+    deadline_type       text NOT NULL DEFAULT 'internal' CHECK (deadline_type IN ('statutory','internal','recommendation')),   -- Fristart | bestimmt die Eskalationsstufen | intern | statutory=gesetzliche Frist; internal=interne Frist; recommendation=Empfehlung
+    module_operation_id uuid REFERENCES module_operations(id),   -- Vorgang | nur bei Art «Aufruf an Modul»
     parameters          jsonb NOT NULL DEFAULT '{}'::jsonb,   -- Parameter | mit Platzhaltern «{person}», «{o3.username}»
     is_automatic        boolean NOT NULL DEFAULT false,  -- Automatisch | ohne Bestätigung bei erreichter Frist
-    condition           jsonb,                           -- Bedingung | z. B. {"field":"function","op":"in","value":"…"}
+    options             text[],                          -- Möglichkeiten | bei Art «Entscheidung»
+    sub_template_id     uuid REFERENCES templates(id),   -- Unterprozess | Vorlage, die gestartet wird (aktuell freigegebene Version)
+    sub_offset_days     integer NOT NULL DEFAULT 0,      -- Stichtag Unterprozess | Tage zum eigenen Stichtag
+    condition           jsonb,                           -- Bedingung | Kontextfeld oder Ergebnis eines früheren Schritts (Verzweigung), z. B. {"field":"s5.decision","op":"=","value":"approved"}
     responsibility_task_id uuid REFERENCES responsibility_tasks(id),   -- Funktionendiagramm | Nummer der Aufgabe
     source_id           uuid REFERENCES sources(id),     -- Quelle | Pflicht (Quelle oder Stelle)
     source_location     text,                            -- Stelle | z. B. «§ 12 Abs. 2»
     UNIQUE (template_id, code),
-    CHECK (source_id IS NOT NULL OR source_location IS NOT NULL)
+    CHECK (source_id IS NOT NULL OR source_location IS NOT NULL),
+    CHECK ((step_type = 'call') = (module_operation_id IS NOT NULL)),
+    CHECK (step_type <> 'subprocess' OR sub_template_id IS NOT NULL)
 );
 
 -- Vorgänger eines Schritts («erst nach»)
@@ -276,6 +301,41 @@ CREATE TABLE template_step_informed_roles (
     PRIMARY KEY (template_step_id, role_id)
 );
 
+-- Auslöser einer Vorlage (neben dem Start von Hand)
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Vorlage › Auslöser; nur freigegebene Vorlagen werden ausgelöst (Konzept Flow 3.2)
+CREATE TABLE template_triggers (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    template_id         uuid NOT NULL REFERENCES templates(id) ON DELETE CASCADE,   -- Vorlage | wird gestartet
+    trigger_type        text NOT NULL CHECK (trigger_type IN ('module_event','calendar','run_completed')),   -- Art | Herkunft des Auslösers | intern | module_event=Ereignis eines Moduls; calendar=Jahreskalender; run_completed=Abschluss eines Ablaufs
+    module_event_id     uuid REFERENCES module_events(id),   -- Modul-Ereignis | bei Art «Ereignis eines Moduls»
+    calendar_event_id   uuid,                            -- Termin | bei Art «Jahreskalender» (Verweis auf calendar_events)
+    source_template_id  uuid REFERENCES templates(id),   -- Vorlage (Abschluss) | bei Art «Abschluss eines Ablaufs»
+    offset_days         integer NOT NULL DEFAULT 0,      -- Stichtag (Tage) | Abschluss: Stichtag des neuen Ablaufs relativ zum abgeschlossenen
+    is_active           boolean NOT NULL DEFAULT true,   -- Aktiv | ausschalten ohne zu löschen
+    created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1,
+    CHECK ((trigger_type = 'module_event') = (module_event_id IS NOT NULL)),
+    CHECK ((trigger_type = 'calendar') = (calendar_event_id IS NOT NULL)),
+    CHECK ((trigger_type = 'run_completed') = (source_template_id IS NOT NULL))
+);
+
+-- Eskalationsstufe je Fristart
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Motor; Erinnerung, überfällig, vorgesetzte Stelle, Leitung (Konzept Flow 3.3, E6 OFFEN)
+CREATE TABLE escalation_rules (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    deadline_type       text NOT NULL CHECK (deadline_type IN ('statutory','internal','recommendation')),   -- Fristart | für welche Fristen | intern | statutory=gesetzliche Frist; internal=interne Frist; recommendation=Empfehlung
+    level               integer NOT NULL CHECK (level BETWEEN 1 AND 9),   -- Stufe | 1 = Erinnerung
+    offset_days         integer NOT NULL,                -- Abstand zur Frist (Tage) | negativ = vorher
+    recipient           text NOT NULL CHECK (recipient IN ('responsible','superior','management')),   -- Empfänger | wer informiert wird | intern | responsible=zuständige Rolle; superior=vorgesetzte Rolle; management=Leitung
+    text                text NOT NULL,                   -- Meldung | Text des Hinweises
+    is_journaled        boolean NOT NULL DEFAULT false,  -- Ins Journal | ab Stufe 3 im Journal des Ablaufs
+    created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), lock_version integer NOT NULL DEFAULT 1,
+    UNIQUE (organization_id, deadline_type, level)
+);
+
 -- ------------------------------------------------------------------ Laufende Abläufe
 
 -- Laufender Ablauf als Kopie einer Vorlage in der Version beim Start
@@ -292,11 +352,17 @@ CREATE TABLE runs (
     reference_on        date NOT NULL,                   -- Stichtag | Fristen werden davon berechnet | intern
     context             jsonb NOT NULL,                  -- Startwerte | Eingaben beim Start, z. B. Name und Funktion
     user_id             uuid REFERENCES users(id) ON DELETE SET NULL,   -- Person | betroffene Person, falls vorhanden
-    status              text NOT NULL DEFAULT 'running' CHECK (status IN ('running','completed','cancelled')),   -- Status | Stand des Ablaufs | intern | running=läuft; completed=abgeschlossen; cancelled=abgebrochen
+    status              text NOT NULL DEFAULT 'running' CHECK (status IN ('running','paused','completed','cancelled')),   -- Status | Stand des Ablaufs | intern | running=läuft; paused=pausiert; completed=abgeschlossen; cancelled=abgebrochen
     started_on          date NOT NULL DEFAULT current_date,   -- Gestartet am | Start | intern
     started_by_id       uuid,                            -- Gestartet von | Person (ohne Constraint) | intern
     completed_on        date,                            -- Abgeschlossen am | Ende | intern
-    trigger_source      text,                            -- Auslöser | «manuell», Ereignis eines Moduls oder Kalender | intern
+    trigger_source      text,                            -- Auslöser | «manuell», Ereignis eines Moduls, Kalender oder Abschluss | intern
+    template_trigger_id uuid REFERENCES template_triggers(id) ON DELETE SET NULL,   -- Auslöser (Verweis) | leer = von Hand | intern
+    dedup_key           text,                            -- Doppelstart-Schlüssel | Vorlage, Bezeichnung und Stichtag bzw. Vorkommen; zweiter Start wird protokolliert statt ausgeführt | intern
+    parent_run_id       uuid REFERENCES runs(id),        -- Hauptablauf | bei Unterprozessen | intern
+    parent_run_step_id  uuid,                            -- Schritt im Hauptablauf | bei Unterprozessen (Verweis auf run_steps) | intern
+    cancelled_on        date,                            -- Abgebrochen am | Eingriff | intern
+    cancel_reason       text,                            -- Grund des Abbruchs | Pflicht beim Abbruch
     lock_version        integer NOT NULL DEFAULT 1,
     UNIQUE (organization_id, number)
 );
@@ -317,6 +383,14 @@ CREATE TABLE run_steps (
     due_on              date NOT NULL,                   -- Frist | Stichtag plus Tage, änderbar
     predecessors        text[] NOT NULL DEFAULT '{}',    -- Vorgänger | Kürzel
     informed_roles      text[] NOT NULL DEFAULT '{}',    -- Informiert | Rollen
+    step_type           text NOT NULL DEFAULT 'task' CHECK (step_type IN ('task','call','approval','decision','evidence','appointment','wait','notification','subprocess')),   -- Art | aus der Vorlage | intern | task=Aufgabe; call=Aufruf an Modul; approval=Genehmigung; decision=Entscheidung; evidence=Nachweis; appointment=Termin; wait=Warten bis Frist; notification=Benachrichtigung; subprocess=Unterprozess
+    deadline_type       text NOT NULL DEFAULT 'internal' CHECK (deadline_type IN ('statutory','internal','recommendation')),   -- Fristart | aus der Vorlage | intern | statutory=gesetzliche Frist; internal=interne Frist; recommendation=Empfehlung
+    options             text[],                          -- Möglichkeiten | bei Entscheidung
+    child_run_id        uuid REFERENCES runs(id),        -- Unterprozess (Ablauf) | gestarteter Ablauf
+    escalation_level    integer NOT NULL DEFAULT 0,      -- Eskalationsstufe | höchste erreichte Stufe
+    is_branch_skipped   boolean NOT NULL DEFAULT false,  -- Zweig entfällt | übersprungen wegen eines Entscheids; Nachfolger nur auf diesem Zweig entfallen mit
+    is_added            boolean NOT NULL DEFAULT false,  -- Eingefügt | im laufenden Ablauf ergänzt, nicht aus der Vorlage
+    is_manual_only      boolean NOT NULL DEFAULT false,  -- Nur von Hand | nach «wieder öffnen»: Aufruf wird nicht automatisch wiederholt
     operation_key       text,                            -- Vorgang | Schlüssel im Register
     parameter_template  jsonb NOT NULL DEFAULT '{}'::jsonb,   -- Parameter (Vorlage) | mit Platzhaltern
     parameters          jsonb,                           -- Parameter (aufgelöst) | beim Aufruf | personenbezogen
@@ -324,8 +398,8 @@ CREATE TABLE run_steps (
     condition           jsonb,                           -- Bedingung | aus der Vorlage
     responsibility_number text,                          -- Funktionendiagramm | Nummer der Aufgabe
     source_text         text NOT NULL,                   -- Quelle | aus der Vorlage
-    status              text NOT NULL DEFAULT 'waiting' CHECK (status IN ('waiting','ready','scheduled','running','done','skipped','failed')),   -- Status | Zustand des Schritts | intern | waiting=wartet; ready=bereit; scheduled=geplant; running=läuft; done=erledigt; skipped=übersprungen; failed=Fehler
-    result              jsonb,                           -- Ergebnis | Rückgabe des Moduls, Platzhalter für spätere Schritte | personenbezogen
+    status              text NOT NULL DEFAULT 'waiting' CHECK (status IN ('waiting','ready','scheduled','running','done','skipped','failed','cancelled')),   -- Status | Zustand des Schritts | intern | waiting=wartet; ready=bereit; scheduled=geplant; running=läuft; done=erledigt; skipped=übersprungen; failed=Fehler; cancelled=abgebrochen
+    result              jsonb,                           -- Ergebnis | Rückgabe des Moduls bzw. Entscheid, Wahl, Nachweis, Termin; Platzhalter für spätere Schritte | personenbezogen
     done_on             date,                            -- Erledigt am | Abschluss
     done_by_id          uuid,                            -- Erledigt von | Person (ohne Constraint)
     remark              text,                            -- Bemerkung | z. B. Grund für Überspringen
@@ -364,6 +438,38 @@ CREATE TABLE notices (
     run_id              uuid REFERENCES runs(id) ON DELETE CASCADE,   -- Ablauf | Bezug
     text                text NOT NULL,                   -- Hinweis | Text
     read_by_ids         uuid[] NOT NULL DEFAULT '{}'     -- Gelesen von | Personen, die ihn gelesen haben
+);
+
+-- Journal eines Ablaufs: Start, Entscheide, Unterprozesse, Eskalationen, Eingriffe mit Begründung
+-- Geltungsbereich: Organisation · Datenklasse: personenbezogen
+-- Herkunft/Verwendung: Ablauf › Journal; fachlich, getrennt vom Aufrufprotokoll (technisch) und Audit-Log (Konzept Flow 3.4)
+CREATE TABLE run_journal_entries (
+    id                  bigserial PRIMARY KEY,
+    event_id            uuid NOT NULL UNIQUE,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    run_id              uuid NOT NULL REFERENCES runs(id),    -- Ablauf | Verweis | intern
+    run_step_id         uuid REFERENCES run_steps(id),        -- Schritt | Bezug, falls vorhanden | intern
+    occurred_at         timestamptz NOT NULL DEFAULT now(),   -- Zeitpunkt | wann | intern
+    actor_id            uuid,                            -- Wer | Person; leer = Flow (ohne Constraint) | intern
+    entry_type          text NOT NULL CHECK (entry_type IN ('start','decision','subprocess','deadline','notification','escalation','intervention','cancellation','compensation','completion')),   -- Art | Art des Eintrags | intern | start=Start; decision=Entscheid; subprocess=Unterprozess; deadline=Frist; notification=Benachrichtigung; escalation=Eskalation; intervention=Eingriff; cancellation=Abbruch; compensation=Kompensation; completion=Abschluss
+    text                text NOT NULL,                   -- Was | Beschreibung
+    reason              text                             -- Begründung | Pflicht bei Eingriffen
+);
+
+-- Auslöseprotokoll: jedes Ereignis, jeder Kalendertermin und jeder Abschluss, der einen Ablauf starten soll
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Seite «Auslöser»; doppelte Starts werden hier statt als Ablauf vermerkt
+CREATE TABLE trigger_events (
+    id                  bigserial PRIMARY KEY,
+    event_id            uuid NOT NULL UNIQUE,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    occurred_at         timestamptz NOT NULL DEFAULT now(),   -- Zeitpunkt | wann
+    source_text         text NOT NULL,                   -- Quelle | z. B. «EduKSX-Staffing: Anstellung genehmigt»
+    template_id         uuid REFERENCES templates(id),   -- Vorlage | die gestartet werden sollte
+    run_id              uuid REFERENCES runs(id),        -- Ablauf | gestartet bzw. bereits vorhanden
+    outcome             text NOT NULL CHECK (outcome IN ('started','duplicate','no_template','failed')),   -- Ergebnis | was geschah | intern | started=gestartet; duplicate=doppelt, nicht gestartet; no_template=ohne Ablauf; failed=Fehler
+    payload             jsonb,                           -- Gelieferte Werte | aus dem Ereignis | personenbezogen
+    correlation_id      uuid                             -- Korrelations-ID | Verfolgung über Module
 );
 
 -- ------------------------------------------------------------------ Jahreskalender
@@ -446,25 +552,41 @@ CREATE INDEX organizations_parent_id_index ON organizations (parent_id);
 CREATE INDEX users_organization_id_index ON users (organization_id);
 CREATE INDEX school_holidays_organization_id_index ON school_holidays (organization_id);
 CREATE INDEX school_holidays_school_year_id_index ON school_holidays (school_year_id);
+CREATE INDEX roles_superior_role_id_index ON roles (superior_role_id);
 CREATE INDEX role_calendar_roles_organization_id_index ON role_calendar_roles (organization_id);
 CREATE INDEX responsibility_task_roles_organization_id_index ON responsibility_task_roles (organization_id);
 CREATE INDEX module_operations_module_id_index ON module_operations (module_id);
+CREATE INDEX module_events_module_id_index ON module_events (module_id);
 CREATE INDEX template_fields_organization_id_index ON template_fields (organization_id);
 CREATE INDEX template_steps_organization_id_index ON template_steps (organization_id);
 CREATE INDEX template_steps_role_id_index ON template_steps (role_id);
 CREATE INDEX template_steps_module_operation_id_index ON template_steps (module_operation_id);
+CREATE INDEX template_steps_sub_template_id_index ON template_steps (sub_template_id);
 CREATE INDEX template_steps_responsibility_task_id_index ON template_steps (responsibility_task_id);
 CREATE INDEX template_steps_source_id_index ON template_steps (source_id);
 CREATE INDEX template_step_predecessors_organization_id_index ON template_step_predecessors (organization_id);
 CREATE INDEX template_step_informed_roles_organization_id_index ON template_step_informed_roles (organization_id);
+CREATE INDEX template_triggers_organization_id_index ON template_triggers (organization_id);
+CREATE INDEX template_triggers_template_id_index ON template_triggers (template_id);
+CREATE INDEX template_triggers_module_event_id_index ON template_triggers (module_event_id);
+CREATE INDEX template_triggers_source_template_id_index ON template_triggers (source_template_id);
 CREATE INDEX runs_template_id_index ON runs (template_id);
 CREATE INDEX runs_user_id_index ON runs (user_id);
+CREATE INDEX runs_template_trigger_id_index ON runs (template_trigger_id);
+CREATE INDEX runs_parent_run_id_index ON runs (parent_run_id);
 CREATE INDEX run_steps_organization_id_index ON run_steps (organization_id);
 CREATE INDEX run_steps_assignee_id_index ON run_steps (assignee_id);
+CREATE INDEX run_steps_child_run_id_index ON run_steps (child_run_id);
 CREATE INDEX operation_calls_run_id_index ON operation_calls (run_id);
 CREATE INDEX operation_calls_run_step_id_index ON operation_calls (run_step_id);
 CREATE INDEX notices_organization_id_index ON notices (organization_id);
 CREATE INDEX notices_run_id_index ON notices (run_id);
+CREATE INDEX run_journal_entries_organization_id_index ON run_journal_entries (organization_id);
+CREATE INDEX run_journal_entries_run_id_index ON run_journal_entries (run_id);
+CREATE INDEX run_journal_entries_run_step_id_index ON run_journal_entries (run_step_id);
+CREATE INDEX trigger_events_organization_id_index ON trigger_events (organization_id);
+CREATE INDEX trigger_events_template_id_index ON trigger_events (template_id);
+CREATE INDEX trigger_events_run_id_index ON trigger_events (run_id);
 CREATE INDEX calendar_events_calendar_area_id_index ON calendar_events (calendar_area_id);
 CREATE INDEX calendar_events_source_id_index ON calendar_events (source_id);
 CREATE INDEX calendar_event_roles_organization_id_index ON calendar_event_roles (organization_id);
@@ -544,6 +666,8 @@ COMMENT ON COLUMN roles.organization_id IS 'Organisation – Mandant; aus dem To
 COMMENT ON COLUMN roles.code IS 'Kürzel – z. B. «SV»';
 COMMENT ON COLUMN roles.name IS 'Rolle – z. B. «Schulverwaltung»';
 COMMENT ON COLUMN roles.role_scope IS 'Verwendung – Abläufe, Kalender oder beides';
+COMMENT ON COLUMN roles.superior_role_id IS 'Vorgesetzte Rolle – Empfänger der Eskalation Stufe 3 (Konzept E6 OFFEN)';
+COMMENT ON COLUMN roles.may_intervene IS 'Prozessverantwortlich – darf in laufende Abläufe eingreifen (Konzept E5 OFFEN)';
 COMMENT ON COLUMN roles.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
 COMMENT ON COLUMN roles.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
 COMMENT ON COLUMN roles.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
@@ -596,6 +720,18 @@ COMMENT ON COLUMN module_operations.parameters IS 'Parameter – Namen der Einga
 COMMENT ON COLUMN module_operations.results IS 'Ergebnisse – Namen der Rückgaben, z. B. «username»';
 COMMENT ON COLUMN module_operations.response_type IS 'Antwortart – sofort oder mit Rückmeldung';
 COMMENT ON COLUMN module_operations.is_active IS 'Aktiv – verwendbar in Vorlagen';
+COMMENT ON TABLE module_events IS 'Ereignis, das ein Modul meldet (Datensatz erstellt/geändert, Status geändert) – Seite «Auslöser»; Module melden ihre Ereignisse wie ihre Vorgänge';
+COMMENT ON COLUMN module_events.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN module_events.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN module_events.module_id IS 'Modul – meldet das Ereignis';
+COMMENT ON COLUMN module_events.event_key IS 'Ereignis – Schlüssel, z. B. «staffing.anstellung.genehmigt»';
+COMMENT ON COLUMN module_events.title IS 'Bezeichnung – z. B. «Anstellung genehmigt»';
+COMMENT ON COLUMN module_events.event_type IS 'Art – was geschieht';
+COMMENT ON COLUMN module_events.payload_fields IS 'Felder – gelieferte Werte mit Schlüssel und Bezeichnung';
+COMMENT ON COLUMN module_events.is_active IS 'Aktiv – wird ausgewertet';
+COMMENT ON COLUMN module_events.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN module_events.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN module_events.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
 COMMENT ON TABLE templates IS 'Ablaufvorlage; Änderungen nach der Freigabe ergeben eine neue Version – «Ablaufvorlagen»; Schulverwaltung bereitet vor, Ressortvorstand gibt frei';
 COMMENT ON COLUMN templates.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN templates.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
@@ -634,10 +770,15 @@ COMMENT ON COLUMN template_steps.position IS 'Reihenfolge – Anzeige';
 COMMENT ON COLUMN template_steps.title IS 'Schritt – Bezeichnung';
 COMMENT ON COLUMN template_steps.role_id IS 'Verantwortlich – Rolle';
 COMMENT ON COLUMN template_steps.offset_days IS 'Frist (Tage)';
-COMMENT ON COLUMN template_steps.module_operation_id IS 'Vorgang';
+COMMENT ON COLUMN template_steps.step_type IS 'Art – Aufgabentyp (Konzept Flow 3.1)';
+COMMENT ON COLUMN template_steps.deadline_type IS 'Fristart – bestimmt die Eskalationsstufen';
+COMMENT ON COLUMN template_steps.module_operation_id IS 'Vorgang – nur bei Art «Aufruf an Modul»';
 COMMENT ON COLUMN template_steps.parameters IS 'Parameter – mit Platzhaltern «{person}», «{o3.username}»';
 COMMENT ON COLUMN template_steps.is_automatic IS 'Automatisch – ohne Bestätigung bei erreichter Frist';
-COMMENT ON COLUMN template_steps.condition IS 'Bedingung – z. B. {"field":"function","op":"in","value":"…"}';
+COMMENT ON COLUMN template_steps.options IS 'Möglichkeiten – bei Art «Entscheidung»';
+COMMENT ON COLUMN template_steps.sub_template_id IS 'Unterprozess – Vorlage, die gestartet wird (aktuell freigegebene Version)';
+COMMENT ON COLUMN template_steps.sub_offset_days IS 'Stichtag Unterprozess – Tage zum eigenen Stichtag';
+COMMENT ON COLUMN template_steps.condition IS 'Bedingung';
 COMMENT ON COLUMN template_steps.responsibility_task_id IS 'Funktionendiagramm – Nummer der Aufgabe';
 COMMENT ON COLUMN template_steps.source_id IS 'Quelle – Pflicht (Quelle oder Stelle)';
 COMMENT ON COLUMN template_steps.source_location IS 'Stelle – z. B. «§ 12 Abs. 2»';
@@ -649,6 +790,33 @@ COMMENT ON TABLE template_step_informed_roles IS 'Zu informierende Rollen eines 
 COMMENT ON COLUMN template_step_informed_roles.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
 COMMENT ON COLUMN template_step_informed_roles.template_step_id IS 'Schritt – Verweis';
 COMMENT ON COLUMN template_step_informed_roles.role_id IS 'Rolle – wird informiert';
+COMMENT ON TABLE template_triggers IS 'Auslöser einer Vorlage (neben dem Start von Hand) – Vorlage › Auslöser; nur freigegebene Vorlagen werden ausgelöst (Konzept Flow 3.2)';
+COMMENT ON COLUMN template_triggers.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN template_triggers.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN template_triggers.template_id IS 'Vorlage – wird gestartet';
+COMMENT ON COLUMN template_triggers.trigger_type IS 'Art – Herkunft des Auslösers';
+COMMENT ON COLUMN template_triggers.module_event_id IS 'Modul-Ereignis – bei Art «Ereignis eines Moduls»';
+COMMENT ON COLUMN template_triggers.calendar_event_id IS 'Termin – bei Art «Jahreskalender» (Verweis auf calendar_events)';
+COMMENT ON COLUMN template_triggers.source_template_id IS 'Vorlage (Abschluss) – bei Art «Abschluss eines Ablaufs»';
+COMMENT ON COLUMN template_triggers.offset_days IS 'Stichtag (Tage) – Abschluss: Stichtag des neuen Ablaufs relativ zum abgeschlossenen';
+COMMENT ON COLUMN template_triggers.is_active IS 'Aktiv – ausschalten ohne zu löschen';
+COMMENT ON COLUMN template_triggers.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN template_triggers.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
+COMMENT ON COLUMN template_triggers.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN template_triggers.updated_by_id IS 'Geändert von – Person der letzten Änderung (ohne Constraint)';
+COMMENT ON COLUMN template_triggers.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
+COMMENT ON TABLE escalation_rules IS 'Eskalationsstufe je Fristart – Motor; Erinnerung, überfällig, vorgesetzte Stelle, Leitung (Konzept Flow 3.3, E6 OFFEN)';
+COMMENT ON COLUMN escalation_rules.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN escalation_rules.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN escalation_rules.deadline_type IS 'Fristart – für welche Fristen';
+COMMENT ON COLUMN escalation_rules.level IS 'Stufe';
+COMMENT ON COLUMN escalation_rules.offset_days IS 'Abstand zur Frist (Tage)';
+COMMENT ON COLUMN escalation_rules.recipient IS 'Empfänger – wer informiert wird';
+COMMENT ON COLUMN escalation_rules.text IS 'Meldung – Text des Hinweises';
+COMMENT ON COLUMN escalation_rules.is_journaled IS 'Ins Journal – ab Stufe 3 im Journal des Ablaufs';
+COMMENT ON COLUMN escalation_rules.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
+COMMENT ON COLUMN escalation_rules.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
+COMMENT ON COLUMN escalation_rules.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
 COMMENT ON TABLE runs IS 'Laufender Ablauf als Kopie einer Vorlage in der Version beim Start – gestartet in «Ablauf starten», aus dem Kalender oder durch ein Ereignis eines Moduls';
 COMMENT ON COLUMN runs.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN runs.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
@@ -664,7 +832,13 @@ COMMENT ON COLUMN runs.status IS 'Status – Stand des Ablaufs';
 COMMENT ON COLUMN runs.started_on IS 'Gestartet am – Start';
 COMMENT ON COLUMN runs.started_by_id IS 'Gestartet von – Person (ohne Constraint)';
 COMMENT ON COLUMN runs.completed_on IS 'Abgeschlossen am – Ende';
-COMMENT ON COLUMN runs.trigger_source IS 'Auslöser – «manuell», Ereignis eines Moduls oder Kalender';
+COMMENT ON COLUMN runs.trigger_source IS 'Auslöser – «manuell», Ereignis eines Moduls, Kalender oder Abschluss';
+COMMENT ON COLUMN runs.template_trigger_id IS 'Auslöser (Verweis)';
+COMMENT ON COLUMN runs.dedup_key IS 'Doppelstart-Schlüssel – Vorlage, Bezeichnung und Stichtag bzw. Vorkommen; zweiter Start wird protokolliert statt ausgeführt';
+COMMENT ON COLUMN runs.parent_run_id IS 'Hauptablauf – bei Unterprozessen';
+COMMENT ON COLUMN runs.parent_run_step_id IS 'Schritt im Hauptablauf – bei Unterprozessen (Verweis auf run_steps)';
+COMMENT ON COLUMN runs.cancelled_on IS 'Abgebrochen am – Eingriff';
+COMMENT ON COLUMN runs.cancel_reason IS 'Grund des Abbruchs – Pflicht beim Abbruch';
 COMMENT ON COLUMN runs.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
 COMMENT ON TABLE run_steps IS 'Schritt eines laufenden Ablaufs (Kopie aus der Vorlage mit Zustand) – «Laufende Abläufe» und «Meine Aufgaben»; Zustand setzt der Motor';
 COMMENT ON COLUMN run_steps.id IS 'ID – UUID v7, von der Anwendung vergeben';
@@ -679,6 +853,14 @@ COMMENT ON COLUMN run_steps.offset_days IS 'Frist (Tage) – relativ zum Stichta
 COMMENT ON COLUMN run_steps.due_on IS 'Frist – Stichtag plus Tage, änderbar';
 COMMENT ON COLUMN run_steps.predecessors IS 'Vorgänger – Kürzel';
 COMMENT ON COLUMN run_steps.informed_roles IS 'Informiert – Rollen';
+COMMENT ON COLUMN run_steps.step_type IS 'Art – aus der Vorlage';
+COMMENT ON COLUMN run_steps.deadline_type IS 'Fristart – aus der Vorlage';
+COMMENT ON COLUMN run_steps.options IS 'Möglichkeiten – bei Entscheidung';
+COMMENT ON COLUMN run_steps.child_run_id IS 'Unterprozess (Ablauf) – gestarteter Ablauf';
+COMMENT ON COLUMN run_steps.escalation_level IS 'Eskalationsstufe – höchste erreichte Stufe';
+COMMENT ON COLUMN run_steps.is_branch_skipped IS 'Zweig entfällt – übersprungen wegen eines Entscheids; Nachfolger nur auf diesem Zweig entfallen mit';
+COMMENT ON COLUMN run_steps.is_added IS 'Eingefügt – im laufenden Ablauf ergänzt, nicht aus der Vorlage';
+COMMENT ON COLUMN run_steps.is_manual_only IS 'Nur von Hand – nach «wieder öffnen»: Aufruf wird nicht automatisch wiederholt';
 COMMENT ON COLUMN run_steps.operation_key IS 'Vorgang – Schlüssel im Register';
 COMMENT ON COLUMN run_steps.parameter_template IS 'Parameter (Vorlage) – mit Platzhaltern';
 COMMENT ON COLUMN run_steps.parameters IS 'Parameter (aufgelöst) – beim Aufruf';
@@ -687,7 +869,7 @@ COMMENT ON COLUMN run_steps.condition IS 'Bedingung – aus der Vorlage';
 COMMENT ON COLUMN run_steps.responsibility_number IS 'Funktionendiagramm – Nummer der Aufgabe';
 COMMENT ON COLUMN run_steps.source_text IS 'Quelle – aus der Vorlage';
 COMMENT ON COLUMN run_steps.status IS 'Status – Zustand des Schritts';
-COMMENT ON COLUMN run_steps.result IS 'Ergebnis – Rückgabe des Moduls, Platzhalter für spätere Schritte';
+COMMENT ON COLUMN run_steps.result IS 'Ergebnis – Rückgabe des Moduls bzw. Entscheid, Wahl, Nachweis, Termin; Platzhalter für spätere Schritte';
 COMMENT ON COLUMN run_steps.done_on IS 'Erledigt am – Abschluss';
 COMMENT ON COLUMN run_steps.done_by_id IS 'Erledigt von – Person (ohne Constraint)';
 COMMENT ON COLUMN run_steps.remark IS 'Bemerkung – z. B. Grund für Überspringen';
@@ -714,6 +896,28 @@ COMMENT ON COLUMN notices.notice_on IS 'Datum – wann';
 COMMENT ON COLUMN notices.run_id IS 'Ablauf – Bezug';
 COMMENT ON COLUMN notices.text IS 'Hinweis – Text';
 COMMENT ON COLUMN notices.read_by_ids IS 'Gelesen von – Personen, die ihn gelesen haben';
+COMMENT ON TABLE run_journal_entries IS 'Journal eines Ablaufs: Start, Entscheide, Unterprozesse, Eskalationen, Eingriffe mit Begründung – Ablauf › Journal; fachlich, getrennt vom Aufrufprotokoll (technisch) und Audit-Log (Konzept Flow 3.4)';
+COMMENT ON COLUMN run_journal_entries.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN run_journal_entries.event_id IS 'Ereignis-ID – eindeutig über Module und Exporte hinweg';
+COMMENT ON COLUMN run_journal_entries.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN run_journal_entries.run_id IS 'Ablauf – Verweis';
+COMMENT ON COLUMN run_journal_entries.run_step_id IS 'Schritt – Bezug, falls vorhanden';
+COMMENT ON COLUMN run_journal_entries.occurred_at IS 'Zeitpunkt – wann';
+COMMENT ON COLUMN run_journal_entries.actor_id IS 'Wer – Person; leer = Flow (ohne Constraint)';
+COMMENT ON COLUMN run_journal_entries.entry_type IS 'Art – Art des Eintrags';
+COMMENT ON COLUMN run_journal_entries.text IS 'Was – Beschreibung';
+COMMENT ON COLUMN run_journal_entries.reason IS 'Begründung – Pflicht bei Eingriffen';
+COMMENT ON TABLE trigger_events IS 'Auslöseprotokoll: jedes Ereignis, jeder Kalendertermin und jeder Abschluss, der einen Ablauf starten soll – Seite «Auslöser»; doppelte Starts werden hier statt als Ablauf vermerkt';
+COMMENT ON COLUMN trigger_events.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN trigger_events.event_id IS 'Ereignis-ID – eindeutig über Module und Exporte hinweg';
+COMMENT ON COLUMN trigger_events.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN trigger_events.occurred_at IS 'Zeitpunkt – wann';
+COMMENT ON COLUMN trigger_events.source_text IS 'Quelle – z. B. «EduKSX-Staffing: Anstellung genehmigt»';
+COMMENT ON COLUMN trigger_events.template_id IS 'Vorlage – die gestartet werden sollte';
+COMMENT ON COLUMN trigger_events.run_id IS 'Ablauf – gestartet bzw. bereits vorhanden';
+COMMENT ON COLUMN trigger_events.outcome IS 'Ergebnis – was geschah';
+COMMENT ON COLUMN trigger_events.payload IS 'Gelieferte Werte – aus dem Ereignis';
+COMMENT ON COLUMN trigger_events.correlation_id IS 'Korrelations-ID – Verfolgung über Module';
 COMMENT ON TABLE calendar_areas IS 'Themenbereich des Jahreskalenders – Jahresplanung ICT-Prozesse; Zeilen der Zeitleiste';
 COMMENT ON COLUMN calendar_areas.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN calendar_areas.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';

@@ -36,6 +36,15 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-24 (02:10–04:00) – EduKSX-Flow 0.7.0: Stufe 1 der Prozess-Engine
+
+Externes Review gewichtet → `docs/KONZEPT-FLOW.md` (Stufen 1–4, E1–E13). Entscheid 2026-11-24: Engine vor weiteren
+Vorlagen (E1), Stufe 1 umsetzen (E2) – Auftrag im Chat. Umgesetzt: Aufgabentypen, Verzweigung, Unterprozesse,
+Auslöser mit Deduplizierung, Fristarten und Eskalation, Eingriffe mit Journal; Datenmodell/API/Pflichtenheft
+nachgeführt. Playwright-Szenarien grün, alle 45 Vorlagen ohne Prüfbefund. Parallel auf `main` entstandene
+Flow-Änderungen (0.6.0–0.6.2: Entwickler-Menü, CodeQL-Escaping, Zurück-Taste) übernommen. Offen: E4–E13; Issues
+nachtragen (`gh` hier nicht angemeldet).
+
 ### Sitzung 2026-11-24 – GUI-EX 0.6.0: Erscheinungsbild, #100
 
 Nach Bildbeispielen und eingefügter Stilliste: elf weitere Stile (umbenannt ohne Herstellernamen: Tonal, Sachlich) und Fenster «Erscheinungsbild» mit fünf Ebenen (Stil, Modus, Dichte, Akzent, Barrierefreiheit) plus Schulvorgabe. Konzept: Ebenen-Tabelle, E8 offen. Nicht gebaut: Memphis, Elegant, Editorial.

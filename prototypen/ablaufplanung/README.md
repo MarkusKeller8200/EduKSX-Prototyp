@@ -65,6 +65,23 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
   Schuljahr), Liste und Quartale (wie die Jahresplanung auf dem Flipchart); Filter nach Bereich, Zuständigkeit, Quelle.
   Ein Ereignis kann mit einer **Ablaufvorlage verknüpft** werden; «Ablauf starten» übernimmt das Datum des Ereignisses
   als Stichtag (Beispiel: Vorlage «Beschaffung Geräte»). Anstehende Termine erscheinen in Übersicht und «Meine Aufgaben».
+- **Prozess-Engine Stufe 1** (0.7.0, `docs/KONZEPT-FLOW.md`):
+  - **Arten von Schritten:** Aufgabe, Aufruf an Modul, Genehmigung (Ablehnung mit Begründung), Entscheidung
+    (mehrere Möglichkeiten), Nachweis, Termin, Warten bis Frist, Benachrichtigung, Unterprozess.
+  - **Verzweigung:** Bedingung auf das Ergebnis eines früheren Schritts (`ictsw5.entscheid = genehmigt`); ein
+    entfallender Zweig nimmt die Schritte mit, die nur auf ihn warten. Vorschau zeigt «entscheidet sich im Ablauf».
+  - **Unterprozesse:** Budget → RPK-Prüfung Budget, Jahresrechnung → RPK-Prüfung Rechnung, Anstellung kommunal →
+    ICT-Onboarding; Kontextfelder werden übernommen, Kreise werden erkannt.
+  - **Auslöser:** Modul-Ereignisse (Anstellung genehmigt, Austritt erfasst, Pensum geändert, Lernende angemeldet –
+    auf der Seite «Auslöser» simulierbar), Jahreskalender automatisch (Schulpflegesitzung, Schulleitungskonferenz;
+    Start, sobald der erste Schritt fällig wird), Abschluss eines Ablaufs (Hardwarebeschaffung → Investition buchen).
+    Doppelte Starts werden protokolliert statt ausgeführt.
+  - **Fristarten und Eskalation:** gesetzlich (§, mit Paragraf in der Quelle), intern, Empfehlung; Stufen Erinnerung,
+    überfällig, vorgesetzte Stelle, Schulpräsidium (gesetzliche Fristen früher); blockierte Schritte mit
+    abgelaufener Frist als «Frist gefährdet».
+  - **Eingriffe** (Schulverwaltung, Schulleitung, Schulpräsidium): pausieren, abbrechen (Unterprozesse mit,
+    Kompensationshinweis für ausgeführte Aufrufe), Stichtag verschieben, Schritt überspringen, wieder öffnen (ohne
+    automatische Wiederholung), Zuständigkeit ändern, Schritt einfügen – mit Begründung im **Journal** des Ablaufs.
 - **Simulation:** simulierter Tag (+1, +7, nächste Frist), Module als «nicht erreichbar» schalten, Rollenwechsel.
 
 ## Grundlagen
@@ -90,6 +107,8 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
 - Quellen «ZU PRÜFEN» (42 Schritte): Geschäftsordnung der Schulpflege, Personalverordnung, Gemeindeordnung
   (Finanzkompetenzen), Submissionsschwellen, Paragrafen VSV/IDG/VGG § 39. Recherchestand 19.11.2026, keine
   Rechtsberatung. Revision PG § 17 (Kündigungsfristen) hängig.
+- Stufe 1 (Konzept, OFFEN): Wer darf eingreifen (E5)? Eskalationsstufen und vorgesetzte Rollen (E6)? Kontext im
+  laufenden Ablauf ändern (E9)? Einstufung gesetzlicher Fristen fachlich prüfen (E12).
 - Digitale Aktenführung ab 1.1.2029: Aufrufprotokoll als Teil des Personaldossiers?
 
 ## Ergebnis

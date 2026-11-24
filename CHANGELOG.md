@@ -8,6 +8,16 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **EduKSX-Flow 0.7.0 – Stufe 1 der Prozess-Engine (24.11.2026)** nach `docs/KONZEPT-FLOW.md` (aus dem Review vom
+  24.11.2026): Arten von Schritten (Aufgabe, Aufruf, Genehmigung, Entscheidung, Nachweis, Termin, Warten,
+  Benachrichtigung, Unterprozess); Verzweigung über Ergebnisse früherer Schritte; Unterprozesse mit Kreisprüfung;
+  Auslöser (Modul-Ereignis, Jahreskalender automatisch, Abschluss eines Ablaufs) mit Deduplizierung, Seite
+  «Auslöser» mit Simulation und Auslöseprotokoll; Fristarten (gesetzlich, intern, Empfehlung) mit vier
+  Eskalationsstufen und «Frist gefährdet»; Eingriffe für Prozessverantwortliche (pausieren, abbrechen mit
+  Kompensationshinweis, Stichtag verschieben, überspringen, wieder öffnen, Zuständigkeit ändern, Schritt einfügen)
+  mit Journal. Umsetzungsgrundlagen Flow nachgeführt (Tabellen `module_events`, `template_triggers`,
+  `escalation_rules`, `run_journal_entries`, `trigger_events`; neue API-Aktionen; FLW-F-24–30, FLW-P-10–11).
+  Neuer Speicherstand (`v6`).
 - **GUI-EX 0.6.0 – Erscheinungsbild (24.11.2026, #100):** Fenster «Erscheinungsbild» mit fünf unabhängigen Einstellungen
   (Stil, Farbmodus Hell/Dunkel/System, Dichte, Akzentfarbe, Barrierefreiheit) und Schulvorgabe; elf weitere Stile
   (Swiss, Tonal, Sachlich, Neumorph, Bento, Minimal, Natur, Zen, Enterprise, Cyberpunk, Terminal), insgesamt 20.

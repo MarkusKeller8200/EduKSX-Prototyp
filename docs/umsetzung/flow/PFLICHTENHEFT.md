@@ -1,7 +1,7 @@
 # EduKSX-Flow – Anforderungskatalog, Pflichtenheft und Prüfpunkte
 
 Stand: 2026-11-20 · Status: **ENTWURF** · Prototyp [`prototypen/ablaufplanung`](../../../prototypen/ablaufplanung)
-(0.5.x) · Datenbank [`datenbank.sql`](datenbank.sql) · API [`openapi.json`](openapi.json)
+(0.7.x, Stufe 1 der Engine nach [`KONZEPT-FLOW.md`](../../KONZEPT-FLOW.md)) · Datenbank [`datenbank.sql`](datenbank.sql) · API [`openapi.json`](openapi.json)
 
 Stufen wie in [`KONZEPT-VORLAGE.md`](../../KONZEPT-VORLAGE.md); ohne Vermerk gilt **EMPFOHLEN**.
 
@@ -42,9 +42,16 @@ Core/Mitteilung), Rechtsauskunft (Quellen verweisen auf EduKSX-Codex).
 | FLW-F-18 | Schuljahresdaten und Ferien/schulfreie Tage je Schuljahr pflegen (in EduKSX-Core) mit Plausibilitätsprüfung. | MUSS | Schuljahre |
 | FLW-F-19 | Ansichten Zeitleiste (Bereiche × KW, Kalender- oder Schuljahr), Liste, Quartale; Filter nach Bereich, Rolle, Quelle, Regel, «nur offen», «nur mit Ablauf». | SOLL | Kalender-Ansichten |
 | FLW-F-20 | Ereignis mit Ablaufvorlage verknüpfen; «Ablauf starten» übernimmt das Datum des Vorkommens als Stichtag. | MUSS | Verknüpfung |
-| FLW-F-21 | Abläufe automatisch starten durch Ereignisse anderer Module (z. B. `staffing.pensumFreigegeben` → Onboarding). | SOLL | – (Ausbau) |
+| FLW-F-21 | Abläufe automatisch starten durch Ereignisse anderer Module (Datensatz erstellt/geändert, Status geändert, z. B. «Anstellung genehmigt» → Onboarding), durch Termine im Jahreskalender (Start, sobald der erste Schritt fällig wird) und durch den Abschluss eines anderen Ablaufs; doppelte Starts werden protokolliert statt ausgeführt. | MUSS | Auslöser |
 | FLW-F-22 | Kalender als iCalendar-Abo je Rolle. | KANN | – |
 | FLW-F-23 | 45 Ablaufvorlagen des Prototyps als Startpaket (nach Prüfung der Quellen «ZU PRÜFEN»). | SOLL | Vorlagen |
+| FLW-F-24 | Arten von Schritten: Aufgabe, Aufruf an Modul, Genehmigung (Ablehnung mit Begründung), Entscheidung (Möglichkeiten), Nachweis, Termin, Warten bis Frist, Benachrichtigung, Unterprozess. | MUSS | Vorlage › Schritt (Art) |
+| FLW-F-25 | Verzweigung: Bedingung auf das Ergebnis eines früheren Schritts; entfällt ein Zweig, entfallen die Schritte, die nur auf ihn warten. Prüfung: der entscheidende Schritt muss Vorgänger sein. | MUSS | Zweige |
+| FLW-F-26 | Unterprozess startet eine freigegebene Vorlage mit übernommenen Startwerten und schliesst den Schritt bei deren Abschluss ab; Kreise werden bei der Prüfung erkannt. | MUSS | Unterprozess |
+| FLW-F-27 | Fristarten gesetzlich (Quelle mit Paragraf Pflicht), intern, Empfehlung; Eskalationsstufen je Fristart (Erinnerung, überfällig, vorgesetzte Stelle, Leitung); blockierte Schritte mit abgelaufener Frist als «Frist gefährdet». | MUSS | Fristen, Eskalation |
+| FLW-F-28 | Eingriffe durch Prozessverantwortliche mit Begründung: pausieren/fortsetzen, abbrechen (Unterprozesse mit, Kompensationshinweis für ausgeführte Aufrufe), Stichtag verschieben, Schritt überspringen, wieder öffnen (ohne automatische Wiederholung), Zuständigkeit ändern, Schritt einfügen. | MUSS | Eingriffe |
+| FLW-F-29 | Journal je Ablauf (Start, Entscheide, Unterprozesse, Eskalationen ab Stufe 3, Eingriffe) getrennt vom Aufrufprotokoll. | MUSS | Journal |
+| FLW-F-30 | Auslöseprotokoll mit Quelle, Vorlage, Ergebnis (gestartet, doppelt, ohne Ablauf). | SOLL | Auslöser |
 
 ### 2.2 Nicht fachliche Anforderungen
 
@@ -77,15 +84,27 @@ wartet ──(Vorgänger erledigt/übersprungen, Bedingung erfüllt)──► be
                                                                erledigt ◄──(Rückmeldung ok)── laeuft ──(Fehler)──► fehler ─(wiederholen)─► laeuft
 ```
 
-`geplant` = bereit, aber Frist noch nicht erreicht (automatische Schritte). Ein Ablauf ist abgeschlossen, wenn alle
-Schritte erledigt oder übersprungen sind.
+`geplant` = bereit, aber Frist noch nicht erreicht (automatische Aufrufe, Warten, Benachrichtigung). Ein Ablauf ist
+abgeschlossen, wenn alle Schritte erledigt oder übersprungen sind.
+
+Ergänzungen Stufe 1 (Referenz: `motor()` in `prototypen/ablaufplanung/assets/app.js`):
+
+- Bedingung auf ein Kontextfeld → sofort `uebersprungen` (Nachfolger laufen weiter). Bedingung auf ein Ergebnis →
+  `wartet`, bis der entscheidende Schritt erledigt ist; trifft sie nicht zu → `uebersprungen` mit `is_branch_skipped`;
+  ein Schritt, dessen Vorgänger **alle** so übersprungen sind, entfällt ebenfalls.
+- Unterprozess: beim Bereitwerden Kind-Ablauf starten → `laeuft`; Kind abgeschlossen → `erledigt`, Kind abgebrochen →
+  `fehler`. Warten: bei erreichter Frist `erledigt`. Benachrichtigung: bei erreichter Frist Hinweis an Rolle und
+  Informierte, `erledigt`.
+- Ablauf `paused`: Motor und Eskalation ruhen. Ablauf `cancelled`: offene Schritte `cancelled`.
+- Nach «wieder öffnen» gilt `is_manual_only`: ein automatischer Aufruf läuft nicht ein zweites Mal von selbst.
 
 ### 3.3 Datenmodell
 
 [`datenbank.sql`](datenbank.sql), Schema `flow`. Namen englisch, deutsche Beschreibungen je Tabelle, Spalte und Wert (DB-Standard 1.3, siehe [README](../README.md#1-datenbank--konventionen-beschlossen)). Tabellen: `roles`, `role_calendar_roles`,
 `responsibility_tasks`, `responsibility_task_roles`, `sources`, `modules`, `module_operations`, `templates`
 (+ `template_fields`, `template_steps`, `template_step_predecessors`, `template_step_informed_roles`), `runs`,
-`run_steps` (Kopie + Zustand), `operation_calls`, `notices`, `calendar_areas`, `calendar_events` (Zeitregel als
+`run_steps` (Kopie + Zustand), `operation_calls`, `notices`, `module_events`, `template_triggers`,
+`escalation_rules`, `run_journal_entries`, `trigger_events`, `calendar_areas`, `calendar_events` (Zeitregel als
 JSON), `calendar_event_roles`, `calendar_event_tasks`, `calendar_completions`. Schuljahre und Ferien in den
 Standardtabellen `school_years`, `school_holidays`.
 
@@ -96,7 +115,9 @@ Standardtabellen `school_years`, `school_holidays`.
 Schrittaktionen (`…/steps/{code}/completion`, `…/skip`, `…/retry`, `PATCH`), `GET /api/v1/org/operation-calls`,
 `POST …/operation-calls/callback`, Register (`/api/v1/org/modules`, `…/check`), Kalender
 (`/api/v1/org/calendar-events`, `/api/v1/org/calendar-occurrences`, `…/completion`, `…/run`, `…/export`).
-Webhooks: `flow.operation.invoked` (an Module), `flow.run.completed`.
+Stufe 1: `…/runs/{id}/pause`, `…/resume`, `…/reference-date`, `POST …/runs/{id}/steps` (einfügen),
+`…/steps/{code}/reopen`, `POST /api/v1/org/module-events` (Ereignis eines Moduls), `GET /api/v1/org/trigger-events`.
+Webhooks: `flow.operation.invoked` (an Module), `flow.run.completed`, `flow.step.escalated`.
 
 ### 3.5 Rollen und Berechtigungen
 
@@ -113,7 +134,7 @@ Webhooks: `flow.operation.invoked` (an Module), `flow.run.completed`.
 | Partner | Richtung | Inhalt |
 |---|---|---|
 | alle Module | ↔ | Vorgangsregister melden (`/api/v1/org/modules`), Aufrufe empfangen, Rückmeldungen senden |
-| EduKSX-Staffing | ← | `pensumFreigegeben` startet Ein-/Austrittsabläufe; Fristen als Kalenderereignisse |
+| EduKSX-Staffing | ← | Ereignisse «Anstellung genehmigt», «Austritt erfasst», «Pensum geändert» starten Abläufe (`module-events`); Fristen als Kalenderereignisse |
 | EduKSX-Ident / Connect | → | Konten, Zugänge, Sperren (Vorgänge `ident.*`, `connect.*`) |
 | EduKSX-Sign | ↔ | Signaturanfrage als Vorgang mit Rückmeldung |
 | EduKSX-Codex | ← | Quellen verlinken auf Erlass und Fassung (`codex_ref`) |
@@ -139,11 +160,14 @@ Zusätzlich zu den gemeinsamen Prüfpunkten in [`../README.md`](../README.md#4-g
 | FLW-P-07 | Offene Fragen der Prozessliste entschieden (Zeitpunkt Login, Sperrregeln Offboarding, Modul für Schlüssel/Geräte). | Fachlich | ☐ |
 | FLW-P-08 | Schuljahres- und Feriendaten des Mandanten erfasst und geprüft (keine Testdaten der Sek Bülach bei anderen Mandanten). | Betrieb | ☐ |
 | FLW-P-09 | Pilot: ein Eintritt und ein Austritt einer Lehrperson vollständig über Flow mit echten Modulaufrufen. | Abnahme | ☐ |
+| FLW-P-10 | Stufe 1: Zweige, Unterprozess (inkl. Abbruch), Pause, Stichtag verschieben, Wiederöffnen ohne Doppelaufruf, doppelter Auslöser mit den Szenarien des Prototyps getestet. | Tests | ☐ |
+| FLW-P-11 | Einstufung gesetzlicher Fristen und Eskalationsstufen fachlich abgenommen (Konzept E6, E12). | Fachlich | ☐ |
 
 ## 5. Offene Punkte
 
 Siehe «Offene Fragen» im README des Prototyps. Zusätzlich:
 
-1. OFFEN: Automatischer Start aus Kalenderereignissen (Vorlauf in Tagen) oder nur Erinnerung?
+1. EMPFOHLEN (Konzept E7): Automatischer Start aus Kalenderereignissen, sobald der erste Schritt fällig wird.
+4. OFFEN: Entscheide E4–E13 in [`KONZEPT-FLOW.md`](../../KONZEPT-FLOW.md) (u. a. wer eingreifen darf, Eskalationsstufen).
 2. OFFEN: Teilaufgaben im Kalender als eigene Ablaufschritte?
 3. ZU PRÜFEN: Gehört das Aufrufprotokoll zum Personaldossier (digitale Aktenführung ab 2029)?
