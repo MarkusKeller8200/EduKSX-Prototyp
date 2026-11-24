@@ -36,9 +36,9 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
-### Sitzung 2026-11-24 (02:10–04:30) – EduKSX-Flow 0.7.0 bis 0.16.0 (Engine Stufen 1–3, Einstellungen)
+### Sitzung 2026-11-24 (02:10–04:30) – EduKSX-Flow 0.7.0 bis 0.17.0 (Engine Stufen 1–3, Einstellungen)
 
-**Stand:** Prototyp `prototypen/ablaufplanung` 0.16.0 auf `main` und GitHub Pages. Konzept `docs/KONZEPT-FLOW.md`
+**Stand:** Prototyp `prototypen/ablaufplanung` 0.17.0 auf `main` und GitHub Pages. Konzept `docs/KONZEPT-FLOW.md`
 (E1–E19), Prüfliste `prototypen/ablaufplanung/PRUEFLISTE.md` (erzeugt mit `node werkzeuge/pruefliste.js`).
 
 - **Stufe 1 (0.7.0):** Aufgabentypen, Verzweigung, Unterprozesse, Auslöser mit Deduplizierung, Fristarten und
@@ -52,6 +52,8 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 - **Selbständig während Abwesenheit der Projektleitung (zur Abnahme):** 0.14.0 mehrjährige Termine (E19),
   0.15.0 Prozesslenkung/Reviews/Prozesslandkarte, 0.16.0 Rechtsgrundlagen/Versionsvergleich/Vorlagenbibliothek,
   Prüfliste. Datenmodell, API und Pflichtenheft (FLW-F-24–38, FLW-P-10–11) nachgeführt.
+- **0.17.0 (auf Wunsch, 08:15):** Rechtsgrundlagen als Teil von EduKSX-Codex gekennzeichnet; Codex-Auszug
+  (`tools/flow_codex_auszug.py`), Abgleich neuer Fassungen, Schnittstelle im Konzept 5b (E20–E24 zu entscheiden).
 - **Infrastruktur:** `seite.yml` wiederholt das Bereitstellen einmal nach 60 s (zeitweise «No artifacts named
   github-pages»). Pushes gingen direkt auf `main` und umgingen die Regel «nur über Pull Request» – `gh` war nicht
   angemeldet; künftig Branch + PR.

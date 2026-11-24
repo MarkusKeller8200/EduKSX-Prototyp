@@ -11,7 +11,7 @@ const vm = require("vm");
 const ordner = path.join(__dirname, "..");
 const ctx = { window: {}, console };
 vm.createContext(ctx);
-["daten.js", "vorlagen.js", "erweiterung.js", "einstellungen.js"].forEach((f) => vm.runInContext(fs.readFileSync(path.join(ordner, "assets", f), "utf8"), ctx, { filename: f }));
+["daten.js", "vorlagen.js", "erweiterung.js", "einstellungen.js", "codex-auszug.js"].forEach((f) => vm.runInContext(fs.readFileSync(path.join(ordner, "assets", f), "utf8"), ctx, { filename: f }));
 const D = ctx.window.FLOW_DATEN, E = ctx.window.FLOW_EINSTELLUNGEN_DATEN;
 const version = JSON.parse(fs.readFileSync(path.join(ordner, "prototyp.json"), "utf8")).version;
 
@@ -64,7 +64,13 @@ out.push("### 5.4 Prozesslenkung: Kategorie, Schutzbedarf, Reviewintervall", "",
 out.push("### 5.5 Intervall → Periode (Konzept E19)", "", tabelle(["Intervall", "Periode", "geprüft"], E.intervalle.map((i) => [`${i.kuerzel} ${i.name}`, i.periode || "– (keine eindeutige)", "☐"])), "");
 out.push("### 5.6 Kompetenzen und Funktionen (Vorschlag mit neuen Kürzeln)", "",
   `Neue Kompetenzarten: ${E.kompetenzen.filter((k) => k.neu).map((k) => `${k.kuerzel} ${k.name}`).join(", ")} – mit dem bestehenden Muster abstimmen. Funktionen: ${E.funktionen.length} Vorschläge in ${new Set(E.funktionen.map((f) => f.gruppe)).size} Gruppen; Erziehungsberechtigte als «ELT» statt «EB» (in den Vorlagen verwendet). ☐`, "");
-out.push(`## 6. Weitere offene Punkte`, "",
+const CX = ctx.window.FLOW_CODEX_AUSZUG || { erlasse: {} };
+const artText = { erlass: "Erlass", merkblatt: "Merkblatt / Arbeitshilfe", intern: "schuleigen" };
+out.push(`## 6. Zuordnung zu EduKSX-Codex (Konzept 5b, E20–E24)`, "",
+  `Auszug aus dem Codex-Prototyp, Stand ${CX.stand || "–"}. Erlasse ohne Eintrag unter den Rechtsgrundlagen Volksschule: Aufnahme in Codex prüfen; Merkblätter: E23.`, "",
+  tabelle(["Quelle", "Art", "Codex", "Fassung", "Rechtsgrundlage Nr.", "geprüft"], Object.entries(CX.erlasse).map(([k, e]) => [k, artText[e.art], e.ordnungsnummer || "–", e.fassung ? `${e.fassung} (${e.publiziert})` : "–",
+    e.art === "erlass" ? ((e.rechtsgrundlagen || []).map((r) => r.nr).join(", ") || "⚠ fehlt") : "–", "☐"])), "");
+out.push(`## 7. Weitere offene Punkte`, "",
   "- ☐ Ab wann dürfen Logins erstellt werden (Prozessliste)? Im Prototyp T−21 bzw. gültig ab T−14.",
   "- ☐ Sperrregeln Offboarding (im Prototyp Tag nach dem letzten Arbeitstag).",
   "- ☐ Welches Modul führt Schlüssel und Geräte (im Prototyp EduKSX-Shop)?",

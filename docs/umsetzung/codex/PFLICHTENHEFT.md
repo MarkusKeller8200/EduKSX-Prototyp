@@ -137,7 +137,7 @@ aus der geltenden Fassung (nie aus der Lieferung).
 | Gemeinde-Websites | ← | Evaluation, solange die Sammlung nicht in Codex gepflegt wird |
 | Gemeindeamt-Verzeichnis, BFS-API | ← | Gemeinden, Schulgemeinden, BFS-Nummern |
 | EduKSX-Staffing | → | Gesetzestexte für die Hilfe (LPG, LPVO, VVO) |
-| EduKSX-Flow | → | Quellen der Ablaufschritte (`codex_ref`), Ereignis `fassungNeu` |
+| EduKSX-Flow | → | Quellen der Ablaufschritte (`codex_ref`, `/citations/resolution`), Ereignis `codex.act_version.created` (Flow macht Reviews der betroffenen Vorlagen fällig; Konzept Flow 5b) |
 | Dokumentenablage | ↔ | Originaldateien |
 
 ### 3.6 Datenübernahme

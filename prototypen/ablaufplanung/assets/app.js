@@ -7,7 +7,7 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v6";
-  const VERSION = "0.16.0";
+  const VERSION = "0.17.0";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
@@ -1402,6 +1402,25 @@
   // ---------------------------------------------------------------- Rechtsgrundlagen (Stufe 3)
   const quelleTrifft = (key, q) => new RegExp(`(^|[\\s(;,])${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?=[\\s§,;)]|$)`).test(q || "");
   let RECHT_SUCHE = "";
+  const CODEX = window.FLOW_CODEX_AUSZUG || { erlasse: {} };
+  const datumIso = (d) => (d ? datumKurz(d) : "");
+  /** Vorlagen, deren letzter Review vor der aktuellen Codex-Fassung liegt und die diese Fassung noch nicht übernommen haben. */
+  function codexOffen(key) {
+    const e = CODEX.erlasse[key];
+    if (!e || !e.publiziert) return [];
+    if ((S.rechtsaenderungen || []).some((r) => r.key === key && r.codexFassung === e.fassung)) return [];
+    return S.vorlagen.filter((v) => v.schritte.some((x) => quelleTrifft(key, x.quelle)) && (!v.meta || !v.meta.letzterReview || v.meta.letzterReview < e.publiziert));
+  }
+  function codexZelle(key) {
+    const e = CODEX.erlasse[key];
+    if (!e) return `<span class="small muted">–</span>`;
+    if (e.art === "intern") return `<span class="badge neutral">schuleigen</span><div class="small muted">bleibt in Flow</div>`;
+    if (e.art === "merkblatt") return `<span class="badge info">Merkblatt</span><div class="small muted">Aufnahme in Codex offen</div>`;
+    const rg = e.rechtsgrundlagen || [];
+    return `<a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.ordnungsnummer)} · ${esc(e.fassung)}</a>
+      <div class="small muted">publiziert ${esc(datumIso(e.publiziert))} · ${e.fassungen} Fassungen (${esc(e.sammlung)})</div>
+      <div class="small">${rg.length ? `Rechtsgrundlage Nr. ${rg.map((r) => esc(r.nr)).join(", ")}` : `<span class="badge warnung">nicht unter den Rechtsgrundlagen Volksschule</span>`}</div>`;
+  }
   function seiteRecht() {
     const QV = D.QUELLENVERZEICHNIS || {};
     const alle = []; S.vorlagen.forEach((v) => v.schritte.forEach((s) => alle.push([v, s])));
@@ -1411,19 +1430,26 @@
       const zp = tr.filter(([, s]) => /ZU PRÜFEN/.test(s.quelle || "")).length;
       return `<tr><td><strong>${esc(k)}</strong><div class="small">${QV[k][1] ? `<a href="${esc(QV[k][1])}" target="_blank" rel="noopener">${esc(QV[k][0])}</a>` : esc(QV[k][0])}</div></td>
         <td>${tr.length ? `<details><summary>${tr.length} Schritte in ${vs.length} Vorlagen</summary><ul class="infoliste">${vs.map((v) => `<li><a href="#/vorlage/${esc(v.id)}/liste">${esc(v.titel)}</a>: <span class="small">${tr.filter(([x]) => x === v).map(([, s]) => esc(s.titel)).join("; ")}</span></li>`).join("")}</ul></details>` : `<span class="muted small">–</span>`}</td>
+        <td>${codexZelle(k)}</td>
         <td>${zp ? `<span class="badge warnung">${zp} ZU PRÜFEN</span>` : ""}</td>
         <td>${["SV", "RV"].includes(S.rolle) && vs.length ? `<button class="btn klein" data-aktion="recht-aenderung" data-key="${esc(k)}">Änderung melden</button>` : ""}</td></tr>`;
     }).join("");
     const treffer = RECHT_SUCHE ? alle.filter(([, s]) => (s.quelle || "").toLowerCase().includes(RECHT_SUCHE.toLowerCase())) : [];
     const offen = alle.filter(([, s]) => !String(s.quelle || "").trim() || /ZU PRÜFEN/.test(s.quelle));
     const offenV = [...new Set(offen.map(([v]) => v))];
-    return `<div class="seitenkopf"><div><h1>Rechtsgrundlagen</h1><p class="muted">Welche Abläufe stützen sich auf welche Rechtsgrundlage? Rückwärtssuche vom Gesetzesartikel zu den Schritten, offene Quellen («ZU PRÜFEN») und gemeldete Änderungen. Führend ist die <a href="https://markuskeller8200.github.io/EduKSX-Prototyp/rechtssammlung/" target="_blank" rel="noopener">EduKSX-Rechtssammlung</a>; Flow verwaltet nur die Verweise.</p></div></div>
+    const neu = Object.keys(QV).map((k) => [k, codexOffen(k)]).filter(([, vs]) => vs.length);
+    const darf = ["SV", "RV"].includes(S.rolle);
+    return `<div class="seitenkopf"><div><h1>Rechtsgrundlagen</h1><p class="muted">Welche Abläufe stützen sich auf welche Rechtsgrundlage? Rückwärtssuche vom Gesetzesartikel zu den Schritten, offene Quellen («ZU PRÜFEN») und Änderungen.</p></div></div>
+      <div class="meldung info"><strong>Quelle im Betrieb: EduKSX-Codex.</strong> Erlasse, Fassungen und Gültigkeit führt die <a href="https://markuskeller8200.github.io/EduKSX-Prototyp/rechtssammlung/" target="_blank" rel="noopener">EduKSX-Rechtssammlung</a>; Flow speichert je Schritt nur den Verweis und wird bei einer neuen Fassung benachrichtigt (Ereignis <code>codex.act_version.created</code>).
+        Im Prototyp: Quellenangaben der Vorlagen (nicht neu recherchiert) und ein Auszug aus dem Codex-Prototyp, Stand ${esc(CODEX.stand || "–")}.</div>
       <div class="formzeile"><label class="feld">Rückwärtssuche (z. B. «GG § 18», «VVO § 100», «UVG»)<input type="search" data-aktion="recht-suche" value="${esc(RECHT_SUCHE)}" style="min-width:20rem"></label></div>
       ${RECHT_SUCHE ? `<div class="karte" style="margin-bottom:1rem"><h3>${treffer.length} Schritte mit «${esc(RECHT_SUCHE)}»</h3><ul class="infoliste">${treffer.slice(0, 60).map(([v, s]) => `<li><a href="#/vorlage/${esc(v.id)}/liste">${esc(v.titel)}</a>: ${esc(s.titel)} <span class="small muted">${quelleHtml(s.quelle)}</span></li>`).join("") || `<li class="muted">Keine Treffer.</li>`}</ul></div>` : ""}
-      <div class="karten"><div class="karte"><div class="zahl">${Object.keys(QV).length}</div><div class="titel">Quellen im Verzeichnis</div></div><div class="karte"><div class="zahl">${offen.length}</div><div class="titel">${offen.length ? "⚠ " : ""}Schritte ohne geprüfte Grundlage</div></div><div class="karte"><div class="zahl">${(S.rechtsaenderungen || []).length}</div><div class="titel">gemeldete Änderungen</div></div></div>
-      <section><h2>Quellenverzeichnis und Verwendung</h2><div class="tabelle-wrap"><table><thead><tr><th>Quelle</th><th>Verwendet in</th><th>Offen</th><th></th></tr></thead><tbody>${zeilen}</tbody></table></div></section>
+      <div class="karten"><div class="karte"><div class="zahl">${Object.keys(QV).length}</div><div class="titel">Quellen im Verzeichnis</div></div><div class="karte"><div class="zahl">${offen.length}</div><div class="titel">${offen.length ? "⚠ " : ""}Schritte ohne geprüfte Grundlage</div></div><div class="karte"><div class="zahl">${(S.rechtsaenderungen || []).length}</div><div class="titel">gemeldete Änderungen</div></div><div class="karte"><div class="zahl">${neu.length}</div><div class="titel">${neu.length ? "⚠ " : ""}neue Fassungen aus Codex</div></div></div>
+      <section style="margin-bottom:1.25rem"><h2>Abgleich mit EduKSX-Codex</h2><p class="small muted">Erlasse, deren aktuelle Fassung nach dem letzten Review einer Vorlage publiziert wurde. Im Betrieb meldet Codex das selbst; übernehmen heisst: Review der betroffenen Vorlagen fällig – laufende Abläufe bleiben unverändert.</p>
+        ${neu.length ? `<ul class="infoliste">${neu.map(([k, vs]) => { const e = CODEX.erlasse[k]; return `<li><strong>${esc(k)}</strong> ${esc(e.fassung)}, publiziert ${esc(datumIso(e.publiziert))} – ${vs.length} Vorlagen mit älterem Review <span class="small muted">(${vs.map((v) => esc(v.titel)).join("; ")})</span> ${darf ? `<button class="btn klein" data-aktion="codex-fassung" data-key="${esc(k)}">Übernehmen</button>` : ""}</li>`; }).join("")}</ul>` : `<p class="small muted">Alle Vorlagen sind auf dem Stand der aktuellen Fassungen.</p>`}</section>
+      <section><h2>Quellenverzeichnis und Verwendung</h2><div class="tabelle-wrap"><table><thead><tr><th>Quelle</th><th>Verwendet in</th><th>EduKSX-Codex</th><th>Offen</th><th></th></tr></thead><tbody>${zeilen}</tbody></table></div></section>
       <section style="margin-top:1.25rem"><h2>Ohne geprüfte Rechtsgrundlage (${offenV.length} Vorlagen)</h2><ul class="infoliste">${offenV.map((v) => `<li><a href="#/vorlage/${esc(v.id)}/liste">${esc(v.titel)}</a> <span class="small muted">${offen.filter(([x]) => x === v).length} Schritte</span></li>`).join("")}</ul></section>
-      <section style="margin-top:1.25rem"><h2>Gemeldete Änderungen</h2>${(S.rechtsaenderungen || []).length ? `<ul class="infoliste">${S.rechtsaenderungen.map((r) => `<li><span class="small muted">${datumKurz(r.am)}</span> <strong>${esc(r.key)}</strong>: ${esc(r.art)}${r.gueltigAb ? ` ab ${datumKurz(r.gueltigAb)}` : ""}${r.bemerkung ? " – " + esc(r.bemerkung) : ""} <span class="small muted">(${r.vorlagen.length} Reviews ausgelöst, ${esc(r.durch)})</span></li>`).join("")}</ul>` : `<p class="small muted">Keine.</p>`}</section>`;
+      <section style="margin-top:1.25rem"><h2>Gemeldete Änderungen</h2>${(S.rechtsaenderungen || []).length ? `<ul class="infoliste">${S.rechtsaenderungen.map((r) => `<li><span class="small muted">${datumKurz(r.am)}</span> <strong>${esc(r.key)}</strong>: ${esc(r.art)}${r.herkunft ? ` <span class="badge info">${esc(r.herkunft)}</span>` : ""}${r.gueltigAb ? ` ab ${datumKurz(r.gueltigAb)}` : ""}${r.bemerkung ? " – " + esc(r.bemerkung) : ""} <span class="small muted">(${r.vorlagen.length} Reviews ausgelöst, ${esc(r.durch)})</span></li>`).join("")}</ul>` : `<p class="small muted">Keine.</p>`}</section>`;
   }
 
   const darfVertretung = () => ["SV", "SL", "SPr"].includes(S.rolle);
@@ -2064,6 +2090,16 @@
           hinweis(["SV", "RV"], { id: "" }, `${grund}: Review für ${vs.length} Vorlagen fällig.`);
           speichern(); render(); ansage(`${vs.length} Reviews ausgelöst.`);
         });
+        break;
+      }
+      case "codex-fassung": {
+        const key = el.dataset.key, e = CODEX.erlasse[key], vs = codexOffen(key);
+        if (!e || !vs.length) break;
+        const grund = `Neue Fassung ${key} (${e.fassung}, publiziert ${datumKurz(e.publiziert)}) aus EduKSX-Codex`;
+        vs.forEach((v) => { v.reviewFaellig = { grund, seit: S.heute }; });
+        (S.rechtsaenderungen = S.rechtsaenderungen || []).unshift({ key, art: "neue Fassung", gueltigAb: e.publiziert, bemerkung: `${e.ordnungsnummer}, ${e.fassung}`, am: S.heute, durch: ROLLEN[S.rolle], vorlagen: vs.map((v) => v.id), herkunft: "EduKSX-Codex", codexFassung: e.fassung });
+        hinweis(["SV", "RV"], { id: "" }, `${grund}: Review für ${vs.length} Vorlagen fällig.`);
+        speichern(); render(); ansage(`${vs.length} Reviews ausgelöst.`);
         break;
       }
       case "std-aktualisieren": {

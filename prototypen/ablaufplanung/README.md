@@ -103,6 +103,9 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
 - **Stufe 3 – Rechtsgrundlagen und Bibliothek** (0.16.0): Rückwärtssuche vom Gesetzesartikel zu den Schritten,
   Änderungen einer Rechtsgrundlage lösen Reviews aus, Versionsverlauf und -vergleich, Vorlagenbibliothek mit
   Drei-Wege-Abgleich (lokale Anpassungen werden nie überschrieben).
+- **Rechtsgrundlagen aus EduKSX-Codex** (0.17.0): Erlasse und Fassungen führt EduKSX-Codex; Flow zeigt je Quelle die
+  Fassung aus einem Auszug des Codex-Prototyps (neu erzeugen: `python3 tools/flow_codex_auszug.py` im Repo) und macht
+  bei neuen Fassungen Reviews fällig. Konzept: `docs/KONZEPT-FLOW.md` Abschnitt 5b.
 - **Simulation:** simulierter Tag (+1, +7, nächste Frist), Module als «nicht erreichbar» schalten, Rollenwechsel.
 
 ## Grundlagen

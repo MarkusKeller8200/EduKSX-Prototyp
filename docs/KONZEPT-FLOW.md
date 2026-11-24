@@ -173,6 +173,67 @@ und Aufgabenbereichen (gruppiert nach Hauptbereichen), je mit Kürzel/Nr., Bezei
 | E19 | Periode und Intervall | zusammenlegen / getrennt mit Verknüpfung | getrennt: Intervall = Zeitregel im Kalender (wann genau), Periode = Häufigkeit pro Jahr für Planung und Berechnung (Wert); Intervall verweist auf eine Periode. Mehrjährige Perioden (2J–5J) als Wiederholung «alle n Jahre ab Jahr» im Kalender (0.14.0; während Abwesenheit der Projektleitung umgesetzt, zur Bestätigung) | EMPFOHLEN |
 | E18 | Plausibilitätsprüfung (fehlender Entscheid, fehlende Ausführung, Konflikt, Funktionstrennung) | Stufe 2 / 3 | Stufe 3 | EMPFOHLEN |
 
+## 5b. Rechtsgrundlagen aus EduKSX-Codex (0.17.0)
+
+Auftrag 24.11.2026: die Seite «Rechtsgrundlagen» klar als Teil von EduKSX-Codex kennzeichnen und die Schnittstelle
+festhalten. Die Rechtsgrundlagen in Flow sind **nicht neu recherchiert**: Sie stammen aus den Quellenangaben der
+Vorlagen (Prozesslisten, Checklisten, Merkblätter, Gesetzeszitate).
+
+### Aufgabenteilung (E20)
+
+| | EduKSX-Codex | EduKSX-Flow |
+|---|---|---|
+| führt | Erlass (Kennung LS/SR, kommunale Erlassnummer), Fassungen mit Publikation und Gültigkeit, Text, Rechtsgrundlagen Volksschule, Monitoring | Verwendung: welcher Schritt sich auf welchen Erlass und welche Stelle (§) stützt, geprüfte Fassung, Prozessentscheid |
+| meldet | neue Fassung: Ereignis `codex.act_version.created` (Codex-Pflichtenheft 3.3) | fälliger Review: Ereignis `flow.template.review_due` |
+| nicht | keine Prozessentscheide, keine Fristen | keine Gesetzestexte, keine eigene Pflege von Erlassen |
+
+### Verweis je Schritt (FLW-F-39, **EMPFOHLEN**)
+
+Heute steht die Quelle als Freitext («GG § 18; FD 1.1.2»). Im Betrieb wird sie strukturiert:
+
+- `source_id` → Erlass mit `codex_reference` (z. B. `ZH:LS:131.1`), `source_location` = Stelle («§ 18 Abs. 2»),
+  `source_checked_version` = Fassung bei der letzten Prüfung («Nachtrag 132»).
+- Freitext bleibt nur für Merkblätter und Arbeitshilfen von Behörden (z. B. Volksschulamt, SUVA) und für schuleigene
+  Unterlagen (Funktionendiagramm, Prozessliste, ICT-Jahresplanung).
+- Datenübernahme: Die Freitexte werden mit `/citations/resolution` von Codex aufgelöst; was nicht eindeutig ist, kommt
+  auf die Prüfliste.
+
+### Ablauf bei einer neuen Fassung (FLW-F-40, **EMPFOHLEN**)
+
+1. Codex übernimmt eine neue Fassung (nach Bestätigung durch die Redaktion) und sendet `codex.act_version.created`.
+2. Flow nimmt das Ereignis über `POST /api/v1/org/source-changes` an (Servicekonto); gleiche `codex_event_id` wird nicht
+   doppelt verarbeitet.
+3. Flow sucht die Vorlagen mit Schritten auf diesem Erlass, deren geprüfte Fassung älter ist, und macht deren Review
+   fällig. **Laufende Abläufe werden nicht verändert.**
+4. Prüfauftrag an die Prozessverantwortlichen der Vorlage (E5); im Review wird die geprüfte Fassung je Schritt
+   nachgeführt.
+
+### Prototyp
+
+`tools/flow_codex_auszug.py` erzeugt aus den Daten des Codex-Prototyps einen statischen Auszug
+(`assets/codex-auszug.js`): 11 Erlasse mit aktueller Fassung (10 davon unter den Rechtsgrundlagen Volksschule),
+17 Merkblätter, 6 schuleigene Unterlagen. Die Prototypen bleiben zur Laufzeit unabhängig (AGENTS.md). Die Seite zeigt je
+Quelle die Fassung in Codex und unter «Abgleich mit EduKSX-Codex» die Erlasse, deren aktuelle Fassung nach dem letzten
+Review einer Vorlage publiziert wurde; «Übernehmen» spielt das Ereignis nach.
+
+Befunde aus dem Abgleich (für Codex):
+
+- **UVG** (SR 832.20) hat in Codex Fassungen (Fedlex), steht aber nicht unter den Rechtsgrundlagen Volksschule – Aufnahme
+  vorschlagen (Unfallmeldung).
+- **GesG** war in Flow ohne Ordnungsnummer erfasst; ergänzt (LS 810.1).
+- Gemeindeeigene Regelungen (Geschäftsordnung, Personalverordnung, Gemeindeordnung) machen den grössten Teil der
+  44 Schritte «ZU PRÜFEN» aus; sie gehören in die kommunale Sammlung der Organisation in Codex (E24).
+
+### Entscheide
+
+| Nr. | Frage | Optionen | Empfehlung | Status |
+|---|---|---|---|---|
+| E20 | Wer führt Erlasse und Fassungen? | Flow / Codex | Codex führt, Flow speichert nur Verweis, Stelle und geprüfte Fassung | EMPFOHLEN |
+| E21 | Wann wird ein Review fällig? | jede neue Fassung des Erlasses / nur wenn die zitierte Stelle geändert hat | zunächst jede neue Fassung (ein Sammelhinweis je Erlass); Stellen-genau, sobald Codex Unterschiede je § liefert (Codex-Konzept «Textfassung», OFFEN) | OFFEN |
+| E22 | Wer erhält den Prüfauftrag? | Prozessverantwortliche der Vorlage / Empfänger aus Codex (CDX-F-32) | Prozessverantwortliche (E5); Codex informiert weiterhin seine eigenen Empfänger | EMPFOHLEN |
+| E23 | Merkblätter und Arbeitshilfen von Behörden (VSA, SUVA, Gemeindeamt) in Codex aufnehmen? | ja, als eigene Klasse / nein, bleibt Freitext in Flow | mit den Quellenklassen A–F von Codex abstimmen | OFFEN |
+| E24 | Gemeindeeigene Erlasse | in Flow als Freitext / über die kommunale Sammlung in Codex | über Codex (kommunale Sammlung der Organisation); löst die meisten «ZU PRÜFEN» | EMPFOHLEN |
+
 ## 6. Issues
 
 `gh` ist in dieser Umgebung nicht angemeldet; die Issues werden nachgetragen, sobald es geht (OFFEN).
@@ -186,6 +247,7 @@ und Aufgabenbereichen (gruppiert nach Hauptbereichen), je mit Kürzel/Nr., Bezei
 
 ## 7. Verlauf
 
+- 2026-11-24: Rechtsgrundlagen als Teil von EduKSX-Codex gekennzeichnet, Abgleich und Schnittstelle (0.17.0, Abschnitt 5b; E20–E24).
 - 2026-11-24: Stufe 3 umgesetzt (0.15.0 Prozesslenkung, Reviews, Prozesslandkarte; 0.16.0 Rechtsgrundlagen, Versionsvergleich, Vorlagenbibliothek) – während Abwesenheit der Projektleitung, zur Abnahme.
 - 2026-11-24: Katalog Periode und Tooltips (0.12.0), E19 empfohlen.
 - 2026-11-24: Stufe 2 im Prototyp 0.11.0 (Stellvertretung, Delegation, Vier-Augen, Mehrfachgenehmigung, rollenbasierte Übersicht, Kalender Monat/Woche, ICS). Offen aus Stufe 2: Organisationseinheiten, Funktionspostfächer, ICS-Abo mit fester Adresse (erst mit Server).

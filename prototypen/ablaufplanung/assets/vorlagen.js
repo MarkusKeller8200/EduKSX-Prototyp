@@ -86,7 +86,7 @@
     "PG": ["Personalgesetz (PG), LS 177.10 – Handbuch Personalrecht", "https://www.zh.ch/de/arbeiten-beim-kanton/fuer-hr-profis/handbuch-personalrecht/definition/beendigung-arbeitsverhaeltnis/grundlagen-zur-kuendigung.html"],
     "VSG": ["Volksschulgesetz (VSG), LS 412.100", ZH],
     "VSV": ["Volksschulverordnung (VSV), LS 412.101", ZH],
-    "GesG": ["Gesundheitsgesetz (GesG) § 51 – Schulzahnpflege", "https://www.zh.ch/de/gesundheit/gesundheitsberufe/fachspezifische-informationen/zahnmedizin/schulzahnmedizin.html"],
+    "GesG": ["Gesundheitsgesetz (GesG), LS 810.1 – § 51 Schulzahnpflege", "https://www.zh.ch/de/gesundheit/gesundheitsberufe/fachspezifische-informationen/zahnmedizin/schulzahnmedizin.html"],
     "VSVZ": ["Verordnung über die Schul- und Volkszahnpflege (VSVZ), LS 818.22", "https://www.zh.ch/de/gesundheit/gesundheitsberufe/fachspezifische-informationen/zahnmedizin/schulzahnmedizin.html"],
     "UVG": ["Unfallversicherungsgesetz (UVG), SR 832.20 – SUVA: Unfall korrekt melden", "https://www.suva.ch/de-ch/unfall/schadenabwicklung/schadenmeldung/unfall-schaden-korrekt-melden"],
     "SUVA": ["SUVA: Ordentlicher Unfall oder Bagatellunfall", "https://www.suva.ch/de-ch/ueber-uns/magazin-und-medien/magazin/ordentlicher-unfall-oder-bagatellunfall"],

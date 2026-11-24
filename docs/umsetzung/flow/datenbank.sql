@@ -297,6 +297,7 @@ CREATE TABLE template_steps (
     responsibility_task_id uuid REFERENCES responsibility_tasks(id),   -- Funktionendiagramm | Nummer der Aufgabe
     source_id           uuid REFERENCES sources(id),     -- Quelle | Pflicht (Quelle oder Stelle)
     source_location     text,                            -- Stelle | z. B. «§ 12 Abs. 2»
+    source_checked_version text,                         -- Geprüfte Fassung | Fassung des Erlasses (aus EduKSX-Codex) bei der letzten Prüfung des Schritts, z. B. «Nachtrag 132»
     UNIQUE (template_id, code),
     CHECK (source_id IS NOT NULL OR source_location IS NOT NULL),
     CHECK ((step_type = 'call') = (module_operation_id IS NOT NULL)),
@@ -375,7 +376,9 @@ CREATE TABLE source_changes (
     remark              text,                            -- Bemerkung | Freitext
     reported_on         date NOT NULL DEFAULT current_date,   -- Gemeldet am | Datum
     reported_by_id      uuid,                            -- Gemeldet von | Person (ohne Constraint)
-    codex_ref           text                             -- Verweis Rechtssammlung | Erlass und Fassung in EduKSX-Codex
+    codex_ref           text,                            -- Verweis Rechtssammlung | Erlass und Fassung in EduKSX-Codex
+    codex_event_id      text,                            -- Codex-Ereignis | Kennung des Ereignisses codex.act_version.created; gleiche Kennung wird nicht doppelt verarbeitet
+    UNIQUE (organization_id, codex_event_id)
 );
 
 -- Auslöser einer Vorlage (neben dem Start von Hand)
@@ -673,7 +676,6 @@ CREATE INDEX template_process_owners_organization_id_index ON template_process_o
 CREATE INDEX template_versions_organization_id_index ON template_versions (organization_id);
 CREATE INDEX template_reviews_organization_id_index ON template_reviews (organization_id);
 CREATE INDEX template_reviews_template_id_index ON template_reviews (template_id);
-CREATE INDEX source_changes_organization_id_index ON source_changes (organization_id);
 CREATE INDEX source_changes_source_id_index ON source_changes (source_id);
 CREATE INDEX template_triggers_organization_id_index ON template_triggers (organization_id);
 CREATE INDEX template_triggers_template_id_index ON template_triggers (template_id);
@@ -920,6 +922,7 @@ COMMENT ON COLUMN template_steps.condition IS 'Bedingung';
 COMMENT ON COLUMN template_steps.responsibility_task_id IS 'Funktionendiagramm – Nummer der Aufgabe';
 COMMENT ON COLUMN template_steps.source_id IS 'Quelle – Pflicht (Quelle oder Stelle)';
 COMMENT ON COLUMN template_steps.source_location IS 'Stelle – z. B. «§ 12 Abs. 2»';
+COMMENT ON COLUMN template_steps.source_checked_version IS 'Geprüfte Fassung – Fassung des Erlasses (aus EduKSX-Codex) bei der letzten Prüfung des Schritts, z. B. «Nachtrag 132»';
 COMMENT ON TABLE template_step_predecessors IS 'Vorgänger eines Schritts («erst nach») – Vorlage › Schritte; ein Schritt wird bereit, wenn die Vorgänger erledigt sind';
 COMMENT ON COLUMN template_step_predecessors.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
 COMMENT ON COLUMN template_step_predecessors.template_step_id IS 'Schritt – Verweis';
@@ -960,6 +963,7 @@ COMMENT ON COLUMN source_changes.remark IS 'Bemerkung – Freitext';
 COMMENT ON COLUMN source_changes.reported_on IS 'Gemeldet am – Datum';
 COMMENT ON COLUMN source_changes.reported_by_id IS 'Gemeldet von – Person (ohne Constraint)';
 COMMENT ON COLUMN source_changes.codex_ref IS 'Verweis Rechtssammlung – Erlass und Fassung in EduKSX-Codex';
+COMMENT ON COLUMN source_changes.codex_event_id IS 'Codex-Ereignis – Kennung des Ereignisses codex.act_version.created; gleiche Kennung wird nicht doppelt verarbeitet';
 COMMENT ON TABLE template_triggers IS 'Auslöser einer Vorlage (neben dem Start von Hand) – Vorlage › Auslöser; nur freigegebene Vorlagen werden ausgelöst (Konzept Flow 3.2)';
 COMMENT ON COLUMN template_triggers.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN template_triggers.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';

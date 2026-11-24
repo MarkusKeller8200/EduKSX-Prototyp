@@ -8,6 +8,12 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **EduKSX-Flow 0.17.0 – Rechtsgrundlagen aus EduKSX-Codex (24.11.2026):** Seite «Rechtsgrundlagen» als Teil von
+  EduKSX-Codex gekennzeichnet (Quellen nicht neu recherchiert, sondern aus den Vorlagen); je Quelle Erlass, aktuelle
+  Fassung und Rechtsgrundlagen-Nr. aus einem Auszug des Codex-Prototyps (`tools/flow_codex_auszug.py`); «Abgleich mit
+  EduKSX-Codex» zeigt neue Fassungen seit dem letzten Review und spielt das Ereignis `codex.act_version.created` nach.
+  Konzept Flow 5b (E20–E24), Pflichtenheft FLW-F-39/40, Datenmodell (`source_checked_version`, `codex_event_id`),
+  Ereignis `flow.template.review_due`; Codex-Pflichtenheft: Ereignisname vereinheitlicht. GesG mit LS 810.1 ergänzt.
 - **EduKSX-Flow 0.16.0 – Stufe 3: Rechtsgrundlagen und Vorlagenbibliothek (24.11.2026):** Seite **Rechtsgrundlagen**
   (Quellenverzeichnis mit Verwendung, Rückwärtssuche vom Artikel zu den Schritten, Schritte ohne geprüfte Grundlage,
   «Änderung melden» macht Reviews der betroffenen Vorlagen fällig); Reiter **Verlauf** je Vorlage (Versionen mit

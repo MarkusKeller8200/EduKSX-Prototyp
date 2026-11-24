@@ -3184,7 +3184,7 @@
         ],
         "operationId": "reportSourceChange",
         "summary": "Änderung einer Rechtsgrundlage melden",
-        "description": "Änderung einer Rechtsgrundlage melden.",
+        "description": "Von Hand oder durch EduKSX-Codex (Ereignis codex.act_version.created, Servicekonto). Betroffene Vorlagen erhalten einen fälligen Review; laufende Abläufe bleiben unverändert.",
         "security": [
           {
             "eduksx_ident": [
@@ -3208,7 +3208,9 @@
                 "source_code": "Beispiel",
                 "change_type": "new_version",
                 "valid_from": "2027-08-23",
-                "remark": "Beispiel"
+                "remark": "Beispiel",
+                "codex_ref": "Beispiel",
+                "codex_event_id": "Beispiel"
               }
             }
           }
@@ -7936,6 +7938,22 @@
             ],
             "title": "Bemerkung",
             "description": "Freitext"
+          },
+          "codex_ref": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Verweis Rechtssammlung",
+            "description": "Erlass und Fassung in EduKSX-Codex"
+          },
+          "codex_event_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Codex-Ereignis",
+            "description": "Kennung von codex.act_version.created; gleiche Kennung = keine zweite Verarbeitung"
           }
         },
         "required": [
@@ -8964,6 +8982,26 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/OperationInvocation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Empfangen"
+          }
+        }
+      }
+    },
+    "flow.template.review_due": {
+      "post": {
+        "summary": "Review einer Vorlage fällig, z. B. nach einer neuen Fassung aus EduKSX-Codex (an die Prozessverantwortlichen)",
+        "description": "Ereignis «flow.template.review_due» an Abonnenten (B7).",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Template"
               }
             }
           }

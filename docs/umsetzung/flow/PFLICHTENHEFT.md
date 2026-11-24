@@ -58,6 +58,8 @@ Core/Mitteilung), Rechtsauskunft (Quellen verweisen auf EduKSX-Codex).
 | FLW-F-36 | Prozesslenkung: Prozessblatt (Nummer, Kategorie, Schutzbedarf, Reviewintervall, Gültigkeit, Dokumente), Freigabe mit Änderungsbegründung, Versionsverlauf, Prozessreviews, Prozesslandkarte. | SOLL | Stufe 3 |
 | FLW-F-37 | Rechtsgrundlagen: Rückwärtssuche, Schritte ohne geprüfte Grundlage, Änderung einer Rechtsgrundlage (im Betrieb aus EduKSX-Codex) löst Reviews aus. | SOLL | Rechtsgrundlagen |
 | FLW-F-38 | Vorlagenbibliothek mit Versionsvergleich und Drei-Wege-Abgleich; lokale Anpassungen werden nie überschrieben, laufende Abläufe nie verändert. | SOLL | Bibliothek |
+| FLW-F-39 | Quellenverweis je Schritt strukturiert: Erlass aus EduKSX-Codex, Stelle (§), geprüfte Fassung; Freitext nur für Merkblätter und schuleigene Unterlagen. | SOLL | Rechtsgrundlagen › EduKSX-Codex |
+| FLW-F-40 | Abgleich mit EduKSX-Codex: neue Fassung eines verwendeten Erlasses macht den Review der betroffenen Vorlagen fällig (nicht doppelt); Prüfauftrag an die Prozessverantwortlichen. | SOLL | Abgleich mit EduKSX-Codex |
 | FLW-F-31 | Einstellungen: Kataloge Kompetenzen, Funktionen (gruppiert), Zeitpunkte, Intervalle, Aufgabenbereiche (Haupt- und Unterbereiche) mit Kürzel, Bezeichnung, Beschreibung, Aktiv; verwendete Einträge nur deaktivieren. Datenmodell ZU PRÜFEN: in EduKSX-Core bzw. eigenem Modul (Konzept E15). | SOLL | Einstellungen |
 | FLW-F-30 | Auslöseprotokoll mit Quelle, Vorlage, Ergebnis (gestartet, doppelt, ohne Ablauf). | SOLL | Auslöser |
 
@@ -145,7 +147,7 @@ Webhooks: `flow.operation.invoked` (an Module), `flow.run.completed`, `flow.step
 | EduKSX-Staffing | ← | Ereignisse «Anstellung genehmigt», «Austritt erfasst», «Pensum geändert» starten Abläufe (`module-events`); Fristen als Kalenderereignisse |
 | EduKSX-Ident / Connect | → | Konten, Zugänge, Sperren (Vorgänge `ident.*`, `connect.*`) |
 | EduKSX-Sign | ↔ | Signaturanfrage als Vorgang mit Rückmeldung |
-| EduKSX-Codex | ← | Quellen verlinken auf Erlass und Fassung (`codex_ref`) |
+| EduKSX-Codex | ← | Erlasse und Fassungen (`codex_ref`, Auflösung von Zitaten über `/citations/resolution`); Ereignis `codex.act_version.created` → `POST …/source-changes` (Servicekonto, idempotent über `codex_event_id`) → Review fällig, Ereignis `flow.template.review_due`. Konzept Flow, Abschnitt 5b |
 | Core | ← | Personen, Rollen, Schuljahre, Ferien; Mitteilungen senden |
 
 ### 3.7 Datenübernahme

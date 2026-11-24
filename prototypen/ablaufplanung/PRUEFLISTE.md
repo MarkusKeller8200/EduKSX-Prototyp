@@ -1,6 +1,6 @@
 # Prüfliste EduKSX-Flow – fachliche Kontrolle
 
-Erzeugt aus den Daten des Prototyps 0.16.0 mit `node werkzeuge/pruefliste.js` – nicht von Hand ändern, sondern die Daten anpassen und neu erzeugen.
+Erzeugt aus den Daten des Prototyps 0.17.0 mit `node werkzeuge/pruefliste.js` – nicht von Hand ändern, sondern die Daten anpassen und neu erzeugen.
 Zweck: Was vor einer produktiven Nutzung fachlich (Schulverwaltung, Ressortvorstand, ggf. Rechtsdienst) zu prüfen ist. Keine Rechtsberatung.
 
 Abhaken: ☐ offen · ☑ geprüft (mit Kürzel und Datum in der Spalte «geprüft»).
@@ -250,7 +250,48 @@ Zuordnung der Muster-Nummern zu den Hauptbereichen (Konzept E16, Vorschlag) und 
 
 Neue Kompetenzarten: A Ausführung, G Genehmigung, P Prüfung, B Beratung, K Koordination, F Freigabe, U Unterstützung, S Stellvertretung, Z Zustimmung, R Rechenschaft, T Antragstellung, D Delegation, W Weisungsbefugnis – mit dem bestehenden Muster abstimmen. Funktionen: 55 Vorschläge in 5 Gruppen; Erziehungsberechtigte als «ELT» statt «EB» (in den Vorlagen verwendet). ☐
 
-## 6. Weitere offene Punkte
+## 6. Zuordnung zu EduKSX-Codex (Konzept 5b, E20–E24)
+
+Auszug aus dem Codex-Prototyp, Stand 20.11.2026. Erlasse ohne Eintrag unter den Rechtsgrundlagen Volksschule: Aufnahme in Codex prüfen; Merkblätter: E23.
+
+| Quelle | Art | Codex | Fassung | Rechtsgrundlage Nr. | geprüft |
+|---|---|---|---|---|---|
+| GG | Erlass | LS 131.1 | Nachtrag 132 (2026-04-01) | 17, 41 | ☐ |
+| VGG | Erlass | LS 131.11 | Nachtrag 134 (2026-08-01) | 18, 42 | ☐ |
+| LPG | Erlass | LS 412.31 | Nachtrag 118 (2022-10-01) | 25 | ☐ |
+| LPVO | Erlass | LS 412.311 | Nachtrag 132 (2026-01-26) | 26 | ☐ |
+| VVO | Erlass | LS 177.111 | Nachtrag 132 (2026-01-26) | 29 | ☐ |
+| PG | Erlass | LS 177.10 | Nachtrag 126 (2024-08-01) | 27 | ☐ |
+| VSG | Erlass | LS 412.100 | Nachtrag 126 (2024-08-01) | 3 | ☐ |
+| VSV | Erlass | LS 412.101 | Nachtrag 134 (2026-08-01) | 4 | ☐ |
+| GesG | Erlass | LS 810.1 | Nachtrag 131 (2026-01-01) | 66 | ☐ |
+| VSVZ | Erlass | LS 818.22 | Nachtrag 075 (2012-01-01) | 67 | ☐ |
+| UVG | Erlass | SR 832.20 | Stand 01.01.2026 (2026-01-01) | ⚠ fehlt | ☐ |
+| SUVA | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| Checkliste GV | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| Leitfaden GV | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| Merkblatt Budget | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| Leitfaden RGPK | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| VSA Abwesenheit | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| VSA Unfallmeldung | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| VSA Versicherung | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| VSA Vikariat | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| VSA Beendigung | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| VSA Anpassung | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| VSA Beginn | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| VSA Stellensituation | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| VSA Stellen | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| VSA Case Management | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| VSA Schularzt | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| Schülerprognose | Merkblatt / Arbeitshilfe | – | – | – | ☐ |
+| Ferienplan | schuleigen | – | – | – | ☐ |
+| FD | schuleigen | – | – | – | ☐ |
+| Prozessliste | schuleigen | – | – | – | ☐ |
+| Jahresplanung ICT | schuleigen | – | – | – | ☐ |
+| Master-Checkliste | schuleigen | – | – | – | ☐ |
+| Jahreskalender ICT | schuleigen | – | – | – | ☐ |
+
+## 7. Weitere offene Punkte
 
 - ☐ Ab wann dürfen Logins erstellt werden (Prozessliste)? Im Prototyp T−21 bzw. gültig ab T−14.
 - ☐ Sperrregeln Offboarding (im Prototyp Tag nach dem letzten Arbeitstag).
