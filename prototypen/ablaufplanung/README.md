@@ -125,7 +125,7 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
 
 ## Ergebnis
 
-Noch offen – nach der Abstimmung festhalten, was nach EduKSX-Flow übernommen wird (Vorgangsregister als
+Entscheide siehe `docs/KONZEPT-FLOW.md` (E1–E18). Noch offen – nach der Abstimmung festhalten, was nach EduKSX-Flow übernommen wird (Vorgangsregister als
 Schnittstelle zu den Modulen, Vorlagen-Versionierung, Motor für Fristen und automatische Schritte).
 
 ## Entwickler
