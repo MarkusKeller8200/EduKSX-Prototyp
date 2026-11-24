@@ -1,0 +1,327 @@
+/*
+ * EduKSX-Flow – Einstellungen: Kataloge für Kompetenzen, Funktionen, Zeitpunkte, Intervalle und Aufgabenbereiche.
+ * Grundlage: Vorschlag zur Erweiterung des Funktionendiagramms (24.11.2026); Kürzel sind Vorschläge und je Mandant
+ * anpassbar. Die bestehenden Kürzel des Prototyps (Rollen, Kompetenzen E/V/M/C/I) bleiben unverändert.
+ * Definiert window.FLOW_EINSTELLUNGEN_DATEN (Vorgabe) und window.FLOW_EINSTELLUNGEN(X) (Seiten und Steuerung).
+ */
+(function () {
+  "use strict";
+
+  const k = (kuerzel, name, beschreibung, weitere) => Object.assign({ kuerzel, name, beschreibung, aktiv: true }, weitere || {});
+
+  // ------------------------------------------------------------ Kompetenzen
+  const KOMPETENZEN = [
+    k("E", "Entscheid", "Verbindliche Entscheidung treffen"),
+    k("V", "Verantwortung", "Operativer Lead, Vorbereitung des Entscheids"),
+    k("M", "Mitwirkung", "Anhörung, Vernehmlassung und Mitwirkung"),
+    k("C", "Controlling", "Regelmässige Überwachung und Kontrolle"),
+    k("I", "Information", "Wird über Sachverhalte und Entscheide informiert"),
+    k("A", "Ausführung", "Operative Umsetzung einer Aufgabe", { neu: true }),
+    k("G", "Genehmigung", "Formelle Genehmigung eines Antrags oder Ergebnisses", { neu: true }),
+    k("P", "Prüfung", "Fachliche, rechtliche oder finanzielle Prüfung", { neu: true }),
+    k("B", "Beratung", "Beratende Funktion ohne Entscheidungsbefugnis", { neu: true }),
+    k("K", "Koordination", "Abstimmung zwischen beteiligten Organisationseinheiten", { neu: true }),
+    k("F", "Freigabe", "Freigabe zur Umsetzung oder Veröffentlichung", { neu: true }),
+    k("U", "Unterstützung", "Unterstützende Tätigkeit bei der Ausführung", { neu: true }),
+    k("S", "Stellvertretung", "Übernahme einer Kompetenz im Vertretungsfall", { neu: true }),
+    k("Z", "Zustimmung", "Erforderliche Zustimmung zu einem Entscheid", { neu: true }),
+    k("R", "Rechenschaft", "Rechenschafts- und Berichterstattungspflicht", { neu: true }),
+    k("T", "Antragstellung", "Formelle Einreichung eines Antrags", { neu: true }),
+    k("D", "Delegation", "Befugnis zur Übertragung einer Aufgabe oder Kompetenz", { neu: true }),
+    k("W", "Weisungsbefugnis", "Erteilung verbindlicher Anweisungen", { neu: true }),
+  ];
+
+  // ------------------------------------------------------------ Funktionen (gruppiert)
+  const f = (gruppe, liste) => liste.map(([kuerzel, name, beschreibung]) => k(kuerzel, name, beschreibung || "", { gruppe }));
+  const FUNKTIONEN = [
+    ...f("Politische und strategische Führung", [
+      ["STB", "Stimmberechtigte / Urne", "Entscheide an der Urne"],
+      ["GV", "Gemeindeversammlung (Stimmberechtigte)", "Budget, Jahresrechnung, Sachgeschäfte"],
+      ["GR", "Gemeinderat", "Exekutive der politischen Gemeinde"],
+      ["SPF", "Schulpflege", "Schulbehörde; strategische Führung der Schule"],
+      ["SPr", "Schulpräsidium", "Vorsitz der Schulbehörde"],
+      ["RV", "Ressortvorstand", "Mitglied der Schulbehörde mit Ressort"],
+      ["RPK", "Rechnungsprüfungskommission", "Prüft Budget, Jahresrechnung und Anträge"],
+      ["KOM", "Kommission", "Weitere Kommission der Schulgemeinde"],
+    ]),
+    ...f("Operative Führung", [
+      ["GL", "Geschäftsleitung", "Operative Gesamtleitung"],
+      ["RSL", "Rektorat / Gesamtschulleitung", "Leitung mehrerer Schuleinheiten"],
+      ["SL", "Schulleitung", "Leitung einer Schuleinheit"],
+      ["SSL", "Stellvertretende Schulleitung", "Vertretung der Schulleitung"],
+      ["BL", "Bereichsleitung", "Leitung eines Bereichs"],
+      ["FL", "Fachbereichsleitung", "Leitung eines Fachbereichs"],
+      ["TL", "Teamleitung", "Leitung eines Teams"],
+      ["PL", "Projektleitung", "Leitung eines Projekts"],
+    ]),
+    ...f("Verwaltung und Support", [
+      ["SV", "Schulverwaltung", "Administration der Schule"],
+      ["LSV", "Leitung Schulverwaltung", "Führung der Schulverwaltung"],
+      ["HR", "Personalwesen", "Personaladministration"],
+      ["FIN", "Finanzwesen", "Rechnungswesen und Finanzen"],
+      ["ICT", "ICT-Support (TICTS/PICTS)", "Fachstelle ICT"],
+      ["ISB", "Informationssicherheitsbeauftragte", "Informationssicherheit, ISMS"],
+      ["DSB", "Datenschutzbeauftragte", "Datenschutz"],
+      ["QM", "Qualitätsmanagement", "Qualitätssicherung und -entwicklung"],
+      ["KOMM", "Kommunikation", "Öffentlichkeitsarbeit"],
+      ["RD", "Rechtsdienst", "Rechtliche Beratung"],
+      ["IM", "Immobilienmanagement", "Strategie und Bewirtschaftung der Liegenschaften"],
+      ["FM", "Facility Management", "Betrieb der Gebäude"],
+      ["HD", "Hausdienst", "Hauswartung und Unterhalt"],
+      ["SIBE", "Sicherheitsbeauftragte", "Sicherheit und Arbeitssicherheit"],
+      ["AV", "Archivverantwortliche", "Archiv und Aktenführung"],
+      ["BES", "Beschaffungswesen", "Einkauf und Submissionen"],
+    ]),
+    ...f("Pädagogischer Bereich", [
+      ["LP", "Lehrperson", "Unterricht"],
+      ["KLP", "Klassenlehrperson", "Führung einer Klasse"],
+      ["FLP", "Fachlehrperson", "Fachunterricht"],
+      ["SHP", "Schulische Heilpädagogik", "Integrative Förderung"],
+      ["SSA", "Schulsozialarbeit", "Soziale Arbeit an der Schule"],
+      ["SPD", "Schulpsychologischer Dienst", "Abklärung und Beratung"],
+      ["DaZ", "Deutsch als Zweitsprache", "DaZ-Unterricht"],
+      ["PICTS", "Pädagogischer ICT-Support", "Unterstützung im Unterricht mit ICT"],
+      ["TICTS", "Technischer ICT-Support", "Technische Unterstützung vor Ort"],
+      ["TA", "Therapieangebote", "Logopädie, Psychomotorik u. a."],
+      ["SA", "Schulassistenz", "Unterstützung im Unterricht"],
+      ["BB", "Berufsbildner", "Ausbildung von Lernenden"],
+      ["SK", "Schulkonferenz", "Konferenz aller Lehrpersonen"],
+      ["PK", "Pädagogische Konferenz", "Pädagogische Fragen"],
+      ["BT", "Betreuung / Tagesstrukturen", "Mittagstisch, Hort"],
+    ]),
+    ...f("Weitere Beteiligte", [
+      ["ELT", "Erziehungsberechtigte", "Eltern bzw. Sorgeberechtigte (im Vorschlag «EB»)"],
+      ["SuS", "Schülerinnen und Schüler", ""],
+      ["ER", "Elternrat", ""],
+      ["SR", "Schülerrat", ""],
+      ["MA", "Mitarbeitende Person", "Betroffene Person in Personalabläufen"],
+      ["EXT", "Externe Dienstleister", ""],
+      ["VSA", "Volksschulamt (extern)", "Kantonale Stelle"],
+      ["REV", "Externe Revisionsstelle", "Finanztechnische Prüfung"],
+    ]),
+  ];
+
+  // ------------------------------------------------------------ Zeitpunkte (Bezugstermine)
+  const ZEITPUNKTE = [
+    k("ST", "Stichtag", "Bezugsdatum eines Ablaufs (z. B. Eintritt); Fristen in Tagen davor oder danach", { bezug: "stichtag" }),
+    k("DAT", "Datum", "Fester Tag im Jahr (Tag und Monat)", { bezug: "am" }),
+    k("KW", "Kalenderwoche", "Kalenderwoche im Jahr", { bezug: "kw" }),
+    k("ZR", "Zeitraum", "Von–bis im Jahr", { bezug: "von-bis" }),
+    k("SJW", "Schuljahreswechsel", "Wechsel des Schuljahres (Datum je Schuljahr)", { bezug: "schuljahreswechsel" }),
+    k("SJB", "Schuljahresbeginn", "Erster Schultag", { bezug: "schuljahresbeginn" }),
+    k("SE1", "Semesterende (1. Semester)", "Ende des ersten Semesters", { bezug: "semesterende1" }),
+    k("SW", "Semesterwechsel", "Beginn des 2. Semesters", { bezug: "semesterwechsel" }),
+    k("SE", "Semesterende (beide Semester)", "Ende jedes Semesters", { bezug: "semesterende" }),
+    k("SJE", "Schuljahresende", "Letzter Schultag", { bezug: "schuljahresende" }),
+    k("HFB", "Beginn Herbstferien", "", { bezug: "herbstferien" }), k("HFE", "Ende Herbstferien", "Letzter Ferientag", { bezug: "herbstferien_ende" }),
+    k("WFB", "Beginn Weihnachtsferien", "", { bezug: "weihnachtsferien" }), k("WFE", "Ende Weihnachtsferien", "Letzter Ferientag", { bezug: "weihnachtsferien_ende" }),
+    k("SFB", "Beginn Sportferien", "", { bezug: "sportferien" }), k("SFE", "Ende Sportferien", "Letzter Ferientag", { bezug: "sportferien_ende" }),
+    k("FFB", "Beginn Frühlingsferien", "", { bezug: "fruehlingsferien" }), k("FFE", "Ende Frühlingsferien", "Letzter Ferientag", { bezug: "fruehlingsferien_ende" }),
+    k("SOB", "Beginn Sommerferien", "", { bezug: "sommerferien" }), k("SOE", "Ende Sommerferien", "Letzter Ferientag", { bezug: "sommerferien_ende" }),
+  ];
+
+  // ------------------------------------------------------------ Intervalle
+  const INTERVALLE = [
+    k("1X", "einmalig", "Nur ein bestimmtes Jahr", { bezug: "jahr" }),
+    k("J", "jährlich", "Einmal pro Jahr (Datum, KW, Quartal oder Schuljahrestermin)"),
+    k("TRI", "trimesterweise", "Jedes Trimester (nicht üblich, der Vollständigkeit halber)", { bezug: "trimester" }),
+    k("SEM", "semesterweise", "Jedes Semester", { bezug: "semester" }),
+    k("Q", "quartalsweise", "Jedes Quartal", { bezug: "quartal" }),
+    k("M", "monatlich", "Jeden Monat an einem Tag (oder letzter Tag)", { bezug: "monatlich" }),
+    k("W", "wöchentlich", "Jede Woche an einem Wochentag", { bezug: "woechentlich" }),
+    k("T", "täglich", "Jeden Tag", { bezug: "taeglich" }),
+    k("WT", "alle Wochentage", "Montag bis Freitag", { bezug: "wochentage" }),
+    k("WE", "Wochenende", "Samstag und Sonntag", { bezug: "wochenende" }),
+    k("AT", "Arbeitstage", "Montag bis Freitag ohne Feiertage Kanton Zürich", { bezug: "arbeitstage" }),
+    k("ST", "Schultage", "Ohne Ferien und schulfreie Tage", { bezug: "schultage" }),
+  ];
+
+  // ------------------------------------------------------------ Aufgabenbereiche (Hauptbereiche mit Unterbereichen)
+  const BEREICHE = [
+    ["Organisation und Führung", "Grundlagen, Strategie, Organisationsentwicklung, Governance"],
+    ["Personalwesen", "Rekrutierung, Anstellung, Personalentwicklung, Austritte"],
+    ["Finanzen", "Budget, Rechnungswesen, Finanzplanung, Kredite"],
+    ["Schulbetrieb", "Schuljahresplanung, Stundenplanung, Klassenbildung"],
+    ["Pädagogik", "Unterricht, Schulentwicklung, Lehrmittel, Beurteilung"],
+    ["Schülerinnen und Schüler", "Aufnahme, Zuteilung, Absenzen, Disziplinarmassnahmen"],
+    ["Sonderpädagogik", "Fördermassnahmen, Sonderschulung, Therapien"],
+    ["Betreuung und Tagesstrukturen", "Mittagstisch, Betreuung, Ferienangebote"],
+    ["ICT und Digitalisierung", "Infrastruktur, Anwendungen, Support, Digitalisierung"],
+    ["Informationssicherheit", "ISMS, Risikomanagement, Sicherheitsvorfälle, Notfallmanagement"],
+    ["Datenschutz", "Datenbearbeitung, Auskunftsbegehren, Datenschutzvorfälle"],
+    ["Immobilien und Infrastruktur", "Gebäude, Unterhalt, Reinigung, Raumplanung"],
+    ["Beschaffungswesen", "Ausschreibungen, Evaluationen, Bestellungen, Verträge"],
+    ["Kommunikation", "Öffentlichkeitsarbeit, Elternkommunikation, Medien"],
+    ["Recht und Compliance", "Rechtssammlung, Rechtsmittel, Reglemente, Weisungen"],
+    ["Qualitätsmanagement", "Evaluation, Qualitätsentwicklung, Audits"],
+    ["Projektmanagement", "Projektanträge, Projektfreigaben, Projektsteuerung"],
+    ["Krisen- und Notfallmanagement", "Krisenstab, Alarmierung, Evakuation, Betriebskontinuität"],
+    ["Dokumentenmanagement", "Dokumentenlenkung, Freigaben, Archivierung"],
+    ["Gesundheit und Arbeitssicherheit", "Gesundheitsschutz, Unfallprävention, Sicherheitskonzepte"],
+    ["Kooperationen und Partnerschaften", "Andere Schulen, Gemeinden, Behörden, externe Stellen"],
+    ["Nachhaltigkeit", "Energie, Umwelt, Ressourcenmanagement"],
+    ["Controlling und Reporting", "Kennzahlen, Zielerreichung, internes Kontrollsystem"],
+  ];
+  const AUFGABENBEREICHE = [];
+  BEREICHE.forEach(([titel, unter], i) => {
+    const nr = String(i + 1);
+    AUFGABENBEREICHE.push(k(nr, titel, unter, { haupt: nr }));
+    unter.split(",").map((x) => x.trim()).forEach((u, j) => AUFGABENBEREICHE.push(k(`${nr}.${j + 1}`, u, "", { haupt: nr })));
+  });
+
+  window.FLOW_EINSTELLUNGEN_DATEN = { kompetenzen: KOMPETENZEN, funktionen: FUNKTIONEN, zeitpunkte: ZEITPUNKTE, intervalle: INTERVALLE, aufgabenbereiche: AUFGABENBEREICHE };
+
+  // ------------------------------------------------------------ Seiten und Steuerung
+  const KATALOGE = {
+    kompetenzen: { titel: "Kompetenzen", spalten: ["Kürzel", "Kompetenz"], text: "Kompetenzarten im Funktionendiagramm. Entscheid, Genehmigung und Freigabe sind bewusst getrennt: z. B. entscheidet die Geschäftsleitung über eine Beschaffung, das Finanzwesen prüft die Finanzierung, eine andere Stelle gibt die Bestellung frei. Aktive Kompetenzen erscheinen in der Legende des Funktionendiagramms." },
+    funktionen: { titel: "Funktionen", spalten: ["Kürzel", "Funktion"], gruppiert: "gruppe", text: "Organisatorische Funktionen (Rollen). Aktive Funktionen stehen bei «Verantwortlich» und «Informieren» in den Ablaufvorlagen zur Auswahl. Kürzel sind Vorschläge und je Schule anpassbar." },
+    zeitpunkte: { titel: "Zeitpunkte", spalten: ["Kürzel", "Zeitpunkt"], text: "Bezugstermine für Fristen und für die Zeitregeln im Jahreskalender (Schuljahres- und Ferientermine je Schuljahr unter Jahreskalender › Schuljahre)." },
+    intervalle: { titel: "Intervalle", spalten: ["Kürzel", "Intervall"], text: "Wiederholungen für Termine und ToDos im Jahreskalender." },
+    aufgabenbereiche: { titel: "Aufgabenbereiche", spalten: ["Nr.", "Aufgabenbereich"], gruppiert: "haupt", text: "Gliederung des Funktionendiagramms in Hauptbereiche und Unterbereiche (Vorschlag für einen schulübergreifenden Standard)." },
+  };
+
+  window.FLOW_EINSTELLUNGEN = function (X) {
+    const { esc, ansage, frage, speichern, render } = X;
+    const S = () => X.S();
+    const darf = () => ["SV", "RV"].includes(S().rolle);
+    const liste = (b) => S().einstellungen[b];
+
+    /** Wie oft wird ein Eintrag in Vorlagen bzw. im Funktionendiagramm verwendet? */
+    function verwendung(b, e) {
+      const D = X.D;
+      if (b === "funktionen") {
+        let n = 0;
+        S().vorlagen.forEach((v) => v.schritte.forEach((s) => { if (s.rolle === e.kuerzel || (s.informiert || []).includes(e.kuerzel)) n++; }));
+        D.FUNKTIONENDIAGRAMM.forEach((fd) => { if (fd.rollen[e.kuerzel]) n++; });
+        return n;
+      }
+      if (b === "kompetenzen") return D.FUNKTIONENDIAGRAMM.filter((fd) => Object.values(fd.rollen).some((z) => String(z).replace(/[()0-9]/g, "").split("/").includes(e.kuerzel))).length;
+      return 0;
+    }
+
+    function pruefung(b) {
+      const m = [];
+      const gesehen = {};
+      liste(b).forEach((e) => {
+        if (!String(e.kuerzel).trim()) m.push(`Eintrag «${e.name || "ohne Bezeichnung"}» hat kein ${KATALOGE[b].spalten[0]}.`);
+        else if (gesehen[e.kuerzel]) m.push(`${KATALOGE[b].spalten[0]} «${e.kuerzel}» kommt mehrfach vor.`);
+        gesehen[e.kuerzel] = true;
+        if (!String(e.name).trim()) m.push(`«${e.kuerzel}» hat keine Bezeichnung.`);
+        if (!e.aktiv && verwendung(b, e)) m.push(`«${e.kuerzel}» ist inaktiv, wird aber ${verwendung(b, e)}× verwendet.`);
+      });
+      return m;
+    }
+
+    function zeile(b, e, i) {
+      const dis = darf() ? "" : "disabled";
+      const d = `data-bereich="${esc(b)}" data-i="${i}"`;
+      const n = verwendung(b, e);
+      const unter = b === "aufgabenbereiche" && e.kuerzel !== e.haupt;
+      return `<tr class="${e.aktiv ? "" : "blass"}">
+        <td style="width:7rem"><label class="sr-only" for="es-${b}-${i}-k">${esc(KATALOGE[b].spalten[0])}</label><input id="es-${b}-${i}-k" type="text" value="${esc(e.kuerzel)}" data-aktion="es-feld" data-k="kuerzel" ${d} ${dis} style="width:100%;${unter ? "padding-left:1.2rem" : "font-weight:600"}"></td>
+        <td><label class="sr-only" for="es-${b}-${i}-n">${esc(KATALOGE[b].spalten[1])}</label><input id="es-${b}-${i}-n" type="text" value="${esc(e.name)}" data-aktion="es-feld" data-k="name" ${d} ${dis} style="width:100%">${e.neu ? ` <span class="badge violett" title="Vorschlag zur Erweiterung">neu</span>` : ""}</td>
+        <td><label class="sr-only" for="es-${b}-${i}-b">Beschreibung</label><input id="es-${b}-${i}-b" type="text" value="${esc(e.beschreibung)}" data-aktion="es-feld" data-k="beschreibung" ${d} ${dis} style="width:100%"></td>
+        <td style="text-align:center"><label class="chip"><input type="checkbox" data-aktion="es-aktiv" ${d} ${e.aktiv ? "checked" : ""} ${dis}> <span class="small">${e.aktiv ? "aktiv" : "inaktiv"}</span></label></td>
+        <td class="small muted" style="text-align:right">${n ? `${n}×` : "–"}</td>
+        <td>${darf() ? `<button class="btn klein gefahr" data-aktion="es-loeschen" ${d} aria-label="Eintrag löschen" title="${n ? "Wird verwendet – nur deaktivieren möglich" : "Löschen"}" ${n ? "disabled" : ""}>✕</button>` : ""}</td></tr>`;
+    }
+
+    function seite(b) {
+      b = KATALOGE[b] ? b : "kompetenzen";
+      const kat = KATALOGE[b];
+      const alle = liste(b);
+      const kopf = `<thead><tr><th>${esc(kat.spalten[0])}</th><th>${esc(kat.spalten[1])}</th><th>Beschreibung</th><th>Aktiv</th><th title="Verwendung in Vorlagen und im Funktionendiagramm">verwendet</th><th></th></tr></thead>`;
+      let inhalt;
+      if (kat.gruppiert) {
+        const gruppen = [...new Set(alle.map((e) => e[kat.gruppiert]))];
+        inhalt = gruppen.map((g) => {
+          const zeilen = alle.map((e, i) => [e, i]).filter(([e]) => e[kat.gruppiert] === g);
+          const titel = b === "aufgabenbereiche" ? `${g} ${(alle.find((e) => e.kuerzel === g) || { name: "" }).name}` : g;
+          const aktiv = zeilen.filter(([e]) => e.aktiv).length;
+          return `<details class="gefaess" open style="margin-top:.75rem"><summary><span><strong>${esc(titel)}</strong></span><span class="small muted">${aktiv} von ${zeilen.length} aktiv</span></summary><div class="inhalt">
+            <div class="tabelle-wrap"><table>${kopf}<tbody>${zeilen.map(([e, i]) => zeile(b, e, i)).join("")}</tbody></table></div>
+            ${darf() ? `<button class="btn klein" data-aktion="es-neu" data-bereich="${esc(b)}" data-gruppe="${esc(g)}">＋ ${b === "aufgabenbereiche" ? "Unterbereich" : "Funktion"} in «${esc(b === "aufgabenbereiche" ? titel : g)}»</button>` : ""}</div></details>`;
+        }).join("") + (darf() ? `<p style="margin-top:1rem"><button class="btn" data-aktion="es-neu-gruppe" data-bereich="${esc(b)}">＋ ${b === "aufgabenbereiche" ? "Hauptbereich" : "Gruppe"}</button></p>` : "");
+      } else {
+        inhalt = `<div class="tabelle-wrap"><table>${kopf}<tbody>${alle.map((e, i) => zeile(b, e, i)).join("")}</tbody></table></div>${darf() ? `<p><button class="btn" data-aktion="es-neu" data-bereich="${esc(b)}">＋ Eintrag</button></p>` : ""}`;
+      }
+      const m = pruefung(b);
+      return `<div class="seitenkopf"><div><div class="small muted">Einstellungen › ${esc(kat.titel)}</div><h1>${esc(kat.titel)}</h1><p class="muted">${esc(kat.text)}</p></div>
+          <div class="aktionen">${darf() ? `<button class="btn" data-aktion="es-vorgabe" data-bereich="${esc(b)}">↺ Vorgabe laden</button>` : ""}</div></div>
+        ${darf() ? "" : `<p class="meldung info">Ändern können die Schulverwaltung und der Ressortvorstand – Rolle oben rechts wechseln.</p>`}
+        <p class="small muted">${alle.filter((e) => e.aktiv).length} von ${alle.length} aktiv. Änderungen werden sofort gespeichert. Verwendete Einträge lassen sich nicht löschen, nur deaktivieren.</p>
+        ${m.length ? `<div class="meldung warnung"><strong>⚠ Hinweise</strong><ul>${m.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+        ${inhalt}`;
+    }
+
+    function klick(ak, el) {
+      const b = el.dataset.bereich;
+      if (!b || !KATALOGE[b] || !darf()) return false;
+      const l = liste(b);
+      if (ak === "es-neu") {
+        const g = el.dataset.gruppe;
+        const e = { kuerzel: "", name: "", beschreibung: "", aktiv: true };
+        if (b === "funktionen" && g) e.gruppe = g;
+        let pos = l.length;
+        if (b === "aufgabenbereiche" && g) {
+          const unter = l.filter((x) => x.haupt === g && x.kuerzel !== g).map((x) => Number(String(x.kuerzel).split(".")[1]) || 0);
+          e.haupt = g; e.kuerzel = `${g}.${Math.max(0, ...unter) + 1}`;
+        }
+        if (g) { const letzte = l.map((x, i) => [x, i]).filter(([x]) => x[KATALOGE[b].gruppiert] === g).pop(); if (letzte) pos = letzte[1] + 1; }
+        l.splice(pos, 0, e);
+        speichern(); render(); ansage("Eintrag hinzugefügt – Kürzel und Bezeichnung erfassen.");
+        const f = document.getElementById(`es-${b}-${pos}-${e.kuerzel ? "n" : "k"}`); if (f) f.focus();
+        return true;
+      }
+      if (ak === "es-neu-gruppe") {
+        if (b === "aufgabenbereiche") {
+          const nr = String(Math.max(0, ...l.map((x) => Number(x.haupt) || 0)) + 1);
+          l.push({ kuerzel: nr, name: "Neuer Hauptbereich", beschreibung: "", aktiv: true, haupt: nr });
+        } else {
+          let n = 1; while (l.some((x) => x.gruppe === `Neue Gruppe ${n}`)) n++;
+          l.push({ kuerzel: "", name: "", beschreibung: "", aktiv: true, gruppe: `Neue Gruppe ${n}` });
+        }
+        speichern(); render(); return true;
+      }
+      if (ak === "es-loeschen") {
+        const i = Number(el.dataset.i), e = l[i];
+        const kinder = b === "aufgabenbereiche" && e.kuerzel === e.haupt ? l.filter((x) => x.haupt === e.haupt && x !== e) : [];
+        frage(`«${e.kuerzel} ${e.name}» löschen?${kinder.length ? `\n\nDamit werden auch die ${kinder.length} Unterbereiche gelöscht.` : ""}\n\nStatt löschen kann der Eintrag auch deaktiviert werden.`, "Löschen", () => {
+          S().einstellungen[b] = l.filter((x) => x !== e && !kinder.includes(x));
+          speichern(); render(); ansage("Eintrag gelöscht.");
+        });
+        return true;
+      }
+      if (ak === "es-vorgabe") {
+        frage(`Alle Einträge unter «${KATALOGE[b].titel}» durch die Vorgabe ersetzen? Eigene Änderungen gehen verloren.`, "Vorgabe laden", () => {
+          S().einstellungen[b] = JSON.parse(JSON.stringify(window.FLOW_EINSTELLUNGEN_DATEN[b]));
+          speichern(); render(); ansage("Vorgabe geladen.");
+        });
+        return true;
+      }
+      return false;
+    }
+
+    function aenderung(ak, el) {
+      const b = el.dataset.bereich;
+      if (!b || !KATALOGE[b] || !darf()) return false;
+      const e = liste(b)[Number(el.dataset.i)];
+      if (!e) return false;
+      if (ak === "es-aktiv") { e.aktiv = el.checked; speichern(); render(); ansage(`«${e.kuerzel}» ${e.aktiv ? "aktiviert" : "deaktiviert"}.`); return true; }
+      if (ak === "es-feld") {
+        const k = el.dataset.k, w = el.value.trim();
+        if (b === "aufgabenbereiche" && k === "kuerzel" && e.kuerzel === e.haupt) liste(b).forEach((x) => { if (x !== e && x.haupt === e.haupt) { x.haupt = w; x.kuerzel = String(x.kuerzel).replace(/^[^.]+/, w); } });
+        if (b === "aufgabenbereiche" && k === "kuerzel" && e.kuerzel === e.haupt) e.haupt = w;
+        e[k] = w;
+        speichern(); render();
+        return true;
+      }
+      return false;
+    }
+
+    /** Aktive Funktionen als Auswahl (Kürzel → Name), für Rollenlisten in den Vorlagen. */
+    const aktiveFunktionen = () => liste("funktionen").filter((e) => e.aktiv && e.kuerzel);
+    const aktiveKompetenzen = () => liste("kompetenzen").filter((e) => e.aktiv && e.kuerzel);
+    return { seite, klick, aenderung, aktiveFunktionen, aktiveKompetenzen, KATALOGE };
+  };
+})();

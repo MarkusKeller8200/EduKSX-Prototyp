@@ -7,10 +7,11 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v6";
-  const VERSION = "0.7.0";
+  const VERSION = "0.8.0";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
+  const ROLLEN_PROTOTYP = Object.keys(ROLLEN); // Rollenwechsel oben rechts nur für diese Rollen
 
   // ---------------------------------------------------------------- Hilfen
   const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -44,6 +45,7 @@
       hinweise: [],
       ausloesungen: [],
       ausgeloest: {},
+      einstellungen: kopie(window.FLOW_EINSTELLUNGEN_DATEN),
       erreichbar: Object.fromEntries(D.MODULE.map((m) => [m.key, true])),
       ereignisse: kopie(D.EREIGNISSE),
       kalErledigt: {},
@@ -587,6 +589,11 @@
     protokoll: ico('<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h6M9 16h6"/>'),
     kalender: ico('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M7 14h3M14 14h3M7 17.5h3"/>'),
     ausloeser: ico('<path d="M13 2L4.5 13.5H12L11 22l8.5-11.5H12z"/>'),
+    "einstellungen/kompetenzen": ico('<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="1.8" fill="currentColor"/><circle cx="15" cy="12" r="1.8" fill="currentColor"/><circle cx="10" cy="18" r="1.8" fill="currentColor"/>'),
+    "einstellungen/funktionen": ico('<circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3 2.8-5 5.5-5s4.9 2 5.5 5"/><circle cx="17" cy="9" r="2.3"/><path d="M15.5 14.2c2.3.2 4 1.9 4.5 4.8"/>'),
+    "einstellungen/zeitpunkte": ico('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
+    "einstellungen/intervalle": ico('<path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/>'),
+    "einstellungen/aufgabenbereiche": ico('<rect x="3" y="3" width="7" height="7" rx="1"/><path d="M14 5h7M14 8h5M6.5 10v4.5H14M6.5 14.5V19H14"/><rect x="14" y="12.5" width="7" height="4" rx="1"/><rect x="14" y="17" width="7" height="4" rx="1"/>'),
   };
   const NAVI = [
     ["uebersicht", "Übersicht"],
@@ -603,6 +610,12 @@
     ["vorgaenge", "Vorgänge der Module"],
     ["gruppe", "Nachvollziehen"],
     ["protokoll", "Aufrufprotokoll"],
+    ["gruppe", "Einstellungen"],
+    ["einstellungen/kompetenzen", "Kompetenzen"],
+    ["einstellungen/funktionen", "Funktionen"],
+    ["einstellungen/zeitpunkte", "Zeitpunkte"],
+    ["einstellungen/intervalle", "Intervalle"],
+    ["einstellungen/aufgabenbereiche", "Aufgabenbereiche"],
   ];
 
   const STATUS = {
@@ -633,6 +646,16 @@
   const gefaehrdet = (lauf, sch) => ["wartet", "geplant"].includes(sch.status) && typVon(sch) !== "warten" && S.heute > fristVon(lauf, sch);
   const fristartBadge = (s) => (s.fristart === "gesetzlich" ? ` <span class="badge info" title="Gesetzliche Frist – nicht frei verschiebbar">§ gesetzlich</span>` : s.fristart === "empfehlung" ? ` <span class="badge neutral" title="Empfohlener Zeitpunkt">≈ Empfehlung</span>` : "");
   const typHtml = (s) => { const t = TYPEN[typVon(s)] || TYPEN.aufgabe; return `<span class="typ" title="${esc(t[2])}">${t[0]} ${esc(t[1])}</span>`; };
+  /** Namen der Funktionen aus den Einstellungen übernehmen (Kürzel → Bezeichnung). */
+  function rollenAbgleichen() { ((S && S.einstellungen && S.einstellungen.funktionen) || []).forEach((e) => { if (e.kuerzel && e.name) ROLLEN[e.kuerzel] = e.name; }); }
+  /** Aktive Funktionen (Einstellungen) gruppiert; die aktuelle Auswahl bleibt wählbar, auch wenn inaktiv. */
+  function rollenOptionen(aktuell, zusatz) {
+    const akt = ES.aktiveFunktionen();
+    const gruppen = [...new Set(akt.map((e) => e.gruppe || "Weitere"))];
+    const fehlt = aktuell && !akt.some((e) => e.kuerzel === aktuell) ? `<option value="${esc(aktuell)}" selected>${esc(ROLLEN[aktuell] || aktuell)} (inaktiv)</option>` : "";
+    return fehlt + gruppen.map((g) => `<optgroup label="${esc(g)}">${akt.filter((e) => (e.gruppe || "Weitere") === g).map((e) => `<option value="${esc(e.kuerzel)}" ${e.kuerzel === aktuell ? "selected" : ""}>${esc(e.name)} (${esc(e.kuerzel)})${zusatz ? esc(zusatz(e.kuerzel)) : ""}</option>`).join("")}</optgroup>`).join("");
+  }
+  const rollenWerte = () => ES.aktiveFunktionen().map((e) => [e.kuerzel, `${e.name} (${e.kuerzel})`]);
   const rolleBadge = (r) => `<span class="rolle" title="${esc(ROLLEN[r] || r)}">${esc(r)}</span>`;
   function aufrufText(s) {
     const t = typVon(s);
@@ -741,11 +764,12 @@
     const aufgaben = offeneAufgaben(S.rolle).length;
     const navi = NAVI.map((n) => {
       if (n[0] === "gruppe") return `<li class="gruppe" aria-hidden="true">${esc(n[1])}</li>`;
-      const aktiv = seite === n[0] || ({ lauf: "laeufe", vorlage: "vorlagen" }[seite] === n[0]);
+      const unter = route()[1] || "kompetenzen";
+      const aktiv = seite === n[0] || ({ lauf: "laeufe", vorlage: "vorlagen" }[seite] === n[0]) || (seite === "einstellungen" && n[0] === "einstellungen/" + unter);
       const zahl = n[0] === "aufgaben" && aufgaben ? ` <span class="zaehler" aria-label="${aufgaben} offen">${aufgaben}</span>` : "";
       return `<li><a href="#/${n[0]}" ${aktiv ? 'aria-current="page"' : ""}>${ICONS[n[0]]}<span>${esc(n[1])}</span>${zahl}</a></li>`;
     }).join("") + `<li class="gruppe" aria-hidden="true">Entwicklung</li><li><a href="entwickler/" title="Datenmodell und API – Entwurf für die Umsetzung">${ico('<path d="m8 8-4 4 4 4"/><path d="m16 8 4 4-4 4"/><path d="m14 4-4 16"/>')}<span>Entwickler</span></a></li>`;
-    const rollen = Object.entries(ROLLEN).filter(([k]) => !["LP", "GV", "VSA", "MA", "ELT"].includes(k)).map(([k, v]) => `<option value="${k}" ${k === S.rolle ? "selected" : ""}>${esc(v)}</option>`).join("");
+    const rollen = Object.entries(ROLLEN).filter(([k]) => ROLLEN_PROTOTYP.includes(k) && !["LP", "GV", "VSA", "MA", "ELT"].includes(k)).map(([k, v]) => `<option value="${k}" ${k === S.rolle ? "selected" : ""}>${esc(v)}</option>`).join("");
     const dunkel = document.documentElement.classList.contains("dark");
     return `
       <header class="kopf">
@@ -1093,7 +1117,7 @@
     S.vorlagen.forEach((v) => v.schritte.forEach((s) => { if (s.fd) (verwendung[s.fd] = verwendung[s.fd] || []).push(`${v.titel}: ${s.titel} (${s.rolle})`); }));
     const zeilen = D.FUNKTIONENDIAGRAMM.map((f) => `<tr><td>${esc(f.nr)}</td><td>${esc(f.titel)}</td>${sp.map((r) => `<td class="fd ${f.rollen[r] && /[EV]/.test(f.rollen[r]) ? "lead" : ""}">${esc(f.rollen[r] || "")}</td>`).join("")}<td class="small">${(verwendung[f.nr] || []).map(esc).join("<br>") || `<span class="muted">–</span>`}</td></tr>`).join("");
     return `<div class="seitenkopf"><div><h1>Funktionendiagramm</h1><p class="muted">Auszug (Muster) mit den Aufgaben, die Abläufe im Personalbereich berühren. Ist einem Schritt eine Nummer zugeordnet, schlägt ${wordmark("Flow")} die Rolle mit «V» als verantwortlich und die Rollen mit «I» als zu informieren vor und warnt bei Abweichungen.</p></div></div>
-      <p class="small muted">E = Entscheid · V = operativer Lead · M = Mitwirkung · C = Controlling · I = wird informiert</p>
+      <p class="small muted">${ES.aktiveKompetenzen().map((e) => `${esc(e.kuerzel)} = ${esc(e.name)}`).join(" · ")} <a href="#/einstellungen/kompetenzen">Kompetenzen</a></p>
       <div class="tabelle-wrap"><table><thead><tr><th>Nr.</th><th>Aufgabe</th>${sp.map((r) => `<th title="${esc(ROLLEN[r])}">${esc(r)}</th>`).join("")}<th>Verwendet in Schritten</th></tr></thead><tbody>${zeilen}</tbody></table></div>`;
   }
 
@@ -1150,10 +1174,10 @@
         <fieldset><legend>Zuständigkeit</legend>
           <div class="formzeile">
             <label class="feld">Funktionendiagramm<select data-e="fd"><option value="">– keine Zuordnung –</option>${D.FUNKTIONENDIAGRAMM.map((f) => `<option value="${esc(f.nr)}" ${f.nr === s.fd ? "selected" : ""}>${esc(f.nr + " " + f.titel)}</option>`).join("")}</select></label>
-            <label class="feld">Verantwortlich<select data-e="rolle">${Object.entries(ROLLEN).map(([k, n]) => `<option value="${k}" ${k === s.rolle ? "selected" : ""}>${esc(n)}${fd && fd.rollen[k] ? " (" + fd.rollen[k] + ")" : ""}</option>`).join("")}</select></label>
+            <label class="feld">Verantwortlich<select data-e="rolle">${rollenOptionen(s.rolle, (k) => (fd && fd.rollen[k] ? " – FD " + fd.rollen[k] : ""))}</select></label>
           </div>
           ${fd ? `<p class="small muted">FD ${esc(fd.nr)}: ${Object.entries(fd.rollen).map(([r, z]) => `${esc(r)} ${esc(z)}`).join(" · ")} – Vorschlag übernommen: V → verantwortlich, I → informieren.</p>` : ""}
-          <div class="small">Informieren (I): ${Object.keys(ROLLEN).map((r) => `<label class="chip"><input type="checkbox" data-e="informiert" value="${r}" ${(s.informiert || []).includes(r) ? "checked" : ""}> ${esc(r)}</label>`).join(" ")}</div>
+          <div class="small">Informieren (I): ${[...new Set([...(s.informiert || []), ...ES.aktiveFunktionen().map((e) => e.kuerzel)])].map((r) => `<label class="chip"><input type="checkbox" data-e="informiert" value="${r}" ${(s.informiert || []).includes(r) ? "checked" : ""}> ${esc(r)}</label>`).join(" ")}</div>
         </fieldset>
         <fieldset><legend>Zeitpunkt und Reihenfolge</legend>
           <div class="formzeile"><label class="feld">Frist in Tagen zum Stichtag (${esc(v.stichtag)})<input type="number" data-e="tage" value="${s.tage}"></label><span class="small muted" style="align-self:center">${relTage(Number(s.tage))} · negativ = vorher</span>
@@ -1356,7 +1380,7 @@
       return formular("Schritt einfügen", "Der Schritt gilt nur für diesen Ablauf, nicht für die Vorlage.", [
         { key: "titel", label: "Bezeichnung", typ: "text", pflicht: true },
         { key: "typ", label: "Art", typ: "auswahl", werte: ["aufgabe", "nachweis", "termin", "genehmigung"].map((k) => [k, TYPEN[k][0] + " " + TYPEN[k][1]]) },
-        { key: "rolle", label: "Verantwortlich", typ: "auswahl", werte: Object.entries(ROLLEN), wert: S.rolle },
+        { key: "rolle", label: "Verantwortlich", typ: "auswahl", werte: rollenWerte(), wert: S.rolle },
         { key: "frist", label: "Frist", typ: "datum", pflicht: true, wert: addTage(S.heute, 7) },
         { key: "nach", label: "Erst nach", typ: "auswahl", werte: nachWerte },
         GRUND,
@@ -1377,7 +1401,7 @@
       journal(l, "Eingriff", `Schritt «${s.titel}» übersprungen.`, w.grund, wer);
       weiter(); ansage("Schritt übersprungen.");
     });
-    if (ak === "ein-rolle") return formular("Zuständigkeit ändern", `«${s.titel}» – bisher ${ROLLEN[s.rolle] || s.rolle}`, [{ key: "rolle", label: "Neu verantwortlich", typ: "auswahl", werte: Object.entries(ROLLEN), wert: s.rolle }, GRUND], "Ändern", (w) => {
+    if (ak === "ein-rolle") return formular("Zuständigkeit ändern", `«${s.titel}» – bisher ${ROLLEN[s.rolle] || s.rolle}`, [{ key: "rolle", label: "Neu verantwortlich", typ: "auswahl", werte: [[s.rolle, ROLLEN[s.rolle] || s.rolle], ...rollenWerte().filter(([k]) => k !== s.rolle)], wert: s.rolle }, GRUND], "Ändern", (w) => {
       if (w.rolle === s.rolle) return;
       journal(l, "Eingriff", `Zuständigkeit «${s.titel}»: ${ROLLEN[s.rolle]} → ${ROLLEN[w.rolle]}.`, w.grund, wer);
       s.rolle = w.rolle; s.eskaliert = [];
@@ -1399,6 +1423,7 @@
 
   function route() { return (location.hash || "#/uebersicht").slice(2).split("/"); }
   function render() {
+    rollenAbgleichen();
     const [seite, a, b] = route();
     // feste Zuordnung Route → Seite (kein Aufruf über einen Namen aus der Adresse)
     const inhalt = () => {
@@ -1414,6 +1439,7 @@
         case "funktionendiagramm": return seiteFunktionendiagramm();
         case "protokoll": return seiteProtokoll();
         case "ausloeser": return seiteAusloeser();
+        case "einstellungen": return ES.seite(a);
         default: return seiteUebersicht();
       }
     };
@@ -1495,7 +1521,7 @@
       case "freigeben": { const v = vorlageVon(a); v.status = "freigegeben"; speichern(); render(); ansage(`Version ${esc(v.version)} freigegeben.`); break; }
       case "dlg-abbrechen": ev.preventDefault(); document.getElementById("dlg").close(); EDIT = null; break;
       case "dlg-speichern": ev.preventDefault(); if (dialogSpeichern()) { document.getElementById("dlg").close(); speichern(); render(); } break;
-      default: KAL.klick(ak, el); break;
+      default: if (!(ak.startsWith("es-") && ES.klick(ak, el)) && !ak.startsWith("es-")) KAL.klick(ak, el); break;
     }
   });
   document.addEventListener("keydown", (ev) => {
@@ -1507,6 +1533,7 @@
     if (el.dataset.e && EDIT && ["fd", "modul", "vorgang", "b-feld", "typ", "unter"].includes(el.dataset.e)) { dialogLesen(el.dataset.e); dialogZeichnen(); return; }
     if (el.dataset.e === "tage" && EDIT) { dialogLesen(); dialogZeichnen(); return; }
     const ak = el.dataset.aktion;
+    if (ak && ak.startsWith("es-")) { ES.aenderung(ak, el); return; }
     if ((ak && ak.startsWith("kal-")) || el.dataset.neuZeichnen) { KAL.aenderung(ak || "", el); return; }
     if (ak === "rolle") { S.rolle = el.value; speichern(); render(); ansage("Rolle: " + ROLLEN[S.rolle]); }
     if (ak === "erreichbar") { S.erreichbar[el.dataset.key] = el.checked; weiter(); }
@@ -1528,7 +1555,10 @@
     D, esc, addTage, tageZwischen, datumKurz, kopie, rolleBadge, ansage, frage, ROLLEN,
     S: () => S, vorlageVon, fortschritt, speichern, render, startVorbereiten,
   });
+  const ES = window.FLOW_EINSTELLUNGEN({ D, esc, ansage, frage, speichern, render: () => render(), S: () => S });
   S = laden() || neuerZustand();
+  if (!S.einstellungen) S.einstellungen = kopie(window.FLOW_EINSTELLUNGEN_DATEN);
+  rollenAbgleichen();
   try { if (localStorage.getItem("eduksx-thema") === "dunkel") document.documentElement.classList.add("dark"); } catch (e) { /* */ }
   motor();
   speichern();
