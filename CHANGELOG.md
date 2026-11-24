@@ -32,6 +32,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Geändert
 
+- **GUI-EX 0.4.1 – Clay weniger rund (24.11.2026, #92):** Karten 16 px statt 28 px, Bedienelemente 10 px; Rundung über
+  `--clay-rund`/`--clay-rund-klein` einstellbar; G-Dossierkarten erhalten den Clay-Stil.
 - **CodeQL-Funde behoben (23.11.2026, #1–#5, #13, #20, #27–#29):** Werte aus Zustand und Eingaben werden in allen
   HTML-Vorlagen escaped (IDs, Zahlen, Datumswerte, Attribute); Seitenwahl in EduKSX-Flow über feste Zuordnung statt
   Aufruf per Name aus der Adresse; Sign-Filter `sauber()` ohne HTML-Parser (erlaubte Tags fest, Text immer escaped);
