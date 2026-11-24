@@ -8,6 +8,7 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- EduKSX-Flow 0.8.1: Einstellungen ohne Bearbeitungsrecht als Text statt als gesperrte Eingabefelder.
 - **EduKSX-Flow 0.8.0 – Einstellungen (24.11.2026):** neue Menügruppe mit Katalogen Kompetenzen (18 Kompetenzarten,
   E/V/M/C/I bestehend, 13 neu), Funktionen (55, gruppiert nach Führung, Verwaltung, Pädagogik, Weitere), Zeitpunkte
   (Stichtag, Schuljahres- und Ferientermine), Intervalle (einmalig bis Schultage) und Aufgabenbereiche (23
