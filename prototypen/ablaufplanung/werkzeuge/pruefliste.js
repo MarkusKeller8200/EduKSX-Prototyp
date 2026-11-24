@@ -16,7 +16,7 @@ const D = ctx.window.FLOW_DATEN, E = ctx.window.FLOW_EINSTELLUNGEN_DATEN;
 const version = JSON.parse(fs.readFileSync(path.join(ordner, "prototyp.json"), "utf8")).version;
 
 const t = (n) => (n === 0 ? "T" : n < 0 ? `T−${-n}` : `T+${n}`);
-const zelle = (x) => String(x == null ? "" : x).replace(/\|/g, "\\|").replace(/\n/g, " ");
+const zelle = (x) => String(x == null ? "" : x).replace(/\\/g, "\\\\").replace(/\|/g, "\\|").replace(/\n/g, " ");
 const tabelle = (kopf, zeilen) => [`| ${kopf.join(" | ")} |`, `|${kopf.map(() => "---").join("|")}|`, ...zeilen.map((z) => `| ${z.map(zelle).join(" | ")} |`)].join("\n");
 
 const out = [];
