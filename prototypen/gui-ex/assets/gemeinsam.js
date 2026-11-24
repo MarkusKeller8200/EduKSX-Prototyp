@@ -8,6 +8,7 @@
     { key: "fenster", buchstabe: "D", name: "Arbeitsfläche", datei: "fenster.html" },
     { key: "cockpit", buchstabe: "E", name: "Cockpit", datei: "cockpit.html" },
     { key: "tabelle", buchstabe: "F", name: "Tabelle", datei: "tabelle.html" },
+    { key: "dossier", buchstabe: "G", name: "Dossier", datei: "dossier.html" },
   ];
   // Aussehen unabhängig vom Aufbau: jede Variante lässt sich in jedem Stil zeigen
   const STILE = [
@@ -134,6 +135,7 @@
     if (!X) return liste;
     X.AUFGABEN.forEach((a) => liste.push({ art: "aufgabe", id: a.id, gruppe: "Aufgaben", titel: a.titel, neben: X.fmtRelativ(a.faellig), modul: a.modul, worte: a.text + " " + X.modul(a.modul).titel + " " + X.STATUS[a.status].text }));
     X.TERMINE.forEach((t) => liste.push({ art: "termin", id: t.id, gruppe: "Termine", titel: t.titel, neben: X.fmtRelativ(t.start), modul: t.modul, worte: "termin " + t.ort }));
+    (X.LERNENDE || []).forEach((l) => liste.push({ art: "lernende", id: l.id, gruppe: "Lernende", titel: l.name + " " + l.vorname, neben: "Klasse " + l.klasse, modul: "staffing", worte: "lernende schüler dossier " + l.klasse + " " + l.schulhaus }));
     (X.PENSEN || []).forEach((p) => liste.push({ art: "person", id: p.id, gruppe: "Personen", titel: p.name + " " + p.vorname, neben: p.funktion, modul: "staffing", worte: p.klassen + " " + p.faecher + " pensum lehrperson" }));
     X.MODULE.forEach((m) => liste.push({ art: "modul", id: m.key, gruppe: "Module", titel: m.titel, neben: m.name, modul: m.key, worte: m.kurz + " modul " + m.name }));
     return liste;

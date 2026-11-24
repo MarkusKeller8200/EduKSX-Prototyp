@@ -36,6 +36,10 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-24 – GUI-EX 0.4.0: Variante G Dossier mit Tabs, #95
+
+Tab-Konzept einer bestehenden Schulverwaltungs-Software bewertet (Bildschirmfotos nur konzeptionell, nach der Bewertung gelöscht, nichts ins Repo). Übernommen als Variante G mit Regeln (höchstens 8 Tabs, «Zuletzt», Link teilbar, Kürzel) und Datenschutz (geschützte Felder je Rolle, Anzeigen protokolliert). Konzept: Dossier-Ansicht, Tab-Regeln, E6/E7 offen.
+
 ### Sitzung 2026-11-24 – GUI-EX 0.3.0: Tabelle, Suche, Konzept, #93
 
 Entscheid 24.11.2026: Die Konzepte A–E eignen sich für verschiedene Arten von Arbeit (A nicht für Tabellen). Neu Variante F Tabelle, Suche aus A per Ctrl/⌘ K in allen Varianten, Konzept `docs/KONZEPT-OBERFLAECHE.md` mit weiteren Stilvorschlägen (Hoher Kontrast, Aurora, Neubrutalismus, Papier, Spielerisch) und Entscheiden E1–E5 (offen).

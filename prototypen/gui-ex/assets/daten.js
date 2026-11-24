@@ -82,6 +82,27 @@
     ["P14", "Graf", "Elias", "Fachlehrperson", "1a–3b", "Textiles und Technisches Gestalten", 16, "offen"],
   ].map(([id, name, vorname, funktion, klassen, faecher, lektionen, status]) => ({ id, name, vorname, funktion, klassen, faecher, lektionen, status }));
 
+  // Lernende für Variante G – frei erfunden; heikle Angaben sind Platzhalter (Testwerte), keine echten Nummern
+  const LERNENDE = [
+    ["L01", "Aebi", "Mara", "1a", "w", "2013-03-14", "Deutsch", "Aebi Ruth", 2, 0, 1],
+    ["L02", "Bachmann", "Nico", "1a", "m", "2013-07-02", "Deutsch", "Bachmann Petra", 1, 1, 0],
+    ["L03", "Caduff", "Lina", "1b", "w", "2012-11-23", "Rätoromanisch", "Caduff Gion", 3, 0, 2],
+    ["L04", "Dubois", "Elio", "1b", "m", "2013-01-30", "Französisch", "Dubois Claire", 0, 0, 0],
+    ["L05", "Egli", "Jana", "2a", "w", "2012-05-09", "Deutsch", "Egli Markus", 4, 2, 1],
+    ["L06", "Fischer", "Tim", "2a", "m", "2012-09-17", "Deutsch", "Fischer Anna", 1, 0, 0],
+    ["L07", "Gasser", "Ella", "2b", "w", "2012-02-28", "Italienisch", "Gasser Luca", 2, 0, 3],
+    ["L08", "Hofer", "Max", "2b", "m", "2011-12-05", "Deutsch", "Hofer Sandra", 0, 1, 0],
+    ["L09", "Iten", "Sofia", "3a", "w", "2011-06-21", "Spanisch", "Iten Carlos", 5, 0, 1],
+    ["L10", "Jost", "Liam", "3a", "m", "2011-04-11", "Deutsch", "Jost Karin", 2, 0, 0],
+    ["L11", "Kunz", "Anna", "3b", "w", "2011-08-30", "Englisch", "Kunz Peter", 1, 0, 2],
+    ["L12", "Lang", "Jonas", "3b", "m", "2011-10-03", "Deutsch", "Lang Monika", 3, 1, 0],
+  ].map(([id, name, vorname, klasse, geschlecht, geburt, sprache, kontakt, dokumente, aufgaben, notizen]) => ({
+    id, name, vorname, klasse, geschlecht, geburt, sprache, kontakt, dokumente, aufgaben, notizen,
+    schulhaus: ["1a", "1b", "2a"].includes(klasse) ? "Schulhaus Nord" : "Schulhaus See",
+    status: ["L04", "L08"].includes(id) ? "In Bearbeitung" : "Aktiv",
+  }));
+  const KLASSENLEHRPERSON = { "1a": "P01", "1b": "P03", "2a": "P05", "2b": "P06", "3a": "P09", "3b": "P10" };
+
   const PERSON = { name: "Alex Beispiel", rolle: "Leitung Fachstelle ICT", kuerzel: "AB", schule: "Musterschule Seetal" };
 
   const STATUS = {
@@ -108,5 +129,5 @@
   // Fortschritt einer Aufgabe in Prozent aus ihren Teilschritten
   const fortschritt = (a) => a.status === "erledigt" ? 100 : Math.round(100 * a.teil.filter((t) => t[1]).length / a.teil.length);
 
-  window.EX = { PENSEN, VOLLPENSUM, WOCHE_ZEIT, SOLL_TAG, heute, MODULE, AUFGABEN, TERMINE, MELDUNGEN, PERSON, STATUS, fmtZeit, fmtDatum, fmtRelativ, esc, modul, fortschritt };
+  window.EX = { LERNENDE, KLASSENLEHRPERSON, PENSEN, VOLLPENSUM, WOCHE_ZEIT, SOLL_TAG, heute, MODULE, AUFGABEN, TERMINE, MELDUNGEN, PERSON, STATUS, fmtZeit, fmtDatum, fmtRelativ, esc, modul, fortschritt };
 })();

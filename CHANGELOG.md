@@ -8,6 +8,10 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **GUI-EX 0.4.0 – Variante G Dossier mit Tabs (24.11.2026, #95):** geöffnete Dossiers als Tabs (höchstens 8, «Zuletzt»,
+  anheften, mittlere Maustaste, Alt+1–9, Tabs in der Adresse, Kürzel statt Namen, schmal als Liste), Dossier mit
+  Kernangaben und Abschnitten, geschützte Felder je Rolle mit Protokollhinweis; Konzept um Dossier-Ansicht, Tab-Regeln
+  und Datenschutz ergänzt (E6, E7).
 - **GUI-EX 0.3.0 – Tabelle, Suche überall, Konzept (24.11.2026, #93):** Variante F Tabelle (Pensen und Aufgaben direkt
   in der Zelle bearbeiten, Tastatur, Sammeländerung, Summen, Prüfhinweise, Rückgängig), Suchfenster aus A per
   Ctrl/⌘ K in B–F, Konzept `docs/KONZEPT-OBERFLAECHE.md` (Ansichten je Art der Arbeit, wählbare Stile, Entscheide E1–E5).
