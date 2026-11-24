@@ -26,19 +26,19 @@
 
   // status: offen | heute | ueberfaellig | erledigt  (immer mit Symbol und Text anzeigen)
   const AUFGABEN = [
-    { id: "A1", modul: "sign", titel: "Arbeitsvertrag Lehrperson Mittelstufe signieren", faellig: tag(0, 12), status: "heute", prio: "hoch",
+    { id: "A1", modul: "sign", titel: "Arbeitsvertrag Lehrperson Mittelstufe signieren", faellig: tag(0, 12), status: "heute", prio: "hoch", teil: [["Vertrag geprüft", true], ["Signatur Fachstelle", false], ["Signatur Schulleitung", false], ["Versiegeln und ablegen", false]],
       text: "Vertrag für die Stellvertretung ab Januar. Zweite Signatur durch die Schulleitung folgt." },
-    { id: "A2", modul: "flow", titel: "Onboarding: Konto und Gerät für neue Lehrperson", faellig: tag(1, 9), status: "offen", prio: "mittel",
+    { id: "A2", modul: "flow", titel: "Onboarding: Konto und Gerät für neue Lehrperson", faellig: tag(1, 9), status: "offen", prio: "mittel", teil: [["Personalien erfasst", true], ["Pensum bestätigt", true], ["Konto anlegen", false], ["Gerät zuteilen", false], ["Klassenteams", false]],
       text: "Schritt 3 von 7 im Ablauf «Eintritt Lehrperson»: Konto anlegen, Gerät zuteilen, Zugang Klassenteams." },
-    { id: "A3", modul: "staffing", titel: "Stellenplan Schuljahr 2027/28 prüfen", faellig: tag(3, 17), status: "offen", prio: "hoch",
+    { id: "A3", modul: "staffing", titel: "Stellenplan Schuljahr 2027/28 prüfen", faellig: tag(3, 17), status: "offen", prio: "hoch", teil: [["Klassenbildung übernommen", true], ["Pensen verteilt", true], ["Abweichung begründen", false]],
       text: "Abgleich mit den kantonalen Vorgaben zur Klassen- und Stellenplanung; Abweichung 1,5 Lektionen." },
-    { id: "A4", modul: "time", titel: "Pause vom Montag korrigieren", faellig: tag(-1, 18), status: "ueberfaellig", prio: "tief",
+    { id: "A4", modul: "time", titel: "Pause vom Montag korrigieren", faellig: tag(-1, 18), status: "ueberfaellig", prio: "tief", teil: [["Pause nachtragen", false]],
       text: "Gestempelte Pause fehlt; gesetzliche Pause wurde automatisch abgezogen." },
-    { id: "A5", modul: "codex", titel: "Änderung Personalverordnung zur Kenntnis nehmen", faellig: tag(5, 12), status: "offen", prio: "mittel",
+    { id: "A5", modul: "codex", titel: "Änderung Personalverordnung zur Kenntnis nehmen", faellig: tag(5, 12), status: "offen", prio: "mittel", teil: [["Änderungen lesen", false], ["Betroffene informieren", false]],
       text: "Neue Fassung gültig ab 1. Januar; zwei Paragrafen betreffen die Stellvertretungen." },
-    { id: "A6", modul: "flow", titel: "Jahresplanung ICT: Lizenzen verlängern", faellig: tag(9, 12), status: "offen", prio: "mittel",
+    { id: "A6", modul: "flow", titel: "Jahresplanung ICT: Lizenzen verlängern", faellig: tag(9, 12), status: "offen", prio: "mittel", teil: [["Lizenzliste prüfen", false], ["Offerte einholen", false], ["Bestellung auslösen", false]],
       text: "Wiederkehrender Termin «2 Monate vor Semesterende»." },
-    { id: "A7", modul: "sign", titel: "Datenschutz-Vereinbarung Lernplattform", faellig: tag(-3, 12), status: "erledigt", prio: "mittel",
+    { id: "A7", modul: "sign", titel: "Datenschutz-Vereinbarung Lernplattform", faellig: tag(-3, 12), status: "erledigt", prio: "mittel", teil: [["Signiert", true], ["Versiegelt", true]],
       text: "Signiert und versiegelt, abgelegt mit Suffix _sign." },
   ];
 
@@ -58,6 +58,10 @@
     { id: "M4", modul: "flow", zeit: tag(-1, 11, 30), text: "Ablauf «Eintritt Lehrperson» gestartet (7 Schritte)." },
     { id: "M5", modul: "staffing", zeit: tag(-2, 9, 0), text: "Klassenbildung 2027/28: 14 Klassen vorgeschlagen." },
   ];
+
+  // Arbeitszeit der letzten 7 Arbeitstage in Stunden (erfunden) und Soll je Tag
+  const WOCHE_ZEIT = [8.1, 8.9, 7.6, 9.2, 8.4, 8.7, 6.9];
+  const SOLL_TAG = 8.4;
 
   const PERSON = { name: "Alex Beispiel", rolle: "Leitung Fachstelle ICT", kuerzel: "AB", schule: "Musterschule Seetal" };
 
@@ -82,6 +86,8 @@
   };
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const modul = (key) => MODULE.find((m) => m.key === key);
+  // Fortschritt einer Aufgabe in Prozent aus ihren Teilschritten
+  const fortschritt = (a) => a.status === "erledigt" ? 100 : Math.round(100 * a.teil.filter((t) => t[1]).length / a.teil.length);
 
-  window.EX = { heute, MODULE, AUFGABEN, TERMINE, MELDUNGEN, PERSON, STATUS, fmtZeit, fmtDatum, fmtRelativ, esc, modul };
+  window.EX = { WOCHE_ZEIT, SOLL_TAG, heute, MODULE, AUFGABEN, TERMINE, MELDUNGEN, PERSON, STATUS, fmtZeit, fmtDatum, fmtRelativ, esc, modul, fortschritt };
 })();

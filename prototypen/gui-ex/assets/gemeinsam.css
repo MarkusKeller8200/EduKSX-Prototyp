@@ -55,3 +55,96 @@ svg[aria-hidden="true"] { flex: none; }
 .ex-dialog button.primaer { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); font-weight: 600; }
 .ex-toast { position: fixed; left: 50%; bottom: 70px; transform: translateX(-50%); z-index: 1001; background: var(--foreground); color: var(--background);
   padding: .5rem .9rem; border-radius: 8px; font: 500 14px var(--font-sans); }
+
+/* ===================================================================================================
+ * Stil-Schalter: dieselbe Variante in anderem Aussehen (html[data-stil]). Farben bleiben die CI-Werte;
+ * die Stile ändern Flächen, Tiefe, Rundung und Hintergrund. Rahmen und Schrift bleiben für den Kontrast sichtbar.
+ * =================================================================================================== */
+:root { --flaeche-schatten: var(--shadow); }
+.ex-stilmenue { position: absolute; bottom: calc(100% + 8px); right: 0; display: grid; gap: 2px; min-width: 210px; padding: 6px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 12px 34px rgb(15 23 42 / .25); }
+.ex-stilmenue[hidden] { display: none; }
+.ex-leiste .ex-stilmenue button { justify-content: flex-start; height: auto; padding: .5rem .7rem; border-radius: 10px; text-align: left; font-weight: 500; }
+.ex-leiste .ex-stilmenue button[aria-checked="true"] { background: var(--secondary); color: var(--secondary-foreground); font-weight: 650; }
+.ex-stilmenue .muster { width: 26px; height: 18px; border-radius: 6px; border: 1px solid var(--border); flex: none; }
+.ex-stilmenue small { display: block; font-weight: 400; color: var(--muted-foreground); font-size: .72rem; margin-top: 2px; }
+.ex-leiste .stilknopf { position: relative; }
+
+/* Gemeinsame Flächen und Bedienelemente aller Varianten */
+:is(html[data-stil="neo"], html[data-stil="glas"], html[data-stil="clay"]) :is(
+  .kachel:not(.stempel):not(.lila), .fenster, .treffer, .blatt .innen, .zeile, .detail, .suche input, .v-karte, .ex-dialog, .bisher,
+  .ex-leiste, .dock, .klein-hinweis, .seite table) { border-color: var(--stil-rand, var(--border)); }
+
+/* ---------- Neo-Dunkel: weiche Tiefe, Orange als leuchtender Akzent (immer dunkel) ---------- */
+html[data-stil="neo"] {
+  --background: #1f242c; --card: #232932; --muted: #1b2027; --sidebar: #1c2128; --border: #313946; --input: #3b4554;
+  --neo-licht: rgb(255 255 255 / .045); --neo-schatten: rgb(0 0 0 / .5);
+  --stil-rand: rgb(255 255 255 / .06);
+  --flaeche-schatten: 9px 9px 20px var(--neo-schatten), -6px -6px 16px var(--neo-licht);
+  --radius: 18px;
+}
+html[data-stil="neo"] body { background: var(--background) !important; }
+html[data-stil="neo"] :is(.tisch, .flaeche, .seiten) { background-color: var(--background); }
+html[data-stil="neo"] .tisch { background-image: none; }
+html[data-stil="neo"] :is(.kachel:not(.stempel):not(.lila), .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .ex-leiste, .dock, .seite table, .symbol .ico, .bahnkopf .ico, .kachel .ico) {
+  background: var(--card); box-shadow: var(--flaeche-schatten); }
+html[data-stil="neo"] .kachel { border-radius: 26px; }
+html[data-stil="neo"] :is(.suche input, .tipp, .knopf, .segment, .zurueck, .filter label, .zeile button:not(.primaer), .koerper .knopf:not(.primaer), .titelbalken .tasten button, .blatt .zu, .detail .zu, .detail .knoepfe button:not(.primaer), .blatt .aktionen button:not(.primaer), .dock button, .ex-dialog textarea, .ex-skala label) {
+  background: var(--background); border-color: var(--stil-rand); box-shadow: inset 4px 4px 9px var(--neo-schatten), inset -3px -3px 8px var(--neo-licht); }
+html[data-stil="neo"] :is(.dock button[aria-pressed="true"], .ex-leiste a[aria-current="page"], .segment button[aria-pressed="true"], .task .offen button.vorn) {
+  background: var(--brand-orange); color: #222222; box-shadow: 0 0 18px rgb(255 138 0 / .45); }
+html[data-stil="neo"] :is(.primaer, .btn.primaer, .zeile button.primaer, .blatt .aktionen button.primaer, .detail .knoepfe button.primaer, .koerper .knopf.primaer, .ex-dialog button.primaer) {
+  box-shadow: 0 0 20px rgb(255 138 0 / .45), 0 4px 10px rgb(0 0 0 / .4); }
+html[data-stil="neo"] :is(.suche input:focus) { border-color: var(--brand-orange); box-shadow: inset 4px 4px 9px var(--neo-schatten), 0 0 0 3px rgb(255 138 0 / .35); }
+html[data-stil="neo"] :is(.ecke, .tagkopf, .bahnkopf, .senkrecht h3) { background: var(--background); }
+html[data-stil="neo"] :is(.tagkopf.we, .zelle.we) { background: #1b2027; }
+html[data-stil="neo"] .eintrag { box-shadow: 4px 4px 10px var(--neo-schatten); }
+html[data-stil="neo"] .jetzt { box-shadow: 0 0 12px rgb(255 138 0 / .8); }
+html[data-stil="neo"] .kachel.stempel { box-shadow: 0 0 34px rgb(255 138 0 / .35), 9px 9px 20px var(--neo-schatten); }
+html[data-stil="neo"] .fenster .titelbalken { background: var(--card); }
+
+/* ---------- Glas hell: durchscheinende Flächen auf Pastellverlauf ---------- */
+html[data-stil="glas"] {
+  --glas: rgb(255 255 255 / .6); --glas-stark: rgb(255 255 255 / .78); --stil-rand: rgb(255 255 255 / .85);
+  --muted: rgb(255 255 255 / .38); --sidebar: rgb(255 255 255 / .45); --radius: 18px;
+  --flaeche-schatten: 0 10px 34px rgb(60 50 130 / .13);
+}
+html.dark[data-stil="glas"] { --glas: rgb(30 36 52 / .55); --glas-stark: rgb(30 36 52 / .8); --stil-rand: rgb(255 255 255 / .12); --muted: rgb(255 255 255 / .05); --sidebar: rgb(20 24 36 / .5); }
+html[data-stil="glas"] body { background: linear-gradient(135deg, #c8d5f6 0%, #e4dbf8 42%, #f9dfe8 72%, #fde6d2 100%) fixed !important; }
+html.dark[data-stil="glas"] body { background: linear-gradient(135deg, #18213d 0%, #2a1f42 50%, #3b2418 100%) fixed !important; }
+html[data-stil="glas"] :is(.tisch, .flaeche) { background-color: transparent; }
+html[data-stil="glas"] .tisch { background-image: none; }
+html[data-stil="glas"] :is(.kachel:not(.stempel):not(.lila), .fenster, .treffer, .zeile, .v-karte, .bisher, .ex-leiste, .dock, .seite table, .suche input, .klein-hinweis, .symbol .ico, .tipp, .filter label, .segment, .knopf, .zurueck) {
+  background: var(--glas); -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5); box-shadow: var(--flaeche-schatten); }
+html[data-stil="glas"] :is(.blatt .innen, .detail, .ex-dialog, .ex-stilmenue) { background: var(--glas-stark); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); }
+html[data-stil="glas"] :is(.ecke, .tagkopf, .bahnkopf, .senkrecht h3, .leiste-oben, .filter, .task) { background: rgb(255 255 255 / .35); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+html.dark[data-stil="glas"] :is(.ecke, .tagkopf, .bahnkopf, .senkrecht h3, .leiste-oben, .filter, .task) { background: rgb(20 24 36 / .45); }
+html[data-stil="glas"] :is(.tagkopf.we, .zelle.we) { background: rgb(255 255 255 / .2); }
+html[data-stil="glas"] .kachel { border-radius: 28px; }
+html[data-stil="glas"] .kachel.lila { background: linear-gradient(140deg, #5b3a8f, #3f5fa8); }
+html[data-stil="glas"] .fenster .titelbalken { background: rgb(255 255 255 / .35); }
+html.dark[data-stil="glas"] .fenster .titelbalken { background: rgb(255 255 255 / .04); }
+html[data-stil="glas"] .eintrag { -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+
+/* ---------- Clay: weiche, plastische Formen in Pastell ---------- */
+html[data-stil="clay"] {
+  --background: #eef0fa; --muted: #e6e9f6; --sidebar: #eceefa; --radius: 24px; --stil-rand: transparent;
+  --clay: 12px 14px 28px rgb(84 92 150 / .2), inset -5px -7px 12px rgb(84 92 150 / .12), inset 5px 5px 10px rgb(255 255 255 / .9);
+  --clay-klein: 5px 6px 12px rgb(84 92 150 / .2), inset -3px -4px 7px rgb(84 92 150 / .12), inset 3px 3px 6px rgb(255 255 255 / .9);
+}
+html.dark[data-stil="clay"] {
+  --background: #1d2130; --muted: #242a3b; --sidebar: #1d2130; --card: #2a3044;
+  --clay: 12px 14px 28px rgb(0 0 0 / .45), inset -5px -7px 12px rgb(0 0 0 / .25), inset 5px 5px 10px rgb(255 255 255 / .07);
+  --clay-klein: 5px 6px 12px rgb(0 0 0 / .4), inset -3px -4px 7px rgb(0 0 0 / .25), inset 3px 3px 6px rgb(255 255 255 / .07);
+}
+html[data-stil="clay"] body { background: var(--background) !important; }
+html[data-stil="clay"] .tisch { background-color: var(--background); background-image: none; }
+html[data-stil="clay"] :is(.kachel, .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .ex-leiste, .dock, .seite table, .klein-hinweis) {
+  box-shadow: var(--clay); border-radius: 28px; }
+html[data-stil="clay"] :is(.kachel:not(.stempel):not(.lila)) { background: var(--m-soft, var(--card)); }
+html[data-stil="clay"] :is(.suche input, .tipp, .knopf, .segment, .zurueck, .filter label, .zeile button, .koerper .knopf, .blatt .zu, .detail .zu, .detail .knoepfe button, .blatt .aktionen button, .symbol .ico, .eintrag, .status, .ex-dialog button, .ex-skala label) {
+  box-shadow: var(--clay-klein); border-color: transparent; }
+html[data-stil="clay"] .eintrag { border-radius: 14px; }
+html[data-stil="clay"] .fenster .titelbalken { background: transparent; }
+html[data-stil="clay"] :is(.ecke, .tagkopf, .bahnkopf, .senkrecht h3) { background: var(--background); }
+html[data-stil="clay"] .zelle, html[data-stil="clay"] .tagkopf { border-color: rgb(84 92 150 / .12); }

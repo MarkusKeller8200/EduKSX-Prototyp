@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="de-CH" class="dark" data-stil="neo">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>EduKSX-Experience – E Cockpit (Prototyp)</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/eduksx.css">
+  <link rel="stylesheet" href="assets/gemeinsam.css">
+  <style>
+    /* Variante E: fester Stil Neo-Dunkel (weiche Tiefe, Orange als leuchtender Akzent). Werte aus eduksx.css/gemeinsam.css. */
+    body { background: var(--background); min-height: 100vh; padding-bottom: 90px; }
+    .cp { max-width: 1240px; margin: 0 auto; padding: 1.25rem; display: grid; gap: 22px; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+    .cp > * { min-width: 0; }
+    .flaeche { background: var(--card); border-radius: 26px; padding: 20px 22px; box-shadow: var(--flaeche-schatten); border: 1px solid var(--stil-rand); }
+    .vertieft { background: var(--background); box-shadow: inset 5px 5px 11px var(--neo-schatten), inset -4px -4px 10px var(--neo-licht); border: 1px solid var(--stil-rand); }
+    .ueber { font-size: .72rem; text-transform: uppercase; letter-spacing: .09em; color: var(--muted-foreground); font-weight: 600; margin: 0 0 .9rem; }
+    /* Kopf */
+    .kopf-cp { grid-column: 1 / -1; display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; }
+    .kopf-cp .marke svg { width: 30px; height: 30px; }
+    .kopf-cp h1 { margin: 0; font-size: 1.1rem; }
+    .rundknopf { width: 42px; height: 42px; border-radius: 999px; display: inline-grid; place-items: center; color: var(--foreground); background: var(--card); box-shadow: var(--flaeche-schatten); border: 1px solid var(--stil-rand); }
+    .rundknopf:active { box-shadow: inset 4px 4px 8px var(--neo-schatten), inset -3px -3px 7px var(--neo-licht); }
+    .kopf-cp .gruss { margin-left: auto; text-align: right; }
+    .kopf-cp .gruss b { display: block; font-size: 1.05rem; }
+    .kopf-cp .gruss span { font-size: .82rem; color: var(--muted-foreground); }
+    .avatar { width: 46px; height: 46px; border-radius: 999px; display: grid; place-items: center; font-weight: 700; background: var(--violet-soft); color: var(--violet-text); box-shadow: var(--flaeche-schatten); }
+    /* Stempel */
+    .stempel { grid-column: span 4; grid-row: span 2; display: grid; justify-items: center; align-content: center; gap: 16px; }
+    .zifferblatt { position: relative; width: min(250px, 100%); aspect-ratio: 1; border-radius: 999px; display: grid; place-items: center; }
+    .zifferblatt svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+    .zifferblatt .innen { width: 70%; aspect-ratio: 1; border-radius: 999px; display: grid; place-items: center; text-align: center; background: var(--card); box-shadow: var(--flaeche-schatten); border: 1px solid var(--stil-rand); }
+    .zifferblatt .zeit { font-size: 2.6rem; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+    .zifferblatt .klein { font-size: .78rem; color: var(--muted-foreground); }
+    .glow { filter: drop-shadow(0 0 8px rgb(255 138 0 / .75)); }
+    .wahl { display: flex; gap: 6px; padding: 6px; border-radius: 999px; width: 100%; }
+    .wahl button { flex: 1; min-height: 44px; border: 0; border-radius: 999px; background: transparent; color: var(--foreground); font: 600 .9rem var(--font-sans); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: .4rem; }
+    .wahl button[aria-pressed="true"] { background: var(--brand-orange); color: #222222; box-shadow: 0 0 18px rgb(255 138 0 / .5); }
+    .zeile-info { display: flex; justify-content: space-between; width: 100%; font-size: .85rem; color: var(--muted-foreground); }
+    .zeile-info b { color: var(--foreground); font-variant-numeric: tabular-nums; }
+    /* Ringe */
+    .ringe { grid-column: span 8; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; align-content: start; }
+    .ringe .ueber { grid-column: 1 / -1; margin: 0; }
+    .ringkarte { display: grid; justify-items: center; gap: 8px; padding: 16px 10px; border-radius: 22px; text-align: center; cursor: pointer; font: inherit; color: inherit; background: var(--card); box-shadow: var(--flaeche-schatten); border: 1px solid var(--stil-rand); }
+    .ringkarte:active { box-shadow: inset 4px 4px 8px var(--neo-schatten), inset -3px -3px 7px var(--neo-licht); }
+    .ringkarte .r { position: relative; width: 112px; height: 112px; }
+    .ringkarte svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .ringkarte .w { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 700; font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+    .ringkarte .t { font-size: .85rem; font-weight: 600; }
+    .ringkarte .u { font-size: .75rem; color: var(--muted-foreground); }
+    /* Verlauf */
+    .verlauf { grid-column: span 7; }
+    .verlauf .oben { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+    .verlauf .saldo { margin-left: auto; text-align: right; }
+    .verlauf .saldo b { font-size: 1.7rem; font-variant-numeric: tabular-nums; }
+    .verlauf .saldo span { display: block; font-size: .8rem; color: var(--success); }
+    .verlauf svg { width: 100%; height: 190px; display: block; margin-top: .5rem; }
+    .verlauf .achse { display: flex; justify-content: space-between; font-size: .75rem; color: var(--muted-foreground); padding: 0 4px; }
+    /* Schalter */
+    .schalter { grid-column: span 5; display: grid; gap: 14px; align-content: start; }
+    .schalter .ueber { margin: 0; }
+    .sw { display: flex; align-items: center; gap: .9rem; padding: 12px 14px; border-radius: 18px; }
+    .sw .text { flex: 1; } .sw .text b { display: block; font-size: .92rem; } .sw .text span { font-size: .78rem; color: var(--muted-foreground); }
+    .sw button[role="switch"] { width: 64px; height: 34px; border-radius: 999px; border: 1px solid var(--stil-rand); position: relative; cursor: pointer; flex: none;
+      background: var(--background); box-shadow: inset 4px 4px 8px var(--neo-schatten), inset -3px -3px 7px var(--neo-licht); }
+    .sw button[role="switch"]::after { content: ""; position: absolute; top: 4px; left: 4px; width: 24px; height: 24px; border-radius: 999px; background: #5a6678; transition: transform .2s ease, background .2s ease; }
+    .sw button[role="switch"][aria-checked="true"]::after { transform: translateX(30px); background: var(--brand-orange); box-shadow: 0 0 14px rgb(255 138 0 / .8); }
+    .sw .zustand { font-size: .75rem; font-weight: 700; min-width: 2.2rem; color: var(--muted-foreground); }
+    @media (prefers-reduced-motion: reduce) { .sw button[role="switch"]::after { transition: none; } }
+    /* Aufgaben */
+    .aufgaben { grid-column: 1 / -1; }
+    .aufgaben ol { grid-template-columns: repeat(auto-fit, minmax(min(520px, 100%), 1fr)); }
+    .aufgaben ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    .pille { width: 100%; display: grid; grid-template-columns: 44px 1fr auto 44px; align-items: center; gap: 12px; padding: 10px 10px 10px 12px; border-radius: 999px;
+      background: var(--card); color: var(--foreground); box-shadow: var(--flaeche-schatten); border: 1px solid var(--stil-rand); font: inherit; text-align: left; cursor: pointer; }
+    .pille .ico { width: 44px; height: 44px; border-radius: 999px; display: grid; place-items: center; background: var(--background); box-shadow: inset 3px 3px 7px var(--neo-schatten), inset -2px -2px 6px var(--neo-licht); }
+    .pille .ico svg { width: 24px; height: 24px; }
+    .pille b { display: block; font-weight: 600; font-size: .92rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pille .meta { display: flex; align-items: center; gap: .5rem; font-size: .75rem; color: var(--muted-foreground); }
+    .pille .balken { width: 90px; height: 6px; border-radius: 99px; background: var(--background); overflow: hidden; }
+    .pille .balken i { display: block; height: 100%; background: linear-gradient(90deg, var(--brand-blue), var(--brand-orange)); }
+    .pille .pfeil { width: 40px; height: 40px; border-radius: 999px; display: grid; place-items: center; color: var(--brand-blue); }
+    .pille:hover .pfeil { color: var(--foreground); }
+    .pille[aria-pressed="true"] { opacity: .55; }
+    /* Termine */
+    .termine { grid-column: span 8; }
+    .termine ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 640px) { .termine ul { grid-template-columns: 1fr; } }
+    .termine ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    .termine li { display: grid; grid-template-columns: 62px 1fr; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 16px; }
+    .termine .zt { text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .termine .zt span { display: block; font-size: .7rem; font-weight: 500; color: var(--muted-foreground); }
+    .termine b { display: block; font-size: .9rem; font-weight: 600; } .termine li > div:last-child span { font-size: .75rem; color: var(--muted-foreground); }
+    /* Module */
+    .module { grid-column: 1 / -1; display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; padding: 22px; }
+    .modulknopf { display: grid; justify-items: center; gap: 8px; width: 96px; background: none; border: 0; color: var(--foreground); font: 500 .78rem var(--font-sans); cursor: pointer; }
+    .modulknopf .q { width: 64px; height: 64px; border-radius: 20px; display: grid; place-items: center; background: var(--card); box-shadow: var(--flaeche-schatten); border: 1px solid var(--stil-rand); }
+    .modulknopf .q svg { width: 34px; height: 34px; }
+    .modulknopf:active .q, .modulknopf[aria-pressed="true"] .q { box-shadow: inset 4px 4px 9px var(--neo-schatten), inset -3px -3px 8px var(--neo-licht); }
+    @media (max-width: 980px) {
+      .stempel, .ringe, .verlauf, .schalter, .aufgaben, .termine { grid-column: 1 / -1; grid-row: auto; }
+      .ringe { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 520px) { .pille { grid-template-columns: 40px 1fr 40px; } .pille .status { display: none; } .kopf-cp .gruss { display: none; } }
+  </style>
+</head>
+<body data-variante="cockpit" data-stil-fest="neo">
+  <div class="cp">
+    <header class="kopf-cp">
+      <span class="marke"><!--eduksx-icon:eduksx--></span>
+      <h1 id="titel"></h1>
+      <a class="rundknopf" href="index.html" title="Zurück zur Übersicht GUI-Experience" aria-label="Zurück zur Übersicht GUI-Experience"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
+      <div class="gruss"><b id="gruss"></b><span id="datum"></span></div>
+      <span class="avatar" id="avatar" aria-hidden="true"></span>
+    </header>
+
+    <section class="flaeche stempel" aria-labelledby="h-stempel">
+      <h2 class="ueber" id="h-stempel" style="justify-self:start">Stempeluhr</h2>
+      <div class="zifferblatt vertieft" id="zifferblatt"></div>
+      <div class="wahl vertieft" role="group" aria-label="Stempeln" id="wahl">
+        <button type="button" data-z="arbeit">▶ Kommen</button>
+        <button type="button" data-z="pause">❚❚ Pause</button>
+        <button type="button" data-z="weg">■ Gehen</button>
+      </div>
+      <div class="zeile-info"><span>Soll heute <b id="soll"></b></span><span>Gesetzl. Pause <b>0:30</b></span></div>
+    </section>
+
+    <section class="ringe" aria-labelledby="h-ringe">
+      <h2 class="ueber" id="h-ringe">Auf einen Blick</h2>
+      <div id="ringe" style="display:contents"></div>
+    </section>
+
+    <section class="flaeche termine" aria-labelledby="h-termine">
+      <h2 class="ueber" id="h-termine">Termine</h2>
+      <ul id="termine"></ul>
+    </section>
+
+    <section class="flaeche verlauf" aria-labelledby="h-verlauf">
+      <div class="oben"><h2 class="ueber" id="h-verlauf" style="margin:0">Arbeitszeit letzte 7 Tage</h2>
+        <div class="saldo"><b>+3:20 h</b><span>▲ über Soll</span></div></div>
+      <div id="kurve"></div>
+      <div class="achse" id="achse" aria-hidden="true"></div>
+    </section>
+
+    <section class="flaeche schalter" aria-labelledby="h-schalter">
+      <h2 class="ueber" id="h-schalter">Schnellschalter</h2>
+      <div id="schalter" style="display:contents"></div>
+    </section>
+
+    <section class="flaeche aufgaben" aria-labelledby="h-aufgaben">
+      <h2 class="ueber" id="h-aufgaben">Als Nächstes</h2>
+      <ol id="aufgaben"></ol>
+    </section>
+
+
+    <nav class="flaeche module" aria-label="Module" id="module"></nav>
+  </div>
+
+  <script src="assets/daten.js"></script>
+  <script src="assets/gemeinsam.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    const X = window.EX, U = window.EXUI, esc = X.esc;
+    const $ = (id) => document.getElementById(id);
+    $("titel").innerHTML = U.wortmarke("EduKSX");
+    $("avatar").textContent = X.PERSON.kuerzel;
+    $("gruss").textContent = "Hallo " + X.PERSON.name.split(" ")[0];
+    $("datum").textContent = X.heute.toLocaleDateString("de-CH", { weekday: "long", day: "numeric", month: "long" });
+    const hm = (h) => Math.floor(h) + ":" + String(Math.round((h % 1) * 60)).padStart(2, "0");
+    $("soll").textContent = hm(X.SOLL_TAG);
+
+    // Stempeluhr
+    let zustand = "arbeit";
+    const start = new Date(); start.setHours(7, 15, 0, 0);
+    if (Date.now() < start) start.setTime(Date.now() - (3 * 60 + 12) * 60000); // Demo ausserhalb der Arbeitszeit
+    const stunden = () => zustand === "weg" ? 0 : Math.max(0, (Date.now() - start) / 3600000);
+    function uhr() {
+      const h = stunden(), anteil = Math.min(1, h / X.SOLL_TAG), r = 46, u = 2 * Math.PI * r;
+      $("zifferblatt").innerHTML = `<svg viewBox="0 0 100 100" aria-hidden="true" class="glow" style="overflow:visible">
+          <circle cx="50" cy="50" r="${r}" fill="none" stroke="rgb(255 255 255 / .06)" stroke-width="5"/>
+          <circle cx="50" cy="50" r="${r}" fill="none" stroke="${zustand === "pause" ? "var(--brand-blue)" : "var(--brand-orange)"}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(u * anteil).toFixed(1)} ${u.toFixed(1)}"/></svg>
+        <div class="innen" role="img" aria-label="${zustand === "weg" ? "Ausgestempelt" : (zustand === "pause" ? "Pause, " : "Arbeitszeit ") + hm(h) + " Stunden, " + Math.round(anteil * 100) + " Prozent des Tagessolls"}">
+          <div aria-hidden="true"><div class="klein">${zustand === "weg" ? "Ausgestempelt" : zustand === "pause" ? "Pause läuft" : "Arbeitszeit"}</div>
+          <div class="zeit">${zustand === "weg" ? "–:––" : hm(h)}</div><div class="klein">${Math.round(anteil * 100)} % vom Soll</div></div></div>`;
+      $("wahl").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.z === zustand));
+    }
+    $("wahl").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-z]"); if (!b) return;
+      zustand = b.dataset.z; uhr(); U.toast(b.textContent.replace(/^\S+\s/, "") + " " + X.fmtZeit(new Date()));
+    });
+    uhr(); setInterval(uhr, 30000);
+
+    // Ringe
+    function ring(werte, mitte) {
+      const r = 42, u = 2 * Math.PI * r;
+      let versatz = 0;
+      const boegen = werte.map(([anteil, farbe]) => { const l = u * anteil; const s = `<circle cx="50" cy="50" r="${r}" fill="none" stroke="${farbe}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${Math.max(0, l - 4).toFixed(1)} ${u.toFixed(1)}" stroke-dashoffset="${(-versatz).toFixed(1)}"/>`; versatz += l; return s; }).join("");
+      return `<span class="r"><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="${r}" fill="none" stroke="rgb(0 0 0 / .35)" stroke-width="9"/>${boegen}</svg><span class="w" aria-hidden="true">${mitte}</span></span>`;
+    }
+    function ringe() {
+      const auf = X.AUFGABEN, erl = auf.filter((a) => a.status === "erledigt").length;
+      const zuSign = auf.filter((a) => a.modul === "sign" && a.status !== "erledigt").length;
+      const ueber = auf.filter((a) => a.status === "ueberfaellig").length;
+      const karten = [
+        { key: "staffing", t: "Stellenplan", u: "98,5 % belegt", label: "Stellenplan zu 98,5 Prozent belegt", html: ring([[.985, "var(--brand-violet)"]], "98%") },
+        { key: "aufgaben", t: "Aufgaben", u: `${erl} von ${auf.length} erledigt · ${ueber} überfällig`, label: `${erl} von ${auf.length} Aufgaben erledigt, ${ueber} überfällig`,
+          html: ring([[erl / auf.length, "var(--success)"], [ueber / auf.length, "var(--destructive)"]], `${erl}/${auf.length}`) },
+        { key: "sign", t: "Signieren", u: `${zuSign} warten`, label: `${zuSign} Dokumente warten auf Signatur`, html: ring([[zuSign / 4, "var(--brand-blue)"]], String(zuSign)) },
+        { key: "time", t: "Woche", u: "42:00 von 42:00 h", label: "Wochensoll erreicht", html: ring([[.62, "var(--brand-orange)"], [.25, "var(--brand-blue)"], [.1, "var(--brand-violet)"]], "100%") },
+      ];
+      $("ringe").innerHTML = karten.map((k) => `<button type="button" class="ringkarte" data-k="${k.key}" aria-label="${esc(k.t)}: ${esc(k.label)}">${k.html}<span class="t">${esc(k.t)}</span><span class="u">${esc(k.u)}</span></button>`).join("");
+      $("ringe").querySelectorAll("button").forEach((b) => b.addEventListener("click", () => U.toast(b.querySelector(".t").textContent + " öffnen (Prototyp)")));
+    }
+    ringe();
+
+    // Kurve Arbeitszeit
+    (function () {
+      const w = 600, h = 190, d = X.WOCHE_ZEIT, min = 5, max = 10;
+      const x = (i) => 10 + i * (w - 20) / (d.length - 1), y = (v) => h - 12 - (v - min) / (max - min) * (h - 30);
+      let pfad = `M${x(0)},${y(d[0])}`;
+      for (let i = 1; i < d.length; i++) { const cx = (x(i - 1) + x(i)) / 2; pfad += ` C${cx},${y(d[i - 1])} ${cx},${y(d[i])} ${x(i)},${y(d[i])}`; }
+      const fl = pfad + ` L${x(d.length - 1)},${h} L${x(0)},${h} Z`;
+      $("kurve").innerHTML = `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Arbeitszeit der letzten 7 Tage: ${d.map((v) => hm(v)).join(", ")} Stunden; Soll ${hm(X.SOLL_TAG)}">
+        <defs><linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#32b8f2" stop-opacity=".45"/><stop offset="1" stop-color="#32b8f2" stop-opacity="0"/></linearGradient>
+        <linearGradient id="li" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#32b8f2"/><stop offset="1" stop-color="#ff8a00"/></linearGradient></defs>
+        <line x1="0" x2="${w}" y1="${y(X.SOLL_TAG)}" y2="${y(X.SOLL_TAG)}" stroke="rgb(255 255 255 / .25)" stroke-dasharray="6 6"/>
+        <text x="${w - 6}" y="${y(X.SOLL_TAG) - 6}" text-anchor="end" fill="#aab6c7" font-size="12">Soll ${hm(X.SOLL_TAG)}</text>
+        <path d="${fl}" fill="url(#fl)"/><path d="${pfad}" fill="none" stroke="url(#li)" stroke-width="3.5" stroke-linecap="round" style="filter:drop-shadow(0 0 6px rgb(50 184 242 / .7))"/>
+        <circle cx="${x(d.length - 1)}" cy="${y(d[d.length - 1])}" r="6" fill="#ff8a00" style="filter:drop-shadow(0 0 6px rgb(255 138 0 / .9))"/></svg>`;
+      const tage = []; for (let i = d.length - 1; i >= 0; i--) { const t = new Date(X.heute); t.setDate(t.getDate() - i); tage.push(i === 0 ? "heute" : t.toLocaleDateString("de-CH", { weekday: "short" })); }
+      $("achse").innerHTML = tage.map((t) => `<span>${t}</span>`).join("");
+    })();
+
+    // Schnellschalter
+    const SCHALTER = [
+      ["Homeoffice", "Buchungsart beim nächsten Stempeln", false],
+      ["Fokuszeit", "Meldungen bis 12:00 stumm", true],
+      ["Erinnerungen", "Fristen einen Tag vorher melden", true],
+    ];
+    $("schalter").innerHTML = SCHALTER.map(([t, u, an], i) => `<div class="sw vertieft"><div class="text"><b id="sw${i}">${t}</b><span>${u}</span></div><span class="zustand" aria-hidden="true">${an ? "Ein" : "Aus"}</span><button type="button" role="switch" aria-checked="${an}" aria-labelledby="sw${i}"></button></div>`).join("");
+    $("schalter").querySelectorAll('[role="switch"]').forEach((b) => b.addEventListener("click", () => {
+      const an = b.getAttribute("aria-checked") !== "true"; b.setAttribute("aria-checked", an);
+      b.previousElementSibling.textContent = an ? "Ein" : "Aus";
+    }));
+
+    // Aufgaben als Pillen
+    function aufgaben() {
+      const rang = { ueberfaellig: 0, heute: 1, offen: 2, erledigt: 3 };
+      const liste = [...X.AUFGABEN].sort((a, b) => rang[a.status] - rang[b.status] || a.faellig - b.faellig).slice(0, 5);
+      $("aufgaben").innerHTML = liste.map((a) => {
+        const m = X.modul(a.modul), f = X.fortschritt(a);
+        return `<li><button type="button" class="pille" data-id="${esc(a.id)}" aria-pressed="${a.status === "erledigt"}" aria-label="${esc(a.titel)}, ${esc(X.STATUS[a.status].text)}, ${f} Prozent, fällig ${esc(X.fmtRelativ(a.faellig))}">
+          <span class="ico">${m.icon}</span>
+          <span style="min-width:0"><b>${esc(a.titel)}</b><span class="meta"><span class="balken"><i style="width:${f}%"></i></span>${f}% · ${esc(X.fmtRelativ(a.faellig))}</span></span>
+          <span class="status-wrap">${U.statusChip(a.status)}</span>
+          <span class="pfeil" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span></button></li>`;
+      }).join("");
+      $("aufgaben").querySelectorAll(".pille").forEach((b) => b.addEventListener("click", () => {
+        const a = X.AUFGABEN.find((x) => x.id === b.dataset.id);
+        U.toast(a.titel.slice(0, 40) + " … in " + X.modul(a.modul).titel + " öffnen (Prototyp)");
+      }));
+    }
+    aufgaben();
+
+    // Termine
+    $("termine").innerHTML = X.TERMINE.slice(0, 4).map((t) => `<li class="vertieft"><div class="zt">${t.ganztags ? "ganzt." : esc(X.fmtZeit(t.start))}<span>${esc(X.fmtRelativ(t.start))}</span></div><div><b>${esc(t.titel)}</b><span>${esc(X.modul(t.modul).titel)}${t.ort ? " · " + esc(t.ort) : ""}</span></div></li>`).join("");
+
+    // Module
+    $("module").innerHTML = X.MODULE.map((m) => `<button type="button" class="modulknopf" aria-pressed="false"><span class="q">${m.icon}</span>${esc(m.titel)}</button>`).join("");
+    $("module").querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+      $("module").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+      U.toast(b.textContent + " öffnen (Prototyp)");
+    }));
+  })();
+  </script>
+</body>
+</html>

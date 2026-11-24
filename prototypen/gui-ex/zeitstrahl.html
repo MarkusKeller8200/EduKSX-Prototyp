@@ -40,15 +40,23 @@
     .bahnkopf .ico svg { width: 22px; height: 22px; }
     .bahnkopf b { display: block; font-size: .9rem; } .bahnkopf span { font-size: .75rem; color: var(--muted-foreground); }
     .zelle { border-bottom: 1px solid var(--border); border-left: 1px solid var(--border); min-height: var(--bahn); }
-    .zelle.we { background: var(--muted); }
+    .zelle.we, .tagkopf.we { background-image: repeating-linear-gradient(135deg, transparent 0 7px, color-mix(in srgb, var(--muted-foreground) 14%, transparent) 7px 8px); }
     .eintrag { position: absolute; z-index: 1; height: 30px; display: flex; align-items: center; gap: .35rem; padding: 0 .6rem 0 .35rem; border-radius: 999px; font: 500 .8rem var(--font-sans);
       background: var(--m-soft); color: var(--m-text); border: 1px solid color-mix(in srgb, var(--m) 45%, transparent); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
     .eintrag:hover, .eintrag[aria-expanded="true"] { box-shadow: 0 0 0 2px var(--m); z-index: 2; }
     .eintrag .sym { width: 20px; height: 20px; border-radius: 999px; display: grid; place-items: center; background: var(--card); font-weight: 700; flex: none; font-size: .72rem; color: var(--foreground); }
     .eintrag.termin { border-radius: 6px; border-style: dashed; }
+    .eintrag.aufgabe { height: 64px; white-space: normal; flex-direction: column; align-items: stretch; justify-content: center; gap: 5px; padding: 0 .7rem 0 .8rem; border-radius: 12px;
+      background: var(--card); color: var(--foreground); border: 1px solid var(--border); box-shadow: inset 4px 0 0 var(--m), 0 2px 8px rgb(15 23 42 / .06); }
+    .eintrag.aufgabe .z1 { display: flex; align-items: flex-start; gap: .35rem; overflow: hidden; font-weight: 600; line-height: 1.2; font-size: .76rem; }
+    .eintrag.aufgabe .z1 span:last-child { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .eintrag.aufgabe .z2 { display: flex; align-items: center; gap: .45rem; font-size: .72rem; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+    .balken { flex: 1; height: 5px; border-radius: 99px; background: var(--muted); overflow: hidden; border: 1px solid var(--border); }
+    .balken i { display: block; height: 100%; background: var(--m); border-radius: 99px; }
+    .eintrag.aufgabe .sym { background: var(--m-soft); color: var(--m-text); }
     .eintrag.meldung { background: transparent; border-color: transparent; color: var(--muted-foreground); }
     .eintrag.meldung .sym { background: var(--m-soft); }
-    .eintrag.s-ueber-r { box-shadow: inset 3px 0 0 var(--destructive); }
+    .eintrag.s-ueber-r { box-shadow: inset 4px 0 0 var(--destructive), 0 2px 8px rgb(15 23 42 / .06); }
     .eintrag.erledigt { opacity: .6; text-decoration: line-through; }
     .jetzt { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--brand-orange); z-index: 4; pointer-events: none; }
     .jetzt span { position: sticky; top: 62px; display: inline-block; transform: translateX(-50%); margin-left: 1px; margin-top: 4px; white-space: nowrap; font: 700 .7rem var(--font-sans); background: var(--brand-orange); color: #222222; padding: .05rem .4rem; border-radius: 6px; }
@@ -64,6 +72,17 @@
     .detail .knoepfe { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1rem; }
     .detail .knoepfe button { font: inherit; border-radius: 8px; padding: .45rem .9rem; border: 1px solid var(--input); background: var(--card); color: var(--foreground); cursor: pointer; }
     .detail .knoepfe button.primaer { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); font-weight: 600; }
+    .ring { display: grid; place-items: center; position: relative; margin: 1rem 0 .5rem; }
+    .ring svg { width: 170px; height: 100px; }
+    .ring .wert { position: absolute; bottom: 4px; text-align: center; }
+    .ring .wert b { display: block; font-size: 1.9rem; line-height: 1; font-variant-numeric: tabular-nums; }
+    .ring .wert span { font-size: .8rem; color: var(--muted-foreground); }
+    .eigenschaften { display: grid; grid-template-columns: auto 1fr; gap: .55rem 1rem; align-items: center; margin: 1rem 0; font-size: .9rem; }
+    .eigenschaften dt { color: var(--muted-foreground); } .eigenschaften dd { margin: 0; justify-self: end; }
+    .teil { list-style: none; margin: .4rem 0 0; padding: 0; display: grid; gap: 6px; }
+    .teil label { display: flex; align-items: center; gap: .6rem; padding: .55rem .7rem; border: 1px solid var(--border); border-radius: 10px; background: var(--muted); cursor: pointer; }
+    .teil input { width: 18px; height: 18px; accent-color: var(--ring); }
+    .teil label:has(input:checked) span { text-decoration: line-through; color: var(--muted-foreground); }
     .detail .verlauf { margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem; font-size: .85rem; }
     /* schmal: senkrechter Strahl */
     .senkrecht { display: none; padding: 1rem 1.25rem 6rem; }
@@ -123,6 +142,7 @@
         ...X.MELDUNGEN.map((m) => ({ art: "meldung", id: m.id, modul: m.modul, zeit: m.zeit, titel: m.text, ref: m })),
       ].filter((e) => sichtbar.has(e.modul));
     }
+    const hoeheVon = (e) => e.art === "aufgabe" ? 70 : 36;
     const tagIndex = (d) => Math.floor((new Date(d).setHours(0, 0, 0, 0) - X.heute) / 86400000) + VOR;
     const spalte = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--spalte"));
     const bahnH = 76, kopfH = 58, links = 190;
@@ -142,11 +162,11 @@
       const eintraege = alleEintraege();
       const hoehe = {};
       bahnen.forEach((m) => {
-        // Zeilen je Bahn: Einträge am gleichen Tag stapeln
+        // Einträge am gleichen Tag stapeln: Aufgaben als Karte (70 px), Termine/Meldungen als Pille (36 px)
         const proTag = {};
-        eintraege.filter((e) => e.modul === m.key).forEach((e) => { const t = tagIndex(e.zeit); proTag[t] = (proTag[t] || 0) + 1; });
-        hoehe[m.key] = Math.max(1, ...Object.values(proTag));
-        const h = Math.max(bahnH, 16 + hoehe[m.key] * 36);
+        eintraege.filter((e) => e.modul === m.key).forEach((e) => { const t = tagIndex(e.zeit); proTag[t] = (proTag[t] || 0) + hoeheVon(e); });
+        hoehe[m.key] = Math.max(0, ...Object.values(proTag));
+        const h = Math.max(bahnH, 16 + hoehe[m.key]);
         const offen = X.AUFGABEN.filter((a) => a.modul === m.key && a.status !== "erledigt").length;
         html += `<div class="bahnkopf m-${m.farbe}" role="rowheader" style="min-height:${h}px"><span class="ico">${m.icon}</span><div><b>${esc(m.titel)}</b><span>${offen} offen</span></div></div>`;
         for (let i = 0; i < tage; i++) { const d = datum(i); html += `<div class="zelle ${d.getDay() % 6 === 0 ? "we" : ""}" style="min-height:${h}px"></div>`; }
@@ -155,23 +175,26 @@
       // Einträge absolut platzieren
       let y = kopfH;
       bahnen.forEach((m) => {
-        const h = Math.max(bahnH, 16 + hoehe[m.key] * 36);
+        const h = Math.max(bahnH, 16 + hoehe[m.key]);
         const stapel = {};
         eintraege.filter((e) => e.modul === m.key).sort((a, b) => a.zeit - b.zeit).forEach((e) => {
           const t = tagIndex(e.zeit);
           if (t < 0 || t >= tage) return;
-          const n = stapel[t] = (stapel[t] || 0) + 1;
+          const versatz = stapel[t] || 0; stapel[t] = versatz + hoeheVon(e);
           const b = document.createElement("button");
           b.type = "button";
           const st = e.art === "aufgabe" ? X.STATUS[e.ref.status] : null;
           b.className = `eintrag ${e.art} m-${m.farbe} ${st && e.ref.status === "ueberfaellig" ? "s-ueber-r" : ""} ${st && e.ref.status === "erledigt" ? "erledigt" : ""}`;
           b.style.left = (links + t * sp + 6) + "px";
-          b.style.top = (y + 8 + (n - 1) * 36) + "px";
+          b.style.top = (y + 8 + versatz) + "px";
           b.style.maxWidth = (sp - 12) + "px";
           const sym = e.art === "aufgabe" ? st.symbol : e.art === "termin" ? "◷" : "•";
           const zeit = e.art === "termin" ? (e.ref.ganztags ? "" : X.fmtZeit(e.zeit) + " ") : "";
-          b.innerHTML = `<span class="sym" aria-hidden="true">${sym}</span>${esc(zeit + e.titel)}`;
-          b.setAttribute("aria-label", `${e.art === "aufgabe" ? "Aufgabe, " + st.text : e.art === "termin" ? "Termin" : "Meldung"}: ${e.titel}, ${X.fmtDatum(e.zeit)}`);
+          if (e.art === "aufgabe") {
+            const f = X.fortschritt(e.ref);
+            b.innerHTML = `<span class="z1"><span class="sym" aria-hidden="true">${sym}</span><span>${esc(e.titel)}</span></span><span class="z2"><span class="balken" aria-hidden="true"><i style="width:${f}%"></i></span>${f}%</span>`;
+          } else b.innerHTML = `<span class="sym" aria-hidden="true">${sym}</span>${esc(zeit + e.titel)}`;
+          b.setAttribute("aria-label", `${e.art === "aufgabe" ? "Aufgabe, " + st.text + ", " + X.fortschritt(e.ref) + " Prozent" : e.art === "termin" ? "Termin" : "Meldung"}: ${e.titel}, ${X.fmtDatum(e.zeit)}`);
           b.setAttribute("aria-expanded", "false"); b.title = e.titel;
           b.addEventListener("click", () => detail(e, b));
           s.appendChild(b);
@@ -202,9 +225,17 @@
       b.setAttribute("aria-expanded", "true"); ausloeser = b;
       const m = X.modul(e.modul);
       let inhalt = "";
-      if (e.art === "aufgabe") inhalt = `<p>${U.statusChip(e.ref.status)}</p><p class="muted">Fällig ${esc(X.fmtDatum(e.zeit))}, ${esc(X.fmtZeit(e.zeit))}</p><p>${esc(e.ref.text)}</p>
+      if (e.art === "aufgabe") {
+        const f = X.fortschritt(e.ref), r = 70, u = Math.PI * r;
+        inhalt = `<div class="ring m-${m.farbe}" role="img" aria-label="${f} Prozent erledigt"><svg viewBox="0 0 170 100" aria-hidden="true">
+            <path d="M15 90 A70 70 0 0 1 155 90" fill="none" stroke="var(--muted)" stroke-width="14" stroke-linecap="round"/>
+            <path d="M15 90 A70 70 0 0 1 155 90" fill="none" stroke="var(--m)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${(u * f / 100).toFixed(1)} ${u.toFixed(1)}"/></svg>
+            <div class="wert"><b>${f}%</b><span>erledigt</span></div></div>
+          <dl class="eigenschaften"><dt>Status</dt><dd>${U.statusChip(e.ref.status)}</dd><dt>Fällig</dt><dd>${esc(X.fmtDatum(e.zeit))}, ${esc(X.fmtZeit(e.zeit))}</dd><dt>Priorität</dt><dd>${esc(e.ref.prio)}</dd></dl>
+          <p>${esc(e.ref.text)}</p>
+          <b>Teilschritte</b><ul class="teil">${e.ref.teil.map((t, i) => `<li><label><input type="checkbox" data-teil="${i}" ${t[1] ? "checked" : ""}><span>${esc(t[0])}</span></label></li>`).join("")}</ul>
         <div class="knoepfe">${e.ref.status !== "erledigt" ? `<button class="primaer" type="button" data-tun="erledigt">Erledigt</button><button type="button" data-tun="schieben">+1 Tag</button>` : ""}<button type="button">In ${esc(m.titel)} öffnen</button></div>`;
-      else if (e.art === "termin") inhalt = `<p class="muted">${esc(X.fmtDatum(e.zeit))}${e.ref.ganztags ? ", ganztags" : ", " + esc(X.fmtZeit(e.ref.start)) + "–" + esc(X.fmtZeit(e.ref.ende))}${e.ref.ort ? " · " + esc(e.ref.ort) : ""}</p><div class="knoepfe"><button class="primaer" type="button">Ablauf dazu anzeigen</button></div>`;
+      } else if (e.art === "termin") inhalt = `<p class="muted">${esc(X.fmtDatum(e.zeit))}${e.ref.ganztags ? ", ganztags" : ", " + esc(X.fmtZeit(e.ref.start)) + "–" + esc(X.fmtZeit(e.ref.ende))}${e.ref.ort ? " · " + esc(e.ref.ort) : ""}</p><div class="knoepfe"><button class="primaer" type="button">Ablauf dazu anzeigen</button></div>`;
       else inhalt = `<p class="muted">${esc(X.fmtDatum(e.zeit))}, ${esc(X.fmtZeit(e.zeit))}</p>`;
       const verlauf = X.MELDUNGEN.filter((x) => x.modul === e.modul && x.id !== e.id).slice(0, 3);
       $("detail").innerHTML = `<button class="zu" type="button" aria-label="Details schliessen">×</button>
@@ -213,6 +244,14 @@
       $("detail").classList.add("offen"); $("detail").setAttribute("aria-hidden", "false");
       $("detail").querySelector(".zu").addEventListener("click", zu);
       $("detail").querySelector(".zu").focus();
+      $("detail").querySelectorAll("[data-teil]").forEach((k) => k.addEventListener("change", () => {
+        e.ref.teil[+k.dataset.teil][1] = k.checked;
+        const alle = e.ref.teil.every((t) => t[1]);
+        if (alle) { e.ref.status = "erledigt"; U.toast("Alle Teilschritte erledigt"); }
+        else if (e.ref.status === "erledigt") e.ref.status = "offen";
+        zeichnen(); const neu = [...document.querySelectorAll(".eintrag")].find((x) => x.title === e.titel); detail(e, neu || b);
+        const wieder = $("detail").querySelector(`[data-teil="${k.dataset.teil}"]`); if (wieder) wieder.focus();
+      }));
       $("detail").querySelectorAll("[data-tun]").forEach((k) => k.addEventListener("click", () => {
         if (k.dataset.tun === "erledigt") { e.ref.status = "erledigt"; U.toast("Erledigt"); }
         else { e.ref.faellig = new Date(+e.ref.faellig + 86400000); if (e.ref.status !== "erledigt") e.ref.status = "offen"; U.toast("Um einen Tag verschoben"); }

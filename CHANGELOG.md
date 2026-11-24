@@ -13,6 +13,9 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
   Dock, Touch), C Zeitstrahl (Bahnen je Modul auf einer Zeitachse), D Arbeitsfläche (Fenster wie am Desktop);
   Variantenleiste mit Hell/Dunkel und Bewertung je Variante, Übersicht mit Vergleich. Label `prototyp:ex` und
   Meilenstein «EduKSX-Experience – GUI-Experience» in `blueprint.toml`.
+- **GUI-EX 0.2.0 – Stile und Variante E (24.11.2026, #92):** Stil-Schalter für alle Varianten (Standard, Neo-Dunkel,
+  Glas, Clay), neue Variante E Cockpit im festen Stil Neo-Dunkel, Zeitstrahl mit Fortschrittskarten, schraffiertem
+  Wochenende und Detailspalte mit Ring und Teilschritten.
 - **Prototyp EduKSX-AI – Interne KI (23.11.2026, #88):** `prototypen/interne-ki` 0.1.1 – Chat mit offenen Modellen
   (Apertus, Qwen, DeepSeek, GLM, Kimi, gpt-oss) auf dem internen KI-Server oder bei geprüften Schweizer Anbietern;
   Schutzbedarf je Unterhaltung steuert den Betriebsort, Personendaten-Prüfung vor dem Senden, Assistenten,

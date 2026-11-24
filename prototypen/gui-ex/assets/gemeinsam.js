@@ -6,17 +6,35 @@
     { key: "kacheln", buchstabe: "B", name: "Kacheln", datei: "kacheln.html" },
     { key: "zeitstrahl", buchstabe: "C", name: "Zeitstrahl", datei: "zeitstrahl.html" },
     { key: "fenster", buchstabe: "D", name: "Arbeitsfläche", datei: "fenster.html" },
+    { key: "cockpit", buchstabe: "E", name: "Cockpit", datei: "cockpit.html" },
+  ];
+  // Aussehen unabhängig vom Aufbau: jede Variante lässt sich in jedem Stil zeigen
+  const STILE = [
+    { key: "standard", name: "Standard", text: "EduKSX wie bisher", muster: "linear-gradient(#fff,#f4f6f8)" },
+    { key: "neo", name: "Neo-Dunkel", text: "weiche Tiefe, Orange leuchtet", muster: "linear-gradient(135deg,#2a313b,#1b2027)" },
+    { key: "glas", name: "Glas", text: "durchscheinend auf Pastell", muster: "linear-gradient(135deg,#c8d5f6,#f9dfe8,#fde6d2)" },
+    { key: "clay", name: "Clay", text: "weich und plastisch", muster: "linear-gradient(135deg,#ffffff,#dfe3f5)" },
   ];
   const SPEICHER = "eduksx-ex-bewertung";
 
   function lesen(k, standard) { try { const v = localStorage.getItem(k); return v === null ? standard : JSON.parse(v); } catch (e) { return standard; } }
   function schreiben(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
 
+  const html = document.documentElement;
+  const festerStil = () => document.body && document.body.dataset.stilFest;
+  let stilJetzt = lesen("eduksx-ex-stil", "standard");
   function thema(dunkel) {
-    document.documentElement.classList.toggle("dark", dunkel);
     schreiben("eduksx-ex-dunkel", dunkel);
+    anwenden();
   }
-  thema(lesen("eduksx-ex-dunkel", window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches));
+  function anwenden() {
+    const stil = festerStil() || stilJetzt;
+    html.dataset.stil = stil;
+    // Neo-Dunkel ist immer dunkel; sonst gilt die eigene Wahl
+    html.classList.toggle("dark", stil === "neo" || lesen("eduksx-ex-dunkel", window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches));
+  }
+  function stil(key) { stilJetzt = key; schreiben("eduksx-ex-stil", key); anwenden(); document.dispatchEvent(new CustomEvent("ex-stil", { detail: key })); }
+  anwenden();
 
   function toast(text) {
     const t = document.createElement("div");
@@ -66,7 +84,35 @@
       `<span class="trenner" aria-hidden="true"></span>` +
       `<button type="button" data-ex="thema" title="Hell/Dunkel umschalten" aria-label="Hell/Dunkel umschalten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>` +
       `<button type="button" data-ex="bewerten" title="Diese Variante bewerten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span class="lang">Bewerten</span></button>`;
-    nav.querySelector('[data-ex="thema"]').addEventListener("click", () => thema(!document.documentElement.classList.contains("dark")));
+    if (!festerStil()) {
+      const knopf = document.createElement("span");
+      knopf.className = "stilknopf";
+      knopf.innerHTML = `<button type="button" aria-haspopup="true" aria-expanded="false" title="Stil wählen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 2a10 10 0 1 0 0 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.3A5.7 5.7 0 0 0 22 9.7C22 5.4 17.5 2 12 2z"/></svg><span class="lang">Stil</span></button>
+        <div class="ex-stilmenue" role="menu" aria-label="Stil" hidden>${STILE.map((x) => `<button type="button" role="menuitemradio" data-stil="${x.key}" aria-checked="${x.key === stilJetzt}"><span class="muster" style="background:${x.muster}" aria-hidden="true"></span><span>${x.name}<small>${x.text}</small></span></button>`).join("")}</div>`;
+      nav.insertBefore(knopf, nav.querySelector('[data-ex="thema"]'));
+      const auf = knopf.querySelector("button"), menue = knopf.querySelector(".ex-stilmenue");
+      const zu = () => { menue.hidden = true; auf.setAttribute("aria-expanded", "false"); };
+      auf.addEventListener("click", () => { menue.hidden = !menue.hidden; auf.setAttribute("aria-expanded", String(!menue.hidden)); if (!menue.hidden) menue.querySelector('[aria-checked="true"]').focus(); });
+      menue.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-stil]"); if (!b) return;
+        stil(b.dataset.stil);
+        menue.querySelectorAll("[data-stil]").forEach((x) => x.setAttribute("aria-checked", x === b));
+        zu(); auf.focus(); toast("Stil: " + STILE.find((x) => x.key === b.dataset.stil).name);
+      });
+      menue.addEventListener("keydown", (e) => {
+        const alle = [...menue.querySelectorAll("[data-stil]")], i = alle.indexOf(document.activeElement);
+        if (e.key === "ArrowDown") { alle[(i + 1) % alle.length].focus(); e.preventDefault(); }
+        else if (e.key === "ArrowUp") { alle[(i + alle.length - 1) % alle.length].focus(); e.preventDefault(); }
+        else if (e.key === "Escape") { zu(); auf.focus(); }
+      });
+      document.addEventListener("click", (e) => { if (!knopf.contains(e.target)) zu(); });
+    }
+    const themaKnopf = nav.querySelector('[data-ex="thema"]');
+    if (festerStil() === "neo") themaKnopf.remove();
+    else themaKnopf.addEventListener("click", () => {
+      if ((festerStil() || stilJetzt) === "neo") { toast("Neo-Dunkel ist immer dunkel"); return; }
+      thema(!html.classList.contains("dark"));
+    });
     nav.querySelector('[data-ex="bewerten"]').addEventListener("click", () => bewerten(aktuell));
     document.body.appendChild(nav);
   }
@@ -81,6 +127,7 @@
     return `<span class="status ${s.klasse}"><span class="sym" aria-hidden="true">${s.symbol}</span>${s.text}</span>`;
   }
 
-  window.EXUI = { VARIANTEN, leiste, wortmarke, statusChip, toast, lesen, schreiben, SPEICHER };
+  window.EXUI = { stil, stilAktuell: () => stilJetzt, STILE, VARIANTEN, leiste, wortmarke, statusChip, toast, lesen, schreiben, SPEICHER };
+  anwenden();
   if (document.body.dataset.variante) leiste(document.body.dataset.variante);
 })();
