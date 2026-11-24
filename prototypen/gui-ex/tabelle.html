@@ -16,7 +16,7 @@
     .zurueck { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border: 1px solid var(--border); border-radius: .5rem; color: inherit; }
     .reiter { display: flex; gap: 2px; margin-left: 1rem; }
     .reiter button { font: inherit; font-size: .88rem; border: 0; background: transparent; color: var(--muted-foreground); padding: .4rem .8rem; border-radius: 8px; cursor: pointer; }
-    .reiter button[aria-selected="true"] { color: var(--foreground); background: var(--muted); font-weight: 600; box-shadow: inset 0 -2px 0 var(--brand-orange); }
+    .reiter button[aria-selected="true"] { color: var(--foreground); background: var(--muted); font-weight: 600; box-shadow: inset 0 -2px 0 var(--akzentange); }
     .kopf-t .rechts { margin-left: auto; font-size: .8rem; color: var(--muted-foreground); }
     .werkzeug { display: flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; background: var(--sidebar); }
     .werkzeug input[type="search"], .werkzeug select { font: inherit; font-size: .85rem; height: 32px; border: 1px solid var(--input); border-radius: 8px; background: var(--card); color: var(--foreground); padding: 0 .6rem; }
@@ -43,7 +43,7 @@
     .ansichten button { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: .5rem; width: 100%; padding: .42rem .6rem; border-radius: 8px; cursor: pointer; font-size: .86rem; border-left: 3px solid transparent; }
     .ansichten button:hover { background: var(--muted); }
     .ansichten button:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
-    .ansichten button[aria-current="true"] { background: var(--secondary); color: var(--secondary-foreground); border-left-color: var(--brand-orange); font-weight: 600; }
+    .ansichten button[aria-current="true"] { background: var(--secondary); color: var(--secondary-foreground); border-left-color: var(--akzent); font-weight: 600; }
     .ansichten .sym { width: 1.1em; text-align: center; font-weight: 700; }
     .ansichten .n { margin-left: auto; font-size: .74rem; min-width: 1.5rem; text-align: center; border-radius: 999px; padding: 0 .35rem; background: var(--muted); color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
     @media (max-width: 860px) { .arbeit { grid-template-columns: minmax(0, 1fr); } .ansichten { display: none; } }
@@ -92,7 +92,7 @@
     .raster tbody tr:hover td { background: color-mix(in srgb, var(--accent) 45%, var(--card)); }
     .raster tbody tr.gewaehlt td { background: var(--accent); }
     .raster td:focus { outline: 2px solid var(--ring); outline-offset: -2px; position: relative; z-index: 1; }
-    .raster td.geaendert { box-shadow: inset 3px 0 0 var(--brand-orange); }
+    .raster td.geaendert { box-shadow: inset 3px 0 0 var(--akzent); }
     .raster td.geaendert::after { content: "•"; color: var(--warning); margin-left: .3rem; font-weight: 700; }
     .raster td.bearbeiten { padding: 0; }
     .raster td.bearbeiten :is(input, select) { width: 100%; height: 34px; border: 2px solid var(--ring); border-radius: 0; font: inherit; padding: 0 .5rem; background: var(--card); color: var(--foreground); box-sizing: border-box; }

@@ -36,6 +36,10 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-24 – GUI-EX 0.6.0: Erscheinungsbild, #100
+
+Nach Bildbeispielen und eingefügter Stilliste: elf weitere Stile (umbenannt ohne Herstellernamen: Tonal, Sachlich) und Fenster «Erscheinungsbild» mit fünf Ebenen (Stil, Modus, Dichte, Akzent, Barrierefreiheit) plus Schulvorgabe. Konzept: Ebenen-Tabelle, E8 offen. Nicht gebaut: Memphis, Elegant, Editorial.
+
 ### Sitzung 2026-11-24 – GUI-EX 0.5.0: weitere Stile, Tabelle erweitert, #98
 
 Clay weniger rund (0.4.1, #97). Stile Aurora, Neubrutalismus, Papier, Spielerisch, Hoher Kontrast eingebaut (vorher nur im Konzept). Tabelle F nach Anregung einer Profi-Musiksoftware: Detailbereich oben, feste Ansichten, Mini-Grafiken, Kennzeichen, Statuszeile. Hinweis: Pages-Deploy brach zweimal mit GitHub-Fehler «Artefakt nicht gefunden» ab, erneuter Lauf half.

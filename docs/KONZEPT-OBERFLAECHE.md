@@ -1,6 +1,6 @@
 # Konzept: Oberfläche – Ansichten je Arbeit und wählbare Stile (#93)
 
-Stand: 2026-11-24 (Prototyp GUI-EX 0.5.0 / Meilenstein «EduKSX-Experience – GUI-Experience») · Status: **ENTWURF**
+Stand: 2026-11-24 (Prototyp GUI-EX 0.6.0 / Meilenstein «EduKSX-Experience – GUI-Experience») · Status: **ENTWURF**
 
 Entscheidungsgrundlage für EduKSX-UI und alle Module. Erprobt im Prototyp `prototypen/gui-ex` (#90, #92, #93, #95).
 Umgesetzt wird erst, was als Issue mit `_1 bereit` freigegeben ist.
@@ -81,17 +81,36 @@ Zusätzlich, unabhängig vom Stil:
 - **Akzentfarbe je Schule** (Mandant): eine zusätzliche Akzentfarbe neben dem EduKSX-Orange, z. B. für Kopfzeile und
   Auswahl – OFFEN (E5), Kontrast automatisch prüfen.
 
+### Erscheinungsbild in fünf unabhängigen Einstellungen (EMPFOHLEN, im Prototyp 0.6.0)
+
+Nicht alle Eigenschaften an einen Stil koppeln, sondern getrennte Ebenen von Design-Werten (Tokens):
+
+| Ebene | Zuständig für | Wer legt fest |
+|---|---|---|
+| Stil (Theme) | Formensprache, Schatten, Rahmen, Rundung, Typografie | Schule gibt Standard vor, Person darf wählen (E2) |
+| Farbmodus | Hell, Dunkel, System | Person |
+| Akzent | Akzent- bzw. Schulfarbe (Hauptknöpfe, Auswahl, Markierungen) | Schule (Mandant), ggf. Person (E5) |
+| Dichte | Abstände, Zeilenhöhen, Schriftgrösse: Kompakt / Normal / Komfortabel | Person |
+| Barrierefreiheit | erhöhter Kontrast, Animationen reduzieren, Transparenz deaktivieren | Person; wirkt über jedem Stil |
+
+Beispiel: Schulsekretariat «Swiss + Hell + Kompakt», Lernende «Cyberpunk + Dunkel + Komfortabel». Barrierefreiheit
+bleibt unabhängig vom Stil gewährleistet. Stilnamen ohne Hersteller- oder Systemnamen.
+
+Im Prototyp zusätzlich gebaut: Swiss, Tonal, Sachlich, Neumorph, Bento, Minimal, Natur, Zen, Enterprise, Cyberpunk,
+Terminal (insgesamt 20 Stile). Noch nicht gebaut: Memphis, Elegant/Premium, Editorial.
+
 ## 4. Entscheide
 
 | Nr. | Frage | Optionen | Entscheid | Status |
 |---|---|---|---|---|
-| E1 | Welche Stile werden angeboten? | nur Standard + Hoher Kontrast / 2–3 Stile zur Wahl / alle | – | OFFEN |
+| E1 | Welche Stile werden angeboten? | nur Standard + Hoher Kontrast / eine Auswahl (z. B. je Gruppe 1–2) / alle 20 | – | OFFEN |
 | E2 | Wer wählt den Stil? | jede Person im Profil / Schule legt fest / beides (Schule Vorgabe, Person darf ändern) | – | OFFEN |
 | E3 | Arbeitsfläche (D) anbieten? | gar nicht / optional ab grossem Bildschirm | – | OFFEN |
 | E4 | Startseite: Kacheln (B) oder Cockpit (E)? | B / E / B als Standard, E als Stil «Neo-Dunkel» der Startseite | – | OFFEN |
 | E5 | Akzentfarbe je Schule? | nein / ja, mit Kontrastprüfung | – | OFFEN |
 | E6 | Tabs für Dossiers? | nein / ja mit Obergrenze 8 / andere Obergrenze | – | OFFEN |
 | E7 | Welche Angaben gelten als geschützt, je Rolle? | Liste mit Datenschutz abstimmen | – | OFFEN |
+| E8 | Erscheinungsbild in fünf Ebenen übernehmen? | ja (wie Prototyp) / vereinfacht (Stil + Modus) | – | OFFEN |
 
 ## 5. Umsetzung
 
@@ -119,9 +138,11 @@ Zusätzlich, unabhängig vom Stil:
 | #93 | GUI-EX: Variante F Tabelle, Suche überall, dieses Konzept | `_3 Beta-Test` |
 | #95 | GUI-EX: Variante G Dossier mit Tabs, Dossier-Ansicht und Tab-Regeln | `_3 Beta-Test` |
 | #98 | GUI-EX: weitere Stile, Variante F mit Detailbereich, Mini-Grafiken, Statuszeile | `_3 Beta-Test` |
+| #100 | GUI-EX: elf weitere Stile, Fenster «Erscheinungsbild» mit fünf Einstellungen | `_3 Beta-Test` |
 
 ## 7. Verlauf
 
 - 2026-11-24: Konzept angelegt nach Test von GUI-EX 0.2.0; Beschluss «Konzepte je Art der Arbeit».
 - 2026-11-24: Dossier-Ansicht, Regeln für Tabs und Datenschutz in Dossiers ergänzt (G, #95); E6, E7 neu.
 - 2026-11-24: Clay weniger rund; fünf weitere Stile und erweiterte Tabelle im Prototyp (#98).
+- 2026-11-24: Erscheinungsbild in fünf Ebenen und elf weitere Stile (#100); E8 neu.

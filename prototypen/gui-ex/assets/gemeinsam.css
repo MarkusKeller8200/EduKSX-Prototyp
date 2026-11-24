@@ -14,7 +14,9 @@ svg[aria-hidden="true"] { flex: none; }
 /* Modulfarben als Akzent (nie als Schrift auf Orange) */
 .m-violet { --m: var(--brand-violet); --m-soft: var(--violet-soft); --m-text: var(--violet-text); }
 .m-blue { --m: var(--brand-blue); --m-soft: var(--accent); --m-text: var(--accent-foreground); }
-.m-orange { --m: var(--brand-orange); --m-soft: var(--secondary); --m-text: var(--secondary-foreground); }
+:root { --akzent: var(--brand-orange); --orange-soft: #fff3e5; --orange-text: #5c3200; }
+.dark { --orange-soft: #3a2a10; --orange-text: #ffd9a8; }
+.m-orange { --m: var(--brand-orange); --m-soft: var(--orange-soft); --m-text: var(--orange-text); }
 
 /* Variantenwahl: schwebende Leiste unten */
 .ex-leiste {
@@ -28,7 +30,7 @@ svg[aria-hidden="true"] { flex: none; }
   border-radius: 999px; border: 0; background: transparent; color: inherit; text-decoration: none; font: inherit; cursor: pointer;
 }
 .ex-leiste a:hover, .ex-leiste button:hover { background: var(--muted); }
-.ex-leiste a[aria-current="page"] { background: var(--secondary); color: var(--secondary-foreground); box-shadow: inset 0 -2px 0 var(--brand-orange); }
+.ex-leiste a[aria-current="page"] { background: var(--secondary); color: var(--secondary-foreground); box-shadow: inset 0 -2px 0 var(--akzente); }
 .ex-leiste .trenner { width: 1px; height: 20px; background: var(--border); margin: 0 2px; }
 .ex-leiste .lang { display: none; }
 @media (min-width: 1320px) { .ex-leiste .lang { display: inline; } }
@@ -46,7 +48,7 @@ svg[aria-hidden="true"] { flex: none; }
 .ex-skala label { flex: 1; text-align: center; border: 1px solid var(--input); border-radius: 8px; padding: .45rem 0; cursor: pointer; font-size: .85rem; }
 .ex-skala input { position: absolute; opacity: 0; pointer-events: none; }
 .ex-skala input:checked + span { font-weight: 700; }
-.ex-skala label:has(input:checked) { background: var(--secondary); border-color: var(--brand-orange); color: var(--secondary-foreground); }
+.ex-skala label:has(input:checked) { background: var(--secondary); border-color: var(--akzent); color: var(--secondary-foreground); }
 .ex-skala label:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
 .ex-dialog textarea { width: 100%; min-height: 4.5rem; border: 1px solid var(--input); border-radius: 8px; padding: .5rem; font: inherit;
   background: var(--background); color: var(--foreground); }
@@ -247,24 +249,222 @@ html[data-stil="spiel"] :is(h1, h2, .kachel .name) { font-weight: 800; }
 html[data-stil="spiel"] .symbol .ico { border-radius: 16px; border: 2px solid var(--brand-violet); }
 
 /* ---------- Hoher Kontrast: keine Transparenz, keine Schatten, deutliche Fokusrahmen ---------- */
-html[data-stil="kontrast"] {
+:is(html[data-stil="kontrast"], html[data-kontrast="an"]) {
   --background: #ffffff; --foreground: #000000; --card: #ffffff; --muted: #ffffff; --muted-foreground: #1a1a1a; --sidebar: #ffffff;
   --border: #000000; --input: #000000; --accent: #dbe9ff; --accent-foreground: #000000; --secondary: #ffd9a8; --secondary-foreground: #000000;
   --link: #0037a6; --ring: #000000; --shadow: none; --flaeche-schatten: none; --radius: 4px;
   --violet-soft: #efe6ff; --violet-text: #2c1259; --success: #0b5a26; --warning: #6e3c00; --destructive: #9b0000;
 }
-html.dark[data-stil="kontrast"] {
+:is(html.dark[data-stil="kontrast"], html.dark[data-kontrast="an"]) {
   --background: #000000; --foreground: #ffffff; --card: #000000; --muted: #000000; --muted-foreground: #f0f0f0; --sidebar: #000000;
   --border: #ffffff; --input: #ffffff; --accent: #00305c; --accent-foreground: #ffffff; --secondary: #4a2a00; --secondary-foreground: #ffffff;
   --link: #9fd3ff; --ring: #ffd400; --violet-soft: #2a1452; --violet-text: #ffffff; --success: #7dffad; --warning: #ffd37a; --destructive: #ff9e9e;
 }
-html[data-stil="kontrast"] body { background: var(--background) !important; }
-html[data-stil="kontrast"] * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; box-shadow: none !important; text-shadow: none !important; filter: none !important; }
-html[data-stil="kontrast"] :is(.tisch, .flaeche, .ansicht, .rahmen-t) { background: var(--background); background-image: none; }
-html[data-stil="kontrast"] :is(.kachel:not(.stempel):not(.lila), .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .ex-leiste, .dock, .liste, .eintrag, .symbol .ico) { background: var(--card); border: 2px solid var(--border) !important; }
-html[data-stil="kontrast"] .kachel:not(.stempel):not(.lila) .ico { background: var(--card); border: 1px solid var(--border); }
-html[data-stil="kontrast"] :focus-visible { outline: 3px solid var(--ring) !important; outline-offset: 2px !important; }
-html[data-stil="kontrast"] a { text-decoration: underline; }
-html[data-stil="kontrast"] :is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [aria-selected="true"]) { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 4px; font-weight: 700; }
-html[data-stil="kontrast"] :is(.zelle.we, .tagkopf.we) { background-image: none; }
-html[data-stil="kontrast"] .muted { color: var(--muted-foreground); }
+:is(html[data-stil="kontrast"], html[data-kontrast="an"]) body { background: var(--background) !important; }
+:is(html[data-stil="kontrast"], html[data-kontrast="an"]) * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; box-shadow: none !important; text-shadow: none !important; filter: none !important; }
+:is(html[data-stil="kontrast"], html[data-kontrast="an"]) :is(.tisch, .flaeche, .ansicht, .rahmen-t) { background: var(--background); background-image: none; }
+:is(html[data-stil="kontrast"], html[data-kontrast="an"]) :is(.kachel:not(.stempel):not(.lila), .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .ex-leiste, .dock, .liste, .eintrag, .symbol .ico) { background: var(--card); border: 2px solid var(--border) !important; }
+:is(html[data-stil="kontrast"], html[data-kontrast="an"]) .kachel:not(.stempel):not(.lila) .ico { background: var(--card); border: 1px solid var(--border); }
+:is(html[data-stil="kontrast"], html[data-kontrast="an"]) :focus-visible { outline: 3px solid var(--ring) !important; outline-offset: 2px !important; }
+:is(html[data-stil="kontrast"], html[data-kontrast="an"]) a { text-decoration: underline; }
+:is(html[data-stil="kontrast"], html[data-kontrast="an"]) :is([aria-current="page"], [aria-current="true"], [aria-pressed="true"], [aria-selected="true"]) { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 4px; font-weight: 700; }
+:is(html[data-stil="kontrast"], html[data-kontrast="an"]) :is(.zelle.we, .tagkopf.we) { background-image: none; }
+:is(html[data-stil="kontrast"], html[data-kontrast="an"]) .muted { color: var(--muted-foreground); }
+
+/* ===================================================================================================
+ * Weitere Stile (24.11.2026, #100). Hersteller-/Systemnamen werden nicht als Stilnamen verwendet.
+ * FL = Flächen, BE = Bedienelemente (gleiche Gruppen wie oben).
+ * =================================================================================================== */
+
+/* ---------- Swiss: klares Raster, präzise Typografie, viel Weissraum, reduzierte Farben ---------- */
+html[data-stil="swiss"] { --background: #ffffff; --card: #ffffff; --muted: #f4f4f4; --sidebar: #ffffff; --border: #d4d4d4; --input: #1a1a1a; --radius: 0px;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, "Inter", sans-serif; --shadow: none; --flaeche-schatten: none; }
+html.dark[data-stil="swiss"] { --background: #111111; --card: #111111; --muted: #1c1c1c; --sidebar: #111111; --border: #3a3a3a; --input: #e5e5e5; }
+html[data-stil="swiss"] body { background: var(--background) !important; letter-spacing: -.005em; }
+html[data-stil="swiss"] .tisch { background-color: var(--background); background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 48px 48px; }
+html[data-stil="swiss"] :is(.kachel, .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .liste, .ex-leiste, .dock, .klein-hinweis) {
+  border-radius: 0 !important; box-shadow: none !important; border: 0 !important; border-top: 2px solid var(--foreground) !important; }
+html[data-stil="swiss"] .kachel:not(.stempel):not(.lila) { background: var(--card); }
+html[data-stil="swiss"] :is(.ex-leiste, .dock) { border: 1px solid var(--foreground) !important; }
+html[data-stil="swiss"] :is(.suche input, .tipp, .knopf, .wk, .segment, .zurueck, .filter label, .zeile button, .koerper .knopf, .detail .knoepfe button, .blatt .aktionen button, .ex-dialog button, .stil-wahl, .eintrag, .symbol .ico, .ex-skala label) { border-radius: 0 !important; box-shadow: none !important; }
+html[data-stil="swiss"] :is(h1, .gruss, .begruessung h2) { font-weight: 700; letter-spacing: -.03em; }
+html[data-stil="swiss"] :is(.ueber, .gruppe, .ansichten h2, th, .wt, .ecke) { text-transform: uppercase; letter-spacing: .12em; font-weight: 700; }
+
+/* ---------- Tonal: abgestufte Farbflächen, abgerundete Komponenten, dezente Tiefe ---------- */
+html[data-stil="tonal"] { --background: #fdf7ff; --card: #f7f2fa; --muted: #ece6f0; --sidebar: #f3edf7; --border: #e2dbe9; --input: #79747e; --radius: 12px;
+  --secondary: #e8def8; --secondary-foreground: #1d192b; --accent: #eaddff; --accent-foreground: #21005d; --flaeche-schatten: 0 1px 2px rgb(0 0 0 / .18), 0 1px 3px 1px rgb(0 0 0 / .08); }
+html.dark[data-stil="tonal"] { --background: #141218; --card: #211f26; --muted: #2b2930; --sidebar: #1d1b20; --border: #36343b; --input: #938f99; --secondary: #4a4458; --secondary-foreground: #e8def8; --accent: #4f378b; --accent-foreground: #eaddff; }
+html[data-stil="tonal"] body { background: var(--background) !important; }
+html[data-stil="tonal"] .tisch { background-color: var(--background); background-image: none; }
+html[data-stil="tonal"] :is(.kachel, .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .liste) { border-color: transparent !important; border-radius: 16px; box-shadow: var(--flaeche-schatten) !important; }
+html[data-stil="tonal"] .kachel:not(.stempel):not(.lila) { background: var(--m-soft, var(--card)); }
+html[data-stil="tonal"] :is(.suche input, .tipp, .knopf, .wk, .zurueck, .zeile button, .koerper .knopf, .detail .knoepfe button, .blatt .aktionen button, .ex-dialog button, .filter label, .segment) { border-radius: 999px; }
+html[data-stil="tonal"] :is(.tipp, .filter label, .knopf:not(.primaer), .wk:not(.primaer)) { background: var(--secondary); color: var(--secondary-foreground); border-color: transparent; }
+html[data-stil="tonal"] :is(.ex-leiste a[aria-current="page"], .dock button[aria-pressed="true"], .ansichten button[aria-current="true"], .abschnitte button[aria-current="true"]) { background: var(--secondary); color: var(--secondary-foreground); border-radius: 999px; box-shadow: none; border-left-color: transparent; }
+
+/* ---------- Sachlich: nüchtern, professionell, vertraut wie Büroanwendungen ---------- */
+html[data-stil="sachlich"] { --background: #f5f5f5; --card: #ffffff; --muted: #fafafa; --sidebar: #fafafa; --border: #e0e0e0; --input: #8a8a8a; --radius: 4px;
+  --link: #0f6cbd; --ring: #0f6cbd; --font-sans: "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --flaeche-schatten: 0 1.6px 3.6px rgb(0 0 0 / .13), 0 .3px .9px rgb(0 0 0 / .11); --shadow: var(--flaeche-schatten); }
+html.dark[data-stil="sachlich"] { --background: #1f1f1f; --card: #292929; --muted: #2e2e2e; --sidebar: #242424; --border: #3d3d3d; --input: #8a8a8a; --link: #479ef5; --ring: #479ef5; }
+html[data-stil="sachlich"] body { background: var(--background) !important; }
+html[data-stil="sachlich"] .tisch { background-color: var(--background); background-image: none; }
+html[data-stil="sachlich"] :is(.kachel, .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .liste) { border-radius: 8px; box-shadow: var(--flaeche-schatten) !important; border-color: transparent !important; }
+html[data-stil="sachlich"] .kachel:not(.stempel):not(.lila) { background: var(--card); }
+html[data-stil="sachlich"] :is(.suche input, .tipp, .knopf, .wk, .zurueck, .filter label, .zeile button, .detail .knoepfe button, .blatt .aktionen button, .ex-dialog button) { border-radius: 4px; }
+html[data-stil="sachlich"] :is(.ansichten button[aria-current="true"], .abschnitte button[aria-current="true"], .navi a[aria-current="page"]) { background: var(--muted); color: var(--foreground); border-left-color: var(--link); }
+
+/* ---------- Neumorph: eingelassen und hervorgehoben, monochrom, zurückhaltender als Clay ---------- */
+html[data-stil="neumorph"] { --background: #e6e9ef; --card: #e6e9ef; --muted: #e6e9ef; --sidebar: #e6e9ef; --border: #d3d8e1; --input: #b9c0cc; --radius: 12px;
+  --nm-hell: #ffffff; --nm-dunkel: #bec5d0; --stil-rand: rgb(255 255 255 / .55); }
+html.dark[data-stil="neumorph"] { --background: #2a2e35; --card: #2a2e35; --muted: #2a2e35; --sidebar: #2a2e35; --border: #383d46; --input: #4a505b; --nm-hell: #353a43; --nm-dunkel: #1f2227; --stil-rand: rgb(255 255 255 / .05); }
+html[data-stil="neumorph"] body { background: var(--background) !important; }
+html[data-stil="neumorph"] :is(.tisch, .ansicht, .rahmen-t) { background: var(--background); background-image: none; }
+html[data-stil="neumorph"] :is(.kachel:not(.stempel):not(.lila), .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .liste, .ex-leiste, .dock, .symbol .ico) {
+  background: var(--card); border-color: var(--stil-rand) !important; border-radius: 14px; box-shadow: 7px 7px 14px var(--nm-dunkel), -7px -7px 14px var(--nm-hell) !important; }
+html[data-stil="neumorph"] :is(.ex-leiste, .dock) { border-radius: 999px; }
+html[data-stil="neumorph"] :is(.suche input, .tipp, .knopf, .wk, .zurueck, .filter label, .segment, .zeile button:not(.primaer), .koerper .knopf:not(.primaer), .detail .knoepfe button:not(.primaer), .blatt .aktionen button:not(.primaer), .eintrag, .ex-dialog textarea) {
+  background: var(--background); border-color: var(--stil-rand); box-shadow: inset 3px 3px 6px var(--nm-dunkel), inset -3px -3px 6px var(--nm-hell); }
+html[data-stil="neumorph"] :is(.ex-leiste a[aria-current="page"], .dock button[aria-pressed="true"], .segment button[aria-pressed="true"]) { background: var(--background); color: var(--foreground); box-shadow: inset 3px 3px 6px var(--nm-dunkel), inset -3px -3px 6px var(--nm-hell); }
+
+/* ---------- Bento: modulare Blöcke, grosszügige Abstände, getönte Flächen ---------- */
+html[data-stil="bento"] { --background: #f2f3f5; --card: #ffffff; --muted: #f6f7f9; --border: #e6e8ec; --radius: 20px; --flaeche-schatten: none; }
+html.dark[data-stil="bento"] { --background: #0f1115; --card: #1a1d23; --muted: #20242b; --border: #2a2e36; }
+html[data-stil="bento"] body { background: var(--background) !important; }
+html[data-stil="bento"] .tisch { background-color: var(--background); background-image: none; }
+html[data-stil="bento"] :is(.kachel, .fenster, .treffer, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .liste) { border-radius: 20px; box-shadow: none !important; border-color: transparent !important; }
+html[data-stil="bento"] .kachel:not(.stempel):not(.lila) { background: var(--card); }
+html[data-stil="bento"] .kachel:nth-child(3n+2):not(.stempel):not(.lila) { background: var(--m-soft, var(--card)); }
+html[data-stil="bento"] :is(.raster, .karten, .varianten, .ringe, .inhalt) { gap: 16px; }
+html[data-stil="bento"] :is(.kachel .name, h1, h2) { letter-spacing: -.02em; }
+
+/* ---------- Minimal: flach, keine Schatten, keine Verläufe, keine Dekoration ---------- */
+html[data-stil="minimal"] { --background: #ffffff; --card: #ffffff; --muted: #f7f7f8; --sidebar: #ffffff; --border: #ececee; --radius: 6px; --shadow: none; --flaeche-schatten: none; }
+html.dark[data-stil="minimal"] { --background: #121212; --card: #121212; --muted: #1b1b1b; --sidebar: #121212; --border: #262626; }
+html[data-stil="minimal"] body { background: var(--background) !important; }
+html[data-stil="minimal"] .tisch { background: var(--background); }
+html[data-stil="minimal"] * { box-shadow: none !important; text-shadow: none !important; }
+html[data-stil="minimal"] :is(.kachel, .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .liste) { border-radius: 6px; }
+html[data-stil="minimal"] .kachel:not(.stempel):not(.lila) { background: var(--card); }
+html[data-stil="minimal"] .kachel .ico, html[data-stil="minimal"] .symbol .ico { background: transparent; }
+
+/* ---------- Natur: Salbeigrün, Sandtöne, sanfte Rundungen ---------- */
+html[data-stil="natur"] { --background: #f3f0e7; --card: #fbf9f3; --muted: #ebe6d8; --sidebar: #eef0e6; --border: #d9d3c1; --input: #a7a08b; --radius: 14px;
+  --secondary: #dfe8d8; --secondary-foreground: #2f4a2b; --accent: #e3ebdc; --accent-foreground: #2f4a2b; --flaeche-schatten: 0 2px 10px rgb(80 90 60 / .08); }
+html.dark[data-stil="natur"] { --background: #1b1f18; --card: #242a20; --muted: #2c3327; --sidebar: #20261c; --border: #3a4234; --input: #6d7663; --secondary: #34432e; --secondary-foreground: #dbe8d2; --accent: #2f3d2a; --accent-foreground: #dbe8d2; }
+html[data-stil="natur"] body { background: radial-gradient(ellipse at 0% 0%, rgb(122 150 110 / .18), transparent 50%), radial-gradient(ellipse at 100% 100%, rgb(200 170 120 / .18), transparent 50%), var(--background) fixed !important; }
+html[data-stil="natur"] .tisch { background: transparent; }
+html[data-stil="natur"] :is(.kachel, .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .liste) { border-radius: 18px 18px 18px 6px; box-shadow: var(--flaeche-schatten) !important; }
+html[data-stil="natur"] .kachel:not(.stempel):not(.lila) { background: var(--card); }
+html[data-stil="natur"] .kachel.lila { background: #3e5a3a; }
+html[data-stil="natur"] :is(.tipp, .knopf, .wk, .zeile button, .filter label) { border-radius: 999px; }
+
+/* ---------- Zen: warme Neutraltöne, viel Abstand, wenige Reize ---------- */
+html[data-stil="zen"] { --background: #f7f5f2; --card: #fbfaf8; --muted: #f0ede8; --sidebar: #f7f5f2; --border: #e6e1d9; --input: #c4bcb0; --muted-foreground: #6b6459; --radius: 10px; --flaeche-schatten: none; }
+html.dark[data-stil="zen"] { --background: #1a1917; --card: #1f1e1b; --muted: #262420; --sidebar: #1a1917; --border: #2f2c27; --input: #4a463f; --muted-foreground: #a39b8e; }
+html[data-stil="zen"] body { background: var(--background) !important; }
+html[data-stil="zen"] .tisch { background: var(--background); }
+html[data-stil="zen"] :is(.kachel, .fenster, .treffer, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .liste) { box-shadow: none !important; border-color: var(--border) !important; border-radius: 10px; }
+html[data-stil="zen"] .kachel:not(.stempel):not(.lila) { background: var(--card); }
+html[data-stil="zen"] .kachel.lila { background: #5b5248; }
+html[data-stil="zen"] :is(.raster, .karten, .inhalt) { gap: 22px; }
+html[data-stil="zen"] :is(.kachel, .karte-d, .zeile) { padding: 22px 24px; }
+html[data-stil="zen"] :is(h1, h2, .gruss) { font-weight: 400; letter-spacing: 0; }
+html[data-stil="zen"] .kachel .zaehler { background: var(--muted-foreground); }
+
+/* ---------- Enterprise: dezent, nüchtern, funktional; zusammen mit Dichte «Kompakt» besonders dicht ---------- */
+html[data-stil="enterprise"] { --background: #f3f5f8; --card: #ffffff; --muted: #f6f8fa; --sidebar: #f6f8fa; --border: #d8dee6; --input: #9aa6b5; --radius: 3px;
+  --link: #1f5fa8; --ring: #1f5fa8; --flaeche-schatten: none; --shadow: none; }
+html.dark[data-stil="enterprise"] { --background: #161b22; --card: #0d1117; --muted: #161b22; --sidebar: #0d1117; --border: #30363d; --input: #6e7681; --link: #58a6ff; --ring: #58a6ff; }
+html[data-stil="enterprise"] body { background: var(--background) !important; }
+html[data-stil="enterprise"] .tisch { background: var(--background); }
+html[data-stil="enterprise"] :is(.kachel, .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .liste) { border-radius: 3px; box-shadow: none !important; border: 1px solid var(--border) !important; }
+html[data-stil="enterprise"] .kachel:not(.stempel):not(.lila) { background: var(--card); }
+html[data-stil="enterprise"] :is(.suche input, .tipp, .knopf, .wk, .zurueck, .filter label, .zeile button, .detail .knoepfe button, .blatt .aktionen button, .ex-dialog button) { border-radius: 3px; }
+html[data-stil="enterprise"] :is(th, .ueber, .gruppe, .ansichten h2) { font-size: .72rem; }
+html[data-stil="enterprise"] .kachel .gross, html[data-stil="enterprise"] .zifferblatt .zeit { font-weight: 600; }
+
+/* ---------- Cyberpunk: dunkel, Neon, technische Schrift (immer dunkel) ---------- */
+html[data-stil="cyberpunk"] { --background: #07060d; --card: #0f0d1c; --muted: #15122a; --sidebar: #0b0a16; --border: #2b2550; --input: #4a3f8a; --radius: 2px;
+  --neon-a: #ff2bd6; --neon-b: #00e5ff; --link: #00e5ff; --ring: #ff2bd6; --muted-foreground: #a9a3d6; }
+html[data-stil="cyberpunk"] body { background: linear-gradient(transparent 0 calc(100% - 1px), rgb(0 229 255 / .06) calc(100% - 1px)) 0 0 / 100% 4px, radial-gradient(ellipse at 80% -10%, rgb(255 43 214 / .25), transparent 55%), var(--background) fixed !important; }
+html[data-stil="cyberpunk"] .tisch { background-color: transparent; background-image: linear-gradient(rgb(0 229 255 / .07) 1px, transparent 1px), linear-gradient(90deg, rgb(0 229 255 / .07) 1px, transparent 1px); background-size: 32px 32px; }
+html[data-stil="cyberpunk"] :is(h1, h2, h3, .ueber, .gruppe, th, .kachel .name, .wt) { font-family: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace; text-transform: uppercase; letter-spacing: .08em; }
+html[data-stil="cyberpunk"] :is(.kachel:not(.stempel), .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .liste, .ex-leiste, .dock) {
+  background: var(--card) !important; border: 1px solid var(--neon-b) !important; border-radius: 2px !important; box-shadow: 0 0 0 1px rgb(0 229 255 / .15), 0 0 18px rgb(0 229 255 / .18), inset 0 0 22px rgb(255 43 214 / .06) !important;
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px)); }
+html[data-stil="cyberpunk"] :is(.ex-leiste, .dock, .ex-dialog, .ex-suche, .blatt .innen, .detail) { clip-path: none; }
+html[data-stil="cyberpunk"] .kachel.lila { border-color: var(--neon-a) !important; box-shadow: 0 0 22px rgb(255 43 214 / .3) !important; }
+html[data-stil="cyberpunk"] :is(.suche input, .tipp, .knopf, .wk, .zurueck, .filter label, .zeile button, .koerper .knopf, .detail .knoepfe button, .blatt .aktionen button, .ex-dialog button, .symbol .ico) { border-radius: 0; border-color: var(--neon-a) !important; }
+html[data-stil="cyberpunk"] :is(.ex-leiste a[aria-current="page"], .dock button[aria-pressed="true"], .segment button[aria-pressed="true"]) { background: var(--neon-a); color: #07060d; box-shadow: 0 0 14px var(--neon-a); }
+html[data-stil="cyberpunk"] .kachel.stempel { box-shadow: 0 0 26px rgb(255 138 0 / .45) !important; border-radius: 2px; }
+
+/* ---------- Terminal: Monospace, technisch, monochromer Akzent (immer dunkel) ---------- */
+html[data-stil="terminal"] { --background: #0b0f0c; --card: #0f1511; --muted: #121a15; --sidebar: #0b0f0c; --border: #1f3326; --input: #2f5c3e; --radius: 0px;
+  --foreground: #c9f7d4; --muted-foreground: #7fbf92; --link: #5dff95; --ring: #5dff95; --font-sans: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono", Consolas, monospace; }
+html[data-stil="terminal"] body { background: var(--background) !important; font-size: 14px; }
+html[data-stil="terminal"] .tisch { background: var(--background); }
+html[data-stil="terminal"] * { box-shadow: none !important; text-shadow: none !important; }
+html[data-stil="terminal"] :is(.kachel:not(.stempel):not(.lila), .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .karte-d, .ex-suche, .liste, .ex-leiste, .dock) {
+  background: var(--card) !important; border: 1px dashed var(--input) !important; border-radius: 0 !important; }
+html[data-stil="terminal"] :is(.suche input, .tipp, .knopf, .wk, .zurueck, .filter label, .zeile button, .koerper .knopf, .detail .knoepfe button, .blatt .aktionen button, .ex-dialog button, .symbol .ico, .eintrag) { border-radius: 0 !important; border-color: var(--input) !important; }
+html[data-stil="terminal"] :is(h1, h2, .kachel .name)::before { content: "> "; color: var(--link); }
+html[data-stil="terminal"] .kachel.lila { background: #10261a; border: 1px solid var(--link); }
+html[data-stil="terminal"] :is(.ex-leiste a[aria-current="page"], .dock button[aria-pressed="true"], .segment button[aria-pressed="true"]) { background: var(--link); color: #0b0f0c; }
+
+/* ===================================================================================================
+ * Erscheinungsbild in fünf unabhängigen Einstellungen (#100):
+ * Stil (data-stil) · Farbmodus (.dark, Hell/Dunkel/System) · Dichte (data-dichte) · Akzent (data-akzent) ·
+ * Barrierefreiheit (data-kontrast, data-bewegung, data-transparenz – wirken über jedem Stil).
+ * =================================================================================================== */
+html[data-dichte="kompakt"] { font-size: 93.75%; } html[data-dichte="kompakt"] body { font-size: 14px; }
+html[data-dichte="komfortabel"] { font-size: 106.25%; } html[data-dichte="komfortabel"] body { font-size: 16.5px; }
+html[data-dichte="kompakt"] .raster :is(th, td) { height: 27px; } html[data-dichte="kompakt"] .raster thead th button { height: 27px; }
+html[data-dichte="komfortabel"] .raster :is(th, td) { height: 42px; } html[data-dichte="komfortabel"] .raster thead th button { height: 42px; }
+html[data-dichte="kompakt"] :is(.raster, .karten, .inhalt, .ringe) { gap: 10px; }
+html[data-dichte="kompakt"] :is(.kachel, .karte-d, .zeile, .flaeche) { padding: 12px 14px; }
+html[data-dichte="komfortabel"] :is(.kachel, .karte-d, .zeile) { padding: 20px 22px; }
+html[data-dichte="komfortabel"] :is(.liste td, .liste th, .koerper td) { padding-top: .75rem; padding-bottom: .75rem; }
+
+/* Akzentfarbe (z. B. Schulfarbe): ändert Hauptknöpfe, Auswahl und Markierungen; Markenfarben der Wortmarke bleiben */
+html[data-akzent="blau"][data-stil] { --akzent: #0272ad; --primary: #0272ad; --primary-foreground: #ffffff; --secondary: #e6f3fa; --secondary-foreground: #08415f; }
+html[data-akzent="violett"][data-stil] { --akzent: #7952b3; --primary: #6b46a3; --primary-foreground: #ffffff; --secondary: #f1ecf8; --secondary-foreground: #4a2d78; }
+html[data-akzent="gruen"][data-stil] { --akzent: #1b7a3d; --primary: #1b7a3d; --primary-foreground: #ffffff; --secondary: #e7f5ec; --secondary-foreground: #124f28; }
+html[data-akzent="rot"][data-stil] { --akzent: #c62828; --primary: #b71c1c; --primary-foreground: #ffffff; --secondary: #fdecea; --secondary-foreground: #7f1414; }
+html.dark[data-akzent="blau"][data-stil] { --akzent: #32b8f2; --primary: #32b8f2; --primary-foreground: #0b1620; --secondary: #12324a; --secondary-foreground: #d6eefb; }
+html.dark[data-akzent="violett"][data-stil] { --akzent: #b59aff; --primary: #b59aff; --primary-foreground: #1b1230; --secondary: #2a2140; --secondary-foreground: #e6dcff; }
+html.dark[data-akzent="gruen"][data-stil] { --akzent: #5fd38d; --primary: #5fd38d; --primary-foreground: #0b1f13; --secondary: #12321f; --secondary-foreground: #d3f5e0; }
+html.dark[data-akzent="rot"][data-stil] { --akzent: #ff8a80; --primary: #ff8a80; --primary-foreground: #2a0b09; --secondary: #3a1614; --secondary-foreground: #ffdcd8; }
+
+/* Barrierefreiheit unabhängig vom Stil */
+html[data-bewegung="aus"] *, html[data-bewegung="aus"] *::before, html[data-bewegung="aus"] *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+html[data-transparenz="aus"] * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+html[data-transparenz="aus"][data-stil="glas"] :is(.kachel:not(.stempel):not(.lila), .fenster, .treffer, .zeile, .v-karte, .bisher, .ex-leiste, .dock, .seite table, .suche input, .klein-hinweis, .symbol .ico, .tipp, .filter label, .segment, .knopf, .zurueck, .blatt .innen, .detail, .ex-dialog, .ex-stilmenue, .ex-suche, .ecke, .tagkopf, .bahnkopf, .leiste-oben, .filter, .task) { background: #ffffff; }
+html.dark[data-transparenz="aus"][data-stil="glas"] :is(.kachel:not(.stempel):not(.lila), .fenster, .treffer, .zeile, .v-karte, .bisher, .ex-leiste, .dock, .seite table, .suche input, .klein-hinweis, .symbol .ico, .tipp, .filter label, .segment, .knopf, .zurueck, .blatt .innen, .detail, .ex-dialog, .ex-stilmenue, .ex-suche, .ecke, .tagkopf, .bahnkopf, .leiste-oben, .filter, .task) { background: #1e2433; }
+html[data-transparenz="aus"][data-stil="aurora"] :is(.kachel:not(.stempel):not(.lila), .fenster, .treffer, .zeile, .v-karte, .bisher, .ex-leiste, .dock, .seite table, .klein-hinweis, .karte-d, .symbol .ico, .liste, .tipp, .filter label, .segment, .knopf, .zurueck, .suche input, .dossier-kopf, .abschnitte, .blatt .innen, .detail, .ex-dialog, .ex-stilmenue, .ex-suche, .zuletzt .menue, .ecke, .tagkopf, .bahnkopf, .leiste-oben, .filter, .task, .tabzeile, .kopf-t, .werkzeug, .raster :is(th, td)) { background: #161c2e; }
+
+/* Fenster «Erscheinungsbild» */
+.ex-eb { width: min(720px, calc(100vw - 1.5rem)); max-height: calc(100vh - 2rem); overflow: auto; }
+.ex-eb form { padding: 1.25rem 1.4rem; gap: 1.1rem; }
+.ex-eb h2 { display: flex; align-items: center; gap: .6rem; }
+.ex-eb h2 .zu { margin-left: auto; width: 2rem; height: 2rem; border-radius: 999px; padding: 0; }
+.ex-eb h3 { font-size: .78rem; text-transform: uppercase; letter-spacing: .07em; color: var(--muted-foreground); margin: 0 0 .5rem; }
+.ex-eb .stilgruppe { font-size: .72rem; color: var(--muted-foreground); margin: .6rem 0 .3rem; }
+.ex-eb .stilraster { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: .45rem; }
+.ex-eb .stilraster button { display: flex; align-items: center; gap: .5rem; text-align: left; padding: .45rem .55rem; border-radius: 10px; border: 1px solid var(--border); background: var(--card); color: var(--foreground); font: 600 .82rem var(--font-sans); cursor: pointer; }
+.ex-eb .stilraster button small { display: block; font-weight: 400; font-size: .7rem; color: var(--muted-foreground); }
+.ex-eb .stilraster button[aria-checked="true"] { border-color: var(--akzent); box-shadow: inset 0 0 0 1px var(--akzent); background: var(--secondary); color: var(--secondary-foreground); }
+.ex-eb .stilraster .muster { width: 30px; height: 22px; border-radius: 6px; border: 1px solid var(--border); flex: none; }
+.ex-eb .segment-eb { display: inline-flex; border: 1px solid var(--input); border-radius: 999px; padding: 2px; flex-wrap: wrap; }
+.ex-eb .segment-eb button { border: 0; border-radius: 999px; padding: .35rem .9rem; background: transparent; color: var(--foreground); font: 500 .85rem var(--font-sans); cursor: pointer; }
+.ex-eb .segment-eb button[aria-checked="true"] { background: var(--foreground); color: var(--background); font-weight: 650; }
+.ex-eb .zweispaltig { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 600px) { .ex-eb .zweispaltig { grid-template-columns: 1fr; } }
+.ex-eb .akzente { display: flex; gap: .5rem; flex-wrap: wrap; }
+.ex-eb .akzente button { width: 40px; height: 40px; border-radius: 999px; border: 2px solid var(--border); cursor: pointer; display: grid; place-items: center; color: #fff; font-weight: 700; padding: 0; }
+.ex-eb .akzente button[aria-checked="true"] { outline: 3px solid var(--foreground); outline-offset: 2px; }
+.ex-eb .a11y label { display: flex; gap: .6rem; align-items: flex-start; padding: .35rem 0; font-size: .9rem; cursor: pointer; }
+.ex-eb .a11y input { width: 18px; height: 18px; margin-top: .1rem; accent-color: var(--ring); }
+.ex-eb .a11y small { display: block; color: var(--muted-foreground); font-size: .76rem; }
+.ex-eb .vorgabe { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; padding: .6rem .8rem; border-radius: 10px; background: var(--muted); border: 1px solid var(--border); font-size: .82rem; }
+.ex-eb .vorgabe button { margin-left: auto; }

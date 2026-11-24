@@ -8,6 +8,9 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **GUI-EX 0.6.0 – Erscheinungsbild (24.11.2026, #100):** Fenster «Erscheinungsbild» mit fünf unabhängigen Einstellungen
+  (Stil, Farbmodus Hell/Dunkel/System, Dichte, Akzentfarbe, Barrierefreiheit) und Schulvorgabe; elf weitere Stile
+  (Swiss, Tonal, Sachlich, Neumorph, Bento, Minimal, Natur, Zen, Enterprise, Cyberpunk, Terminal), insgesamt 20.
 - **GUI-EX 0.5.0 – weitere Stile, Tabelle erweitert (24.11.2026, #98):** Stile Aurora, Neubrutalismus, Papier, Spielerisch
   und Hoher Kontrast im Stil-Schalter (neun Stile); Variante F mit Detailbereich oben, Seitenleiste mit festen Ansichten
   und Zählern, Mini-Grafiken (Pensum-Balken, Ist 8 Wochen), Kennzeichen für Funktion und Status, Statuszeile.
