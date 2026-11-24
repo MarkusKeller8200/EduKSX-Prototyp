@@ -7,7 +7,7 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v6";
-  const VERSION = "0.12.0";
+  const VERSION = "0.13.0";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
@@ -783,7 +783,10 @@
     return fehlt + gruppen.map((g) => `<optgroup label="${esc(g)}">${akt.filter((e) => (e.gruppe || "Weitere") === g).map((e) => `<option value="${esc(e.kuerzel)}" ${e.kuerzel === aktuell ? "selected" : ""}>${esc(e.name)} (${esc(e.kuerzel)})${zusatz ? esc(zusatz(e.kuerzel)) : ""}</option>`).join("")}</optgroup>`).join("");
   }
   const rollenWerte = () => ES.aktiveFunktionen().map((e) => [e.kuerzel, `${e.name} (${e.kuerzel})`]);
-  const rolleBadge = (r) => `<span class="rolle" title="${esc((typeof ES !== "undefined" && S && S.einstellungen && ES.tooltip("funktionen", r)) || ROLLEN[r] || r)}">${esc(r)}</span>`;
+  const rolleBadge = (r) => {
+    const f = S && S.einstellungen ? ES.farbeVon("funktionen", r) : "";
+    return `<span class="rolle" ${f ? `style="background:${esc(f)};color:${ES.textFarbe(f)};border-color:${esc(f)}"` : ""} title="${esc((S && S.einstellungen && ES.tooltip("funktionen", r)) || ROLLEN[r] || r)}">${esc(r)}</span>`;
+  };
   /** Tooltip für Kompetenz-Einträge wie «E1/V»: je Kürzel der Tooltip aus Einstellungen › Kompetenzen. */
   const kompetenzTooltip = (w) => String(w || "").split("/").map((x) => { const k = x.replace(/[()\s0-9]/g, ""); return k ? (ES.tooltip("kompetenzen", k) || k) + (/[0-9]/.test(x) ? ` (Instanz ${x.replace(/\D/g, "")})` : "") : ""; }).filter(Boolean).join(" · ");
   function aufrufText(s) {
@@ -1355,7 +1358,7 @@
     }).join("");
     const freie = ES.aktiveFunktionen().filter((e) => !sp.includes(e.kuerzel));
     return `<div class="seitenkopf"><div><h1>Funktionendiagramm</h1><p class="muted">Muster mit den Aufgaben, die Abläufe berühren, gruppiert nach den <a href="#/einstellungen/aufgabenbereiche">Aufgabenbereichen</a>. Ist einem Schritt eine Nummer zugeordnet, schlägt ${wordmark("Flow")} die Rolle mit «V» als verantwortlich und die Rollen mit «I» als zu informieren vor und warnt bei Abweichungen.</p></div></div>
-      <p class="small muted">${ES.aktiveKompetenzen().map((e) => `<span title="${esc(e.beschreibung || e.tooltip || "")}">${esc(e.tooltip || e.kuerzel + " = " + e.name)}</span>`).join(" · ")} · <a href="#/einstellungen/kompetenzen">Kompetenzen</a> · Mehrere mit «/» trennen, Instanz als Ziffer (z. B. E1/E2), Klammern für bedingt.</p>
+      <p class="small muted">${ES.aktiveKompetenzen().map((e) => `${ES.labelVon("kompetenzen", e.kuerzel)} <span title="${esc(e.beschreibung || "")}">${esc(e.name)}</span>`).join(" · ")} · <a href="#/einstellungen/kompetenzen">Kompetenzen</a> · Mehrere mit «/» trennen, Instanz als Ziffer (z. B. E1/E2), Klammern für bedingt.</p>
       ${darf ? `<div class="formzeile"><label class="feld">Spalte (Funktion) einblenden<select id="fd-spalte-neu"><option value="">– Funktion wählen –</option>${[...new Set(freie.map((e) => e.gruppe || "Weitere"))].map((g) => `<optgroup label="${esc(g)}">${freie.filter((e) => (e.gruppe || "Weitere") === g).map((e) => `<option value="${esc(e.kuerzel)}">${esc(e.name)} (${esc(e.kuerzel)})</option>`).join("")}</optgroup>`).join("")}</select></label><button class="btn" data-aktion="fd-spalte" style="align-self:end">＋ Spalte</button></div>` : `<p class="meldung info">Ändern können die Schulverwaltung und der Ressortvorstand – Rolle oben rechts wechseln.</p>`}
       ${inaktivSp.length ? `<p class="meldung warnung">⚠ Spalten mit inaktiver Funktion: ${inaktivSp.map(esc).join(", ")} – unter <a href="#/einstellungen/funktionen">Funktionen</a> aktivieren oder Spalte ausblenden.</p>` : ""}
       ${befunde.length ? `<details class="meldung warnung"><summary>⚠ ${befunde.length} Hinweise zur Prüfung</summary><ul>${befunde.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>` : ""}
@@ -1901,6 +1904,7 @@
   if (!S.einstellungen.perioden) S.einstellungen.perioden = kopie(window.FLOW_EINSTELLUNGEN_DATEN.perioden);
   Object.entries(S.einstellungen).forEach(([b, l]) => (l || []).forEach((e) => {
     if (e.tooltip === undefined) e.tooltip = e.kuerzel ? `${e.kuerzel} = ${e.name}` : "";
+    if (e.farbe === undefined) e.farbe = "";
     if (b === "intervalle" && e.periode === undefined) { const v = window.FLOW_EINSTELLUNGEN_DATEN.intervalle.find((x) => x.kuerzel === e.kuerzel); e.periode = v ? v.periode : ""; }
   }));
   S.einstellungen.funktionen.forEach((e) => { if (e.vorgesetzt === undefined) { const v = window.FLOW_EINSTELLUNGEN_DATEN.funktionen.find((x) => x.kuerzel === e.kuerzel); e.vorgesetzt = v ? v.vorgesetzt : ""; } });

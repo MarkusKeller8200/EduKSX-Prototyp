@@ -8,6 +8,9 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **EduKSX-Flow 0.13.0 – Farbe und Label (24.11.2026):** alle Einstellungen mit Farbe; daraus wird ein Label erzeugt
+  (Kürzel auf der Farbe, Schrift schwarz oder weiss nach Kontrast, Tooltip als Titel) mit Vorschau in der Tabelle;
+  Funktionen erscheinen als farbige Rollen-Labels, Kompetenzen als Labels in der Legende des Funktionendiagramms.
 - **EduKSX-Flow 0.12.0 – Periode und Tooltips (24.11.2026):** neuer Katalog **Periode** (Kürzel, Periode, Wert =
   Vorkommen pro Jahr, Farbe, Beschreibung, Tooltip, Aktiv; «keiner» bis «Alle 5 Jahre»); Intervalle mit Spalte
   «Periode» (Häufigkeit pro Jahr); **Tooltip** in allen Einstellungen (Vorgabe «Kürzel = Bezeichnung», folgt der

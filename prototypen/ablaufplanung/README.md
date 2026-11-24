@@ -96,6 +96,8 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
   Quorum, rollenbasierte Übersicht («Für …»), Kalender mit Monats- und Wochenansicht sowie ICS-Export.
 - **Periode und Tooltips** (0.12.0): Katalog Periode (Häufigkeit pro Jahr mit Wert und Farbe), Intervalle mit
   zugeordneter Periode, Tooltip in allen Katalogen.
+- **Farbe und Label** (0.13.0): jede Einstellung hat eine Farbe; daraus entsteht ein Label (Kontrast automatisch),
+  verwendet für Rollen und Kompetenzen.
 - **Simulation:** simulierter Tag (+1, +7, nächste Frist), Module als «nicht erreichbar» schalten, Rollenwechsel.
 
 ## Grundlagen

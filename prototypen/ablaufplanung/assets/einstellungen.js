@@ -210,6 +210,8 @@
   const IV_PERIODE = { "1X": "-", J: "J", SEM: "S", Q: "Q", M: "M", W: "W", T: "T" };
   INTERVALLE.forEach((e) => { e.periode = IV_PERIODE[e.kuerzel] || ""; });
 
+  // Farbe je Eintrag (für Labels): Vorgabe leer = neutrales Label
+  [KOMPETENZEN, FUNKTIONEN, ZEITPUNKTE, INTERVALLE, AUFGABENBEREICHE, ESKALATION].forEach((l) => l.forEach((e) => { e.farbe = e.farbe || ""; }));
   // Tooltip je Eintrag: Vorgabe «Kürzel = Bezeichnung»
   [KOMPETENZEN, FUNKTIONEN, ZEITPUNKTE, INTERVALLE, AUFGABENBEREICHE, ESKALATION, PERIODEN].forEach((l) => l.forEach((e) => { e.tooltip = `${e.kuerzel} = ${e.name}`; }));
 
@@ -217,15 +219,15 @@
 
   // ------------------------------------------------------------ Seiten und Steuerung
   const KATALOGE = {
-    kompetenzen: { titel: "Kompetenzen", spalten: ["Kürzel", "Kompetenz"], extra: [{ k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Kompetenzarten im Funktionendiagramm. Entscheid, Genehmigung und Freigabe sind bewusst getrennt: z. B. entscheidet die Geschäftsleitung über eine Beschaffung, das Finanzwesen prüft die Finanzierung, eine andere Stelle gibt die Bestellung frei. Aktive Kompetenzen erscheinen in der Legende des Funktionendiagramms." },
-    funktionen: { titel: "Funktionen", spalten: ["Kürzel", "Funktion"], gruppiert: "gruppe", extra: [{ k: "vorgesetzt", label: "Vorgesetzt", typ: "funktion", titel: "Empfänger der Eskalation «vorgesetzte Stelle»" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Organisatorische Funktionen (Rollen). Aktive Funktionen stehen bei «Verantwortlich» und «Informieren» in den Ablaufvorlagen zur Auswahl. Kürzel sind Vorschläge und je Schule anpassbar." },
-    zeitpunkte: { titel: "Zeitpunkte", spalten: ["Kürzel", "Zeitpunkt"], extra: [{ k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Bezugstermine für Fristen und für die Zeitregeln im Jahreskalender (Schuljahres- und Ferientermine je Schuljahr unter Jahreskalender › Schuljahre). Nur aktive Zeitpunkte stehen beim Bearbeiten eines Termins zur Wahl." },
-    intervalle: { titel: "Intervalle", spalten: ["Kürzel", "Intervall"], extra: [{ k: "periode", label: "Periode", typ: "periode", titel: "Häufigkeit pro Jahr (Einstellungen › Periode)" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Wiederholungen für Termine und ToDos im Jahreskalender (wann genau ein Termin liegt). Nur aktive Intervalle stehen beim Bearbeiten eines Termins als Art der Zeitregel zur Wahl. Die Periode ordnet jedem Intervall eine Häufigkeit pro Jahr zu." },
-    perioden: { titel: "Periode", spalten: ["Kürzel", "Periode"], extra: [{ k: "wert", label: "Wert", typ: "dezimal", titel: "Vorkommen pro Jahr (z. B. Monate = 12, alle 2 Jahre = 0,5)" }, { k: "farbe", label: "Farbe", typ: "farbe" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Häufigkeit pro Jahr für Planung und Berechnung (z. B. Aufwand pro Jahr, Erneuerungszyklen von Geräten). Wert = Vorkommen pro Jahr; «nicht berücksichtigen» schliesst von Berechnungen aus. Die Perioden ab zwei Jahren haben noch keine Zeitregel im Kalender (Konzept E19 OFFEN)." },
+    kompetenzen: { titel: "Kompetenzen", spalten: ["Kürzel", "Kompetenz"], extra: [{ k: "farbe", label: "Farbe / Label", typ: "farbe", titel: "Farbe für das Label; Text schwarz oder weiss je nach Kontrast" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Kompetenzarten im Funktionendiagramm. Entscheid, Genehmigung und Freigabe sind bewusst getrennt: z. B. entscheidet die Geschäftsleitung über eine Beschaffung, das Finanzwesen prüft die Finanzierung, eine andere Stelle gibt die Bestellung frei. Aktive Kompetenzen erscheinen in der Legende des Funktionendiagramms." },
+    funktionen: { titel: "Funktionen", spalten: ["Kürzel", "Funktion"], gruppiert: "gruppe", extra: [{ k: "vorgesetzt", label: "Vorgesetzt", typ: "funktion", titel: "Empfänger der Eskalation «vorgesetzte Stelle»" }, { k: "farbe", label: "Farbe / Label", typ: "farbe", titel: "Farbe für das Label; Text schwarz oder weiss je nach Kontrast" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Organisatorische Funktionen (Rollen). Aktive Funktionen stehen bei «Verantwortlich» und «Informieren» in den Ablaufvorlagen zur Auswahl. Kürzel sind Vorschläge und je Schule anpassbar." },
+    zeitpunkte: { titel: "Zeitpunkte", spalten: ["Kürzel", "Zeitpunkt"], extra: [{ k: "farbe", label: "Farbe / Label", typ: "farbe", titel: "Farbe für das Label; Text schwarz oder weiss je nach Kontrast" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Bezugstermine für Fristen und für die Zeitregeln im Jahreskalender (Schuljahres- und Ferientermine je Schuljahr unter Jahreskalender › Schuljahre). Nur aktive Zeitpunkte stehen beim Bearbeiten eines Termins zur Wahl." },
+    intervalle: { titel: "Intervalle", spalten: ["Kürzel", "Intervall"], extra: [{ k: "periode", label: "Periode", typ: "periode", titel: "Häufigkeit pro Jahr (Einstellungen › Periode)" }, { k: "farbe", label: "Farbe / Label", typ: "farbe", titel: "Farbe für das Label; Text schwarz oder weiss je nach Kontrast" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Wiederholungen für Termine und ToDos im Jahreskalender (wann genau ein Termin liegt). Nur aktive Intervalle stehen beim Bearbeiten eines Termins als Art der Zeitregel zur Wahl. Die Periode ordnet jedem Intervall eine Häufigkeit pro Jahr zu." },
+    perioden: { titel: "Periode", spalten: ["Kürzel", "Periode"], extra: [{ k: "wert", label: "Wert", typ: "dezimal", titel: "Vorkommen pro Jahr (z. B. Monate = 12, alle 2 Jahre = 0,5)" }, { k: "farbe", label: "Farbe / Label", typ: "farbe", titel: "Farbe für das Label; Text schwarz oder weiss je nach Kontrast" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Häufigkeit pro Jahr für Planung und Berechnung (z. B. Aufwand pro Jahr, Erneuerungszyklen von Geräten). Wert = Vorkommen pro Jahr; «nicht berücksichtigen» schliesst von Berechnungen aus. Die Perioden ab zwei Jahren haben noch keine Zeitregel im Kalender (Konzept E19 OFFEN)." },
     eskalation: { titel: "Eskalation", spalten: ["Kürzel", "Meldung"], gruppiert: "fristart", gruppenTitel: { gesetzlich: "Gesetzliche Fristen", intern: "Interne Fristen", empfehlung: "Empfehlungen" },
-      extra: [{ k: "stufe", label: "Stufe", typ: "zahl" }, { k: "tage", label: "Tage zur Frist", typ: "zahl", titel: "negativ = vorher" }, { k: "an", label: "An", typ: "empfaenger" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }],
+      extra: [{ k: "stufe", label: "Stufe", typ: "zahl" }, { k: "tage", label: "Tage zur Frist", typ: "zahl", titel: "negativ = vorher" }, { k: "an", label: "An", typ: "empfaenger" }, { k: "farbe", label: "Farbe / Label", typ: "farbe", titel: "Farbe für das Label; Text schwarz oder weiss je nach Kontrast" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }],
       text: "Eskalationsstufen je Fristart (Konzept E6). Tage zur Frist: negativ = vorher. Empfänger: zuständige Rolle, vorgesetzte Stelle (siehe Funktionen › Vorgesetzt) oder eine bestimmte Funktion. Ab Stufe 3 steht die Meldung im Journal des Ablaufs. Ohne aktive Stufen eskaliert eine Fristart nicht." },
-    aufgabenbereiche: { titel: "Aufgabenbereiche", spalten: ["Nr.", "Aufgabenbereich"], gruppiert: "haupt", extra: [{ k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Gliederung des Funktionendiagramms in Hauptbereiche und Unterbereiche (Vorschlag für einen schulübergreifenden Standard). Das Funktionendiagramm ist nach den Hauptbereichen gruppiert." },
+    aufgabenbereiche: { titel: "Aufgabenbereiche", spalten: ["Nr.", "Aufgabenbereich"], gruppiert: "haupt", extra: [{ k: "farbe", label: "Farbe / Label", typ: "farbe", titel: "Farbe für das Label; Text schwarz oder weiss je nach Kontrast" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Gliederung des Funktionendiagramms in Hauptbereiche und Unterbereiche (Vorschlag für einen schulübergreifenden Standard). Das Funktionendiagramm ist nach den Hauptbereichen gruppiert." },
   };
 
   window.FLOW_EINSTELLUNGEN = function (X) {
@@ -281,7 +283,7 @@
       if (x.typ === "zahl") return `${lab}<input type="number" step="any" ${d} value="${esc(w)}" style="width:5rem">`;
       if (x.typ === "dezimal") return `${lab}<input type="text" inputmode="decimal" ${d} value="${esc(String(w).replace(".", ","))}" style="width:5rem;text-align:right" title="Dezimalzahl, z. B. 0,333">`;
       if (x.typ === "text") return `${lab}<input type="text" ${d} value="${esc(w)}" style="width:100%;min-width:9rem">`;
-      if (x.typ === "farbe") return `${lab}<span class="es-farbe"><input type="color" ${d} value="${esc(w || "#d0d5dd")}" title="${w ? esc(w) : "keine Farbe"}">${w ? "" : '<span class="small muted">–</span>'}</span>`;
+      if (x.typ === "farbe") return `${lab}<span class="es-farbe"><input type="color" ${d} value="${esc(w || "#d0d5dd")}" title="${w ? esc(w) : "keine Farbe"}">${label(e)}${w && !dis ? `<button class="link small" data-aktion="es-farbe-weg" data-bereich="${esc(b)}" data-i="${i}" title="Farbe entfernen" aria-label="Farbe entfernen">×</button>` : ""}</span>`;
       if (x.typ === "periode") {
         const pw = liste("perioden").filter((f) => f.kuerzel && (f.aktiv || f.kuerzel === w)).map((f) => [f.kuerzel, `${f.kuerzel} – ${f.name}`]);
         return `${lab}<select ${d} style="max-width:11rem"><option value="">–</option>${pw.map(([v, t]) => `<option value="${esc(v)}" ${v === w ? "selected" : ""}>${esc(t)}</option>`).join("")}</select>`;
@@ -290,6 +292,22 @@
       const werte = x.typ === "empfaenger" ? [["zustaendig", "zuständige Rolle"], ["vorgesetzt", "vorgesetzte Stelle"]].concat(funk) : [["", "–"]].concat(funk.filter(([kk]) => kk !== e.kuerzel));
       return `${lab}<select ${d} style="max-width:12rem">${werte.map(([v, t]) => `<option value="${esc(v)}" ${String(v) === String(w) ? "selected" : ""}>${esc(t)}</option>`).join("")}</select>`;
     }
+    /** Textfarbe mit genügend Kontrast (WCAG-Luminanz) zur Hintergrundfarbe. */
+    function textFarbe(hex) {
+      const m = /^#?([0-9a-f]{6})$/i.exec(hex || "");
+      if (!m) return "";
+      const [r, g, bl] = [0, 2, 4].map((j) => { const c = parseInt(m[1].slice(j, j + 2), 16) / 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+      const L = 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+      return (L + 0.05) / 0.05 > 1.05 / (L + 0.05) ? "#000000" : "#ffffff";
+    }
+    /** Label eines Eintrags: Kürzel auf der Farbe des Eintrags, Tooltip als Titel. */
+    function label(e, text) {
+      if (!e) return "";
+      const t = esc(text || e.kuerzel || e.name);
+      const tip = esc(e.tooltip || `${e.kuerzel} = ${e.name}`);
+      return e.farbe ? `<span class="es-label" style="background:${esc(e.farbe)};color:${textFarbe(e.farbe)};border-color:${esc(e.farbe)}" title="${tip}">${t}</span>` : `<span class="es-label" title="${tip}">${t}</span>`;
+    }
+    const labelVon = (b, kz, text) => label(liste(b).find((x) => x.kuerzel === kz), text);
     /** Breite der Verknüpfungshinweise nach dem längsten Text im Katalog, damit die Felder bündig sind. */
     const bezugBreite = (b) => Math.max(0, ...liste(b).map((e) => String(e.bezug || "").length)) + 2.5;
     function zeile(b, e, i) {
@@ -374,6 +392,7 @@
         });
         return true;
       }
+      if (ak === "es-farbe-weg") { const e = l[Number(el.dataset.i)]; if (e) { e.farbe = ""; speichern(); render(); } return true; }
       if (ak === "es-vorgabe") {
         frage(`Alle Einträge unter «${KATALOGE[b].titel}» durch die Vorgabe ersetzen? Eigene Änderungen gehen verloren.`, "Vorgabe laden", () => {
           S().einstellungen[b] = JSON.parse(JSON.stringify(window.FLOW_EINSTELLUNGEN_DATEN[b]));
@@ -410,6 +429,6 @@
     /** Tooltip eines Eintrags (Kürzel) in einem Katalog; leer, wenn unbekannt. */
     const tooltip = (b, kz) => { const e = liste(b).find((x) => x.kuerzel === kz); return e ? e.tooltip || `${e.kuerzel} = ${e.name}` : ""; };
     const hauptbereiche = () => liste("aufgabenbereiche").filter((e) => e.kuerzel && e.kuerzel === e.haupt);
-    return { seite, klick, aenderung, aktiveFunktionen, aktiveKompetenzen, aktiveBezuege, hauptbereiche, tooltip, KATALOGE };
+    return { seite, klick, aenderung, aktiveFunktionen, aktiveKompetenzen, aktiveBezuege, hauptbereiche, tooltip, labelVon, farbeVon: (b, kz) => ((liste(b).find((x) => x.kuerzel === kz) || {}).farbe || ""), textFarbe, KATALOGE };
   };
 })();
