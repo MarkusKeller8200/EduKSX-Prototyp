@@ -1,6 +1,6 @@
 # Konzept: Oberfläche – Ansichten je Arbeit und wählbare Stile (#93)
 
-Stand: 2026-11-24 (Prototyp GUI-EX 0.4.0 / Meilenstein «EduKSX-Experience – GUI-Experience») · Status: **ENTWURF**
+Stand: 2026-11-24 (Prototyp GUI-EX 0.5.0 / Meilenstein «EduKSX-Experience – GUI-Experience») · Status: **ENTWURF**
 
 Entscheidungsgrundlage für EduKSX-UI und alle Module. Erprobt im Prototyp `prototypen/gui-ex` (#90, #92, #93, #95).
 Umgesetzt wird erst, was als Issue mit `_1 bereit` freigegeben ist.
@@ -32,7 +32,7 @@ Stile, die die CI-Farben ersetzen.
 | Schnell finden oder auslösen (stempeln, Dokument, Person, Modul) | **Suche/Befehle** als Fenster über jeder Seite, `Ctrl/⌘ K` bzw. `/` | A Fokus (als Fenster in B–F erprobt) | EMPFOHLEN |
 | Tagesüberblick, unterwegs, Handy/Tablet | **Startseite** mit lebenden Kacheln bzw. Cockpit | B Kacheln, E Cockpit | EMPFOHLEN |
 | Planen mit Fristen und Abläufen (Flow, Jahresplanung, Stellvertretungen) | **Zeitstrahl** als Ansicht («als Zeitstrahl zeigen») mit Fortschritt und Detailspalte | C Zeitstrahl | EMPFOHLEN |
-| Massendaten erfassen und korrigieren (Pensen, Lizenzen, Codex-Erfassung) | **Tabelle/Raster**: direkt in der Zelle bearbeiten, Tastatur, Mehrfachauswahl, Sammeländerung, Summen, Prüfhinweise, Rückgängig | F Tabelle | EMPFOHLEN |
+| Massendaten erfassen und korrigieren (Pensen, Lizenzen, Codex-Erfassung) | **Tabelle/Raster**: direkt in der Zelle bearbeiten, Tastatur, Mehrfachauswahl, Sammeländerung, Summen, Prüfhinweise, Rückgängig; Detailbereich oben, feste Ansichten mit Zählern, Mini-Grafiken und Kennzeichen in der Zeile, Statuszeile | F Tabelle | EMPFOHLEN |
 | Vergleichen, mehrere Dinge parallel | **Arbeitsfläche** mit Fenstern, nur auf grossen Bildschirmen, optional – Tabs (G) decken den häufigen Fall «zwischen Dossiers springen» einfacher ab | D Arbeitsfläche | OFFEN (E3) |
 | An einzelnen Datensätzen arbeiten (Lernende, Lehrpersonen, Klassen) | **Dossier**: Kopf mit wenigen Kernangaben, Abschnittsmenü mit Zählern, Karten mit Feldern; geöffnete Dossiers als **Tabs** | G Dossier (Anregung: Tab-Konzept einer bestehenden Schulverwaltungs-Software) | EMPFOHLEN |
 | Kurz einen Datensatz ansehen oder ändern, ohne die Liste zu verlassen | Detailspalte rechts (wie C) | C Zeitstrahl | EMPFOHLEN |
@@ -67,12 +67,12 @@ immer Symbol + Text, Orange nie Schrift.
 | Standard | ruhig, hell, wie bisher | alle | in GUI-EX | EMPFOHLEN (Grundstil) |
 | Neo-Dunkel | weiche Tiefe, Orange leuchtet, immer dunkel | Cockpit, Abendarbeit | in GUI-EX | OFFEN (E1) |
 | Glas | durchscheinend auf Pastellverlauf, hell/dunkel | Startseite, Planung | in GUI-EX | OFFEN (E1) |
-| Clay | weich und plastisch, Pastell | Startseite, Lehrpersonen | in GUI-EX | OFFEN (E1) |
-| Hoher Kontrast | schwarz/weiss, dicke Fokusrahmen, keine Transparenz | Barrierefreiheit | Vorschlag | EMPFOHLEN (Pflicht) |
-| Aurora | dunkles Glas über weichen Farbschleiern in Violett/Blau/Orange | Startseite, «Wow» | Vorschlag | OFFEN (E1) |
-| Neubrutalismus | dicke dunkle Rahmen, harte versetzte Schatten, kräftige Flächen | Primarstufe, Lernende, Kampagnen | Vorschlag | OFFEN (E1) |
-| Papier | warmes Off-White, Serifen-Überschriften, feine Linien | Codex, Rechtstexte, lange Lesestrecken | Vorschlag | OFFEN (E1) |
-| Spielerisch (Primar) | grosse Rundungen, kräftige Pastellfarben, grosse Tasten | Schülerinnen und Schüler Primarstufe | Vorschlag | OFFEN (E1) |
+| Clay | weich und plastisch, Pastell, zurückhaltende Rundung (16/10 px) | Startseite, Lehrpersonen | in GUI-EX | OFFEN (E1) |
+| Hoher Kontrast | schwarz/weiss, dicke Fokusrahmen, keine Transparenz | Barrierefreiheit | in GUI-EX | EMPFOHLEN (Pflicht) |
+| Aurora | dunkles Glas über weichen Farbschleiern in Violett/Blau/Orange | Startseite, «Wow» | in GUI-EX | OFFEN (E1) |
+| Neubrutalismus | dicke dunkle Rahmen, harte versetzte Schatten, kräftige Flächen | Primarstufe, Lernende, Kampagnen | in GUI-EX | OFFEN (E1) |
+| Papier | warmes Off-White, Serifen-Überschriften, feine Linien | Codex, Rechtstexte, lange Lesestrecken | in GUI-EX | OFFEN (E1) |
+| Spielerisch (Primar) | grosse Rundungen, kräftige Pastellfarben, grosse Tasten | Schülerinnen und Schüler Primarstufe | in GUI-EX | OFFEN (E1) |
 
 Zusätzlich, unabhängig vom Stil:
 
@@ -118,8 +118,10 @@ Zusätzlich, unabhängig vom Stil:
 | #92 | GUI-EX: Stil-Schalter, Variante E, Zeitstrahl mit Fortschritt | `_3 Beta-Test` |
 | #93 | GUI-EX: Variante F Tabelle, Suche überall, dieses Konzept | `_3 Beta-Test` |
 | #95 | GUI-EX: Variante G Dossier mit Tabs, Dossier-Ansicht und Tab-Regeln | `_3 Beta-Test` |
+| #98 | GUI-EX: weitere Stile, Variante F mit Detailbereich, Mini-Grafiken, Statuszeile | `_3 Beta-Test` |
 
 ## 7. Verlauf
 
 - 2026-11-24: Konzept angelegt nach Test von GUI-EX 0.2.0; Beschluss «Konzepte je Art der Arbeit».
 - 2026-11-24: Dossier-Ansicht, Regeln für Tabs und Datenschutz in Dossiers ergänzt (G, #95); E6, E7 neu.
+- 2026-11-24: Clay weniger rund; fünf weitere Stile und erweiterte Tabelle im Prototyp (#98).

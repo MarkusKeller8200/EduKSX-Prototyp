@@ -36,6 +36,10 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-24 – GUI-EX 0.5.0: weitere Stile, Tabelle erweitert, #98
+
+Clay weniger rund (0.4.1, #97). Stile Aurora, Neubrutalismus, Papier, Spielerisch, Hoher Kontrast eingebaut (vorher nur im Konzept). Tabelle F nach Anregung einer Profi-Musiksoftware: Detailbereich oben, feste Ansichten, Mini-Grafiken, Kennzeichen, Statuszeile. Hinweis: Pages-Deploy brach zweimal mit GitHub-Fehler «Artefakt nicht gefunden» ab, erneuter Lauf half.
+
 ### Sitzung 2026-11-24 – GUI-EX 0.4.0: Variante G Dossier mit Tabs, #95
 
 Tab-Konzept einer bestehenden Schulverwaltungs-Software bewertet (Bildschirmfotos nur konzeptionell, nach der Bewertung gelöscht, nichts ins Repo). Übernommen als Variante G mit Regeln (höchstens 8 Tabs, «Zuletzt», Link teilbar, Kürzel) und Datenschutz (geschützte Felder je Rolle, Anzeigen protokolliert). Konzept: Dossier-Ansicht, Tab-Regeln, E6/E7 offen.

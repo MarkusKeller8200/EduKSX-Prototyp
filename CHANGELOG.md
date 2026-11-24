@@ -8,6 +8,9 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **GUI-EX 0.5.0 – weitere Stile, Tabelle erweitert (24.11.2026, #98):** Stile Aurora, Neubrutalismus, Papier, Spielerisch
+  und Hoher Kontrast im Stil-Schalter (neun Stile); Variante F mit Detailbereich oben, Seitenleiste mit festen Ansichten
+  und Zählern, Mini-Grafiken (Pensum-Balken, Ist 8 Wochen), Kennzeichen für Funktion und Status, Statuszeile.
 - **GUI-EX 0.4.0 – Variante G Dossier mit Tabs (24.11.2026, #95):** geöffnete Dossiers als Tabs (höchstens 8, «Zuletzt»,
   anheften, mittlere Maustaste, Alt+1–9, Tabs in der Adresse, Kürzel statt Namen, schmal als Liste), Dossier mit
   Kernangaben und Abschnitten, geschützte Felder je Rolle mit Protokollhinweis; Konzept um Dossier-Ansicht, Tab-Regeln
