@@ -128,7 +128,9 @@ html[data-stil="glas"] .eintrag { -webkit-backdrop-filter: blur(8px); backdrop-f
 
 /* ---------- Clay: weiche, plastische Formen in Pastell ---------- */
 html[data-stil="clay"] {
-  --background: #eef0fa; --muted: #e6e9f6; --sidebar: #eceefa; --radius: 24px; --stil-rand: transparent;
+  --background: #eef0fa; --muted: #e6e9f6; --sidebar: #eceefa; --stil-rand: transparent;
+  /* Rundung zurückhaltend (Rückmeldung 24.11.2026: Ecken waren zu rund) */
+  --clay-rund: 16px; --clay-rund-klein: 10px; --radius: var(--clay-rund);
   --clay: 12px 14px 28px rgb(84 92 150 / .2), inset -5px -7px 12px rgb(84 92 150 / .12), inset 5px 5px 10px rgb(255 255 255 / .9);
   --clay-klein: 5px 6px 12px rgb(84 92 150 / .2), inset -3px -4px 7px rgb(84 92 150 / .12), inset 3px 3px 6px rgb(255 255 255 / .9);
 }
@@ -139,12 +141,14 @@ html.dark[data-stil="clay"] {
 }
 html[data-stil="clay"] body { background: var(--background) !important; }
 html[data-stil="clay"] .tisch { background-color: var(--background); background-image: none; }
-html[data-stil="clay"] :is(.kachel, .fenster, .treffer, .blatt .innen, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .ex-leiste, .dock, .seite table, .klein-hinweis) {
-  box-shadow: var(--clay); border-radius: 28px; }
+html[data-stil="clay"] :is(.kachel, .fenster, .treffer, .zeile, .detail, .v-karte, .ex-dialog, .bisher, .seite table, .klein-hinweis, .karte-d) {
+  box-shadow: var(--clay); border-radius: var(--clay-rund); }
+html[data-stil="clay"] .blatt .innen { box-shadow: var(--clay); border-radius: var(--clay-rund) var(--clay-rund) 0 0; }
+html[data-stil="clay"] :is(.ex-leiste, .dock) { box-shadow: var(--clay); }
 html[data-stil="clay"] :is(.kachel:not(.stempel):not(.lila)) { background: var(--m-soft, var(--card)); }
 html[data-stil="clay"] :is(.suche input, .tipp, .knopf, .segment, .zurueck, .filter label, .zeile button, .koerper .knopf, .blatt .zu, .detail .zu, .detail .knoepfe button, .blatt .aktionen button, .symbol .ico, .eintrag, .status, .ex-dialog button, .ex-skala label) {
   box-shadow: var(--clay-klein); border-color: transparent; }
-html[data-stil="clay"] .eintrag { border-radius: 14px; }
+html[data-stil="clay"] :is(.suche input, .knopf, .zeile button, .koerper .knopf, .detail .knoepfe button, .blatt .aktionen button, .symbol .ico, .eintrag, .ex-dialog button, .ex-skala label) { border-radius: var(--clay-rund-klein); }
 html[data-stil="clay"] .fenster .titelbalken { background: transparent; }
 html[data-stil="clay"] :is(.ecke, .tagkopf, .bahnkopf, .senkrecht h3) { background: var(--background); }
 html[data-stil="clay"] .zelle, html[data-stil="clay"] .tagkopf { border-color: rgb(84 92 150 / .12); }
@@ -166,5 +170,5 @@ html[data-stil="clay"] .zelle, html[data-stil="clay"] .tagkopf { border-color: r
 .ex-suche .neben { margin-left: auto; font-size: .78rem; color: var(--muted-foreground); }
 .ex-suche .leer { padding: 1rem; color: var(--muted-foreground); }
 html[data-stil="glas"] .ex-suche { background: var(--glas-stark); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); }
-html[data-stil="clay"] .ex-suche { box-shadow: var(--clay); border-radius: 28px; border-color: transparent; }
+html[data-stil="clay"] .ex-suche { box-shadow: var(--clay); border-radius: var(--clay-rund); border-color: transparent; }
 html[data-stil="neo"] .ex-suche { box-shadow: var(--flaeche-schatten); }
