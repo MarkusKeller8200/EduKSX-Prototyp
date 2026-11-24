@@ -155,6 +155,45 @@
     v.reviews = v.reviews || [];
   });
 
+  // ------------------------------------------------------------ Versionsverlauf und Vorlagenbibliothek (Stufe 3)
+  const kopie = (o) => JSON.parse(JSON.stringify(o));
+  // Herkunft: alle Vorlagen stammen aus der EduKSX-Standardbibliothek; Basis = installierte Standardfassung
+  D.VORLAGEN.forEach((v) => {
+    v.herkunft = v.herkunft || { quelle: "EduKSX-Standard", stdVersion: v.version, basis: kopie(v.schritte) };
+    v.verlauf = v.verlauf || [{ version: v.version, am: "2026-08-01", durch: "Ressortvorstand", grund: "Übernahme aus der EduKSX-Standardbibliothek", schritte: kopie(v.schritte), felder: kopie(v.felder) }];
+  });
+  // Onboarding: ältere Version 2 (erfunden) für den Versionsvergleich und eine lokale Anpassung gegenüber dem Standard
+  const onb = D.VORLAGEN.find((v) => v.id === "onboarding");
+  const v2 = kopie(onb.schritte).filter((x) => x.id !== "o10").map((x) => (x.id === "o12" ? Object.assign(x, { tage: -21 }) : x));
+  onb.verlauf.unshift({ version: 2, am: "2025-08-01", durch: "Ressortvorstand", grund: "Zugang Notfall-App fehlte noch; Berufsauftrag früher", schritte: v2, felder: kopie(onb.felder) });
+  onb.schritte.find((x) => x.id === "o15").rolle = "SV"; // lokale Anpassung: Schlüssel gibt bei uns die Schulverwaltung ab
+  onb.verlauf[onb.verlauf.length - 1].schritte = kopie(onb.schritte);
+  // Standardbibliothek: neuere Fassung Onboarding und zwei Vorlagen, die noch nicht übernommen sind
+  const std4 = kopie(onb.herkunft.basis);
+  std4.find((x) => x.id === "o5").tage = -30;
+  std4.find((x) => x.id === "o15").rolle = "FM"; // Standard: Facility Management – lokal angepasst auf SV (Konflikt-Beispiel)
+  std4.find((x) => x.id === "o15").quelle = "Prozessliste (Schlüssel); Schlüsselreglement (ZU PRÜFEN)";
+  std4.push({ id: "o21", typ: "nachweis", titel: "Datenschutzschulung bestätigen", rolle: "SV", tage: -7, nach: ["o11"], aktion: null, auto: false, informiert: [], bedingung: null, fd: "", quelle: "IDG § 7 (Informationssicherheit, ZU PRÜFEN); Jahresplanung ICT (Datenschutz)" });
+  D.BIBLIOTHEK = [
+    { id: "onboarding", version: 4, titel: "Onboarding Mitarbeitende", gruppe: "Personal", notiz: "Neuer Schritt Datenschutzschulung; Konto früher anlegen (T−30); Schlüssel neu beim Facility Management.", schritte: std4 },
+    { id: "dsv", version: 1, titel: "Datenschutzvorfall", gruppe: "Informationssicherheit", stichtag: "Feststellung des Vorfalls", beschreibung: "Meldung, Abklärung und Massnahmen bei einem Datenschutzvorfall.",
+      felder: [{ key: "person", label: "Vorfall (Kurzbezeichnung)", typ: "text" }, { key: "stichtag", label: "Feststellung des Vorfalls", typ: "datum" }],
+      schritte: [
+        { id: "dsv1", titel: "Vorfall melden und erfassen", rolle: "SV", tage: 0, nach: [], aktion: null, quelle: "IDG § 12 a (Meldepflicht, ZU PRÜFEN)" },
+        { id: "dsv2", typ: "entscheidung", optionen: ["Meldung an Datenschutzbeauftragte nötig", "nicht meldepflichtig"], titel: "Risiko beurteilen", rolle: "DSB", tage: 1, nach: ["dsv1"], aktion: null, quelle: "IDG § 12 a; Leitlinie Informationssicherheit (ZU PRÜFEN)", fristart: "gesetzlich" },
+        { id: "dsv3", titel: "Meldung an die Datenschutzbeauftragte des Kantons", rolle: "DSB", tage: 3, nach: ["dsv2"], aktion: null, bedingung: { feld: "dsv2.wahl", op: "=", wert: "Meldung an Datenschutzbeauftragte nötig" }, quelle: "IDG § 12 a (ZU PRÜFEN)" },
+        { id: "dsv4", titel: "Massnahmen umsetzen und dokumentieren", rolle: "ICT", tage: 14, nach: ["dsv2"], aktion: null, quelle: "Leitlinie Informationssicherheit (ZU PRÜFEN)" },
+      ] },
+    { id: "elt", version: 1, titel: "Elternabend", gruppe: "Lernende", stichtag: "Datum Elternabend", beschreibung: "Einladung, Durchführung und Nachbereitung eines Elternabends.",
+      felder: [{ key: "person", label: "Klasse bzw. Anlass", typ: "text" }, { key: "stichtag", label: "Datum Elternabend", typ: "datum" }],
+      schritte: [
+        { id: "elt1", typ: "termin", titel: "Termin und Raum festlegen", rolle: "SL", tage: -30, nach: [], aktion: null, quelle: "Interne Vorgabe (ZU PRÜFEN)" },
+        { id: "elt2", titel: "Einladung an Erziehungsberechtigte", rolle: "SL", tage: -21, nach: ["elt1"], aktion: { vorgang: "core.mitteilung.senden", param: { an: "Erziehungsberechtigte", vorlage: "Einladung Elternabend {person}" } }, quelle: "VSG § 55 (Zusammenarbeit mit den Eltern, ZU PRÜFEN)" },
+        { id: "elt3", typ: "warten", titel: "Elternabend", rolle: "SL", tage: 0, nach: ["elt2"], aktion: null, quelle: "Interne Vorgabe (ZU PRÜFEN)" },
+        { id: "elt4", titel: "Protokoll und Informationen nachreichen", rolle: "SL", tage: 7, nach: ["elt3"], aktion: null, quelle: "Interne Vorgabe (ZU PRÜFEN)" },
+      ] },
+  ];
+
   // ------------------------------------------------------------ Weitere Testabläufe (erfundene Angaben)
   D.LAEUFE.push(
     { vorlage: "ictsw", tageBisStichtag: 45, kontext: { person: "Lernplattform Mathematik", daten: "ja" }, erledigt: ["ictsw1", "ictsw2", "ictsw3", "ictsw4"] },

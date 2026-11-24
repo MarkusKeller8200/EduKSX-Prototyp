@@ -237,6 +237,19 @@
                 "template_group": "Beispiel",
                 "reference_date_label": "Beispiel",
                 "description": "Beispiel",
+                "change_reason": "Beispiel",
+                "process_number": "Beispiel",
+                "process_category": "management",
+                "protection_need": "normal",
+                "review_period_code": "Beispiel",
+                "last_review_on": "2027-08-23",
+                "review_due_reason": "Beispiel",
+                "valid_from": "2027-08-23",
+                "valid_until": "2027-08-23",
+                "process_documents": "Beispiel",
+                "origin": "eduksx_standard",
+                "origin_version": 1,
+                "origin_base": {},
                 "fields": [
                   "Beispiel"
                 ],
@@ -2878,6 +2891,19 @@
             "$ref": "#/components/parameters/IfMatch"
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplateRelease"
+              },
+              "example": {
+                "change_reason": "Beispiel"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Ergebnis",
@@ -2892,6 +2918,324 @@
                   },
                   "required": [
                     "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/templates/{id}/reviews": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "post": {
+        "tags": [
+          "templates"
+        ],
+        "operationId": "reviewTemplate",
+        "summary": "Review erfassen",
+        "description": "Review erfassen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "flow:templates.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "templates.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Review erfassen",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TemplateReview"
+              },
+              "example": {
+                "outcome": "unchanged",
+                "remark": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Template"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/templates/{id}/diff": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "get": {
+        "tags": [
+          "templates"
+        ],
+        "operationId": "diffTemplate",
+        "summary": "Versionen vergleichen",
+        "description": "Versionen vergleichen.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "flow:templates.read"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "templates.read",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Versionen vergleichen",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "description": "Version, «standard» oder «current»",
+            "schema": {
+              "type": "string",
+              "title": "Von"
+            },
+            "example": "Beispiel"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "description": "Version, «standard» oder «current»",
+            "schema": {
+              "type": "string",
+              "title": "Nach"
+            },
+            "example": "Beispiel"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/TemplateDiff"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/templates/{id}/standard-update": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Id"
+        },
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "post": {
+        "tags": [
+          "templates"
+        ],
+        "operationId": "applyStandardUpdate",
+        "summary": "Neue Standardfassung als Entwurf übernehmen",
+        "description": "Drei-Wege-Abgleich; lokale Anpassungen werden nie überschrieben.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "flow:templates.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "templates.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Neue Standardfassung als Entwurf übernehmen",
+        "responses": {
+          "200": {
+            "description": "Ergebnis",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/TemplateDiff"
+                    }
+                  },
+                  "required": [
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthenticated"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/ValidationFailed"
+          }
+        }
+      }
+    },
+    "/api/v1/org/source-changes": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/Organization"
+        }
+      ],
+      "post": {
+        "tags": [
+          "sources"
+        ],
+        "operationId": "reportSourceChange",
+        "summary": "Änderung einer Rechtsgrundlage melden",
+        "description": "Änderung einer Rechtsgrundlage melden.",
+        "security": [
+          {
+            "eduksx_ident": [
+              "flow:sources.write"
+            ]
+          }
+        ],
+        "x-eduksx-ability": "sources.write",
+        "x-eduksx-data-classes": [
+          "internal"
+        ],
+        "x-eduksx-purpose": "Änderung einer Rechtsgrundlage melden",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourceChange"
+              },
+              "example": {
+                "source_code": "Beispiel",
+                "change_type": "new_version",
+                "valid_from": "2027-08-23",
+                "remark": "Beispiel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Liste",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Template"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/ListMeta"
+                    },
+                    "links": {
+                      "$ref": "#/components/schemas/Links"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "meta"
                   ]
                 }
               }
@@ -5584,6 +5928,171 @@
             "readOnly": true,
             "x-eduksx-data-class": "internal"
           },
+          "change_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Änderungsbegründung",
+            "description": "Pflicht bei der Freigabe (Prozesslenkung, Stufe 3)",
+            "x-eduksx-data-class": "internal"
+          },
+          "process_number": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Prozessnummer",
+            "description": "z. B. «P-PER-01»",
+            "x-eduksx-data-class": "internal"
+          },
+          "process_category": {
+            "type": "string",
+            "x-extensible-enum": [
+              "management",
+              "core",
+              "support"
+            ],
+            "x-eduksx-labels": {
+              "management": "Führungsprozess",
+              "core": "Kernprozess",
+              "support": "Supportprozess"
+            },
+            "title": "Kategorie",
+            "description": "Prozesslandkarte",
+            "x-eduksx-data-class": "internal"
+          },
+          "process_category_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Kategorie (Text)",
+            "description": "deutsches Label zu «process_category» in der gewählten Sprache"
+          },
+          "protection_need": {
+            "type": "string",
+            "x-extensible-enum": [
+              "normal",
+              "high",
+              "very_high"
+            ],
+            "x-eduksx-labels": {
+              "normal": "normal",
+              "high": "hoch",
+              "very_high": "sehr hoch"
+            },
+            "title": "Schutzbedarf",
+            "description": "Klassifizierung",
+            "x-eduksx-data-class": "internal"
+          },
+          "protection_need_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Schutzbedarf (Text)",
+            "description": "deutsches Label zu «protection_need» in der gewählten Sprache"
+          },
+          "review_period_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Reviewintervall",
+            "description": "Kürzel aus Einstellungen › Periode",
+            "x-eduksx-data-class": "internal"
+          },
+          "last_review_on": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "title": "Letzter Review",
+            "description": "«Ablaufvorlagen»; Schulverwaltung bereitet vor, Ressortvorstand gibt frei",
+            "x-eduksx-data-class": "internal"
+          },
+          "review_due_reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Review nötig wegen",
+            "description": "z. B. geänderte Rechtsgrundlage",
+            "x-eduksx-data-class": "internal"
+          },
+          "valid_from": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "title": "Gültig ab",
+            "description": "Prozesslenkung",
+            "x-eduksx-data-class": "internal"
+          },
+          "valid_until": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "title": "Gültig bis",
+            "description": "Prozesslenkung",
+            "x-eduksx-data-class": "internal"
+          },
+          "process_documents": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Prozessdokumente",
+            "description": "Reglemente, Weisungen, Hilfsmittel",
+            "x-eduksx-data-class": "internal"
+          },
+          "origin": {
+            "type": "string",
+            "x-extensible-enum": [
+              "eduksx_standard",
+              "cantonal",
+              "community",
+              "own",
+              "derived"
+            ],
+            "x-eduksx-labels": {
+              "eduksx_standard": "EduKSX-Standard",
+              "cantonal": "kantonale Vorlage",
+              "community": "Community-Vorlage",
+              "own": "eigene Vorlage",
+              "derived": "abgeleitete Vorlage"
+            },
+            "title": "Herkunft",
+            "description": "Vorlagenbibliothek",
+            "x-eduksx-data-class": "internal"
+          },
+          "origin_label": {
+            "type": "string",
+            "readOnly": true,
+            "title": "Herkunft (Text)",
+            "description": "deutsches Label zu «origin» in der gewählten Sprache"
+          },
+          "origin_version": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int32",
+            "title": "Standardversion",
+            "description": "installierte Fassung (Basis des Drei-Wege-Abgleichs)",
+            "x-eduksx-data-class": "internal"
+          },
+          "origin_base": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": true,
+            "title": "Basis",
+            "description": "Schritte der installierten Standardfassung",
+            "x-eduksx-data-class": "internal"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -7294,6 +7803,143 @@
           "substitute_role_code",
           "valid_from",
           "valid_until"
+        ]
+      },
+      "TemplateRelease": {
+        "type": "object",
+        "title": "Vorlage freigeben",
+        "description": "Freigabe mit Änderungsbegründung (Prozesslenkung)",
+        "properties": {
+          "change_reason": {
+            "type": "string",
+            "title": "Änderungsbegründung",
+            "description": "Pflicht"
+          }
+        },
+        "required": [
+          "change_reason"
+        ]
+      },
+      "TemplateReview": {
+        "type": "object",
+        "title": "Review",
+        "description": "Review einer Vorlage",
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "x-extensible-enum": [
+              "unchanged",
+              "change_needed"
+            ],
+            "x-eduksx-labels": {
+              "unchanged": "ohne Änderung",
+              "change_needed": "Anpassung nötig"
+            },
+            "title": "Ergebnis",
+            "description": "Review"
+          },
+          "remark": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "Pflicht bei Anpassung"
+          }
+        },
+        "required": [
+          "outcome"
+        ]
+      },
+      "TemplateDiff": {
+        "type": "object",
+        "title": "Versionsvergleich",
+        "description": "Unterschiede zweier Fassungen",
+        "properties": {
+          "added": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Neu",
+            "description": "Kürzel"
+          },
+          "removed": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Entfernt",
+            "description": "Kürzel"
+          },
+          "changed": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "title": "Geändert",
+            "description": "Kürzel, Feld, alt, neu"
+          },
+          "conflicts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            },
+            "title": "Konflikte",
+            "description": "lokale Anpassung betroffen (Drei-Wege-Abgleich)"
+          }
+        }
+      },
+      "SourceChange": {
+        "type": "object",
+        "title": "Änderung einer Rechtsgrundlage",
+        "description": "löst Reviews der betroffenen Vorlagen aus",
+        "properties": {
+          "source_code": {
+            "type": "string",
+            "title": "Quelle",
+            "description": "Kürzel"
+          },
+          "change_type": {
+            "type": "string",
+            "x-extensible-enum": [
+              "new_version",
+              "validity",
+              "repealed",
+              "renumbered"
+            ],
+            "x-eduksx-labels": {
+              "new_version": "neue Fassung",
+              "validity": "geänderte Gültigkeit",
+              "repealed": "aufgehoben",
+              "renumbered": "Paragraf umnummeriert"
+            },
+            "title": "Art",
+            "description": "Änderung"
+          },
+          "valid_from": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "title": "Gültig ab",
+            "description": "Datum"
+          },
+          "remark": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bemerkung",
+            "description": "Freitext"
+          }
+        },
+        "required": [
+          "source_code",
+          "change_type"
         ]
       },
       "StepReopen": {

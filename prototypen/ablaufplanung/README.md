@@ -100,6 +100,9 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
   verwendet für Rollen und Kompetenzen.
 - **Stufe 3 – Prozesslenkung** (0.15.0): Prozessblatt je Vorlage, Freigabe mit Änderungsbegründung und
   Versionsverlauf, Prozessreviews nach Intervall, Prozesslandkarte (Führungs-, Kern-, Supportprozesse).
+- **Stufe 3 – Rechtsgrundlagen und Bibliothek** (0.16.0): Rückwärtssuche vom Gesetzesartikel zu den Schritten,
+  Änderungen einer Rechtsgrundlage lösen Reviews aus, Versionsverlauf und -vergleich, Vorlagenbibliothek mit
+  Drei-Wege-Abgleich (lokale Anpassungen werden nie überschrieben).
 - **Simulation:** simulierter Tag (+1, +7, nächste Frist), Module als «nicht erreichbar» schalten, Rollenwechsel.
 
 ## Grundlagen

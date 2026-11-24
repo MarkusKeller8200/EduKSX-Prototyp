@@ -7,7 +7,7 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v6";
-  const VERSION = "0.15.0";
+  const VERSION = "0.16.0";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
@@ -711,6 +711,8 @@
     kalender: ico('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M7 14h3M14 14h3M7 17.5h3"/>'),
     ausloeser: ico('<path d="M13 2L4.5 13.5H12L11 22l8.5-11.5H12z"/>'),
     landkarte: ico('<rect x="3" y="3" width="18" height="5" rx="1"/><rect x="3" y="10" width="18" height="5" rx="1"/><rect x="3" y="17" width="18" height="4" rx="1"/><path d="M8 5.5h.01M8 12.5h.01M12 12.5h.01M8 19h.01"/>'),
+    recht: ico('<path d="M12 3v18M5 7h14"/><path d="M5 7l-3 6a3 3 0 0 0 6 0zM19 7l-3 6a3 3 0 0 0 6 0z"/><path d="M8 21h8"/>'),
+    bibliothek: ico('<path d="M4 4h4v16H4zM10 4h4v16h-4z"/><path d="M16 5l3.5-1 2.5 15.5-3.5 1z"/>'),
     reviews: ico('<path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 4v4h4"/><path d="M9 12l2 2 4-4"/>'),
     vertretungen: ico('<circle cx="8" cy="8" r="3"/><path d="M3 19c.5-3 2.6-5 5-5"/><path d="M14 13h7M18 10l3 3-3 3"/>'),
     "einstellungen/kompetenzen": ico('<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="1.8" fill="currentColor"/><circle cx="15" cy="12" r="1.8" fill="currentColor"/><circle cx="10" cy="18" r="1.8" fill="currentColor"/>'),
@@ -738,6 +740,8 @@
     ["gruppe", "Qualität"],
     ["landkarte", "Prozesslandkarte"],
     ["reviews", "Prozessreviews"],
+    ["recht", "Rechtsgrundlagen"],
+    ["bibliothek", "Vorlagenbibliothek"],
     ["gruppe", "Nachvollziehen"],
     ["protokoll", "Aufrufprotokoll"],
     ["gruppe", "Einstellungen"],
@@ -1216,11 +1220,13 @@
         <button role="tab" aria-selected="${reiter === "liste"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/liste">Schritte (${v.schritte.length})</button>
         <button role="tab" aria-selected="${reiter === "felder"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/felder">Kontextfelder</button>
         <button role="tab" aria-selected="${reiter === "prozess"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/prozess">Prozessblatt</button>
+        <button role="tab" aria-selected="${reiter === "verlauf"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/verlauf">Verlauf (${(v.verlauf || []).length})</button>
         <button role="tab" aria-selected="${reiter === "ausloeser"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/ausloeser">Auslöser (${(v.ausloeser || []).length})</button>
       </div>
       ${reiter === "bild" ? `${quellenVerzeichnis(v.schritte)}<p class="small muted">Bahnen = verantwortliche Rolle, von links nach rechts = Reihenfolge (Pfeil = «nach»). ${darf ? "Schritt anklicken zum Bearbeiten." : ""} Gestrichelt = nur unter Bedingung.</p>${ablaufbild(v.schritte)}`
         : reiter === "ausloeser" ? vorlageAusloeser(v, darf)
         : reiter === "prozess" ? prozessblatt(v, darfLenkung())
+        : reiter === "verlauf" ? vorlageVerlauf(v)
         : reiter === "felder" ? `<p class="small muted">Angaben beim Start eines Ablaufs. Sie stehen als Platzhalter in den Parametern zur Verfügung, dazu <code>{stichtag+N}</code>/<code>{stichtag-N}</code> und Ergebnisse früherer Schritte wie <code>{o5.benutzername}</code>.</p><div class="tabelle-wrap"><table><thead><tr><th>Platzhalter</th><th>Bezeichnung</th><th>Typ</th></tr></thead><tbody>${felder}</tbody></table></div>`
         : `<div class="tabelle-wrap"><table><thead><tr><th class="zahl">#</th><th>Schritt</th><th>Wer</th><th>Frist</th><th>Nach</th><th>Aufruf</th><th>Ausführung</th><th>Quelle</th><th></th></tr></thead><tbody>${zeilen}</tbody></table></div>${quellenVerzeichnis(v.schritte)}`}`;
   }
@@ -1316,6 +1322,108 @@
         <div class="feldzeile"><span class="muted">Review</span><span>letzter ${datumKurz(m.letzterReview)} · nächster ${datumKurz(naechsterReview(v))} ${reviewBadge(v)} ${darfLenkung() ? `<button class="btn klein" data-aktion="review" data-vorlage="${esc(v.id)}">✓ Review erfassen</button>` : ""}</span></div>
       </div></div>
       <h3 style="margin-top:1rem">Reviews</h3>${rv.length ? `<ul class="infoliste">${rv.map((r) => `<li><span class="small muted">${datumKurz(r.am)}</span> ${esc(r.durch)} – <strong>${esc(r.ergebnis)}</strong>${r.bemerkung ? ": " + esc(r.bemerkung) : ""}</li>`).join("")}</ul>` : `<p class="small muted">Noch keine Reviews erfasst.</p>`}`;
+  }
+
+  // ---------------------------------------------------------------- Versionsvergleich und Bibliothek (Stufe 3)
+  const VGL_FELDER = [["titel", "Bezeichnung"], ["typ", "Art"], ["rolle", "Verantwortlich"], ["tage", "Frist"], ["nach", "Erst nach"], ["aktion", "Aufruf"], ["auto", "Automatisch"], ["bedingung", "Bedingung"], ["fristart", "Fristart"], ["quelle", "Quelle"], ["informiert", "Informiert"], ["fd", "Funktionendiagramm"], ["optionen", "Möglichkeiten"], ["unter", "Unterprozess"], ["mehrfach", "Mehrfachgenehmigung"]];
+  function normFeld(st, f) {
+    if (!st) return "";
+    if (f === "typ") return typVon(st);
+    if (f === "tage") return tKurz(st.tage);
+    if (f === "aktion") return st.aktion ? `${st.aktion.vorgang} ${JSON.stringify(st.aktion.param || {})}` : "";
+    if (f === "bedingung") return bedingungText(st.bedingung) || "";
+    if (f === "fristart") return st.fristart || "intern";
+    if (f === "auto") return st.auto ? "ja" : "nein";
+    if (Array.isArray(st[f])) return st[f].join(", ");
+    if (st[f] && typeof st[f] === "object") return JSON.stringify(st[f]);
+    return st[f] == null ? "" : String(st[f]);
+  }
+  const anzeigeFeld = (st, f) => (f === "aktion" ? (st && st.aktion ? st.aktion.vorgang : "") : normFeld(st, f));
+  /** Unterschiede zwischen zwei Schrittlisten (neu, entfernt, geändert je Feld). */
+  function diffSchritte(a, b) {
+    const ia = Object.fromEntries((a || []).map((x) => [x.id, x])), ib = Object.fromEntries((b || []).map((x) => [x.id, x]));
+    const neu = (b || []).filter((x) => !ia[x.id]), weg = (a || []).filter((x) => !ib[x.id]);
+    const geaendert = (b || []).filter((x) => ia[x.id]).map((x) => ({ id: x.id, titel: x.titel, felder: VGL_FELDER.filter(([f]) => normFeld(ia[x.id], f) !== normFeld(x, f)).map(([f, l]) => [f, l, anzeigeFeld(ia[x.id], f), anzeigeFeld(x, f)]) })).filter((x) => x.felder.length);
+    return { neu, weg, geaendert };
+  }
+  function diffHtml(d, leer) {
+    if (!d.neu.length && !d.weg.length && !d.geaendert.length) return `<p class="small muted">${leer || "Keine Unterschiede in den Schritten."}</p>`;
+    return `<ul class="infoliste diff">${d.neu.map((x) => `<li><span class="badge erfolg">＋ neu</span> <strong>${esc(x.titel)}</strong> <span class="small muted">${esc(x.id)} · ${esc(x.rolle)} · ${tKurz(x.tage)}</span></li>`).join("")}${d.weg.map((x) => `<li><span class="badge fehler">− entfernt</span> <strong>${esc(x.titel)}</strong> <span class="small muted">${esc(x.id)}</span></li>`).join("")}${d.geaendert.map((x) => `<li><span class="badge warnung">✎ geändert</span> <strong>${esc(x.titel)}</strong> <span class="small muted">${esc(x.id)}</span><ul>${x.felder.map(([, l, a, b]) => `<li class="small">${esc(l)}: <del>${esc(a || "–")}</del> → <ins>${esc(b || "–")}</ins></li>`).join("")}</ul></li>`).join("")}</ul>`;
+  }
+  let VGL = {};
+  function vorlageVerlauf(v) {
+    const vs = (v.verlauf || []).slice().sort((a, b) => a.version - b.version);
+    const opt = [["aktuell", `aktuell (v${v.version}${v.status === "entwurf" ? ", Entwurf" : ""})`]].concat(vs.map((x) => [String(x.version), `Version ${x.version} (${datumKurz(x.am)})`])).concat(v.herkunft ? [["standard", `EduKSX-Standard v${v.herkunft.stdVersion} (Basis)`]] : []);
+    const wahl = VGL[v.id] || { a: vs.length > 1 ? String(vs[vs.length - 2].version) : v.herkunft ? "standard" : "aktuell", b: "aktuell" };
+    const stand = (k) => (k === "aktuell" ? v.schritte : k === "standard" ? (v.herkunft || {}).basis : ((vs.find((x) => String(x.version) === k) || {}).schritte));
+    const sel = (seite) => `<select data-aktion="vgl" data-seite="${seite}" data-vorlage="${esc(v.id)}">${opt.map(([k, t]) => `<option value="${esc(k)}" ${wahl[seite] === k ? "selected" : ""}>${esc(t)}</option>`).join("")}</select>`;
+    const lokal = v.herkunft ? diffSchritte(v.herkunft.basis, v.schritte) : null;
+    return `<p class="small muted">Jede Freigabe legt die Version mit Begründung ab. Laufende Abläufe bleiben auf ihrer Version.</p>
+      <div class="tabelle-wrap"><table><thead><tr><th>Version</th><th>Freigegeben</th><th>Durch</th><th>Begründung</th><th>Schritte</th></tr></thead><tbody>${vs.slice().reverse().map((x) => `<tr><td>v${esc(x.version)}</td><td>${datumKurz(x.am)}</td><td>${esc(x.durch)}</td><td class="small">${esc(x.grund)}</td><td>${(x.schritte || []).length}</td></tr>`).join("")}</tbody></table></div>
+      <h3 style="margin-top:1rem">Versionen vergleichen</h3><div class="formzeile"><label class="feld">Von${sel("a")}</label><label class="feld">Nach${sel("b")}</label></div>${diffHtml(diffSchritte(stand(wahl.a), stand(wahl.b)))}
+      ${v.herkunft ? `<h3 style="margin-top:1rem">Herkunft</h3><p class="small">${esc(v.herkunft.quelle)}, Standardversion ${esc(v.herkunft.stdVersion)}. ${lokal.neu.length || lokal.weg.length || lokal.geaendert.length ? "<strong>Lokal angepasst:</strong>" : "Keine lokalen Anpassungen."}</p>${lokal.neu.length || lokal.weg.length || lokal.geaendert.length ? diffHtml(lokal) : ""}` : ""}`;
+  }
+  /** Drei-Wege-Abgleich: Änderungen des Standards übernehmen, lokale Anpassungen nie überschreiben. */
+  function aktualisierungPlanen(v, std) {
+    const basis = (v.herkunft || {}).basis || [];
+    const dStd = diffSchritte(basis, std.schritte);
+    const ib = Object.fromEntries(basis.map((x) => [x.id, x])), il = Object.fromEntries(v.schritte.map((x) => [x.id, x]));
+    const plan = { neu: dStd.neu.filter((x) => !il[x.id]), weg: [], felder: [], konflikte: [] };
+    dStd.weg.forEach((x) => { const l = il[x.id]; if (!l) return; if (VGL_FELDER.every(([f]) => normFeld(l, f) === normFeld(ib[x.id], f))) plan.weg.push(x); else plan.konflikte.push({ id: x.id, titel: x.titel, text: "im Standard entfernt, lokal angepasst – bleibt" }); });
+    dStd.geaendert.forEach((g) => { const l = il[g.id]; if (!l) return; g.felder.forEach(([f, label, alt, neu]) => {
+      if (normFeld(l, f) === normFeld(ib[g.id], f)) plan.felder.push({ id: g.id, titel: g.titel, f, label, alt, neu });
+      else if (normFeld(l, f) !== normFeld(std.schritte.find((x) => x.id === g.id), f)) plan.konflikte.push({ id: g.id, titel: g.titel, text: `${label}: Standard ${neu || "–"}, lokal ${anzeigeFeld(l, f) || "–"} – lokale Anpassung bleibt` });
+    }); });
+    return plan;
+  }
+  function seiteBibliothek() {
+    const darf = S.rolle === "SV";
+    const karten = D.BIBLIOTHEK.map((std) => {
+      const v = vorlageVon(std.id);
+      if (v && v.herkunft && std.version > v.herkunft.stdVersion) {
+        const p = aktualisierungPlanen(v, std);
+        return `<div class="karte"><div class="small muted">Aktualisierung verfügbar · EduKSX-Standard</div><h3>${esc(std.titel)} <span class="badge info">v${esc(std.version)}</span></h3>
+          <p class="small">Lokal: Version ${esc(v.version)} auf Basis Standard v${esc(v.herkunft.stdVersion)}. ${esc(std.notiz || "")}</p>
+          <ul class="infoliste diff">${p.neu.map((x) => `<li><span class="badge erfolg">＋ neuer Schritt</span> ${esc(x.titel)}</li>`).join("")}${p.weg.map((x) => `<li><span class="badge fehler">− entfällt</span> ${esc(x.titel)}</li>`).join("")}${p.felder.map((x) => `<li><span class="badge warnung">✎ ${esc(x.label)}</span> ${esc(x.titel)}: ${esc(x.alt || "–")} → ${esc(x.neu || "–")}</li>`).join("")}${p.konflikte.map((x) => `<li><span class="badge violett">⚑ lokale Anpassung betroffen</span> ${esc(x.titel)}: ${esc(x.text)}</li>`).join("")}</ul>
+          <p class="small muted">Übernehmen erzeugt einen Entwurf; lokale Anpassungen werden nicht überschrieben, laufende Abläufe bleiben unverändert. Freigabe danach wie gewohnt durch den Ressortvorstand.</p>
+          ${darf ? `<button class="btn primaer" data-aktion="std-aktualisieren" data-id="${esc(std.id)}">Änderungen übernehmen (Entwurf)</button>` : ""}</div>`;
+      }
+      if (!v) return `<div class="karte"><div class="small muted">Neu in der Bibliothek · EduKSX-Standard · ${esc(std.gruppe)}</div><h3>${esc(std.titel)} <span class="badge info">v${esc(std.version)}</span></h3><p class="small">${esc(std.beschreibung || "")}</p><p class="small muted">${std.schritte.length} Schritte</p>${darf ? `<button class="btn" data-aktion="std-uebernehmen" data-id="${esc(std.id)}">Als Entwurf übernehmen</button>` : ""}</div>`;
+      return "";
+    }).join("");
+    const angepasst = S.vorlagen.filter((v) => v.herkunft && (() => { const d = diffSchritte(v.herkunft.basis, v.schritte); return d.neu.length || d.weg.length || d.geaendert.length; })());
+    return `<div class="seitenkopf"><div><h1>Vorlagenbibliothek</h1><p class="muted">Musterprozesse aus der schulübergreifenden EduKSX-Standardbibliothek. Eine Schule übernimmt sie und passt sie an; neue Standardfassungen lassen sich abgleichen, ohne lokale Anpassungen zu überschreiben (Drei-Wege-Abgleich mit der installierten Basis).</p></div></div>
+      ${darf ? "" : `<p class="meldung info">Übernehmen kann die Schulverwaltung; freigeben wie gewohnt der Ressortvorstand.</p>`}
+      <div class="karten">${karten || `<p class="muted">Alles aktuell.</p>`}</div>
+      <section style="margin-top:1.25rem"><h2>Lokal angepasste Standardvorlagen (${angepasst.length})</h2><ul class="infoliste">${angepasst.map((v) => `<li><a href="#/vorlage/${esc(v.id)}/verlauf">${esc(v.titel)}</a> <span class="small muted">Basis Standard v${esc(v.herkunft.stdVersion)}</span></li>`).join("") || `<li class="muted">Keine.</li>`}</ul>
+      <p class="small muted">Vorlagentypen (Konzept): EduKSX-Standard, kantonale Vorlage, Community-Vorlage, eigene Vorlage der Schule, abgeleitete Vorlage, persönlicher Entwurf – im Prototyp nur EduKSX-Standard und eigene.</p></section>`;
+  }
+
+  // ---------------------------------------------------------------- Rechtsgrundlagen (Stufe 3)
+  const quelleTrifft = (key, q) => new RegExp(`(^|[\\s(;,])${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?=[\\s§,;)]|$)`).test(q || "");
+  let RECHT_SUCHE = "";
+  function seiteRecht() {
+    const QV = D.QUELLENVERZEICHNIS || {};
+    const alle = []; S.vorlagen.forEach((v) => v.schritte.forEach((s) => alle.push([v, s])));
+    const zeilen = Object.keys(QV).sort().map((k) => {
+      const tr = alle.filter(([, s]) => quelleTrifft(k, s.quelle));
+      const vs = [...new Set(tr.map(([v]) => v))];
+      const zp = tr.filter(([, s]) => /ZU PRÜFEN/.test(s.quelle || "")).length;
+      return `<tr><td><strong>${esc(k)}</strong><div class="small">${QV[k][1] ? `<a href="${esc(QV[k][1])}" target="_blank" rel="noopener">${esc(QV[k][0])}</a>` : esc(QV[k][0])}</div></td>
+        <td>${tr.length ? `<details><summary>${tr.length} Schritte in ${vs.length} Vorlagen</summary><ul class="infoliste">${vs.map((v) => `<li><a href="#/vorlage/${esc(v.id)}/liste">${esc(v.titel)}</a>: <span class="small">${tr.filter(([x]) => x === v).map(([, s]) => esc(s.titel)).join("; ")}</span></li>`).join("")}</ul></details>` : `<span class="muted small">–</span>`}</td>
+        <td>${zp ? `<span class="badge warnung">${zp} ZU PRÜFEN</span>` : ""}</td>
+        <td>${["SV", "RV"].includes(S.rolle) && vs.length ? `<button class="btn klein" data-aktion="recht-aenderung" data-key="${esc(k)}">Änderung melden</button>` : ""}</td></tr>`;
+    }).join("");
+    const treffer = RECHT_SUCHE ? alle.filter(([, s]) => (s.quelle || "").toLowerCase().includes(RECHT_SUCHE.toLowerCase())) : [];
+    const offen = alle.filter(([, s]) => !String(s.quelle || "").trim() || /ZU PRÜFEN/.test(s.quelle));
+    const offenV = [...new Set(offen.map(([v]) => v))];
+    return `<div class="seitenkopf"><div><h1>Rechtsgrundlagen</h1><p class="muted">Welche Abläufe stützen sich auf welche Rechtsgrundlage? Rückwärtssuche vom Gesetzesartikel zu den Schritten, offene Quellen («ZU PRÜFEN») und gemeldete Änderungen. Führend ist die <a href="https://markuskeller8200.github.io/EduKSX-Prototyp/rechtssammlung/" target="_blank" rel="noopener">EduKSX-Rechtssammlung</a>; Flow verwaltet nur die Verweise.</p></div></div>
+      <div class="formzeile"><label class="feld">Rückwärtssuche (z. B. «GG § 18», «VVO § 100», «UVG»)<input type="search" data-aktion="recht-suche" value="${esc(RECHT_SUCHE)}" style="min-width:20rem"></label></div>
+      ${RECHT_SUCHE ? `<div class="karte" style="margin-bottom:1rem"><h3>${treffer.length} Schritte mit «${esc(RECHT_SUCHE)}»</h3><ul class="infoliste">${treffer.slice(0, 60).map(([v, s]) => `<li><a href="#/vorlage/${esc(v.id)}/liste">${esc(v.titel)}</a>: ${esc(s.titel)} <span class="small muted">${quelleHtml(s.quelle)}</span></li>`).join("") || `<li class="muted">Keine Treffer.</li>`}</ul></div>` : ""}
+      <div class="karten"><div class="karte"><div class="zahl">${Object.keys(QV).length}</div><div class="titel">Quellen im Verzeichnis</div></div><div class="karte"><div class="zahl">${offen.length}</div><div class="titel">${offen.length ? "⚠ " : ""}Schritte ohne geprüfte Grundlage</div></div><div class="karte"><div class="zahl">${(S.rechtsaenderungen || []).length}</div><div class="titel">gemeldete Änderungen</div></div></div>
+      <section><h2>Quellenverzeichnis und Verwendung</h2><div class="tabelle-wrap"><table><thead><tr><th>Quelle</th><th>Verwendet in</th><th>Offen</th><th></th></tr></thead><tbody>${zeilen}</tbody></table></div></section>
+      <section style="margin-top:1.25rem"><h2>Ohne geprüfte Rechtsgrundlage (${offenV.length} Vorlagen)</h2><ul class="infoliste">${offenV.map((v) => `<li><a href="#/vorlage/${esc(v.id)}/liste">${esc(v.titel)}</a> <span class="small muted">${offen.filter(([x]) => x === v).length} Schritte</span></li>`).join("")}</ul></section>
+      <section style="margin-top:1.25rem"><h2>Gemeldete Änderungen</h2>${(S.rechtsaenderungen || []).length ? `<ul class="infoliste">${S.rechtsaenderungen.map((r) => `<li><span class="small muted">${datumKurz(r.am)}</span> <strong>${esc(r.key)}</strong>: ${esc(r.art)}${r.gueltigAb ? ` ab ${datumKurz(r.gueltigAb)}` : ""}${r.bemerkung ? " – " + esc(r.bemerkung) : ""} <span class="small muted">(${r.vorlagen.length} Reviews ausgelöst, ${esc(r.durch)})</span></li>`).join("")}</ul>` : `<p class="small muted">Keine.</p>`}</section>`;
   }
 
   const darfVertretung = () => ["SV", "SL", "SPr"].includes(S.rolle);
@@ -1781,6 +1889,8 @@
         case "vertretungen": return seiteVertretungen();
         case "landkarte": return seiteLandkarte();
         case "reviews": return seiteReviews();
+        case "recht": return seiteRecht();
+        case "bibliothek": return seiteBibliothek();
         case "einstellungen": return ES.seite(a);
         default: return seiteUebersicht();
       }
@@ -1942,6 +2052,42 @@
         });
         break;
       }
+      case "recht-aenderung": {
+        const key = el.dataset.key;
+        const vs = S.vorlagen.filter((v) => v.schritte.some((x) => quelleTrifft(key, x.quelle)));
+        formular(`Änderung der Rechtsgrundlage ${key}`, `Betroffen: ${vs.length} Vorlagen. Für jede wird ein Review fällig (Prozessreviews).`, [
+          { key: "art", label: "Art der Änderung", typ: "auswahl", werte: ["neue Fassung", "geänderte Gültigkeit", "aufgehoben", "Paragraf umnummeriert"] },
+          { key: "gueltigAb", label: "Gültig ab", typ: "datum", wert: S.heute }, { key: "bemerkung", label: "Bemerkung", typ: "textarea" }], "Melden", (w) => {
+          const grund = `Rechtsgrundlage ${key} geändert (${w.art}${w.gueltigAb ? ", ab " + datumKurz(w.gueltigAb) : ""})`;
+          vs.forEach((v) => { v.reviewFaellig = { grund, seit: S.heute }; });
+          (S.rechtsaenderungen = S.rechtsaenderungen || []).unshift({ key, art: w.art, gueltigAb: w.gueltigAb, bemerkung: w.bemerkung, am: S.heute, durch: ROLLEN[S.rolle], vorlagen: vs.map((v) => v.id) });
+          hinweis(["SV", "RV"], { id: "" }, `${grund}: Review für ${vs.length} Vorlagen fällig.`);
+          speichern(); render(); ansage(`${vs.length} Reviews ausgelöst.`);
+        });
+        break;
+      }
+      case "std-aktualisieren": {
+        const std = D.BIBLIOTHEK.find((x) => x.id === el.dataset.id), v = vorlageVon(el.dataset.id);
+        if (!std || !v || S.rolle !== "SV") break;
+        const p = aktualisierungPlanen(v, std);
+        entwurfMachen(v);
+        p.weg.forEach((x) => { v.schritte = v.schritte.filter((y) => y.id !== x.id); });
+        p.felder.forEach((x) => { const z = v.schritte.find((y) => y.id === x.id), q = std.schritte.find((y) => y.id === x.id); if (z && q) { if (q[x.f] === undefined) delete z[x.f]; else z[x.f] = kopie(q[x.f]); } });
+        p.neu.forEach((x) => v.schritte.push(Object.assign({ nach: [], aktion: null, auto: false, informiert: [], bedingung: null, fd: "", quelle: "" }, kopie(x))));
+        v.herkunft = { quelle: "EduKSX-Standard", stdVersion: std.version, basis: kopie(std.schritte), konflikte: p.konflikte };
+        speichern(); location.hash = "#/vorlage/" + v.id + "/verlauf"; ansage(`Standard v${std.version} übernommen: ${p.neu.length} neu, ${p.felder.length} Änderungen, ${p.konflikte.length} lokale Anpassungen behalten.`);
+        break;
+      }
+      case "std-uebernehmen": {
+        const std = D.BIBLIOTHEK.find((x) => x.id === el.dataset.id);
+        if (!std || S.rolle !== "SV" || vorlageVon(std.id)) break;
+        const schritte = kopie(std.schritte).map((x) => Object.assign({ nach: [], aktion: null, auto: false, informiert: [], bedingung: null, fd: "", quelle: "" }, x));
+        S.vorlagen.push({ id: std.id, gruppe: std.gruppe, titel: std.titel, version: 1, status: "entwurf", stichtag: std.stichtag, beschreibung: std.beschreibung, felder: kopie(std.felder), schritte,
+          prozessverantwortlich: ["SV", "SL", "SPr"], meta: { nummer: "", kategorie: "support", schutzbedarf: "normal", reviewPeriode: "J", letzterReview: S.heute }, reviews: [], verlauf: [],
+          herkunft: { quelle: "EduKSX-Standard", stdVersion: std.version, basis: kopie(std.schritte) } });
+        speichern(); location.hash = "#/vorlage/" + std.id + "/liste"; ansage("Als Entwurf übernommen – prüfen, anpassen, freigeben.");
+        break;
+      }
       case "review": {
         const v = vorlageVon(el.dataset.vorlage);
         if (!v || !darfLenkung()) break;
@@ -1983,6 +2129,8 @@
     }
     if (ak === "ereignis-feld") { const E = EREIGNIS_EINGABE[el.dataset.ev]; E[el.dataset.key] = el.value; render(); }
     if (ak === "ausl-art") { AUSL_ART = el.value; render(); }
+    if (ak === "vgl") { VGL[el.dataset.vorlage] = Object.assign(VGL[el.dataset.vorlage] || { a: "standard", b: "aktuell" }, { [el.dataset.seite]: el.value }); render(); }
+    if (ak === "recht-suche") { RECHT_SUCHE = el.value.trim(); render(); }
     if (ak === "meta" && darfLenkung()) { const [, vid] = route(); const v = vorlageVon(vid); if (v) { (v.meta = v.meta || {})[el.dataset.k] = el.value; speichern(); render(); } }
     if (ak === "pv-rolle" && S.rolle === "SV") {
       const [, vid] = route(); const v = vorlageVon(vid); if (!v) return;
@@ -2010,6 +2158,8 @@
   if (!S.einstellungen) S.einstellungen = kopie(window.FLOW_EINSTELLUNGEN_DATEN);
   if (!S.fd) S.fd = kopie(D.FUNKTIONENDIAGRAMM);
   if (!S.vertretungen) S.vertretungen = [];
+  if (!S.rechtsaenderungen) S.rechtsaenderungen = [];
+  S.vorlagen.forEach((v) => { const d = D.VORLAGEN.find((x) => x.id === v.id); if (!v.herkunft && d && d.herkunft) v.herkunft = kopie(d.herkunft); if (!v.verlauf) v.verlauf = kopie((d && d.verlauf) || []); });
   S.vorlagen.forEach((v) => { if (!v.meta) { const d = D.VORLAGEN.find((x) => x.id === v.id); v.meta = kopie((d && d.meta) || { kategorie: "support", reviewPeriode: "J" }); } if (!v.reviews) v.reviews = []; });
   if (!S.einstellungen.eskalation) S.einstellungen.eskalation = kopie(window.FLOW_EINSTELLUNGEN_DATEN.eskalation);
   if (!S.einstellungen.perioden) S.einstellungen.perioden = kopie(window.FLOW_EINSTELLUNGEN_DATEN.perioden);

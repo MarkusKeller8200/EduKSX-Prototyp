@@ -55,6 +55,9 @@ Core/Mitteilung), Rechtsauskunft (Quellen verweisen auf EduKSX-Codex).
 | FLW-F-33 | Vier-Augen-Prinzip: nach einer Genehmigung zweite Prüfung durch eine andere Funktion; Mehrfachgenehmigung mit Quorum (alle, Mehrheit, mindestens n). | MUSS | Genehmigung |
 | FLW-F-34 | Rollenbasierte Übersicht (Entscheide, Eskalationen, gesetzliche Fristen, Fehler, Belastung je Funktion). | SOLL | Übersicht |
 | FLW-F-35 | Kalender: Monats- und Wochenansicht mit Fristen offener Schritte; ICS-Export (Abo mit fester Adresse im Betrieb, FLW-F-22). | SOLL | Kalender |
+| FLW-F-36 | Prozesslenkung: Prozessblatt (Nummer, Kategorie, Schutzbedarf, Reviewintervall, Gültigkeit, Dokumente), Freigabe mit Änderungsbegründung, Versionsverlauf, Prozessreviews, Prozesslandkarte. | SOLL | Stufe 3 |
+| FLW-F-37 | Rechtsgrundlagen: Rückwärtssuche, Schritte ohne geprüfte Grundlage, Änderung einer Rechtsgrundlage (im Betrieb aus EduKSX-Codex) löst Reviews aus. | SOLL | Rechtsgrundlagen |
+| FLW-F-38 | Vorlagenbibliothek mit Versionsvergleich und Drei-Wege-Abgleich; lokale Anpassungen werden nie überschrieben, laufende Abläufe nie verändert. | SOLL | Bibliothek |
 | FLW-F-31 | Einstellungen: Kataloge Kompetenzen, Funktionen (gruppiert), Zeitpunkte, Intervalle, Aufgabenbereiche (Haupt- und Unterbereiche) mit Kürzel, Bezeichnung, Beschreibung, Aktiv; verwendete Einträge nur deaktivieren. Datenmodell ZU PRÜFEN: in EduKSX-Core bzw. eigenem Modul (Konzept E15). | SOLL | Einstellungen |
 | FLW-F-30 | Auslöseprotokoll mit Quelle, Vorlage, Ergebnis (gestartet, doppelt, ohne Ablauf). | SOLL | Auslöser |
 

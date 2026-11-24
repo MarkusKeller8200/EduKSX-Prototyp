@@ -238,6 +238,19 @@ CREATE TABLE templates (
     description         text,                            -- Beschreibung | Zweck der Vorlage
     released_at         timestamptz,                     -- Freigegeben am | Freigabe
     released_by_id      uuid,                            -- Freigegeben von | Ressortvorstand (ohne Constraint)
+    change_reason       text,                            -- Änderungsbegründung | Pflicht bei der Freigabe (Prozesslenkung, Stufe 3)
+    process_number      text,                            -- Prozessnummer | z. B. «P-PER-01»
+    process_category    text NOT NULL DEFAULT 'support' CHECK (process_category IN ('management','core','support')),   -- Kategorie | Prozesslandkarte | intern | management=Führungsprozess; core=Kernprozess; support=Supportprozess
+    protection_need     text NOT NULL DEFAULT 'normal' CHECK (protection_need IN ('normal','high','very_high')),   -- Schutzbedarf | Klassifizierung | intern | normal=normal; high=hoch; very_high=sehr hoch
+    review_period_code  text,                            -- Reviewintervall | Kürzel aus Einstellungen › Periode
+    last_review_on      date,                            -- Letzter Review | nächster = plus Intervall
+    review_due_reason   text,                            -- Review nötig wegen | z. B. geänderte Rechtsgrundlage
+    valid_from          date,                            -- Gültig ab | Prozesslenkung
+    valid_until         date,                            -- Gültig bis | Prozesslenkung
+    process_documents   text,                            -- Prozessdokumente | Reglemente, Weisungen, Hilfsmittel
+    origin              text NOT NULL DEFAULT 'own' CHECK (origin IN ('eduksx_standard','cantonal','community','own','derived')),   -- Herkunft | Vorlagenbibliothek | intern | eduksx_standard=EduKSX-Standard; cantonal=kantonale Vorlage; community=Community-Vorlage; own=eigene Vorlage; derived=abgeleitete Vorlage
+    origin_version      integer,                         -- Standardversion | installierte Fassung (Basis des Drei-Wege-Abgleichs)
+    origin_base         jsonb,                           -- Basis | Schritte der installierten Standardfassung
     created_at timestamptz NOT NULL DEFAULT now(), created_by_id uuid, updated_at timestamptz NOT NULL DEFAULT now(), updated_by_id uuid, lock_version integer NOT NULL DEFAULT 1, deleted_at timestamptz, deleted_by_id uuid,
     UNIQUE (organization_id, code, version_number)
 );
@@ -319,6 +332,50 @@ CREATE TABLE template_process_owners (
     template_id         uuid NOT NULL REFERENCES templates(id) ON DELETE CASCADE,   -- Vorlage | Verweis
     role_id             uuid NOT NULL REFERENCES roles(id),   -- Rolle | prozessverantwortlich
     PRIMARY KEY (template_id, role_id)
+);
+
+-- Freigegebene Version einer Vorlage (Versionsverlauf und Versionsvergleich)
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Vorlage › Verlauf; bei jeder Freigabe eingefroren
+CREATE TABLE template_versions (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    template_id         uuid NOT NULL REFERENCES templates(id) ON DELETE CASCADE,   -- Vorlage | Verweis
+    version_number      integer NOT NULL,                -- Version | freigegeben
+    released_at         timestamptz NOT NULL,            -- Freigegeben am | Zeitpunkt
+    released_by_id      uuid,                            -- Freigegeben von | Person (ohne Constraint)
+    change_reason       text NOT NULL,                   -- Änderungsbegründung | Pflicht
+    content             jsonb NOT NULL,                  -- Inhalt | Schritte, Startfelder, Auslöser, Prozessverantwortung (eingefroren)
+    UNIQUE (template_id, version_number)
+);
+
+-- Review einer Vorlage (Prozesslenkung)
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: «Prozessreviews»; Ergebnis und Bemerkung, Anlass periodisch oder Rechtsänderung
+CREATE TABLE template_reviews (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    template_id         uuid NOT NULL REFERENCES templates(id) ON DELETE CASCADE,   -- Vorlage | Verweis
+    reviewed_on         date NOT NULL,                   -- Datum | Review
+    reviewed_by_id      uuid,                            -- Durch | Person (ohne Constraint)
+    outcome             text NOT NULL CHECK (outcome IN ('unchanged','change_needed')),   -- Ergebnis | intern | unchanged=ohne Änderung; change_needed=Anpassung nötig
+    remark              text,                            -- Bemerkung | Pflicht bei Anpassung
+    occasion            text                             -- Anlass | periodisch oder z. B. Rechtsänderung
+);
+
+-- Gemeldete Änderung einer Rechtsgrundlage; löst Reviews der betroffenen Vorlagen aus
+-- Geltungsbereich: Organisation · Datenklasse: öffentlich
+-- Herkunft/Verwendung: «Rechtsgrundlagen»; im Betrieb als Ereignis aus EduKSX-Codex (Rechtssammlung)
+CREATE TABLE source_changes (
+    id                  uuid PRIMARY KEY,
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    source_id           uuid NOT NULL REFERENCES sources(id),   -- Quelle | Verweis
+    change_type         text NOT NULL CHECK (change_type IN ('new_version','validity','repealed','renumbered')),   -- Art | intern | new_version=neue Fassung; validity=geänderte Gültigkeit; repealed=aufgehoben; renumbered=Paragraf umnummeriert
+    valid_from          date,                            -- Gültig ab | neue Fassung
+    remark              text,                            -- Bemerkung | Freitext
+    reported_on         date NOT NULL DEFAULT current_date,   -- Gemeldet am | Datum
+    reported_by_id      uuid,                            -- Gemeldet von | Person (ohne Constraint)
+    codex_ref           text                             -- Verweis Rechtssammlung | Erlass und Fassung in EduKSX-Codex
 );
 
 -- Auslöser einer Vorlage (neben dem Start von Hand)
@@ -613,6 +670,11 @@ CREATE INDEX template_steps_source_id_index ON template_steps (source_id);
 CREATE INDEX template_step_predecessors_organization_id_index ON template_step_predecessors (organization_id);
 CREATE INDEX template_step_informed_roles_organization_id_index ON template_step_informed_roles (organization_id);
 CREATE INDEX template_process_owners_organization_id_index ON template_process_owners (organization_id);
+CREATE INDEX template_versions_organization_id_index ON template_versions (organization_id);
+CREATE INDEX template_reviews_organization_id_index ON template_reviews (organization_id);
+CREATE INDEX template_reviews_template_id_index ON template_reviews (template_id);
+CREATE INDEX source_changes_organization_id_index ON source_changes (organization_id);
+CREATE INDEX source_changes_source_id_index ON source_changes (source_id);
 CREATE INDEX template_triggers_organization_id_index ON template_triggers (organization_id);
 CREATE INDEX template_triggers_template_id_index ON template_triggers (template_id);
 CREATE INDEX template_triggers_module_event_id_index ON template_triggers (module_event_id);
@@ -805,6 +867,19 @@ COMMENT ON COLUMN templates.reference_date_label IS 'Stichtag (Bezeichnung) – 
 COMMENT ON COLUMN templates.description IS 'Beschreibung – Zweck der Vorlage';
 COMMENT ON COLUMN templates.released_at IS 'Freigegeben am – Freigabe';
 COMMENT ON COLUMN templates.released_by_id IS 'Freigegeben von – Ressortvorstand (ohne Constraint)';
+COMMENT ON COLUMN templates.change_reason IS 'Änderungsbegründung – Pflicht bei der Freigabe (Prozesslenkung, Stufe 3)';
+COMMENT ON COLUMN templates.process_number IS 'Prozessnummer – z. B. «P-PER-01»';
+COMMENT ON COLUMN templates.process_category IS 'Kategorie – Prozesslandkarte';
+COMMENT ON COLUMN templates.protection_need IS 'Schutzbedarf – Klassifizierung';
+COMMENT ON COLUMN templates.review_period_code IS 'Reviewintervall – Kürzel aus Einstellungen › Periode';
+COMMENT ON COLUMN templates.last_review_on IS 'Letzter Review';
+COMMENT ON COLUMN templates.review_due_reason IS 'Review nötig wegen – z. B. geänderte Rechtsgrundlage';
+COMMENT ON COLUMN templates.valid_from IS 'Gültig ab – Prozesslenkung';
+COMMENT ON COLUMN templates.valid_until IS 'Gültig bis – Prozesslenkung';
+COMMENT ON COLUMN templates.process_documents IS 'Prozessdokumente – Reglemente, Weisungen, Hilfsmittel';
+COMMENT ON COLUMN templates.origin IS 'Herkunft – Vorlagenbibliothek';
+COMMENT ON COLUMN templates.origin_version IS 'Standardversion – installierte Fassung (Basis des Drei-Wege-Abgleichs)';
+COMMENT ON COLUMN templates.origin_base IS 'Basis – Schritte der installierten Standardfassung';
 COMMENT ON COLUMN templates.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
 COMMENT ON COLUMN templates.created_by_id IS 'Erstellt von – Person, die den Datensatz angelegt hat (ohne Constraint)';
 COMMENT ON COLUMN templates.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
@@ -857,6 +932,34 @@ COMMENT ON TABLE template_process_owners IS 'Prozessverantwortliche Rolle einer 
 COMMENT ON COLUMN template_process_owners.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
 COMMENT ON COLUMN template_process_owners.template_id IS 'Vorlage – Verweis';
 COMMENT ON COLUMN template_process_owners.role_id IS 'Rolle – prozessverantwortlich';
+COMMENT ON TABLE template_versions IS 'Freigegebene Version einer Vorlage (Versionsverlauf und Versionsvergleich) – Vorlage › Verlauf; bei jeder Freigabe eingefroren';
+COMMENT ON COLUMN template_versions.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN template_versions.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN template_versions.template_id IS 'Vorlage – Verweis';
+COMMENT ON COLUMN template_versions.version_number IS 'Version – freigegeben';
+COMMENT ON COLUMN template_versions.released_at IS 'Freigegeben am – Zeitpunkt';
+COMMENT ON COLUMN template_versions.released_by_id IS 'Freigegeben von – Person (ohne Constraint)';
+COMMENT ON COLUMN template_versions.change_reason IS 'Änderungsbegründung – Pflicht';
+COMMENT ON COLUMN template_versions.content IS 'Inhalt – Schritte, Startfelder, Auslöser, Prozessverantwortung (eingefroren)';
+COMMENT ON TABLE template_reviews IS 'Review einer Vorlage (Prozesslenkung) – «Prozessreviews»; Ergebnis und Bemerkung, Anlass periodisch oder Rechtsänderung';
+COMMENT ON COLUMN template_reviews.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN template_reviews.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN template_reviews.template_id IS 'Vorlage – Verweis';
+COMMENT ON COLUMN template_reviews.reviewed_on IS 'Datum – Review';
+COMMENT ON COLUMN template_reviews.reviewed_by_id IS 'Durch – Person (ohne Constraint)';
+COMMENT ON COLUMN template_reviews.outcome IS 'Ergebnis';
+COMMENT ON COLUMN template_reviews.remark IS 'Bemerkung – Pflicht bei Anpassung';
+COMMENT ON COLUMN template_reviews.occasion IS 'Anlass – periodisch oder z. B. Rechtsänderung';
+COMMENT ON TABLE source_changes IS 'Gemeldete Änderung einer Rechtsgrundlage; löst Reviews der betroffenen Vorlagen aus – «Rechtsgrundlagen»; im Betrieb als Ereignis aus EduKSX-Codex (Rechtssammlung)';
+COMMENT ON COLUMN source_changes.id IS 'ID – UUID v7, von der Anwendung vergeben';
+COMMENT ON COLUMN source_changes.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN source_changes.source_id IS 'Quelle – Verweis';
+COMMENT ON COLUMN source_changes.change_type IS 'Art';
+COMMENT ON COLUMN source_changes.valid_from IS 'Gültig ab – neue Fassung';
+COMMENT ON COLUMN source_changes.remark IS 'Bemerkung – Freitext';
+COMMENT ON COLUMN source_changes.reported_on IS 'Gemeldet am – Datum';
+COMMENT ON COLUMN source_changes.reported_by_id IS 'Gemeldet von – Person (ohne Constraint)';
+COMMENT ON COLUMN source_changes.codex_ref IS 'Verweis Rechtssammlung – Erlass und Fassung in EduKSX-Codex';
 COMMENT ON TABLE template_triggers IS 'Auslöser einer Vorlage (neben dem Start von Hand) – Vorlage › Auslöser; nur freigegebene Vorlagen werden ausgelöst (Konzept Flow 3.2)';
 COMMENT ON COLUMN template_triggers.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN template_triggers.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';

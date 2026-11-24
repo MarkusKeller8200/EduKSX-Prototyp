@@ -8,6 +8,12 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **EduKSX-Flow 0.16.0 – Stufe 3: Rechtsgrundlagen und Vorlagenbibliothek (24.11.2026):** Seite **Rechtsgrundlagen**
+  (Quellenverzeichnis mit Verwendung, Rückwärtssuche vom Artikel zu den Schritten, Schritte ohne geprüfte Grundlage,
+  «Änderung melden» macht Reviews der betroffenen Vorlagen fällig); Reiter **Verlauf** je Vorlage (Versionen mit
+  Begründung, Versionsvergleich, lokale Anpassungen gegenüber dem Standard); **Vorlagenbibliothek** (EduKSX-Standard:
+  neue Fassung mit Drei-Wege-Abgleich als Entwurf übernehmen, lokale Anpassungen bleiben; neue Vorlagen
+  Datenschutzvorfall und Elternabend übernehmen). Datenmodell und API für Stufe 3 nachgeführt.
 - **EduKSX-Flow 0.15.0 – Stufe 3: Prozesslenkung (24.11.2026):** Prozessblatt je Vorlage (Prozessnummer, Kategorie
   Führungs-/Kern-/Supportprozess, Schutzbedarf, Reviewintervall aus den Perioden, gültig ab/bis, Prozessdokumente,
   Genehmigung mit Änderungsbegründung); Freigabe verlangt eine Änderungsbegründung und legt die Version im Verlauf
