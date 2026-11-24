@@ -94,6 +94,8 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
   Stufe 2.
 - **Stufe 2** (0.11.0): Stellvertretungen, Delegation, Vier-Augen-Prinzip (zweite Prüfung), Mehrfachgenehmigung mit
   Quorum, rollenbasierte Übersicht («Für …»), Kalender mit Monats- und Wochenansicht sowie ICS-Export.
+- **Periode und Tooltips** (0.12.0): Katalog Periode (Häufigkeit pro Jahr mit Wert und Farbe), Intervalle mit
+  zugeordneter Periode, Tooltip in allen Katalogen.
 - **Simulation:** simulierter Tag (+1, +7, nächste Frist), Module als «nicht erreichbar» schalten, Rollenwechsel.
 
 ## Grundlagen

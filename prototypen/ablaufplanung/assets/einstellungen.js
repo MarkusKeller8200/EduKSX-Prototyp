@@ -189,18 +189,43 @@
     es("empfehlung", 2, 7, "zustaendig", "Empfohlener Zeitpunkt überschritten", "eine Woche danach"),
   ];
 
-  window.FLOW_EINSTELLUNGEN_DATEN = { kompetenzen: KOMPETENZEN, funktionen: FUNKTIONEN, zeitpunkte: ZEITPUNKTE, intervalle: INTERVALLE, aufgabenbereiche: AUFGABENBEREICHE, eskalation: ESKALATION };
+  // ------------------------------------------------------------ Periode: Häufigkeit pro Jahr (Wert) für Planung und Berechnung
+  const pe = (name, kuerzel, wert, beschreibung) => k(kuerzel, name, beschreibung, { wert, farbe: "" });
+  const PERIODEN = [
+    pe("keiner", "-", 0, "keine Wiederholung / nicht definiert"),
+    pe("nicht berücksichtigen", "X", 0, "wird von Berechnung ausgeschlossen"),
+    pe("Tage", "T", 365, "tägliche Wiederholung auf Jahresbasis"),
+    pe("Wochen", "W", 52, "wöchentliche Wiederholung"),
+    pe("Schulwochen", "SW", 39, "nur während Schulbetrieb"),
+    pe("Monate", "M", 12, "monatliche Wiederholung"),
+    pe("Quartal", "Q", 4, "vierteljährliche Wiederholung"),
+    pe("Semester", "S", 2, "halbjährliche Wiederholung"),
+    pe("Jahr", "J", 1, "einmal jährlich"),
+    pe("Alle 2 Jahre", "2J", 0.5, "alle zwei Jahre (überarbeiten Konzepte)"),
+    pe("Alle 3 Jahre", "3J", 0.333, "alle drei Jahre (z. B. Abschreibung SuS-Geräte auflösen)"),
+    pe("Alle 4 Jahre", "4J", 0.25, "alle vier Jahre"),
+    pe("Alle 5 Jahre", "5J", 0.2, "alle fünf Jahre (Ersatzbeschaffung, Ausserbetriebnahme persönlicher Geräte)"),
+  ];
+  // Intervall → Periode (nur eindeutige Zuordnungen; Rest bleibt leer)
+  const IV_PERIODE = { "1X": "-", J: "J", SEM: "S", Q: "Q", M: "M", W: "W", T: "T" };
+  INTERVALLE.forEach((e) => { e.periode = IV_PERIODE[e.kuerzel] || ""; });
+
+  // Tooltip je Eintrag: Vorgabe «Kürzel = Bezeichnung»
+  [KOMPETENZEN, FUNKTIONEN, ZEITPUNKTE, INTERVALLE, AUFGABENBEREICHE, ESKALATION, PERIODEN].forEach((l) => l.forEach((e) => { e.tooltip = `${e.kuerzel} = ${e.name}`; }));
+
+  window.FLOW_EINSTELLUNGEN_DATEN = { kompetenzen: KOMPETENZEN, funktionen: FUNKTIONEN, zeitpunkte: ZEITPUNKTE, intervalle: INTERVALLE, perioden: PERIODEN, aufgabenbereiche: AUFGABENBEREICHE, eskalation: ESKALATION };
 
   // ------------------------------------------------------------ Seiten und Steuerung
   const KATALOGE = {
-    kompetenzen: { titel: "Kompetenzen", spalten: ["Kürzel", "Kompetenz"], text: "Kompetenzarten im Funktionendiagramm. Entscheid, Genehmigung und Freigabe sind bewusst getrennt: z. B. entscheidet die Geschäftsleitung über eine Beschaffung, das Finanzwesen prüft die Finanzierung, eine andere Stelle gibt die Bestellung frei. Aktive Kompetenzen erscheinen in der Legende des Funktionendiagramms." },
-    funktionen: { titel: "Funktionen", spalten: ["Kürzel", "Funktion"], gruppiert: "gruppe", extra: [{ k: "vorgesetzt", label: "Vorgesetzt", typ: "funktion", titel: "Empfänger der Eskalation «vorgesetzte Stelle»" }], text: "Organisatorische Funktionen (Rollen). Aktive Funktionen stehen bei «Verantwortlich» und «Informieren» in den Ablaufvorlagen zur Auswahl. Kürzel sind Vorschläge und je Schule anpassbar." },
-    zeitpunkte: { titel: "Zeitpunkte", spalten: ["Kürzel", "Zeitpunkt"], text: "Bezugstermine für Fristen und für die Zeitregeln im Jahreskalender (Schuljahres- und Ferientermine je Schuljahr unter Jahreskalender › Schuljahre). Nur aktive Zeitpunkte stehen beim Bearbeiten eines Termins zur Wahl." },
-    intervalle: { titel: "Intervalle", spalten: ["Kürzel", "Intervall"], text: "Wiederholungen für Termine und ToDos im Jahreskalender. Nur aktive Intervalle stehen beim Bearbeiten eines Termins als Art der Zeitregel zur Wahl." },
+    kompetenzen: { titel: "Kompetenzen", spalten: ["Kürzel", "Kompetenz"], extra: [{ k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Kompetenzarten im Funktionendiagramm. Entscheid, Genehmigung und Freigabe sind bewusst getrennt: z. B. entscheidet die Geschäftsleitung über eine Beschaffung, das Finanzwesen prüft die Finanzierung, eine andere Stelle gibt die Bestellung frei. Aktive Kompetenzen erscheinen in der Legende des Funktionendiagramms." },
+    funktionen: { titel: "Funktionen", spalten: ["Kürzel", "Funktion"], gruppiert: "gruppe", extra: [{ k: "vorgesetzt", label: "Vorgesetzt", typ: "funktion", titel: "Empfänger der Eskalation «vorgesetzte Stelle»" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Organisatorische Funktionen (Rollen). Aktive Funktionen stehen bei «Verantwortlich» und «Informieren» in den Ablaufvorlagen zur Auswahl. Kürzel sind Vorschläge und je Schule anpassbar." },
+    zeitpunkte: { titel: "Zeitpunkte", spalten: ["Kürzel", "Zeitpunkt"], extra: [{ k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Bezugstermine für Fristen und für die Zeitregeln im Jahreskalender (Schuljahres- und Ferientermine je Schuljahr unter Jahreskalender › Schuljahre). Nur aktive Zeitpunkte stehen beim Bearbeiten eines Termins zur Wahl." },
+    intervalle: { titel: "Intervalle", spalten: ["Kürzel", "Intervall"], extra: [{ k: "periode", label: "Periode", typ: "periode", titel: "Häufigkeit pro Jahr (Einstellungen › Periode)" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Wiederholungen für Termine und ToDos im Jahreskalender (wann genau ein Termin liegt). Nur aktive Intervalle stehen beim Bearbeiten eines Termins als Art der Zeitregel zur Wahl. Die Periode ordnet jedem Intervall eine Häufigkeit pro Jahr zu." },
+    perioden: { titel: "Periode", spalten: ["Kürzel", "Periode"], extra: [{ k: "wert", label: "Wert", typ: "dezimal", titel: "Vorkommen pro Jahr (z. B. Monate = 12, alle 2 Jahre = 0,5)" }, { k: "farbe", label: "Farbe", typ: "farbe" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Häufigkeit pro Jahr für Planung und Berechnung (z. B. Aufwand pro Jahr, Erneuerungszyklen von Geräten). Wert = Vorkommen pro Jahr; «nicht berücksichtigen» schliesst von Berechnungen aus. Die Perioden ab zwei Jahren haben noch keine Zeitregel im Kalender (Konzept E19 OFFEN)." },
     eskalation: { titel: "Eskalation", spalten: ["Kürzel", "Meldung"], gruppiert: "fristart", gruppenTitel: { gesetzlich: "Gesetzliche Fristen", intern: "Interne Fristen", empfehlung: "Empfehlungen" },
-      extra: [{ k: "stufe", label: "Stufe", typ: "zahl" }, { k: "tage", label: "Tage zur Frist", typ: "zahl", titel: "negativ = vorher" }, { k: "an", label: "An", typ: "empfaenger" }],
+      extra: [{ k: "stufe", label: "Stufe", typ: "zahl" }, { k: "tage", label: "Tage zur Frist", typ: "zahl", titel: "negativ = vorher" }, { k: "an", label: "An", typ: "empfaenger" }, { k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }],
       text: "Eskalationsstufen je Fristart (Konzept E6). Tage zur Frist: negativ = vorher. Empfänger: zuständige Rolle, vorgesetzte Stelle (siehe Funktionen › Vorgesetzt) oder eine bestimmte Funktion. Ab Stufe 3 steht die Meldung im Journal des Ablaufs. Ohne aktive Stufen eskaliert eine Fristart nicht." },
-    aufgabenbereiche: { titel: "Aufgabenbereiche", spalten: ["Nr.", "Aufgabenbereich"], gruppiert: "haupt", text: "Gliederung des Funktionendiagramms in Hauptbereiche und Unterbereiche (Vorschlag für einen schulübergreifenden Standard). Das Funktionendiagramm ist nach den Hauptbereichen gruppiert." },
+    aufgabenbereiche: { titel: "Aufgabenbereiche", spalten: ["Nr.", "Aufgabenbereich"], gruppiert: "haupt", extra: [{ k: "tooltip", label: "Tooltip", typ: "text", titel: "Erscheint beim Darüberfahren, z. B. «E = Entscheid»" }], text: "Gliederung des Funktionendiagramms in Hauptbereiche und Unterbereiche (Vorschlag für einen schulübergreifenden Standard). Das Funktionendiagramm ist nach den Hauptbereichen gruppiert." },
   };
 
   window.FLOW_EINSTELLUNGEN = function (X) {
@@ -230,6 +255,7 @@
       }
       if (b === "aufgabenbereiche") return e.kuerzel === e.haupt ? fdListe().filter((fd) => fd.bereich === e.kuerzel).length : 0;
       if (b === "eskalation") return 0;
+      if (b === "perioden") return liste("intervalle").filter((x) => x.periode === e.kuerzel).length;
       if (b === "zeitpunkte" || b === "intervalle") return S().ereignisse.filter((ev) => regelBezuege(ev.zeit, ev.jahr).includes(e.bezug)).length;
       if (b === "kompetenzen") return fdListe().filter((fd) => Object.values(fd.rollen).some((z) => String(z).replace(/[()0-9]/g, "").split("/").includes(e.kuerzel))).length;
       return 0;
@@ -252,7 +278,14 @@
       const id = `es-${b}-${i}-${x.k}`, d = `data-aktion="es-feld" data-k="${esc(x.k)}" data-bereich="${esc(b)}" data-i="${i}" id="${id}" ${dis}`;
       const lab = `<label class="sr-only" for="${id}">${esc(x.label)}</label>`;
       const w = e[x.k] == null ? "" : e[x.k];
-      if (x.typ === "zahl") return `${lab}<input type="number" ${d} value="${esc(w)}" style="width:4.5rem">`;
+      if (x.typ === "zahl") return `${lab}<input type="number" step="any" ${d} value="${esc(w)}" style="width:5rem">`;
+      if (x.typ === "dezimal") return `${lab}<input type="text" inputmode="decimal" ${d} value="${esc(String(w).replace(".", ","))}" style="width:5rem;text-align:right" title="Dezimalzahl, z. B. 0,333">`;
+      if (x.typ === "text") return `${lab}<input type="text" ${d} value="${esc(w)}" style="width:100%;min-width:9rem">`;
+      if (x.typ === "farbe") return `${lab}<span class="es-farbe"><input type="color" ${d} value="${esc(w || "#d0d5dd")}" title="${w ? esc(w) : "keine Farbe"}">${w ? "" : '<span class="small muted">–</span>'}</span>`;
+      if (x.typ === "periode") {
+        const pw = liste("perioden").filter((f) => f.kuerzel && (f.aktiv || f.kuerzel === w)).map((f) => [f.kuerzel, `${f.kuerzel} – ${f.name}`]);
+        return `${lab}<select ${d} style="max-width:11rem"><option value="">–</option>${pw.map(([v, t]) => `<option value="${esc(v)}" ${v === w ? "selected" : ""}>${esc(t)}</option>`).join("")}</select>`;
+      }
       const funk = liste("funktionen").filter((f) => f.kuerzel && (f.aktiv || f.kuerzel === w)).map((f) => [f.kuerzel, `${f.kuerzel} – ${f.name}`]);
       const werte = x.typ === "empfaenger" ? [["zustaendig", "zuständige Rolle"], ["vorgesetzt", "vorgesetzte Stelle"]].concat(funk) : [["", "–"]].concat(funk.filter(([kk]) => kk !== e.kuerzel));
       return `${lab}<select ${d} style="max-width:12rem">${werte.map(([v, t]) => `<option value="${esc(v)}" ${String(v) === String(w) ? "selected" : ""}>${esc(t)}</option>`).join("")}</select>`;
@@ -266,7 +299,7 @@
       const unter = b === "aufgabenbereiche" && e.kuerzel !== e.haupt;
       return `<tr class="${e.aktiv ? "" : "blass"}">
         <td style="width:7rem"><label class="sr-only" for="es-${b}-${i}-k">${esc(KATALOGE[b].spalten[0])}</label><input id="es-${b}-${i}-k" type="text" value="${esc(e.kuerzel)}" data-aktion="es-feld" data-k="kuerzel" ${d} ${dis} style="width:100%;${unter ? "padding-left:1.2rem" : "font-weight:600"}"></td>
-        <td><div class="es-name"><label class="sr-only" for="es-${b}-${i}-n">${esc(KATALOGE[b].spalten[1])}</label><input id="es-${b}-${i}-n" type="text" value="${esc(e.name)}" data-aktion="es-feld" data-k="name" ${d} ${dis}>${e.neu ? `<span class="badge violett" title="Vorschlag zur Erweiterung">neu</span>` : ""}${e.bezug ? `<span class="small muted es-bezug" style="width:${bezugBreite(b)}ch" title="Verknüpfung mit den Zeitregeln des Kalenders">⇢ ${esc(e.bezug)}</span>` : ""}</div></td>
+        <td><div class="es-name"><label class="sr-only" for="es-${b}-${i}-n">${esc(KATALOGE[b].spalten[1])}</label><input id="es-${b}-${i}-n" type="text" value="${esc(e.name)}" data-aktion="es-feld" data-k="name" ${d} ${dis} title="${esc(e.tooltip || "")}">${e.neu ? `<span class="badge violett" title="Vorschlag zur Erweiterung">neu</span>` : ""}${e.bezug ? `<span class="small muted es-bezug" style="width:${bezugBreite(b)}ch" title="Verknüpfung mit den Zeitregeln des Kalenders">⇢ ${esc(e.bezug)}</span>` : ""}</div></td>
         <td><label class="sr-only" for="es-${b}-${i}-b">Beschreibung</label><input id="es-${b}-${i}-b" type="text" value="${esc(e.beschreibung)}" data-aktion="es-feld" data-k="beschreibung" ${d} ${dis} style="width:100%"></td>
         ${(KATALOGE[b].extra || []).map((x) => `<td>${extraFeld(b, e, i, x, dis)}</td>`).join("")}
         <td style="text-align:center"><label class="chip"><input type="checkbox" data-aktion="es-aktiv" ${d} ${e.aktiv ? "checked" : ""} ${dis}> <span class="small">${e.aktiv ? "aktiv" : "inaktiv"}</span></label></td>
@@ -358,7 +391,9 @@
       if (!e) return false;
       if (ak === "es-aktiv") { e.aktiv = el.checked; speichern(); render(); ansage(`«${e.kuerzel}» ${e.aktiv ? "aktiviert" : "deaktiviert"}.`); return true; }
       if (ak === "es-feld") {
-        const k = el.dataset.k, w = ["stufe", "tage"].includes(el.dataset.k) ? Number(el.value || 0) : el.value.trim();
+        const k = el.dataset.k, w = ["stufe", "tage", "wert"].includes(el.dataset.k) ? Number(String(el.value || 0).replace(",", ".")) : el.value.trim();
+        if (k === "name" && (!e.tooltip || e.tooltip === `${e.kuerzel} = ${e.name}`)) e.tooltip = `${e.kuerzel} = ${w}`;
+        if (k === "kuerzel" && (!e.tooltip || e.tooltip === `${e.kuerzel} = ${e.name}`)) e.tooltip = `${w} = ${e.name}`;
         if (b === "aufgabenbereiche" && k === "kuerzel" && e.kuerzel === e.haupt) liste(b).forEach((x) => { if (x !== e && x.haupt === e.haupt) { x.haupt = w; x.kuerzel = String(x.kuerzel).replace(/^[^.]+/, w); } });
         if (b === "aufgabenbereiche" && k === "kuerzel" && e.kuerzel === e.haupt) e.haupt = w;
         e[k] = w;
@@ -372,7 +407,9 @@
     const aktiveFunktionen = () => liste("funktionen").filter((e) => e.aktiv && e.kuerzel);
     const aktiveKompetenzen = () => liste("kompetenzen").filter((e) => e.aktiv && e.kuerzel);
     const aktiveBezuege = (b) => new Set(liste(b).filter((e) => e.aktiv).map((e) => e.bezug || e.kuerzel));
+    /** Tooltip eines Eintrags (Kürzel) in einem Katalog; leer, wenn unbekannt. */
+    const tooltip = (b, kz) => { const e = liste(b).find((x) => x.kuerzel === kz); return e ? e.tooltip || `${e.kuerzel} = ${e.name}` : ""; };
     const hauptbereiche = () => liste("aufgabenbereiche").filter((e) => e.kuerzel && e.kuerzel === e.haupt);
-    return { seite, klick, aenderung, aktiveFunktionen, aktiveKompetenzen, aktiveBezuege, hauptbereiche, KATALOGE };
+    return { seite, klick, aenderung, aktiveFunktionen, aktiveKompetenzen, aktiveBezuege, hauptbereiche, tooltip, KATALOGE };
   };
 })();

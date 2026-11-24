@@ -7,7 +7,7 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v6";
-  const VERSION = "0.11.0";
+  const VERSION = "0.12.0";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
@@ -715,6 +715,7 @@
     "einstellungen/funktionen": ico('<circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3 2.8-5 5.5-5s4.9 2 5.5 5"/><circle cx="17" cy="9" r="2.3"/><path d="M15.5 14.2c2.3.2 4 1.9 4.5 4.8"/>'),
     "einstellungen/zeitpunkte": ico('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
     "einstellungen/intervalle": ico('<path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/>'),
+    "einstellungen/perioden": ico('<path d="M3 12h3l2-5 3 10 2-5h8"/>'),
     "einstellungen/eskalation": ico('<path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17h.01"/>'),
     "einstellungen/aufgabenbereiche": ico('<rect x="3" y="3" width="7" height="7" rx="1"/><path d="M14 5h7M14 8h5M6.5 10v4.5H14M6.5 14.5V19H14"/><rect x="14" y="12.5" width="7" height="4" rx="1"/><rect x="14" y="17" width="7" height="4" rx="1"/>'),
   };
@@ -739,6 +740,7 @@
     ["einstellungen/funktionen", "Funktionen"],
     ["einstellungen/zeitpunkte", "Zeitpunkte"],
     ["einstellungen/intervalle", "Intervalle"],
+    ["einstellungen/perioden", "Periode"],
     ["einstellungen/aufgabenbereiche", "Aufgabenbereiche"],
     ["einstellungen/eskalation", "Eskalation"],
   ];
@@ -781,7 +783,9 @@
     return fehlt + gruppen.map((g) => `<optgroup label="${esc(g)}">${akt.filter((e) => (e.gruppe || "Weitere") === g).map((e) => `<option value="${esc(e.kuerzel)}" ${e.kuerzel === aktuell ? "selected" : ""}>${esc(e.name)} (${esc(e.kuerzel)})${zusatz ? esc(zusatz(e.kuerzel)) : ""}</option>`).join("")}</optgroup>`).join("");
   }
   const rollenWerte = () => ES.aktiveFunktionen().map((e) => [e.kuerzel, `${e.name} (${e.kuerzel})`]);
-  const rolleBadge = (r) => `<span class="rolle" title="${esc(ROLLEN[r] || r)}">${esc(r)}</span>`;
+  const rolleBadge = (r) => `<span class="rolle" title="${esc((typeof ES !== "undefined" && S && S.einstellungen && ES.tooltip("funktionen", r)) || ROLLEN[r] || r)}">${esc(r)}</span>`;
+  /** Tooltip für Kompetenz-Einträge wie «E1/V»: je Kürzel der Tooltip aus Einstellungen › Kompetenzen. */
+  const kompetenzTooltip = (w) => String(w || "").split("/").map((x) => { const k = x.replace(/[()\s0-9]/g, ""); return k ? (ES.tooltip("kompetenzen", k) || k) + (/[0-9]/.test(x) ? ` (Instanz ${x.replace(/\D/g, "")})` : "") : ""; }).filter(Boolean).join(" · ");
   function aufrufText(s) {
     const t = typVon(s);
     if (t === "unterprozess") { const u = s.unter && vorlageVon(s.unter.vorlage); return `${typHtml(s)}<div class="small">${u ? `<a href="#/vorlage/${u.id}">${esc(u.titel)}</a>` : `<span class="badge fehler">✕ Vorlage fehlt</span>`}</div>`; }
@@ -1334,9 +1338,9 @@
       const w = f.rollen[r] || "";
       const fehlerhaft = fdUnbekannt(w).length;
       const mh = merkmalHtml((f.merkmale || {})[r]);
-      if (!darf) return `<td class="fd ${/[EV]/.test(w) ? "lead" : ""}">${esc(w)}${fehlerhaft ? " ⚠" : ""}${mh ? `<div>${mh}</div>` : ""}</td>`;
+      if (!darf) return `<td class="fd ${/[EV]/.test(w) ? "lead" : ""}" title="${esc(kompetenzTooltip(w))}">${esc(w)}${fehlerhaft ? " ⚠" : ""}${mh ? `<div>${mh}</div>` : ""}</td>`;
       const knopf = w ? `<button class="link small" data-aktion="fd-merkmale" data-nr="${esc(f.nr)}" data-rolle="${esc(r)}" title="Merkmale: Betragsgrenze, Vier-Augen, delegierbar, befristet …" aria-label="Merkmale ${esc(f.nr)} ${esc(r)}">⋯</button>` : "";
-      return `<td class="fd ${/[EV]/.test(w) ? "lead" : ""}">${mh ? `<div>${mh}</div>` : ""}${knopf}<label class="sr-only" for="fd-${esc(f.nr)}-${esc(r)}">${esc(f.nr)} ${esc(r)}</label><input id="fd-${esc(f.nr)}-${esc(r)}" class="fdzelle ${fehlerhaft ? "ungueltig" : ""}" data-aktion="fd-zelle" data-nr="${esc(f.nr)}" data-rolle="${esc(r)}" value="${esc(w)}" title="${fehlerhaft ? "Unbekannte Kompetenz" : esc(ROLLEN[r] || r)}" ${fehlerhaft ? 'aria-invalid="true"' : ""}></td>`;
+      return `<td class="fd ${/[EV]/.test(w) ? "lead" : ""}">${mh ? `<div>${mh}</div>` : ""}${knopf}<label class="sr-only" for="fd-${esc(f.nr)}-${esc(r)}">${esc(f.nr)} ${esc(r)}</label><input id="fd-${esc(f.nr)}-${esc(r)}" class="fdzelle ${fehlerhaft ? "ungueltig" : ""}" data-aktion="fd-zelle" data-nr="${esc(f.nr)}" data-rolle="${esc(r)}" value="${esc(w)}" title="${fehlerhaft ? "Unbekannte Kompetenz" : esc(kompetenzTooltip(w) || ROLLEN[r] || r)}" ${fehlerhaft ? 'aria-invalid="true"' : ""}></td>`;
     };
     const zeile = (f) => `<tr><td>${esc(f.nr)}</td><td>${darf ? `<label class="sr-only" for="fdt-${esc(f.nr)}">Aufgabe ${esc(f.nr)}</label><input id="fdt-${esc(f.nr)}" data-aktion="fd-titel" data-nr="${esc(f.nr)}" value="${esc(f.titel)}" style="width:100%;min-width:14rem">` : esc(f.titel)}</td>${sp.map((r) => zelle(f, r)).join("")}<td class="small">${(verwendung[f.nr] || []).map(esc).join("<br>") || `<span class="muted">–</span>`}</td><td>${darf && !(verwendung[f.nr] || []).length ? `<button class="btn klein gefahr" data-aktion="fd-loeschen" data-nr="${esc(f.nr)}" aria-label="Aufgabe ${esc(f.nr)} löschen">✕</button>` : ""}</td></tr>`;
     const kopf = `<thead><tr><th>Nr.</th><th>Aufgabe</th>${sp.map((r) => `<th title="${esc(ROLLEN[r] || r)}">${esc(r)}${darf ? ` <button class="link small" data-aktion="fd-spalte-weg" data-rolle="${esc(r)}" aria-label="Spalte ${esc(r)} ausblenden" title="Spalte ausblenden (Einträge bleiben)">×</button>` : ""}</th>`).join("")}<th>Verwendet in Schritten</th><th></th></tr></thead>`;
@@ -1351,7 +1355,7 @@
     }).join("");
     const freie = ES.aktiveFunktionen().filter((e) => !sp.includes(e.kuerzel));
     return `<div class="seitenkopf"><div><h1>Funktionendiagramm</h1><p class="muted">Muster mit den Aufgaben, die Abläufe berühren, gruppiert nach den <a href="#/einstellungen/aufgabenbereiche">Aufgabenbereichen</a>. Ist einem Schritt eine Nummer zugeordnet, schlägt ${wordmark("Flow")} die Rolle mit «V» als verantwortlich und die Rollen mit «I» als zu informieren vor und warnt bei Abweichungen.</p></div></div>
-      <p class="small muted">${ES.aktiveKompetenzen().map((e) => `${esc(e.kuerzel)} = ${esc(e.name)}`).join(" · ")} · <a href="#/einstellungen/kompetenzen">Kompetenzen</a> · Mehrere mit «/» trennen, Instanz als Ziffer (z. B. E1/E2), Klammern für bedingt.</p>
+      <p class="small muted">${ES.aktiveKompetenzen().map((e) => `<span title="${esc(e.beschreibung || e.tooltip || "")}">${esc(e.tooltip || e.kuerzel + " = " + e.name)}</span>`).join(" · ")} · <a href="#/einstellungen/kompetenzen">Kompetenzen</a> · Mehrere mit «/» trennen, Instanz als Ziffer (z. B. E1/E2), Klammern für bedingt.</p>
       ${darf ? `<div class="formzeile"><label class="feld">Spalte (Funktion) einblenden<select id="fd-spalte-neu"><option value="">– Funktion wählen –</option>${[...new Set(freie.map((e) => e.gruppe || "Weitere"))].map((g) => `<optgroup label="${esc(g)}">${freie.filter((e) => (e.gruppe || "Weitere") === g).map((e) => `<option value="${esc(e.kuerzel)}">${esc(e.name)} (${esc(e.kuerzel)})</option>`).join("")}</optgroup>`).join("")}</select></label><button class="btn" data-aktion="fd-spalte" style="align-self:end">＋ Spalte</button></div>` : `<p class="meldung info">Ändern können die Schulverwaltung und der Ressortvorstand – Rolle oben rechts wechseln.</p>`}
       ${inaktivSp.length ? `<p class="meldung warnung">⚠ Spalten mit inaktiver Funktion: ${inaktivSp.map(esc).join(", ")} – unter <a href="#/einstellungen/funktionen">Funktionen</a> aktivieren oder Spalte ausblenden.</p>` : ""}
       ${befunde.length ? `<details class="meldung warnung"><summary>⚠ ${befunde.length} Hinweise zur Prüfung</summary><ul>${befunde.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>` : ""}
@@ -1894,6 +1898,11 @@
   if (!S.fd) S.fd = kopie(D.FUNKTIONENDIAGRAMM);
   if (!S.vertretungen) S.vertretungen = [];
   if (!S.einstellungen.eskalation) S.einstellungen.eskalation = kopie(window.FLOW_EINSTELLUNGEN_DATEN.eskalation);
+  if (!S.einstellungen.perioden) S.einstellungen.perioden = kopie(window.FLOW_EINSTELLUNGEN_DATEN.perioden);
+  Object.entries(S.einstellungen).forEach(([b, l]) => (l || []).forEach((e) => {
+    if (e.tooltip === undefined) e.tooltip = e.kuerzel ? `${e.kuerzel} = ${e.name}` : "";
+    if (b === "intervalle" && e.periode === undefined) { const v = window.FLOW_EINSTELLUNGEN_DATEN.intervalle.find((x) => x.kuerzel === e.kuerzel); e.periode = v ? v.periode : ""; }
+  }));
   S.einstellungen.funktionen.forEach((e) => { if (e.vorgesetzt === undefined) { const v = window.FLOW_EINSTELLUNGEN_DATEN.funktionen.find((x) => x.kuerzel === e.kuerzel); e.vorgesetzt = v ? v.vorgesetzt : ""; } });
   S.vorlagen.forEach((v) => { if (!v.prozessverantwortlich) { const d = D.VORLAGEN.find((x) => x.id === v.id); v.prozessverantwortlich = kopie((d && d.prozessverantwortlich) || D.PROZESSVERANTWORTLICH); } });
   S.fd.forEach((f) => { if (!f.merkmale) { const d = D.FUNKTIONENDIAGRAMM.find((x) => x.nr === f.nr); f.merkmale = kopie((d && d.merkmale) || {}); } });

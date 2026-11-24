@@ -8,6 +8,11 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **EduKSX-Flow 0.12.0 – Periode und Tooltips (24.11.2026):** neuer Katalog **Periode** (Kürzel, Periode, Wert =
+  Vorkommen pro Jahr, Farbe, Beschreibung, Tooltip, Aktiv; «keiner» bis «Alle 5 Jahre»); Intervalle mit Spalte
+  «Periode» (Häufigkeit pro Jahr); **Tooltip** in allen Einstellungen (Vorgabe «Kürzel = Bezeichnung», folgt der
+  Bezeichnung, bis er von Hand geändert wird) – angezeigt bei Funktionen (Rollen) und Kompetenzen im
+  Funktionendiagramm.
 - **EduKSX-Flow 0.11.0 – Stufe 2 der Prozess-Engine (24.11.2026):** Stellvertretungen (Seite «Stellvertretungen»;
   Aufgaben, Hinweise und Eskalationen gehen während der Abwesenheit auch an die Vertretung, Journal vermerkt «in
   Vertretung»); Delegation einzelner Schritte (Ausführung an andere Funktion, Verantwortung bleibt; gesperrt bei
