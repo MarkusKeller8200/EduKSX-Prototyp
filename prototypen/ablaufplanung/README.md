@@ -124,6 +124,8 @@ Schnittstelle zu den Modulen, Vorlagen-Versionierung, Motor für Fristen und aut
 
 ## Entwickler
 
+Auf GitHub Pages: <https://markuskeller8200.github.io/EduKSX-Prototyp/ablaufplanung/entwickler/>.
+
 Menüpunkt «Entwickler» bzw. `entwickler/`: Datenmodell (Diagramm, Tabellen, SQL), API-Dokumentation (Scalar),
 Swagger und OpenAPI – erzeugt mit `python3 tools/entwickler_bauen.py` aus `docs/umsetzung/flow/` (nicht von Hand ändern).
 
