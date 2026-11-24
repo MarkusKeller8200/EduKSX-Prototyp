@@ -134,6 +134,7 @@ CREATE TABLE responsibility_tasks (
     organization_id     uuid NOT NULL REFERENCES organizations(id),
     number              text NOT NULL,                   -- Nummer | z. B. «5.2.2»
     title               text NOT NULL,                   -- Aufgabe | Text im Funktionendiagramm
+    task_area_code      text,                            -- Aufgabenbereich | Hauptbereich aus Einstellungen › Aufgabenbereiche (Konzept E16); Funktionendiagramm zieht nach EduKSX-Organization (E15)
     created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), lock_version integer NOT NULL DEFAULT 1,
     UNIQUE (organization_id, number)
 );
@@ -145,7 +146,14 @@ CREATE TABLE responsibility_task_roles (
     organization_id     uuid NOT NULL REFERENCES organizations(id),
     responsibility_task_id uuid NOT NULL REFERENCES responsibility_tasks(id) ON DELETE CASCADE,   -- Aufgabe | Verweis
     role_id             uuid NOT NULL REFERENCES roles(id),   -- Rolle | Verweis
-    competence          text NOT NULL,                   -- Kompetenz | V verantwortlich, E entscheidet, A ausführen, M mitwirken, I informiert
+    competence          text NOT NULL,                   -- Kompetenz | Kürzel aus Einstellungen › Kompetenzen, mehrere mit «/», Instanz als Ziffer (E1/E2)
+    amount_limit        numeric(12,2),                   -- Betragsgrenze | Kompetenz bis CHF (Konzept E14)
+    requires_four_eyes  boolean NOT NULL DEFAULT false,  -- Vier-Augen-Prinzip | zweite unabhängige Prüfung nötig
+    is_collective       boolean NOT NULL DEFAULT false,  -- Kollektiv | nur gemeinsam ausübbar
+    is_delegable        boolean,                         -- Delegierbar | leer = nicht festgelegt
+    valid_until         date,                            -- Befristet bis | danach nächste Instanz
+    condition_text      text,                            -- Bedingung | Voraussetzung in Worten
+    scope_text          text,                            -- Geltungsbereich | z. B. Schuleinheit
     PRIMARY KEY (responsibility_task_id, role_id)
 );
 
@@ -301,6 +309,16 @@ CREATE TABLE template_step_informed_roles (
     PRIMARY KEY (template_step_id, role_id)
 );
 
+-- Prozessverantwortliche Rolle einer Vorlage: darf in laufende Abläufe eingreifen (Konzept E5)
+-- Geltungsbereich: Organisation · Datenklasse: intern
+-- Herkunft/Verwendung: Vorlage › Prozessverantwortlich; der Ablauf übernimmt die Rollen beim Start
+CREATE TABLE template_process_owners (
+    organization_id     uuid NOT NULL REFERENCES organizations(id),
+    template_id         uuid NOT NULL REFERENCES templates(id) ON DELETE CASCADE,   -- Vorlage | Verweis
+    role_id             uuid NOT NULL REFERENCES roles(id),   -- Rolle | prozessverantwortlich
+    PRIMARY KEY (template_id, role_id)
+);
+
 -- Auslöser einer Vorlage (neben dem Start von Hand)
 -- Geltungsbereich: Organisation · Datenklasse: intern
 -- Herkunft/Verwendung: Vorlage › Auslöser; nur freigegebene Vorlagen werden ausgelöst (Konzept Flow 3.2)
@@ -329,7 +347,9 @@ CREATE TABLE escalation_rules (
     deadline_type       text NOT NULL CHECK (deadline_type IN ('statutory','internal','recommendation')),   -- Fristart | für welche Fristen | intern | statutory=gesetzliche Frist; internal=interne Frist; recommendation=Empfehlung
     level               integer NOT NULL CHECK (level BETWEEN 1 AND 9),   -- Stufe | 1 = Erinnerung
     offset_days         integer NOT NULL,                -- Abstand zur Frist (Tage) | negativ = vorher
-    recipient           text NOT NULL CHECK (recipient IN ('responsible','superior','management')),   -- Empfänger | wer informiert wird | intern | responsible=zuständige Rolle; superior=vorgesetzte Rolle; management=Leitung
+    recipient           text NOT NULL CHECK (recipient IN ('responsible','superior','management','role')),   -- Empfänger | wer informiert wird | intern | responsible=zuständige Rolle; superior=vorgesetzte Rolle; management=Leitung; role=bestimmte Funktion
+    recipient_role_id   uuid REFERENCES roles(id),       -- Funktion (Empfänger) | bei «bestimmte Funktion»
+    is_active           boolean NOT NULL DEFAULT true,   -- Aktiv | ohne aktive Stufen keine Eskalation (Einstellungen › Eskalation, Konzept E6)
     text                text NOT NULL,                   -- Meldung | Text des Hinweises
     is_journaled        boolean NOT NULL DEFAULT false,  -- Ins Journal | ab Stufe 3 im Journal des Ablaufs
     created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), lock_version integer NOT NULL DEFAULT 1,
@@ -363,6 +383,7 @@ CREATE TABLE runs (
     parent_run_step_id  uuid,                            -- Schritt im Hauptablauf | bei Unterprozessen (Verweis auf run_steps) | intern
     cancelled_on        date,                            -- Abgebrochen am | Eingriff | intern
     cancel_reason       text,                            -- Grund des Abbruchs | Pflicht beim Abbruch
+    process_owner_codes text[] NOT NULL DEFAULT '{}',    -- Prozessverantwortlich | Rollen beim Start aus der Vorlage übernommen | intern
     lock_version        integer NOT NULL DEFAULT 1,
     UNIQUE (organization_id, number)
 );
@@ -391,6 +412,7 @@ CREATE TABLE run_steps (
     is_branch_skipped   boolean NOT NULL DEFAULT false,  -- Zweig entfällt | übersprungen wegen eines Entscheids; Nachfolger nur auf diesem Zweig entfallen mit
     is_added            boolean NOT NULL DEFAULT false,  -- Eingefügt | im laufenden Ablauf ergänzt, nicht aus der Vorlage
     is_manual_only      boolean NOT NULL DEFAULT false,  -- Nur von Hand | nach «wieder öffnen»: Aufruf wird nicht automatisch wiederholt
+    escalated_from_role text,                            -- Instanzwechsel von | Genehmigung ging wegen Betragsgrenze oder Befristung an die nächste Instanz (Konzept E14)
     operation_key       text,                            -- Vorgang | Schlüssel im Register
     parameter_template  jsonb NOT NULL DEFAULT '{}'::jsonb,   -- Parameter (Vorlage) | mit Platzhaltern
     parameters          jsonb,                           -- Parameter (aufgelöst) | beim Aufruf | personenbezogen
@@ -566,10 +588,12 @@ CREATE INDEX template_steps_responsibility_task_id_index ON template_steps (resp
 CREATE INDEX template_steps_source_id_index ON template_steps (source_id);
 CREATE INDEX template_step_predecessors_organization_id_index ON template_step_predecessors (organization_id);
 CREATE INDEX template_step_informed_roles_organization_id_index ON template_step_informed_roles (organization_id);
+CREATE INDEX template_process_owners_organization_id_index ON template_process_owners (organization_id);
 CREATE INDEX template_triggers_organization_id_index ON template_triggers (organization_id);
 CREATE INDEX template_triggers_template_id_index ON template_triggers (template_id);
 CREATE INDEX template_triggers_module_event_id_index ON template_triggers (module_event_id);
 CREATE INDEX template_triggers_source_template_id_index ON template_triggers (source_template_id);
+CREATE INDEX escalation_rules_recipient_role_id_index ON escalation_rules (recipient_role_id);
 CREATE INDEX runs_template_id_index ON runs (template_id);
 CREATE INDEX runs_user_id_index ON runs (user_id);
 CREATE INDEX runs_template_trigger_id_index ON runs (template_trigger_id);
@@ -680,6 +704,7 @@ COMMENT ON COLUMN responsibility_tasks.id IS 'ID – UUID v7, von der Anwendung 
 COMMENT ON COLUMN responsibility_tasks.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
 COMMENT ON COLUMN responsibility_tasks.number IS 'Nummer – z. B. «5.2.2»';
 COMMENT ON COLUMN responsibility_tasks.title IS 'Aufgabe – Text im Funktionendiagramm';
+COMMENT ON COLUMN responsibility_tasks.task_area_code IS 'Aufgabenbereich – Hauptbereich aus Einstellungen › Aufgabenbereiche (Konzept E16); Funktionendiagramm zieht nach EduKSX-Organization (E15)';
 COMMENT ON COLUMN responsibility_tasks.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
 COMMENT ON COLUMN responsibility_tasks.updated_at IS 'Geändert am – Zeitpunkt der letzten Änderung (UTC)';
 COMMENT ON COLUMN responsibility_tasks.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
@@ -687,7 +712,14 @@ COMMENT ON TABLE responsibility_task_roles IS 'Kompetenz einer Rolle bei einer A
 COMMENT ON COLUMN responsibility_task_roles.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
 COMMENT ON COLUMN responsibility_task_roles.responsibility_task_id IS 'Aufgabe – Verweis';
 COMMENT ON COLUMN responsibility_task_roles.role_id IS 'Rolle – Verweis';
-COMMENT ON COLUMN responsibility_task_roles.competence IS 'Kompetenz – V verantwortlich, E entscheidet, A ausführen, M mitwirken, I informiert';
+COMMENT ON COLUMN responsibility_task_roles.competence IS 'Kompetenz – Kürzel aus Einstellungen › Kompetenzen, mehrere mit «/», Instanz als Ziffer (E1/E2)';
+COMMENT ON COLUMN responsibility_task_roles.amount_limit IS 'Betragsgrenze – Kompetenz bis CHF (Konzept E14)';
+COMMENT ON COLUMN responsibility_task_roles.requires_four_eyes IS 'Vier-Augen-Prinzip – zweite unabhängige Prüfung nötig';
+COMMENT ON COLUMN responsibility_task_roles.is_collective IS 'Kollektiv – nur gemeinsam ausübbar';
+COMMENT ON COLUMN responsibility_task_roles.is_delegable IS 'Delegierbar';
+COMMENT ON COLUMN responsibility_task_roles.valid_until IS 'Befristet bis – danach nächste Instanz';
+COMMENT ON COLUMN responsibility_task_roles.condition_text IS 'Bedingung – Voraussetzung in Worten';
+COMMENT ON COLUMN responsibility_task_roles.scope_text IS 'Geltungsbereich – z. B. Schuleinheit';
 COMMENT ON TABLE sources IS 'Quelle eines Schritts (Gesetz, Merkblatt, Prozessliste) – Quellenverzeichnis der Vorlagen; Pflicht bei jedem Schritt';
 COMMENT ON COLUMN sources.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN sources.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
@@ -790,6 +822,10 @@ COMMENT ON TABLE template_step_informed_roles IS 'Zu informierende Rollen eines 
 COMMENT ON COLUMN template_step_informed_roles.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
 COMMENT ON COLUMN template_step_informed_roles.template_step_id IS 'Schritt – Verweis';
 COMMENT ON COLUMN template_step_informed_roles.role_id IS 'Rolle – wird informiert';
+COMMENT ON TABLE template_process_owners IS 'Prozessverantwortliche Rolle einer Vorlage: darf in laufende Abläufe eingreifen (Konzept E5) – Vorlage › Prozessverantwortlich; der Ablauf übernimmt die Rollen beim Start';
+COMMENT ON COLUMN template_process_owners.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
+COMMENT ON COLUMN template_process_owners.template_id IS 'Vorlage – Verweis';
+COMMENT ON COLUMN template_process_owners.role_id IS 'Rolle – prozessverantwortlich';
 COMMENT ON TABLE template_triggers IS 'Auslöser einer Vorlage (neben dem Start von Hand) – Vorlage › Auslöser; nur freigegebene Vorlagen werden ausgelöst (Konzept Flow 3.2)';
 COMMENT ON COLUMN template_triggers.id IS 'ID – UUID v7, von der Anwendung vergeben';
 COMMENT ON COLUMN template_triggers.organization_id IS 'Organisation – Mandant; aus dem Token, nie aus der Eingabe';
@@ -812,6 +848,8 @@ COMMENT ON COLUMN escalation_rules.deadline_type IS 'Fristart – für welche Fr
 COMMENT ON COLUMN escalation_rules.level IS 'Stufe';
 COMMENT ON COLUMN escalation_rules.offset_days IS 'Abstand zur Frist (Tage)';
 COMMENT ON COLUMN escalation_rules.recipient IS 'Empfänger – wer informiert wird';
+COMMENT ON COLUMN escalation_rules.recipient_role_id IS 'Funktion (Empfänger) – bei «bestimmte Funktion»';
+COMMENT ON COLUMN escalation_rules.is_active IS 'Aktiv – ohne aktive Stufen keine Eskalation (Einstellungen › Eskalation, Konzept E6)';
 COMMENT ON COLUMN escalation_rules.text IS 'Meldung – Text des Hinweises';
 COMMENT ON COLUMN escalation_rules.is_journaled IS 'Ins Journal – ab Stufe 3 im Journal des Ablaufs';
 COMMENT ON COLUMN escalation_rules.created_at IS 'Erstellt am – Zeitpunkt der Erfassung (UTC)';
@@ -839,6 +877,7 @@ COMMENT ON COLUMN runs.parent_run_id IS 'Hauptablauf – bei Unterprozessen';
 COMMENT ON COLUMN runs.parent_run_step_id IS 'Schritt im Hauptablauf – bei Unterprozessen (Verweis auf run_steps)';
 COMMENT ON COLUMN runs.cancelled_on IS 'Abgebrochen am – Eingriff';
 COMMENT ON COLUMN runs.cancel_reason IS 'Grund des Abbruchs – Pflicht beim Abbruch';
+COMMENT ON COLUMN runs.process_owner_codes IS 'Prozessverantwortlich – Rollen beim Start aus der Vorlage übernommen';
 COMMENT ON COLUMN runs.lock_version IS 'Version – optimistisches Sperren; ETag und If-Match';
 COMMENT ON TABLE run_steps IS 'Schritt eines laufenden Ablaufs (Kopie aus der Vorlage mit Zustand) – «Laufende Abläufe» und «Meine Aufgaben»; Zustand setzt der Motor';
 COMMENT ON COLUMN run_steps.id IS 'ID – UUID v7, von der Anwendung vergeben';
@@ -861,6 +900,7 @@ COMMENT ON COLUMN run_steps.escalation_level IS 'Eskalationsstufe – höchste e
 COMMENT ON COLUMN run_steps.is_branch_skipped IS 'Zweig entfällt – übersprungen wegen eines Entscheids; Nachfolger nur auf diesem Zweig entfallen mit';
 COMMENT ON COLUMN run_steps.is_added IS 'Eingefügt – im laufenden Ablauf ergänzt, nicht aus der Vorlage';
 COMMENT ON COLUMN run_steps.is_manual_only IS 'Nur von Hand – nach «wieder öffnen»: Aufruf wird nicht automatisch wiederholt';
+COMMENT ON COLUMN run_steps.escalated_from_role IS 'Instanzwechsel von – Genehmigung ging wegen Betragsgrenze oder Befristung an die nächste Instanz (Konzept E14)';
 COMMENT ON COLUMN run_steps.operation_key IS 'Vorgang – Schlüssel im Register';
 COMMENT ON COLUMN run_steps.parameter_template IS 'Parameter (Vorlage) – mit Platzhaltern';
 COMMENT ON COLUMN run_steps.parameters IS 'Parameter (aufgelöst) – beim Aufruf';

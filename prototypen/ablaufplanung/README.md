@@ -88,6 +88,10 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
   anpassbar. Verwendete Einträge (Vorlagen, Funktionendiagramm, Kalender) lassen sich nur deaktivieren. Seit 0.9.0:
   aktive Intervalle und Zeitpunkte steuern die Zeitregeln im Kalender; das **Funktionendiagramm** ist nach
   Aufgabenbereichen gruppiert und für SV/RV bearbeitbar (Kompetenzen geprüft, Spalten aus den Funktionen).
+- **Entscheide umgesetzt** (0.10.0): Prozessverantwortung je Vorlage (E5); Einstellungen › **Eskalation** und
+  «Vorgesetzt» je Funktion (E6); **Kompetenzmerkmale** je Zuweisung im Funktionendiagramm (E14) mit Wirkung auf
+  Genehmigungen (Betragsgrenze → nächste Instanz E1 → E2). Vier-Augen wird angezeigt, der zweite Prüfschritt folgt in
+  Stufe 2.
 - **Simulation:** simulierter Tag (+1, +7, nächste Frist), Module als «nicht erreichbar» schalten, Rollenwechsel.
 
 ## Grundlagen

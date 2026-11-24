@@ -245,6 +245,9 @@
                 ],
                 "triggers": [
                   "Beispiel"
+                ],
+                "process_owners": [
+                  "Beispiel"
                 ]
               }
             }
@@ -1228,6 +1231,7 @@
               "example": {
                 "number": "Beispiel",
                 "title": "Beispiel",
+                "task_area_code": "Beispiel",
                 "roles": [
                   "Beispiel"
                 ]
@@ -5426,6 +5430,14 @@
             },
             "title": "Auslöser",
             "description": "Modul-Ereignis, Jahreskalender oder Abschluss eines Ablaufs"
+          },
+          "process_owners": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Prozessverantwortlich",
+            "description": "Rollen, die in laufende Abläufe eingreifen dürfen (Konzept E5)"
           }
         },
         "required": [
@@ -5621,6 +5633,15 @@
             "description": "Pflicht beim Abbruch",
             "x-eduksx-data-class": "personal"
           },
+          "process_owner_codes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "title": "Prozessverantwortlich",
+            "description": "Rollen beim Start aus der Vorlage übernommen",
+            "x-eduksx-data-class": "internal"
+          },
           "lock_version": {
             "type": "integer",
             "format": "int32",
@@ -5790,6 +5811,15 @@
             "type": "string",
             "title": "Aufgabe",
             "description": "Text im Funktionendiagramm",
+            "x-eduksx-data-class": "internal"
+          },
+          "task_area_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Aufgabenbereich",
+            "description": "Hauptbereich aus Einstellungen › Aufgabenbereiche (Konzept E16); Funktionendiagramm zieht nach EduKSX-Organization (E15)",
             "x-eduksx-data-class": "internal"
           },
           "created_at": {
@@ -6567,6 +6597,15 @@
             "type": "boolean",
             "title": "Frist gefährdet",
             "description": "Frist vorbei, Schritt noch blockiert",
+            "readOnly": true
+          },
+          "escalated_from_role": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Instanzwechsel von",
+            "description": "Genehmigung an nächste Instanz wegen Betragsgrenze oder Befristung",
             "readOnly": true
           },
           "due_on": {
@@ -7589,7 +7628,7 @@
       "ResponsibilityTaskRole": {
         "type": "object",
         "title": "Kompetenz",
-        "description": "Kompetenz einer Rolle bei einer Aufgabe",
+        "description": "Kompetenz einer Rolle bei einer Aufgabe mit Merkmalen (Konzept E14)",
         "properties": {
           "role_code": {
             "type": "string",
@@ -7599,7 +7638,60 @@
           "competence": {
             "type": "string",
             "title": "Kompetenz",
-            "description": "V, E, A, M oder I"
+            "description": "Kürzel aus dem Kompetenzkatalog, z. B. E1/V"
+          },
+          "amount_limit": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "decimal",
+            "pattern": "^-?\\d+(\\.\\d{1,4})?$",
+            "title": "Betragsgrenze",
+            "description": "CHF"
+          },
+          "requires_four_eyes": {
+            "type": "boolean",
+            "title": "Vier-Augen-Prinzip",
+            "description": "zweite Prüfung"
+          },
+          "is_collective": {
+            "type": "boolean",
+            "title": "Kollektiv",
+            "description": "nur gemeinsam"
+          },
+          "is_delegable": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "title": "Delegierbar",
+            "description": "leer = offen"
+          },
+          "valid_until": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "title": "Befristet bis",
+            "description": "Datum"
+          },
+          "condition_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Bedingung",
+            "description": "Voraussetzung"
+          },
+          "scope_text": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "title": "Geltungsbereich",
+            "description": "z. B. Schuleinheit"
           }
         },
         "required": [

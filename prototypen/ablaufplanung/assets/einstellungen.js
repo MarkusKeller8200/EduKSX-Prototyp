@@ -169,14 +169,37 @@
     unter.split(",").map((x) => x.trim()).forEach((u, j) => AUFGABENBEREICHE.push(k(`${nr}.${j + 1}`, u, "", { haupt: nr })));
   });
 
-  window.FLOW_EINSTELLUNGEN_DATEN = { kompetenzen: KOMPETENZEN, funktionen: FUNKTIONEN, zeitpunkte: ZEITPUNKTE, intervalle: INTERVALLE, aufgabenbereiche: AUFGABENBEREICHE };
+  // ------------------------------------------------------------ Vorgesetzte Rolle je Funktion (Eskalation, Konzept E6)
+  const VORGESETZT = { SV: "SPr", LSV: "SPr", HD: "SV", ICT: "SV", ISB: "SPr", DSB: "SPr", HR: "SPr", FIN: "SPr", LP: "SL", KLP: "SL", FLP: "SL", SHP: "SL", SA: "SL", SSA: "SL",
+    PICTS: "ICT", TICTS: "ICT", MA: "SL", SL: "SPr", SSL: "SL", RSL: "SPr", GL: "SPr", RV: "SPr", SPr: "SPF", BT: "SL", FM: "SV", IM: "RV" };
+  FUNKTIONEN.forEach((e) => { e.vorgesetzt = VORGESETZT[e.kuerzel] || ""; });
+
+  // ------------------------------------------------------------ Eskalation je Fristart (Konzept 3.3, E6)
+  const es = (fristart, stufe, tage, an, name, beschreibung) => k(`${{ gesetzlich: "G", intern: "I", empfehlung: "E" }[fristart]}${stufe}`, name, beschreibung, { fristart, stufe, tage, an });
+  const ESKALATION = [
+    es("gesetzlich", 1, -7, "zustaendig", "Erinnerung (gesetzliche Frist)", "7 Tage vor der Frist an die zuständige Rolle"),
+    es("gesetzlich", 2, -2, "zustaendig", "Dringend: gesetzliche Frist in 2 Tagen", "2 Tage vor der Frist"),
+    es("gesetzlich", 3, 0, "vorgesetzt", "Gesetzliche Frist erreicht – Information an die vorgesetzte Stelle", "am Fristtag; im Journal"),
+    es("gesetzlich", 4, 2, "SPr", "Gesetzliche Frist verpasst – Eskalation an das Schulpräsidium", "2 Tage nach der Frist; im Journal"),
+    es("intern", 1, -2, "zustaendig", "Erinnerung", "2 Tage vor der Frist"),
+    es("intern", 2, 0, "zustaendig", "Frist erreicht bzw. überschritten", "am Fristtag"),
+    es("intern", 3, 2, "vorgesetzt", "Information an die vorgesetzte Stelle", "2 Tage nach der Frist; im Journal"),
+    es("intern", 4, 5, "SPr", "Eskalation an das Schulpräsidium", "5 Tage nach der Frist; im Journal"),
+    es("empfehlung", 1, 0, "zustaendig", "Empfohlener Zeitpunkt erreicht", "am Tag der Empfehlung"),
+    es("empfehlung", 2, 7, "zustaendig", "Empfohlener Zeitpunkt überschritten", "eine Woche danach"),
+  ];
+
+  window.FLOW_EINSTELLUNGEN_DATEN = { kompetenzen: KOMPETENZEN, funktionen: FUNKTIONEN, zeitpunkte: ZEITPUNKTE, intervalle: INTERVALLE, aufgabenbereiche: AUFGABENBEREICHE, eskalation: ESKALATION };
 
   // ------------------------------------------------------------ Seiten und Steuerung
   const KATALOGE = {
     kompetenzen: { titel: "Kompetenzen", spalten: ["Kürzel", "Kompetenz"], text: "Kompetenzarten im Funktionendiagramm. Entscheid, Genehmigung und Freigabe sind bewusst getrennt: z. B. entscheidet die Geschäftsleitung über eine Beschaffung, das Finanzwesen prüft die Finanzierung, eine andere Stelle gibt die Bestellung frei. Aktive Kompetenzen erscheinen in der Legende des Funktionendiagramms." },
-    funktionen: { titel: "Funktionen", spalten: ["Kürzel", "Funktion"], gruppiert: "gruppe", text: "Organisatorische Funktionen (Rollen). Aktive Funktionen stehen bei «Verantwortlich» und «Informieren» in den Ablaufvorlagen zur Auswahl. Kürzel sind Vorschläge und je Schule anpassbar." },
+    funktionen: { titel: "Funktionen", spalten: ["Kürzel", "Funktion"], gruppiert: "gruppe", extra: [{ k: "vorgesetzt", label: "Vorgesetzt", typ: "funktion", titel: "Empfänger der Eskalation «vorgesetzte Stelle»" }], text: "Organisatorische Funktionen (Rollen). Aktive Funktionen stehen bei «Verantwortlich» und «Informieren» in den Ablaufvorlagen zur Auswahl. Kürzel sind Vorschläge und je Schule anpassbar." },
     zeitpunkte: { titel: "Zeitpunkte", spalten: ["Kürzel", "Zeitpunkt"], text: "Bezugstermine für Fristen und für die Zeitregeln im Jahreskalender (Schuljahres- und Ferientermine je Schuljahr unter Jahreskalender › Schuljahre). Nur aktive Zeitpunkte stehen beim Bearbeiten eines Termins zur Wahl." },
     intervalle: { titel: "Intervalle", spalten: ["Kürzel", "Intervall"], text: "Wiederholungen für Termine und ToDos im Jahreskalender. Nur aktive Intervalle stehen beim Bearbeiten eines Termins als Art der Zeitregel zur Wahl." },
+    eskalation: { titel: "Eskalation", spalten: ["Kürzel", "Meldung"], gruppiert: "fristart", gruppenTitel: { gesetzlich: "Gesetzliche Fristen", intern: "Interne Fristen", empfehlung: "Empfehlungen" },
+      extra: [{ k: "stufe", label: "Stufe", typ: "zahl" }, { k: "tage", label: "Tage zur Frist", typ: "zahl", titel: "negativ = vorher" }, { k: "an", label: "An", typ: "empfaenger" }],
+      text: "Eskalationsstufen je Fristart (Konzept E6). Tage zur Frist: negativ = vorher. Empfänger: zuständige Rolle, vorgesetzte Stelle (siehe Funktionen › Vorgesetzt) oder eine bestimmte Funktion. Ab Stufe 3 steht die Meldung im Journal des Ablaufs. Ohne aktive Stufen eskaliert eine Fristart nicht." },
     aufgabenbereiche: { titel: "Aufgabenbereiche", spalten: ["Nr.", "Aufgabenbereich"], gruppiert: "haupt", text: "Gliederung des Funktionendiagramms in Hauptbereiche und Unterbereiche (Vorschlag für einen schulübergreifenden Standard). Das Funktionendiagramm ist nach den Hauptbereichen gruppiert." },
   };
 
@@ -206,6 +229,7 @@
         return n;
       }
       if (b === "aufgabenbereiche") return e.kuerzel === e.haupt ? fdListe().filter((fd) => fd.bereich === e.kuerzel).length : 0;
+      if (b === "eskalation") return 0;
       if (b === "zeitpunkte" || b === "intervalle") return S().ereignisse.filter((ev) => regelBezuege(ev.zeit, ev.jahr).includes(e.bezug)).length;
       if (b === "kompetenzen") return fdListe().filter((fd) => Object.values(fd.rollen).some((z) => String(z).replace(/[()0-9]/g, "").split("/").includes(e.kuerzel))).length;
       return 0;
@@ -224,6 +248,15 @@
       return m;
     }
 
+    function extraFeld(b, e, i, x, dis) {
+      const id = `es-${b}-${i}-${x.k}`, d = `data-aktion="es-feld" data-k="${esc(x.k)}" data-bereich="${esc(b)}" data-i="${i}" id="${id}" ${dis}`;
+      const lab = `<label class="sr-only" for="${id}">${esc(x.label)}</label>`;
+      const w = e[x.k] == null ? "" : e[x.k];
+      if (x.typ === "zahl") return `${lab}<input type="number" ${d} value="${esc(w)}" style="width:4.5rem">`;
+      const funk = liste("funktionen").filter((f) => f.kuerzel && (f.aktiv || f.kuerzel === w)).map((f) => [f.kuerzel, `${f.kuerzel} – ${f.name}`]);
+      const werte = x.typ === "empfaenger" ? [["zustaendig", "zuständige Rolle"], ["vorgesetzt", "vorgesetzte Stelle"]].concat(funk) : [["", "–"]].concat(funk.filter(([kk]) => kk !== e.kuerzel));
+      return `${lab}<select ${d} style="max-width:12rem">${werte.map(([v, t]) => `<option value="${esc(v)}" ${String(v) === String(w) ? "selected" : ""}>${esc(t)}</option>`).join("")}</select>`;
+    }
     function zeile(b, e, i) {
       const dis = darf() ? "" : "disabled";
       const d = `data-bereich="${esc(b)}" data-i="${i}"`;
@@ -233,6 +266,7 @@
         <td style="width:7rem"><label class="sr-only" for="es-${b}-${i}-k">${esc(KATALOGE[b].spalten[0])}</label><input id="es-${b}-${i}-k" type="text" value="${esc(e.kuerzel)}" data-aktion="es-feld" data-k="kuerzel" ${d} ${dis} style="width:100%;${unter ? "padding-left:1.2rem" : "font-weight:600"}"></td>
         <td><label class="sr-only" for="es-${b}-${i}-n">${esc(KATALOGE[b].spalten[1])}</label><input id="es-${b}-${i}-n" type="text" value="${esc(e.name)}" data-aktion="es-feld" data-k="name" ${d} ${dis} style="width:100%">${e.neu ? ` <span class="badge violett" title="Vorschlag zur Erweiterung">neu</span>` : ""}${e.bezug ? ` <span class="small muted" title="Verknüpfung mit den Zeitregeln des Kalenders">⇢ ${esc(e.bezug)}</span>` : ""}</td>
         <td><label class="sr-only" for="es-${b}-${i}-b">Beschreibung</label><input id="es-${b}-${i}-b" type="text" value="${esc(e.beschreibung)}" data-aktion="es-feld" data-k="beschreibung" ${d} ${dis} style="width:100%"></td>
+        ${(KATALOGE[b].extra || []).map((x) => `<td>${extraFeld(b, e, i, x, dis)}</td>`).join("")}
         <td style="text-align:center"><label class="chip"><input type="checkbox" data-aktion="es-aktiv" ${d} ${e.aktiv ? "checked" : ""} ${dis}> <span class="small">${e.aktiv ? "aktiv" : "inaktiv"}</span></label></td>
         <td class="small muted" style="text-align:right">${n ? `${n}×` : "–"}</td>
         <td>${darf() ? `<button class="btn klein gefahr" data-aktion="es-loeschen" ${d} aria-label="Eintrag löschen" title="${n ? "Wird verwendet – nur deaktivieren möglich" : "Löschen"}" ${n ? "disabled" : ""}>✕</button>` : ""}</td></tr>`;
@@ -242,18 +276,18 @@
       b = KATALOGE[b] ? b : "kompetenzen";
       const kat = KATALOGE[b];
       const alle = liste(b);
-      const kopf = `<thead><tr><th>${esc(kat.spalten[0])}</th><th>${esc(kat.spalten[1])}</th><th>Beschreibung</th><th>Aktiv</th><th title="Verwendung in Vorlagen, im Funktionendiagramm bzw. im Jahreskalender">verwendet</th><th></th></tr></thead>`;
+      const kopf = `<thead><tr><th>${esc(kat.spalten[0])}</th><th>${esc(kat.spalten[1])}</th><th>Beschreibung</th>${(kat.extra || []).map((x) => `<th ${x.titel ? `title="${esc(x.titel)}"` : ""}>${esc(x.label)}</th>`).join("")}<th>Aktiv</th><th title="Verwendung in Vorlagen, im Funktionendiagramm bzw. im Jahreskalender">verwendet</th><th></th></tr></thead>`;
       let inhalt;
       if (kat.gruppiert) {
         const gruppen = [...new Set(alle.map((e) => e[kat.gruppiert]))];
         inhalt = gruppen.map((g) => {
           const zeilen = alle.map((e, i) => [e, i]).filter(([e]) => e[kat.gruppiert] === g);
-          const titel = b === "aufgabenbereiche" ? `${g} ${(alle.find((e) => e.kuerzel === g) || { name: "" }).name}` : g;
+          const titel = b === "aufgabenbereiche" ? `${g} ${(alle.find((e) => e.kuerzel === g) || { name: "" }).name}` : (kat.gruppenTitel && kat.gruppenTitel[g]) || g;
           const aktiv = zeilen.filter(([e]) => e.aktiv).length;
           return `<details class="gefaess" open style="margin-top:.75rem"><summary><span><strong>${esc(titel)}</strong></span><span class="small muted">${aktiv} von ${zeilen.length} aktiv</span></summary><div class="inhalt">
             <div class="tabelle-wrap"><table>${kopf}<tbody>${zeilen.map(([e, i]) => zeile(b, e, i)).join("")}</tbody></table></div>
-            ${darf() ? `<button class="btn klein" data-aktion="es-neu" data-bereich="${esc(b)}" data-gruppe="${esc(g)}">＋ ${b === "aufgabenbereiche" ? "Unterbereich" : "Funktion"} in «${esc(b === "aufgabenbereiche" ? titel : g)}»</button>` : ""}</div></details>`;
-        }).join("") + (darf() ? `<p style="margin-top:1rem"><button class="btn" data-aktion="es-neu-gruppe" data-bereich="${esc(b)}">＋ ${b === "aufgabenbereiche" ? "Hauptbereich" : "Gruppe"}</button></p>` : "");
+            ${darf() ? `<button class="btn klein" data-aktion="es-neu" data-bereich="${esc(b)}" data-gruppe="${esc(g)}">＋ ${{ aufgabenbereiche: "Unterbereich", eskalation: "Stufe", funktionen: "Funktion" }[b]} in «${esc(titel)}»</button>` : ""}</div></details>`;
+        }).join("") + (darf() && b !== "eskalation" ? `<p style="margin-top:1rem"><button class="btn" data-aktion="es-neu-gruppe" data-bereich="${esc(b)}">＋ ${b === "aufgabenbereiche" ? "Hauptbereich" : "Gruppe"}</button></p>` : "");
       } else {
         inhalt = `<div class="tabelle-wrap"><table>${kopf}<tbody>${alle.map((e, i) => zeile(b, e, i)).join("")}</tbody></table></div>${darf() ? `<p><button class="btn" data-aktion="es-neu" data-bereich="${esc(b)}">＋ Eintrag</button></p>` : ""}`;
       }
@@ -274,6 +308,7 @@
         const g = el.dataset.gruppe;
         const e = { kuerzel: "", name: "", beschreibung: "", aktiv: true };
         if (b === "funktionen" && g) e.gruppe = g;
+        if (b === "eskalation" && g) { const n = l.filter((x) => x.fristart === g).length + 1; Object.assign(e, { fristart: g, stufe: n, tage: 0, an: "zustaendig", kuerzel: `${{ gesetzlich: "G", intern: "I", empfehlung: "E" }[g]}${n}` }); }
         let pos = l.length;
         if (b === "aufgabenbereiche" && g) {
           const unter = l.filter((x) => x.haupt === g && x.kuerzel !== g).map((x) => Number(String(x.kuerzel).split(".")[1]) || 0);
@@ -321,7 +356,7 @@
       if (!e) return false;
       if (ak === "es-aktiv") { e.aktiv = el.checked; speichern(); render(); ansage(`«${e.kuerzel}» ${e.aktiv ? "aktiviert" : "deaktiviert"}.`); return true; }
       if (ak === "es-feld") {
-        const k = el.dataset.k, w = el.value.trim();
+        const k = el.dataset.k, w = ["stufe", "tage"].includes(el.dataset.k) ? Number(el.value || 0) : el.value.trim();
         if (b === "aufgabenbereiche" && k === "kuerzel" && e.kuerzel === e.haupt) liste(b).forEach((x) => { if (x !== e && x.haupt === e.haupt) { x.haupt = w; x.kuerzel = String(x.kuerzel).replace(/^[^.]+/, w); } });
         if (b === "aufgabenbereiche" && k === "kuerzel" && e.kuerzel === e.haupt) e.haupt = w;
         e[k] = w;

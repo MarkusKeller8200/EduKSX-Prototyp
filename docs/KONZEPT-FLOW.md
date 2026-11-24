@@ -185,6 +185,7 @@ und Aufgabenbereichen (gruppiert nach Hauptbereichen), je mit Kürzel/Nr., Bezei
 
 ## 7. Verlauf
 
+- 2026-11-24: E5, E6, E14 im Prototyp 0.10.0 umgesetzt.
 - 2026-11-24: Entscheide E5, E6, E14, E15 beschlossen (Rückfrage im Chat).
 - 2026-11-24: Einstellungen verknüpft (0.9.0): E16, E17 beschlossen; Funktionendiagramm bearbeitbar.
 - 2026-11-24: Einstellungen (Kataloge) im Prototyp 0.8.0; Entscheide E14–E18 ergänzt.

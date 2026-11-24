@@ -8,6 +8,13 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **EduKSX-Flow 0.10.0 – Entscheide E5, E6, E14 umgesetzt (24.11.2026):** Prozessverantwortung je Vorlage (wer in
+  laufende Abläufe eingreifen darf; Vorgabe je Gruppe, z. B. ICT-Vorlagen ICT/SV/SL; der Ablauf übernimmt sie beim
+  Start); Einstellungen › Eskalation (Stufen je Fristart mit Tagen und Empfänger) und «Vorgesetzt» je Funktion, der
+  Motor eskaliert danach; Kompetenzmerkmale je Zelle im Funktionendiagramm (Betragsgrenze, Vier-Augen, kollektiv,
+  delegierbar, befristet, Bedingung, Geltungsbereich) – Genehmigungen gehen bei überschrittener Betragsgrenze oder
+  abgelaufener Befristung an die nächste Instanz (Beispiel Hardwarebeschaffung: Ressort bis CHF 20'000, darüber
+  Schulpflege). Datenmodell und API nachgeführt.
 - **EduKSX-Flow 0.9.0 – Einstellungen verknüpft (24.11.2026):** Jahreskalender bietet beim Bearbeiten nur aktive
   Intervalle und Zeitpunkte als Zeitregel an (inaktive bleiben beim bestehenden Termin markiert); Funktionendiagramm
   nach Aufgabenbereichen gruppiert, für SV und RV bearbeitbar (Kompetenzen je Zelle gegen die aktiven Kompetenzen

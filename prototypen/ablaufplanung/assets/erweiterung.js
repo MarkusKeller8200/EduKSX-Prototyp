@@ -112,6 +112,20 @@
     "3.1": "9", "3.7": "9", "3.8": "9", "3.10": "9", "4.4.1": "4", "5.4.7": "16", "6.1.2": "6", "6.1.4": "5" };
   D.FUNKTIONENDIAGRAMM.forEach((f) => { f.bereich = FD_BEREICH[f.nr] || (f.nr.startsWith("5.") ? "2" : ""); });
 
+  // ------------------------------------------------------------ Prozessverantwortung je Vorlage (Konzept E5)
+  const PV = { ICT: ["ICT", "SV", "SL"], Finanzen: ["SV", "RV", "SPr"], Gemeinde: ["SV", "SPr"], Schulbehörde: ["SV", "SPr"], Rechnungsprüfungskommission: ["SV", "SPr"], Infrastruktur: ["SV", "HD", "SL"] };
+  D.VORLAGEN.forEach((v) => { v.prozessverantwortlich = v.prozessverantwortlich || (PV[v.gruppe] || ["SV", "SL", "SPr"]).slice(); });
+
+  // ------------------------------------------------------------ Kompetenzmerkmale je Zuweisung (Konzept E14): Beispiel Finanzkompetenz Hardware
+  const fd37 = D.FUNKTIONENDIAGRAMM.find((f) => f.nr === "3.7");
+  fd37.rollen.RV = "E1"; fd37.rollen.SPF = "E2";
+  fd37.merkmale = { RV: { betrag: 20000, vierAugen: "ja" }, SPF: { bedingt: "über der Finanzkompetenz des Ressorts" } };
+  D.FUNKTIONENDIAGRAMM.forEach((f) => { f.merkmale = f.merkmale || {}; });
+  art("hwb", 4, "genehmigung", { titel: "Freigabe nach Finanzkompetenz", fd: "3.7" });
+  setze("hwb", 5, { bedingung: wenn("hwb4.entscheid", "genehmigt") });
+  neu("hwb", { titel: "Ablehnung mitteilen", rolle: "ICT", tage: -29, nach: ["hwb4"], aktion: { vorgang: "core.mitteilung.senden", param: { an: "Antragsteller", vorlage: "Beschaffung {person} abgelehnt: {hwb4.begruendung}" } },
+    bedingung: wenn("hwb4.entscheid", "abgelehnt"), quelle: "FD 3.7 (RV E1, SPF E2)" });
+
   // ------------------------------------------------------------ Weitere Testabläufe (erfundene Angaben)
   D.LAEUFE.push(
     { vorlage: "ictsw", tageBisStichtag: 45, kontext: { person: "Lernplattform Mathematik", daten: "ja" }, erledigt: ["ictsw1", "ictsw2", "ictsw3", "ictsw4"] },

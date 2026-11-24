@@ -7,7 +7,7 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v6";
-  const VERSION = "0.9.0";
+  const VERSION = "0.10.0";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
@@ -179,6 +179,7 @@
       vorlage: v.id, version: v.version, titel: v.titel, stichtagName: v.stichtag,
       kontext: kopie(kontext), gestartet: S.heute, abgeschlossen: null, abgebrochen: null, pausiert: false, journal: [],
       schritte: kopie(v.schritte).map((x) => Object.assign(x, { status: "wartet", ergebnis: null, erledigtAm: null, param: null, eskaliert: [] })),
+      pv: kopie(v.prozessverantwortlich || D.PROZESSVERANTWORTLICH || []),
     };
     S.laeufe.unshift(lauf);
     if (!still) hinweis(["SV", "SL"], lauf, `Ablauf «${lauf.titel}» für ${lauf.kontext.person} gestartet (Version ${lauf.version}).`);
@@ -330,17 +331,72 @@
     lauf.schritte.forEach((sch) => {
       if (!["bereit", "laeuft", "fehler"].includes(sch.status)) return;
       if (sch.status === "laeuft" && typVon(sch) === "unterprozess") return;
-      const regel = D.ESKALATION[sch.fristart === "gesetzlich" ? "gesetzlich" : "normal"];
+      const fa = sch.fristart || "intern";
+      const katalog = (S.einstellungen && S.einstellungen.eskalation) || null;
+      const regel = katalog ? katalog.filter((e) => e.aktiv && e.fristart === fa).map((e) => ({ tage: Number(e.tage) || 0, stufe: Number(e.stufe) || 1, text: e.name, an: e.an })).sort((a, b) => a.stufe - b.stufe)
+        : D.ESKALATION[fa === "gesetzlich" ? "gesetzlich" : "normal"];
       const d = tageZwischen(fristVon(lauf, sch), S.heute);
       sch.eskaliert = sch.eskaliert || [];
       const neu = regel.filter((st) => d >= st.tage && !sch.eskaliert.includes(st.stufe));
       if (!neu.length) return;
       neu.forEach((st) => sch.eskaliert.push(st.stufe));
       const st = neu[neu.length - 1];
-      const an = st.an === "zustaendig" ? sch.rolle : st.an === "vorgesetzt" ? (D.VORGESETZT[sch.rolle] || D.LEITUNG) : D.LEITUNG;
+      const an = st.an === "zustaendig" ? sch.rolle : st.an === "vorgesetzt" ? (vorgesetztVon(sch.rolle) || D.LEITUNG) : st.an === "leitung" ? D.LEITUNG : st.an;
       hinweis([an], lauf, `${st.text}: «${sch.titel}» (${lauf.kontext.person}, Frist ${datumKurz(fristVon(lauf, sch))}, zuständig ${ROLLEN[sch.rolle] || sch.rolle}).`);
       if (st.stufe >= 3) journal(lauf, "Eskalation", `Stufe ${st.stufe} – ${st.text}: «${sch.titel}» an ${ROLLEN[an] || an}.`, "", "Flow");
     });
+  }
+  // ---------------------------------------------------------------- Kompetenzmerkmale (Konzept E14)
+  const instanzVon = (code) => { const m = String(code || "").match(/[EG](\d)/); return m ? Number(m[1]) : 1; };
+  const zahlCH = (n) => Number(n).toLocaleString("de-CH");
+  function merkmalText(m) {
+    if (!m) return [];
+    const out = [];
+    if (m.betrag) out.push([`≤ ${zahlCH(m.betrag)}`, `Betragsgrenze CHF ${zahlCH(m.betrag)}`]);
+    if (m.vierAugen === "ja") out.push(["4A", "Vier-Augen-Prinzip"]);
+    if (m.kollektiv === "ja") out.push(["koll.", "nur gemeinsam (kollektiv)"]);
+    if (m.delegierbar === "ja") out.push(["deleg.", "delegierbar"]);
+    if (m.delegierbar === "nein") out.push(["n. deleg.", "nicht delegierbar"]);
+    if (m.befristetBis) out.push([`bis ${datumKurz(m.befristetBis)}`, `befristet bis ${datumKurz(m.befristetBis)}`]);
+    if (m.bedingt) out.push(["bed.", `bedingt: ${m.bedingt}`]);
+    if (m.geltung) out.push(["nur " + kuerzen(m.geltung, 12), `Geltungsbereich: ${m.geltung}`]);
+    return out;
+  }
+  const merkmalHtml = (m) => merkmalText(m).map(([k, t]) => `<span class="merkmal" title="${esc(t)}">${esc(k)}</span>`).join("");
+  /** Gilt die Kompetenz der Rolle für diesen Ablauf (Betragsgrenze, Befristung)? Sonst Grund zurückgeben. */
+  function kompetenzGrenze(m, lauf) {
+    if (!m) return "";
+    const betrag = Number(lauf.kontext.betrag);
+    if (m.betrag && betrag > Number(m.betrag)) return `Betrag CHF ${zahlCH(betrag)} über der Grenze von CHF ${zahlCH(m.betrag)}`;
+    if (m.befristetBis && S.heute > m.befristetBis) return `Kompetenz befristet bis ${datumKurz(m.befristetBis)}`;
+    return "";
+  }
+  /** Genehmigung: ist die Rolle laut Funktionendiagramm nicht (mehr) zuständig, geht sie an die nächste Instanz. */
+  function kompetenzPruefen(lauf, sch) {
+    sch.kompetenzGeprueft = true;
+    const f = sch.fd && fdEintrag(sch.fd);
+    if (!f) return;
+    const grund = kompetenzGrenze((f.merkmale || {})[sch.rolle], lauf);
+    if (!grund) return;
+    const kandidaten = Object.entries(f.rollen).filter(([r, c]) => r !== sch.rolle && /[EG]/.test(c) && !kompetenzGrenze((f.merkmale || {})[r], lauf))
+      .sort((a, b) => instanzVon(a[1]) - instanzVon(b[1]));
+    const naechste = kandidaten.find(([, c]) => instanzVon(c) > instanzVon(f.rollen[sch.rolle])) || kandidaten[0];
+    const alt = sch.rolle;
+    if (naechste) {
+      sch.rolle = naechste[0];
+      sch.instanzwechsel = { von: alt, grund };
+      journal(lauf, "Entscheid", `«${sch.titel}»: ${grund} – zuständig ist die nächste Instanz ${ROLLEN[sch.rolle] || sch.rolle} (FD ${f.nr}).`, "", "Flow");
+      hinweis([sch.rolle, alt], lauf, `«${sch.titel}» (${lauf.kontext.person}): ${grund} – Genehmigung durch ${ROLLEN[sch.rolle] || sch.rolle}.`);
+    } else {
+      sch.instanzwechsel = { von: alt, grund, offen: true };
+      hinweis(["SV", alt], lauf, `«${sch.titel}» (${lauf.kontext.person}): ${grund} – im Funktionendiagramm ${f.nr} ist keine weitere Instanz zuständig.`);
+    }
+  }
+
+  /** Vorgesetzte Rolle laut Einstellungen › Funktionen (Konzept E6). */
+  function vorgesetztVon(r) {
+    const f = ((S.einstellungen && S.einstellungen.funktionen) || []).find((e) => e.kuerzel === r);
+    return f && f.vorgesetzt ? f.vorgesetzt : f ? "" : D.VORGESETZT[r];
   }
   const eskStufe = (sch) => Math.max(0, ...(sch.eskaliert || []));
 
@@ -381,7 +437,7 @@
               if (faellig) { benachrichtigen(lauf, sch, "Flow"); geaendert = true; return; }
               sch.status = "geplant";
             } else if (t === "unterprozess") { unterStarten(lauf, sch); geaendert = true; return; }
-            else sch.status = "bereit";
+            else { sch.status = "bereit"; if (t === "genehmigung" && !sch.kompetenzGeprueft) kompetenzPruefen(lauf, sch); }
             if (vorher !== sch.status) geaendert = true;
           });
         }
@@ -466,7 +522,9 @@
   }
 
   // ---------------------------------------------------------------- Eingriffe in laufende Abläufe (Konzept 3.4)
-  const darfEingreifen = () => (D.PROZESSVERANTWORTLICH || []).includes(S.rolle);
+  /** Prozessverantwortung je Vorlage (Konzept E5); der Ablauf übernimmt sie beim Start. */
+  const pvVon = (l) => (l && l.pv) || (l && (vorlageVon(l.vorlage) || {}).prozessverantwortlich) || D.PROZESSVERANTWORTLICH || [];
+  const darfEingreifen = (l) => pvVon(l).includes(S.rolle);
   function abbrechen(lauf, grund, wer) {
     lauf.abgebrochen = S.heute;
     const ausgefuehrt = lauf.schritte.filter((x) => x.status === "erledigt" && typVon(x) === "aufruf");
@@ -597,6 +655,7 @@
     "einstellungen/funktionen": ico('<circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3 2.8-5 5.5-5s4.9 2 5.5 5"/><circle cx="17" cy="9" r="2.3"/><path d="M15.5 14.2c2.3.2 4 1.9 4.5 4.8"/>'),
     "einstellungen/zeitpunkte": ico('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
     "einstellungen/intervalle": ico('<path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/>'),
+    "einstellungen/eskalation": ico('<path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17h.01"/>'),
     "einstellungen/aufgabenbereiche": ico('<rect x="3" y="3" width="7" height="7" rx="1"/><path d="M14 5h7M14 8h5M6.5 10v4.5H14M6.5 14.5V19H14"/><rect x="14" y="12.5" width="7" height="4" rx="1"/><rect x="14" y="17" width="7" height="4" rx="1"/>'),
   };
   const NAVI = [
@@ -620,6 +679,7 @@
     ["einstellungen/zeitpunkte", "Zeitpunkte"],
     ["einstellungen/intervalle", "Intervalle"],
     ["einstellungen/aufgabenbereiche", "Aufgabenbereiche"],
+    ["einstellungen/eskalation", "Eskalation"],
   ];
 
   const STATUS = {
@@ -829,7 +889,7 @@
   }
   /** Eingriffe je Schritt für Prozessverantwortliche (überspringen, Zuständigkeit, wieder öffnen). */
   function eingriffKnoepfe(l, s) {
-    if (!darfEingreifen() || l.abgebrochen) return "";
+    if (!darfEingreifen(l) || l.abgebrochen) return "";
     const d = `data-lauf="${esc(l.id)}" data-id="${esc(s.id)}"`;
     const k = [];
     if (["wartet", "bereit", "geplant", "fehler", "laeuft"].includes(s.status) && !(s.status === "laeuft" && typVon(s) === "unterprozess")) {
@@ -916,7 +976,7 @@
     const zeilen = l.schritte.map((s, i) => `<tr class="${["uebersprungen", "abgebrochen"].includes(s.status) ? "blass" : ""}">
       <td class="zahl">${i + 1}</td>
       <td><strong>${esc(s.titel)}</strong>${s.zusatz ? ` <span class="badge violett" title="Im laufenden Ablauf eingefügt">＋ eingefügt</span>` : ""}${s.quelle ? `<div class="quelle">📖 ${quelleHtml(s.quelle)}</div>` : ""}${s.bedingung && s.bedingung.feld ? `<div class="small muted">${istRef(s.bedingung) ? "Zweig" : "Bedingung"}: ${esc(bedingungText(s.bedingung, l.schritte))}${s.erzwungen ? " (aufgehoben)" : ""}</div>` : ""}${s.status === "uebersprungen" && s.grund ? `<div class="small muted">↷ ${esc(s.grund)}</div>` : ""}${s.fehler && s.status === "fehler" ? `<div class="small" style="color:var(--destructive)">✕ ${esc(s.fehler)}</div>` : ""}</td>
-      <td>${rolleBadge(s.rolle)}${s.fd ? `<div class="small muted">FD ${esc(s.fd)}</div>` : ""}</td>
+      <td>${rolleBadge(s.rolle)}${s.fd ? `<div class="small muted">FD ${esc(s.fd)}</div>` : ""}${s.fd && fdEintrag(s.fd) ? merkmalHtml((fdEintrag(s.fd).merkmale || {})[s.rolle]) : ""}${s.instanzwechsel ? `<div class="small" title="${esc(s.instanzwechsel.grund)}">↑ statt ${esc(s.instanzwechsel.von)}${s.instanzwechsel.offen ? " – keine Instanz" : ""}</div>` : ""}</td>
       <td>${datumKurz(fristVon(l, s))}${fristartBadge(s)}<div class="small muted">${tKurz(s.tage)}</div></td>
       <td>${aufrufText(s)}${s.param ? `<div class="param">${Object.entries(s.param).map(([k, w]) => `${esc(k)}: ${esc(w)}`).join("<br>")}</div>` : ""}</td>
       <td>${badge(s.status, s)}${fristBadge(l, s)}${s.ergebnis ? `<div class="param">${Object.entries(s.ergebnis).map(([k, w]) => `→ ${esc(k)}: ${k === "ablauf" ? `<a href="#/lauf/${esc(w)}">${esc(w)}</a>` : esc(w)}`).join("<br>")}</div>` : ""}${s.erledigtAm ? `<div class="small muted">${datumKurz(s.erledigtAm)}</div>` : ""}</td>
@@ -925,7 +985,7 @@
     const kinder = S.laeufe.filter((x) => x.eltern && x.eltern.lauf === l.id);
     const offen = !l.abgeschlossen && !l.abgebrochen;
     const d = `data-lauf="${esc(l.id)}"`;
-    const eingriffe = darfEingreifen() && offen ? `<div class="aktionen">
+    const eingriffe = darfEingreifen(l) && offen ? `<div class="aktionen">
         <button class="btn" data-aktion="ein-pause" ${d}>${l.pausiert ? "▶ Fortsetzen" : "⏸ Pausieren"}</button>
         <button class="btn" data-aktion="ein-stichtag" ${d}>📅 Stichtag verschieben</button>
         <button class="btn" data-aktion="ein-einfuegen" ${d}>＋ Schritt einfügen</button>
@@ -936,7 +996,7 @@
         <p class="muted">Vorlage Version ${esc(l.version)}, gestartet ${datumKurz(l.gestartet)} · ${esc(l.stichtagName)}: ${datum(l.kontext.stichtag)}${l.ereignisTitel ? ` · aus dem <a href="#/kalender/liste">Jahreskalender</a>: ${esc(l.ereignisTitel)}` : ""}${l.ausloeser ? ` · ⚡ ${esc(l.ausloeser)}` : ""}${l.eltern ? ` · ⧉ Unterprozess von <a href="#/lauf/${esc(l.eltern.lauf)}">${esc(l.eltern.lauf)}</a>` : ""}</p></div>${eingriffe}</div>
       ${l.pausiert ? `<p class="meldung warnung">⏸ Pausiert: Es laufen keine automatischen Schritte, Fristen werden nicht eskaliert, Aufgaben erscheinen nicht unter «Meine Aufgaben».</p>` : ""}
       ${l.abgebrochen ? `<p class="meldung info">⊘ Abgebrochen am ${datumKurz(l.abgebrochen)}. Bereits ausgeführte Aufrufe stehen im Journal (Kompensation).</p>` : ""}
-      ${darfEingreifen() || !offen ? "" : `<p class="small muted">Eingriffe (pausieren, abbrechen, Stichtag verschieben, Schritte überspringen oder einfügen) dürfen Prozessverantwortliche: ${(D.PROZESSVERANTWORTLICH || []).map((r) => esc(ROLLEN[r])).join(", ")}.</p>`}
+      ${darfEingreifen(l) || !offen ? "" : `<p class="small muted">Eingriffe (pausieren, abbrechen, Stichtag verschieben, Schritte überspringen oder einfügen) dürfen die Prozessverantwortlichen dieser Vorlage: ${pvVon(l).map((r) => esc(ROLLEN[r] || r)).join(", ")}.</p>`}
       <div class="spalten" style="grid-template-columns: 2fr 1fr; margin-bottom:1rem">
         <div class="karte"><div class="titel muted small">Fortschritt</div><div class="zahl">${p} %</div>${balken(p)}<div class="small muted">${e} von ${n} Schritten erledigt oder übersprungen${l.abgeschlossen ? " · ✓ abgeschlossen am " + datumKurz(l.abgeschlossen) : ""}</div>${kinder.length ? `<div class="small" style="margin-top:.5rem">Unterprozesse: ${kinder.map((k) => `<a href="#/lauf/${esc(k.id)}">${esc(k.id)} ${esc(k.titel)}</a> ${laufStatus(k) || `(${fortschritt(k)[2]} %)`}`).join(" · ")}</div>` : ""}</div>
         <div class="karte"><div class="titel muted small">Kontext (Eingaben beim Start)</div><div class="feldliste">${kontext}</div></div>
@@ -1049,6 +1109,7 @@
         </div></div>
       ${darf ? "" : `<p class="meldung info">Bearbeiten kann die Schulverwaltung (V), freigeben der Ressortvorstand (E) – Rolle oben rechts wechseln.</p>`}
       ${v.status === "freigegeben" && darf ? `<p class="small muted">Eine Änderung macht aus der freigegebenen Version ${esc(v.version)} einen Entwurf der Version ${esc(v.version + 1)}. Laufende Abläufe bleiben auf ihrer Version.</p>` : ""}
+      <p class="small">Prozessverantwortlich (darf in laufende Abläufe eingreifen): ${darf ? `${[...new Set([...(v.prozessverantwortlich || []), ...ES.aktiveFunktionen().map((e) => e.kuerzel).filter((k) => ["SV", "SL", "SPr", "RV", "SPF", "ICT", "HD", "GL", "LSV", "HR", "FIN"].includes(k))])].map((r) => `<label class="chip" title="${esc(ROLLEN[r] || r)}"><input type="checkbox" data-aktion="pv-rolle" data-rolle="${esc(r)}" ${(v.prozessverantwortlich || []).includes(r) ? "checked" : ""}> ${esc(r)}</label>`).join(" ")}` : (v.prozessverantwortlich || []).map((r) => rolleBadge(r)).join(" ")}</p>
       ${meldungen}
       <div class="reiter" role="tablist">
         <button role="tab" aria-selected="${reiter === "bild"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/bild">Ablaufbild</button>
@@ -1137,8 +1198,10 @@
     const zelle = (f, r) => {
       const w = f.rollen[r] || "";
       const fehlerhaft = fdUnbekannt(w).length;
-      if (!darf) return `<td class="fd ${/[EV]/.test(w) ? "lead" : ""}">${esc(w)}${fehlerhaft ? " ⚠" : ""}</td>`;
-      return `<td class="fd ${/[EV]/.test(w) ? "lead" : ""}"><label class="sr-only" for="fd-${esc(f.nr)}-${esc(r)}">${esc(f.nr)} ${esc(r)}</label><input id="fd-${esc(f.nr)}-${esc(r)}" class="fdzelle ${fehlerhaft ? "ungueltig" : ""}" data-aktion="fd-zelle" data-nr="${esc(f.nr)}" data-rolle="${esc(r)}" value="${esc(w)}" title="${fehlerhaft ? "Unbekannte Kompetenz" : esc(ROLLEN[r] || r)}" ${fehlerhaft ? 'aria-invalid="true"' : ""}></td>`;
+      const mh = merkmalHtml((f.merkmale || {})[r]);
+      if (!darf) return `<td class="fd ${/[EV]/.test(w) ? "lead" : ""}">${esc(w)}${fehlerhaft ? " ⚠" : ""}${mh ? `<div>${mh}</div>` : ""}</td>`;
+      const knopf = w ? `<button class="link small" data-aktion="fd-merkmale" data-nr="${esc(f.nr)}" data-rolle="${esc(r)}" title="Merkmale: Betragsgrenze, Vier-Augen, delegierbar, befristet …" aria-label="Merkmale ${esc(f.nr)} ${esc(r)}">⋯</button>` : "";
+      return `<td class="fd ${/[EV]/.test(w) ? "lead" : ""}">${mh ? `<div>${mh}</div>` : ""}${knopf}<label class="sr-only" for="fd-${esc(f.nr)}-${esc(r)}">${esc(f.nr)} ${esc(r)}</label><input id="fd-${esc(f.nr)}-${esc(r)}" class="fdzelle ${fehlerhaft ? "ungueltig" : ""}" data-aktion="fd-zelle" data-nr="${esc(f.nr)}" data-rolle="${esc(r)}" value="${esc(w)}" title="${fehlerhaft ? "Unbekannte Kompetenz" : esc(ROLLEN[r] || r)}" ${fehlerhaft ? 'aria-invalid="true"' : ""}></td>`;
     };
     const zeile = (f) => `<tr><td>${esc(f.nr)}</td><td>${darf ? `<label class="sr-only" for="fdt-${esc(f.nr)}">Aufgabe ${esc(f.nr)}</label><input id="fdt-${esc(f.nr)}" data-aktion="fd-titel" data-nr="${esc(f.nr)}" value="${esc(f.titel)}" style="width:100%;min-width:14rem">` : esc(f.titel)}</td>${sp.map((r) => zelle(f, r)).join("")}<td class="small">${(verwendung[f.nr] || []).map(esc).join("<br>") || `<span class="muted">–</span>`}</td><td>${darf && !(verwendung[f.nr] || []).length ? `<button class="btn klein gefahr" data-aktion="fd-loeschen" data-nr="${esc(f.nr)}" aria-label="Aufgabe ${esc(f.nr)} löschen">✕</button>` : ""}</td></tr>`;
     const kopf = `<thead><tr><th>Nr.</th><th>Aufgabe</th>${sp.map((r) => `<th title="${esc(ROLLEN[r] || r)}">${esc(r)}${darf ? ` <button class="link small" data-aktion="fd-spalte-weg" data-rolle="${esc(r)}" aria-label="Spalte ${esc(r)} ausblenden" title="Spalte ausblenden (Einträge bleiben)">×</button>` : ""}</th>`).join("")}<th>Verwendet in Schritten</th><th></th></tr></thead>`;
@@ -1385,7 +1448,9 @@
     const t = typVon(s);
     const durch = ROLLEN[S.rolle];
     const fertig = (eingabe) => { ausfuehren(l, s, durch, eingabe); weiter(); ansage(`«${s.titel}»: ${STATUS[s.status][2]}.`); };
-    if (t === "genehmigung") return formular(s.titel, `${l.kontext.person} · ${l.titel}`, [{ key: "entscheid", label: "Entscheid", typ: "auswahl", werte: ["genehmigt", "abgelehnt"] }, { key: "begruendung", label: "Begründung (bei Ablehnung Pflicht)", typ: "textarea", pflichtWenn: (w) => w.entscheid === "abgelehnt" }], "Entscheid festhalten", fertig);
+    const mm = s.fd && fdEintrag(s.fd) ? (fdEintrag(s.fd).merkmale || {})[s.rolle] : null;
+    const mmText = merkmalText(mm).map(([, x]) => x).join(" · ");
+    if (t === "genehmigung") return formular(s.titel, `${l.kontext.person} · ${l.titel}${s.instanzwechsel ? `\nZuständig als nächste Instanz: ${s.instanzwechsel.grund}.` : ""}${mmText ? `\nKompetenz laut Funktionendiagramm ${s.fd}: ${mmText}.` : ""}${mm && mm.vierAugen === "ja" ? "\nVier-Augen-Prinzip: Eine zweite, unabhängige Prüfung ist nötig (Ablauf dafür folgt in Stufe 2)." : ""}`, [{ key: "entscheid", label: "Entscheid", typ: "auswahl", werte: ["genehmigt", "abgelehnt"] }, { key: "begruendung", label: "Begründung (bei Ablehnung Pflicht)", typ: "textarea", pflichtWenn: (w) => w.entscheid === "abgelehnt" }], "Entscheid festhalten", fertig);
     if (t === "entscheidung") return formular(s.titel, `${l.kontext.person} · ${l.titel}`, [{ key: "wahl", label: "Entscheid", typ: "auswahl", werte: s.optionen || ["ja", "nein"] }], "Entscheid festhalten", fertig);
     if (t === "nachweis") return formular(s.titel, "Dokument bzw. Referenz hinterlegen (z. B. Dossiernummer). Im Prototyp wird nichts hochgeladen.", [{ key: "nachweis", label: "Nachweis", typ: "text", pflicht: true, wert: "" }], "Nachweis ablegen", fertig);
     if (t === "termin") return formular(s.titel, "", [{ key: "termin", label: "Datum", typ: "datum", pflicht: true, wert: fristVon(l, s) }, { key: "ort", label: "Ort", typ: "text" }], "Termin festhalten", (w) => fertig({ termin: datumKurz(w.termin), ort: w.ort }));
@@ -1395,7 +1460,7 @@
   /** Eingriffe in laufende Abläufe (Konzept 3.4), jeweils mit Begründung und Journal. */
   function eingriff(ak, l, s) {
     const wer = ROLLEN[S.rolle];
-    if (!darfEingreifen()) { ansage("Eingriffe nur für Prozessverantwortliche."); return; }
+    if (!darfEingreifen(l)) { ansage("Eingriffe nur für die Prozessverantwortlichen dieser Vorlage."); return; }
     if (ak === "ein-pause") {
       if (l.pausiert) return formular("Ablauf fortsetzen", `${esc(l.id)} · ${l.titel}: ${l.kontext.person}`, [GRUND], "Fortsetzen", (w) => { l.pausiert = false; journal(l, "Eingriff", "Ablauf fortgesetzt.", w.grund, wer); weiter(); ansage("Ablauf fortgesetzt."); });
       return formular("Ablauf pausieren", "Während der Pause laufen keine automatischen Schritte und Fristen werden nicht eskaliert.", [GRUND], "Pausieren", (w) => { l.pausiert = true; journal(l, "Eingriff", "Ablauf pausiert.", w.grund, wer); weiter(); ansage("Ablauf pausiert."); });
@@ -1523,6 +1588,27 @@
         });
         break;
       }
+      case "fd-merkmale": {
+        const f = fdEintrag(el.dataset.nr), r = el.dataset.rolle;
+        if (!f || !darfFd()) break;
+        const m = (f.merkmale = f.merkmale || {})[r] || {};
+        const jn = [["", "–"], ["ja", "ja"], ["nein", "nein"]];
+        formular(`Merkmale: ${f.nr} · ${ROLLEN[r] || r} (${f.rollen[r] || "–"})`, "Zusätzliche Eigenschaften der Kompetenzzuweisung (Konzept E14). Bei Genehmigungen prüft Flow Betragsgrenze und Befristung und gibt sonst an die nächste Instanz (E1 → E2) weiter.", [
+          { key: "betrag", label: "Betragsgrenze CHF", typ: "zahl", wert: m.betrag || "" },
+          { key: "vierAugen", label: "Vier-Augen-Prinzip", typ: "auswahl", werte: jn, wert: m.vierAugen || "" },
+          { key: "kollektiv", label: "Kollektiv (nur gemeinsam)", typ: "auswahl", werte: jn, wert: m.kollektiv || "" },
+          { key: "delegierbar", label: "Delegierbar", typ: "auswahl", werte: jn, wert: m.delegierbar || "" },
+          { key: "befristetBis", label: "Befristet bis", typ: "datum", wert: m.befristetBis || "" },
+          { key: "bedingt", label: "Bedingung", typ: "text", wert: m.bedingt || "" },
+          { key: "geltung", label: "Geltungsbereich", typ: "text", wert: m.geltung || "" },
+        ], "Übernehmen", (w) => {
+          const neu = {};
+          Object.entries(w).forEach(([k, x]) => { if (x) neu[k] = k === "betrag" ? Number(x) : x; });
+          if (Object.keys(neu).length) f.merkmale[r] = neu; else delete f.merkmale[r];
+          speichern(); render(); ansage("Merkmale übernommen.");
+        });
+        break;
+      }
       case "fd-loeschen": {
         const f = fdEintrag(el.dataset.nr);
         if (f && darfFd()) frage(`Aufgabe «${f.nr} ${f.titel}» aus dem Funktionendiagramm löschen?`, "Löschen", () => { S.fd = S.fd.filter((x) => x !== f); speichern(); render(); ansage("Aufgabe gelöscht."); });
@@ -1556,7 +1642,7 @@
       }
       case "vorlage-neu": {
         const id = "vorlage-" + S.zaehler++;
-        S.vorlagen.push({ id, gruppe: "Weitere", titel: "Neue Ablaufvorlage", version: 1, status: "entwurf", stichtag: "Stichtag", beschreibung: "Noch zu beschreiben.",
+        S.vorlagen.push({ id, gruppe: "Weitere", titel: "Neue Ablaufvorlage", version: 1, status: "entwurf", prozessverantwortlich: ["SV", "SL", "SPr"], stichtag: "Stichtag", beschreibung: "Noch zu beschreiben.",
           felder: [{ key: "person", label: "Name", typ: "text" }, { key: "funktion", label: "Funktion", typ: "auswahl", werte: D.FUNKTIONEN }, { key: "stichtag", label: "Stichtag", typ: "datum" }], schritte: [] });
         speichern(); location.hash = "#/vorlage/" + id + "/liste"; break;
       }
@@ -1605,6 +1691,12 @@
     }
     if (ak === "ereignis-feld") { const E = EREIGNIS_EINGABE[el.dataset.ev]; E[el.dataset.key] = el.value; render(); }
     if (ak === "ausl-art") { AUSL_ART = el.value; render(); }
+    if (ak === "pv-rolle" && S.rolle === "SV") {
+      const [, vid] = route(); const v = vorlageVon(vid); if (!v) return;
+      const neu = el.checked ? [...new Set([...(v.prozessverantwortlich || []), el.dataset.rolle])] : (v.prozessverantwortlich || []).filter((r) => r !== el.dataset.rolle);
+      if (!neu.length) { ansage("Mindestens eine Rolle muss prozessverantwortlich sein."); render(); return; }
+      entwurfMachen(v); v.prozessverantwortlich = neu; speichern(); render();
+    }
     if (ak === "start-feld") {
       const [, vid] = route();
       const v = vorlageVon(vid) || S.vorlagen.find((x) => x.status === "freigegeben");
@@ -1624,6 +1716,10 @@
   S = laden() || neuerZustand();
   if (!S.einstellungen) S.einstellungen = kopie(window.FLOW_EINSTELLUNGEN_DATEN);
   if (!S.fd) S.fd = kopie(D.FUNKTIONENDIAGRAMM);
+  if (!S.einstellungen.eskalation) S.einstellungen.eskalation = kopie(window.FLOW_EINSTELLUNGEN_DATEN.eskalation);
+  S.einstellungen.funktionen.forEach((e) => { if (e.vorgesetzt === undefined) { const v = window.FLOW_EINSTELLUNGEN_DATEN.funktionen.find((x) => x.kuerzel === e.kuerzel); e.vorgesetzt = v ? v.vorgesetzt : ""; } });
+  S.vorlagen.forEach((v) => { if (!v.prozessverantwortlich) { const d = D.VORLAGEN.find((x) => x.id === v.id); v.prozessverantwortlich = kopie((d && d.prozessverantwortlich) || D.PROZESSVERANTWORTLICH); } });
+  S.fd.forEach((f) => { if (!f.merkmale) { const d = D.FUNKTIONENDIAGRAMM.find((x) => x.nr === f.nr); f.merkmale = kopie((d && d.merkmale) || {}); } });
   if (!S.fdSpalten) S.fdSpalten = FD_SPALTEN.slice();
   rollenAbgleichen();
   try { if (localStorage.getItem("eduksx-thema") === "dunkel") document.documentElement.classList.add("dark"); } catch (e) { /* */ }
