@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>EduKSX-Experience – C Zeitstrahl (Prototyp)</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/eduksx.css">
+  <link rel="stylesheet" href="assets/gemeinsam.css">
+  <style>
+    :root { --spalte: 150px; --bahn: 76px; --links: 190px; }
+    body { height: 100vh; display: grid; grid-template-rows: auto auto 1fr; overflow: hidden; }
+    .leiste-oben { display: flex; align-items: center; gap: .7rem; padding: .7rem 1.25rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .leiste-oben .marke svg { width: 26px; height: 26px; }
+    .leiste-oben h1 { margin: 0; font-size: 1.05rem; }
+    .zurueck { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border: 1px solid var(--border); border-radius: .5rem; color: inherit; }
+    .steuer { margin-left: auto; display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+    .segment { display: inline-flex; border: 1px solid var(--input); border-radius: 999px; padding: 2px; }
+    .segment button { font: inherit; font-size: .85rem; border: 0; background: transparent; color: var(--foreground); padding: .3rem .8rem; border-radius: 999px; cursor: pointer; }
+    .segment button[aria-pressed="true"] { background: var(--foreground); color: var(--background); }
+    .knopf { font: inherit; font-size: .85rem; border: 1px solid var(--input); background: var(--card); color: var(--foreground); padding: .35rem .8rem; border-radius: 999px; cursor: pointer; }
+    .filter { display: flex; gap: .4rem; padding: .55rem 1.25rem; border-bottom: 1px solid var(--border); overflow-x: auto; background: var(--sidebar); }
+    .filter label { display: inline-flex; align-items: center; gap: .35rem; font-size: .82rem; border: 1px solid var(--border); border-radius: 999px; padding: .2rem .7rem .2rem .35rem; cursor: pointer; white-space: nowrap; background: var(--card); }
+    .filter label svg { width: 18px; height: 18px; }
+    .filter input { accent-color: var(--ring); }
+    .filter label:has(input:not(:checked)) { opacity: .5; text-decoration: line-through; }
+    .flaeche { position: relative; overflow: auto; }
+    .strahl { position: relative; display: grid; grid-template-columns: var(--links) repeat(var(--tage), var(--spalte)); min-width: max-content; }
+    .ecke, .tagkopf { position: sticky; top: 0; z-index: 3; background: var(--background); border-bottom: 1px solid var(--border); height: 58px; }
+    .ecke { left: 0; z-index: 5; display: flex; align-items: flex-end; padding: 0 1rem .5rem; font-size: .75rem; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: .06em; }
+    .tagkopf { padding: .55rem .7rem; border-left: 1px solid var(--border); }
+    .tagkopf .wt { font-size: .75rem; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: .05em; }
+    .tagkopf .dt { font-size: 1.15rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+    .tagkopf.heute .dt { display: inline-flex; padding: 0 .45rem; border-radius: 8px; background: var(--brand-orange); color: #222222; }
+    .tagkopf.we { background: var(--muted); }
+    .bahnkopf { position: sticky; left: 0; z-index: 2; background: var(--background); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border);
+      display: flex; align-items: center; gap: .6rem; padding: 0 1rem; min-height: var(--bahn); }
+    .bahnkopf .ico { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--m-soft); }
+    .bahnkopf .ico svg { width: 22px; height: 22px; }
+    .bahnkopf b { display: block; font-size: .9rem; } .bahnkopf span { font-size: .75rem; color: var(--muted-foreground); }
+    .zelle { border-bottom: 1px solid var(--border); border-left: 1px solid var(--border); min-height: var(--bahn); }
+    .zelle.we, .tagkopf.we { background-image: repeating-linear-gradient(135deg, transparent 0 7px, color-mix(in srgb, var(--muted-foreground) 14%, transparent) 7px 8px); }
+    .eintrag { position: absolute; z-index: 1; height: 30px; display: flex; align-items: center; gap: .35rem; padding: 0 .6rem 0 .35rem; border-radius: 999px; font: 500 .8rem var(--font-sans);
+      background: var(--m-soft); color: var(--m-text); border: 1px solid color-mix(in srgb, var(--m) 45%, transparent); cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+    .eintrag:hover, .eintrag[aria-expanded="true"] { box-shadow: 0 0 0 2px var(--m); z-index: 2; }
+    .eintrag .sym { width: 20px; height: 20px; border-radius: 999px; display: grid; place-items: center; background: var(--card); font-weight: 700; flex: none; font-size: .72rem; color: var(--foreground); }
+    .eintrag.termin { border-radius: 6px; border-style: dashed; }
+    .eintrag.aufgabe { height: 64px; white-space: normal; flex-direction: column; align-items: stretch; justify-content: center; gap: 5px; padding: 0 .7rem 0 .8rem; border-radius: 12px;
+      background: var(--card); color: var(--foreground); border: 1px solid var(--border); box-shadow: inset 4px 0 0 var(--m), 0 2px 8px rgb(15 23 42 / .06); }
+    .eintrag.aufgabe .z1 { display: flex; align-items: flex-start; gap: .35rem; overflow: hidden; font-weight: 600; line-height: 1.2; font-size: .76rem; }
+    .eintrag.aufgabe .z1 span:last-child { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .eintrag.aufgabe .z2 { display: flex; align-items: center; gap: .45rem; font-size: .72rem; color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+    .balken { flex: 1; height: 5px; border-radius: 99px; background: var(--muted); overflow: hidden; border: 1px solid var(--border); }
+    .balken i { display: block; height: 100%; background: var(--m); border-radius: 99px; }
+    .eintrag.aufgabe .sym { background: var(--m-soft); color: var(--m-text); }
+    .eintrag.meldung { background: transparent; border-color: transparent; color: var(--muted-foreground); }
+    .eintrag.meldung .sym { background: var(--m-soft); }
+    .eintrag.s-ueber-r { box-shadow: inset 4px 0 0 var(--destructive), 0 2px 8px rgb(15 23 42 / .06); }
+    .eintrag.erledigt { opacity: .6; text-decoration: line-through; }
+    .jetzt { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--brand-orange); z-index: 4; pointer-events: none; }
+    .jetzt span { position: sticky; top: 62px; display: inline-block; transform: translateX(-50%); margin-left: 1px; margin-top: 4px; white-space: nowrap; font: 700 .7rem var(--font-sans); background: var(--brand-orange); color: #222222; padding: .05rem .4rem; border-radius: 6px; }
+    /* Detail-Seitenleiste */
+    .detail { position: fixed; top: 0; right: 0; bottom: 0; width: min(380px, 92vw); z-index: 900; background: var(--card); border-left: 1px solid var(--border);
+      box-shadow: -20px 0 50px rgb(15 23 42 / .15); padding: 1.25rem 1.25rem 6rem; overflow: auto; transform: translateX(105%); transition: transform .2s ease; }
+    .detail.offen { transform: none; }
+    @media (prefers-reduced-motion: reduce) { .detail { transition: none; } }
+    .detail .zu { float: right; width: 2rem; height: 2rem; border-radius: 999px; border: 1px solid var(--border); background: var(--card); color: var(--foreground); cursor: pointer; font-size: 1.1rem; }
+    .detail .mod { display: flex; align-items: center; gap: .45rem; color: var(--muted-foreground); font-size: .85rem; }
+    .detail .mod svg { width: 20px; height: 20px; }
+    .detail h2 { font-size: 1.3rem; margin: .8rem 0 .5rem; }
+    .detail .knoepfe { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1rem; }
+    .detail .knoepfe button { font: inherit; border-radius: 8px; padding: .45rem .9rem; border: 1px solid var(--input); background: var(--card); color: var(--foreground); cursor: pointer; }
+    .detail .knoepfe button.primaer { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); font-weight: 600; }
+    .ring { display: grid; place-items: center; position: relative; margin: 1rem 0 .5rem; }
+    .ring svg { width: 170px; height: 100px; }
+    .ring .wert { position: absolute; bottom: 4px; text-align: center; }
+    .ring .wert b { display: block; font-size: 1.9rem; line-height: 1; font-variant-numeric: tabular-nums; }
+    .ring .wert span { font-size: .8rem; color: var(--muted-foreground); }
+    .eigenschaften { display: grid; grid-template-columns: auto 1fr; gap: .55rem 1rem; align-items: center; margin: 1rem 0; font-size: .9rem; }
+    .eigenschaften dt { color: var(--muted-foreground); } .eigenschaften dd { margin: 0; justify-self: end; }
+    .teil { list-style: none; margin: .4rem 0 0; padding: 0; display: grid; gap: 6px; }
+    .teil label { display: flex; align-items: center; gap: .6rem; padding: .55rem .7rem; border: 1px solid var(--border); border-radius: 10px; background: var(--muted); cursor: pointer; }
+    .teil input { width: 18px; height: 18px; accent-color: var(--ring); }
+    .teil label:has(input:checked) span { text-decoration: line-through; color: var(--muted-foreground); }
+    .detail .verlauf { margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem; font-size: .85rem; }
+    /* schmal: senkrechter Strahl */
+    .senkrecht { display: none; padding: 1rem 1.25rem 6rem; }
+    @media (max-width: 700px) {
+      .strahl { display: none; } .senkrecht { display: block; }
+      .segment { display: none; }
+    }
+    .senkrecht h3 { position: sticky; top: 0; background: var(--background); padding: .5rem 0; margin: 0; font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted-foreground); }
+    .senkrecht ol { list-style: none; margin: 0 0 1rem; padding: 0 0 0 1rem; border-left: 2px solid var(--border); }
+    .senkrecht li { position: relative; margin: .3rem 0 .8rem; }
+    .senkrecht li::before { content: ""; position: absolute; left: calc(-1rem - 7px); top: .45rem; width: 12px; height: 12px; border-radius: 999px; background: var(--m); }
+    .senkrecht button { all: unset; cursor: pointer; display: block; }
+    .senkrecht button b { font-weight: 600; } .senkrecht button span { display: block; font-size: .82rem; color: var(--muted-foreground); }
+  </style>
+</head>
+<body data-variante="zeitstrahl">
+  <header class="leiste-oben">
+    <span class="marke"><!--eduksx-icon:eduksx--></span>
+    <h1 id="titel"></h1>
+    <a class="zurueck" href="index.html" title="Zurück zur Übersicht GUI-Experience" aria-label="Zurück zur Übersicht GUI-Experience"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
+    <div class="steuer">
+      <div class="segment" role="group" aria-label="Zeitraum">
+        <button type="button" data-zoom="7" aria-pressed="false">Woche</button>
+        <button type="button" data-zoom="14" aria-pressed="true">2 Wochen</button>
+        <button type="button" data-zoom="30" aria-pressed="false">Monat</button>
+      </div>
+      <button class="knopf" type="button" id="zu-heute">Heute</button>
+    </div>
+  </header>
+  <div class="filter" id="filter" role="group" aria-label="Module ein- und ausblenden"></div>
+  <div class="flaeche" id="flaeche">
+    <div class="strahl" id="strahl" role="grid" aria-label="Zeitstrahl aller Module"></div>
+    <div class="senkrecht" id="senkrecht"></div>
+  </div>
+  <aside class="detail" id="detail" aria-label="Details" aria-hidden="true"></aside>
+
+  <script src="assets/daten.js"></script>
+  <script src="assets/gemeinsam.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    const X = window.EX, U = window.EXUI, esc = X.esc;
+    const $ = (id) => document.getElementById(id);
+    $("titel").innerHTML = U.wortmarke("EduKSX") + ' <span class="muted" style="font-weight:500">Zeitstrahl</span>';
+    const VOR = 3;
+    let tage = 14;
+    const sichtbar = new Set(X.MODULE.filter((m) => m.key !== "glossary").map((m) => m.key));
+    const BAHNEN = X.MODULE.filter((m) => m.key !== "glossary");
+
+    $("filter").innerHTML = BAHNEN.map((m) => `<label class="m-${m.farbe}"><input type="checkbox" value="${m.key}" checked>${m.icon}${esc(m.titel)}</label>`).join("");
+    $("filter").addEventListener("change", (e) => { e.target.checked ? sichtbar.add(e.target.value) : sichtbar.delete(e.target.value); zeichnen(); });
+
+    function alleEintraege() {
+      return [
+        ...X.AUFGABEN.map((a) => ({ art: "aufgabe", id: a.id, modul: a.modul, zeit: a.faellig, titel: a.titel, ref: a })),
+        ...X.TERMINE.map((t) => ({ art: "termin", id: t.id, modul: t.modul, zeit: t.start, titel: t.titel, ref: t })),
+        ...X.MELDUNGEN.map((m) => ({ art: "meldung", id: m.id, modul: m.modul, zeit: m.zeit, titel: m.text, ref: m })),
+      ].filter((e) => sichtbar.has(e.modul));
+    }
+    const hoeheVon = (e) => e.art === "aufgabe" ? 70 : 36;
+    const tagIndex = (d) => Math.floor((new Date(d).setHours(0, 0, 0, 0) - X.heute) / 86400000) + VOR;
+    const spalte = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--spalte"));
+    const bahnH = 76, kopfH = 58, links = 190;
+
+    function zeichnen() {
+      const sp = tage <= 7 ? 220 : tage <= 14 ? 150 : 96;
+      document.documentElement.style.setProperty("--spalte", sp + "px");
+      const s = $("strahl");
+      s.style.setProperty("--tage", tage);
+      const datum = (i) => { const d = new Date(X.heute); d.setDate(d.getDate() + i - VOR); return d; };
+      let html = `<div class="ecke" role="columnheader">Modul</div>`;
+      for (let i = 0; i < tage; i++) {
+        const d = datum(i), we = d.getDay() === 0 || d.getDay() === 6;
+        html += `<div class="tagkopf ${i === VOR ? "heute" : ""} ${we ? "we" : ""}" role="columnheader"><div class="wt">${d.toLocaleDateString("de-CH", { weekday: "short" })}${i === VOR ? " · heute" : ""}</div><div class="dt">${d.getDate()}.${d.getMonth() + 1}.</div></div>`;
+      }
+      const bahnen = BAHNEN.filter((m) => sichtbar.has(m.key));
+      const eintraege = alleEintraege();
+      const hoehe = {};
+      bahnen.forEach((m) => {
+        // Einträge am gleichen Tag stapeln: Aufgaben als Karte (70 px), Termine/Meldungen als Pille (36 px)
+        const proTag = {};
+        eintraege.filter((e) => e.modul === m.key).forEach((e) => { const t = tagIndex(e.zeit); proTag[t] = (proTag[t] || 0) + hoeheVon(e); });
+        hoehe[m.key] = Math.max(0, ...Object.values(proTag));
+        const h = Math.max(bahnH, 16 + hoehe[m.key]);
+        const offen = X.AUFGABEN.filter((a) => a.modul === m.key && a.status !== "erledigt").length;
+        html += `<div class="bahnkopf m-${m.farbe}" role="rowheader" style="min-height:${h}px"><span class="ico">${m.icon}</span><div><b>${esc(m.titel)}</b><span>${offen} offen</span></div></div>`;
+        for (let i = 0; i < tage; i++) { const d = datum(i); html += `<div class="zelle ${d.getDay() % 6 === 0 ? "we" : ""}" style="min-height:${h}px"></div>`; }
+      });
+      s.innerHTML = html;
+      // Einträge absolut platzieren
+      let y = kopfH;
+      bahnen.forEach((m) => {
+        const h = Math.max(bahnH, 16 + hoehe[m.key]);
+        const stapel = {};
+        eintraege.filter((e) => e.modul === m.key).sort((a, b) => a.zeit - b.zeit).forEach((e) => {
+          const t = tagIndex(e.zeit);
+          if (t < 0 || t >= tage) return;
+          const versatz = stapel[t] || 0; stapel[t] = versatz + hoeheVon(e);
+          const b = document.createElement("button");
+          b.type = "button";
+          const st = e.art === "aufgabe" ? X.STATUS[e.ref.status] : null;
+          b.className = `eintrag ${e.art} m-${m.farbe} ${st && e.ref.status === "ueberfaellig" ? "s-ueber-r" : ""} ${st && e.ref.status === "erledigt" ? "erledigt" : ""}`;
+          b.style.left = (links + t * sp + 6) + "px";
+          b.style.top = (y + 8 + versatz) + "px";
+          b.style.maxWidth = (sp - 12) + "px";
+          const sym = e.art === "aufgabe" ? st.symbol : e.art === "termin" ? "◷" : "•";
+          const zeit = e.art === "termin" ? (e.ref.ganztags ? "" : X.fmtZeit(e.zeit) + " ") : "";
+          if (e.art === "aufgabe") {
+            const f = X.fortschritt(e.ref);
+            b.innerHTML = `<span class="z1"><span class="sym" aria-hidden="true">${sym}</span><span>${esc(e.titel)}</span></span><span class="z2"><span class="balken" aria-hidden="true"><i style="width:${f}%"></i></span>${f}%</span>`;
+          } else b.innerHTML = `<span class="sym" aria-hidden="true">${sym}</span>${esc(zeit + e.titel)}`;
+          b.setAttribute("aria-label", `${e.art === "aufgabe" ? "Aufgabe, " + st.text + ", " + X.fortschritt(e.ref) + " Prozent" : e.art === "termin" ? "Termin" : "Meldung"}: ${e.titel}, ${X.fmtDatum(e.zeit)}`);
+          b.setAttribute("aria-expanded", "false"); b.title = e.titel;
+          b.addEventListener("click", () => detail(e, b));
+          s.appendChild(b);
+        });
+        y += h;
+      });
+      const jetzt = document.createElement("div");
+      const jetztT = new Date();
+      jetzt.className = "jetzt";
+      jetzt.style.left = (links + VOR * sp + sp * ((jetztT.getHours() * 60 + jetztT.getMinutes()) / 1440)) + "px";
+      jetzt.innerHTML = `<span>jetzt ${X.fmtZeit(jetztT)}</span>`;
+      jetzt.style.top = kopfH + "px";
+      s.appendChild(jetzt);
+      senkrecht(eintraege);
+    }
+
+    function senkrecht(eintraege) {
+      const gruppen = {};
+      eintraege.sort((a, b) => a.zeit - b.zeit).forEach((e) => { const k = X.fmtRelativ(e.zeit); (gruppen[k] = gruppen[k] || []).push(e); });
+      $("senkrecht").innerHTML = Object.entries(gruppen).map(([tag, liste]) => `<h3>${esc(tag)}</h3><ol>` + liste.map((e) =>
+        `<li class="m-${X.modul(e.modul).farbe}"><button type="button" data-id="${esc(e.id)}"><b>${esc(e.titel)}</b><span>${esc(X.modul(e.modul).titel)} · ${e.art === "aufgabe" ? esc(X.STATUS[e.ref.status].text) : e.art === "termin" ? "Termin" : "Meldung"}</span></button></li>`).join("") + `</ol>`).join("");
+      $("senkrecht").querySelectorAll("button").forEach((b) => b.addEventListener("click", () => detail(alleEintraege().find((e) => e.id === b.dataset.id), b)));
+    }
+
+    let ausloeser = null;
+    function detail(e, b) {
+      document.querySelectorAll('.eintrag[aria-expanded="true"]').forEach((x) => x.setAttribute("aria-expanded", "false"));
+      b.setAttribute("aria-expanded", "true"); ausloeser = b;
+      const m = X.modul(e.modul);
+      let inhalt = "";
+      if (e.art === "aufgabe") {
+        const f = X.fortschritt(e.ref), r = 70, u = Math.PI * r;
+        inhalt = `<div class="ring m-${m.farbe}" role="img" aria-label="${f} Prozent erledigt"><svg viewBox="0 0 170 100" aria-hidden="true">
+            <path d="M15 90 A70 70 0 0 1 155 90" fill="none" stroke="var(--muted)" stroke-width="14" stroke-linecap="round"/>
+            <path d="M15 90 A70 70 0 0 1 155 90" fill="none" stroke="var(--m)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${(u * f / 100).toFixed(1)} ${u.toFixed(1)}"/></svg>
+            <div class="wert"><b>${f}%</b><span>erledigt</span></div></div>
+          <dl class="eigenschaften"><dt>Status</dt><dd>${U.statusChip(e.ref.status)}</dd><dt>Fällig</dt><dd>${esc(X.fmtDatum(e.zeit))}, ${esc(X.fmtZeit(e.zeit))}</dd><dt>Priorität</dt><dd>${esc(e.ref.prio)}</dd></dl>
+          <p>${esc(e.ref.text)}</p>
+          <b>Teilschritte</b><ul class="teil">${e.ref.teil.map((t, i) => `<li><label><input type="checkbox" data-teil="${i}" ${t[1] ? "checked" : ""}><span>${esc(t[0])}</span></label></li>`).join("")}</ul>
+        <div class="knoepfe">${e.ref.status !== "erledigt" ? `<button class="primaer" type="button" data-tun="erledigt">Erledigt</button><button type="button" data-tun="schieben">+1 Tag</button>` : ""}<button type="button">In ${esc(m.titel)} öffnen</button></div>`;
+      } else if (e.art === "termin") inhalt = `<p class="muted">${esc(X.fmtDatum(e.zeit))}${e.ref.ganztags ? ", ganztags" : ", " + esc(X.fmtZeit(e.ref.start)) + "–" + esc(X.fmtZeit(e.ref.ende))}${e.ref.ort ? " · " + esc(e.ref.ort) : ""}</p><div class="knoepfe"><button class="primaer" type="button">Ablauf dazu anzeigen</button></div>`;
+      else inhalt = `<p class="muted">${esc(X.fmtDatum(e.zeit))}, ${esc(X.fmtZeit(e.zeit))}</p>`;
+      const verlauf = X.MELDUNGEN.filter((x) => x.modul === e.modul && x.id !== e.id).slice(0, 3);
+      $("detail").innerHTML = `<button class="zu" type="button" aria-label="Details schliessen">×</button>
+        <div class="mod">${m.icon}${esc(m.name)}</div><h2>${esc(e.titel)}</h2>${inhalt}
+        ${verlauf.length ? `<div class="verlauf"><b>Zuletzt in ${esc(m.titel)}</b>${verlauf.map((v) => `<p class="muted" style="margin:.4rem 0 0">${esc(X.fmtRelativ(v.zeit))}: ${esc(v.text)}</p>`).join("")}</div>` : ""}`;
+      $("detail").classList.add("offen"); $("detail").setAttribute("aria-hidden", "false");
+      $("detail").querySelector(".zu").addEventListener("click", zu);
+      $("detail").querySelector(".zu").focus();
+      $("detail").querySelectorAll("[data-teil]").forEach((k) => k.addEventListener("change", () => {
+        e.ref.teil[+k.dataset.teil][1] = k.checked;
+        const alle = e.ref.teil.every((t) => t[1]);
+        if (alle) { e.ref.status = "erledigt"; U.toast("Alle Teilschritte erledigt"); }
+        else if (e.ref.status === "erledigt") e.ref.status = "offen";
+        zeichnen(); const neu = [...document.querySelectorAll(".eintrag")].find((x) => x.title === e.titel); detail(e, neu || b);
+        const wieder = $("detail").querySelector(`[data-teil="${k.dataset.teil}"]`); if (wieder) wieder.focus();
+      }));
+      $("detail").querySelectorAll("[data-tun]").forEach((k) => k.addEventListener("click", () => {
+        if (k.dataset.tun === "erledigt") { e.ref.status = "erledigt"; U.toast("Erledigt"); }
+        else { e.ref.faellig = new Date(+e.ref.faellig + 86400000); if (e.ref.status !== "erledigt") e.ref.status = "offen"; U.toast("Um einen Tag verschoben"); }
+        zu(); zeichnen();
+      }));
+    }
+    function zu() { $("detail").classList.remove("offen"); $("detail").setAttribute("aria-hidden", "true"); if (ausloeser && document.body.contains(ausloeser)) { ausloeser.setAttribute("aria-expanded", "false"); ausloeser.focus(); } }
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") zu(); });
+
+    document.querySelectorAll("[data-zoom]").forEach((b) => b.addEventListener("click", () => {
+      tage = +b.dataset.zoom; document.querySelectorAll("[data-zoom]").forEach((x) => x.setAttribute("aria-pressed", x === b)); zeichnen();
+    }));
+    $("zu-heute").addEventListener("click", () => $("flaeche").scrollTo({ left: Math.max(0, (VOR - 1) * spalte()), behavior: "smooth" }));
+    zeichnen();
+  })();
+  </script>
+</body>
+</html>

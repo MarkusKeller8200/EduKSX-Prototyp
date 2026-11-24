@@ -36,6 +36,14 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-24 – GUI-EX 0.2.0: Stile und Variante E, #92
+
+Nach Bildbeispielen aus dem Netz und vom Projektverantwortlichen: Stil-Schalter (Standard, Neo-Dunkel, Glas, Clay) für A–D, Variante E Cockpit im festen Stil Neo-Dunkel, Zeitstrahl mit Fortschrittskarten und Detailspalte. Vorlagen nur als Anregung, nichts übernommen. Offen: Test und Bewertung, Kontrast der weichen Stile prüfen.
+
+### Sitzung 2026-11-24 – Prototyp EduKSX-Experience (GUI-EX), #90
+
+Neuer Klickprototyp `prototypen/gui-ex` 0.1.0: vier grundlegend andere Oberflächen (A Fokus, B Kacheln, C Zeitstrahl, D Arbeitsfläche) mit gleichem, erfundenem Inhalt, Variantenleiste mit Bewertung. Offen: Test und Bewertung durch Projektverantwortliche:n, Entscheid über Übernahme in EduKSX-UI, Label `prototyp:ex` nach Merge über «Einstellungen anwenden» und an #90 setzen, Meilenstein «EduKSX-Experience – GUI-Experience» anlegen.
+
 ### Sitzung 2026-11-23 – Prototyp EduKSX-AI (Interne KI), #88
 
 Neuer Klickprototyp `prototypen/interne-ki` 0.1.0 mit Umsetzungsgrundlagen `docs/umsetzung/ai/`. Entscheide 23.11.2026: Produktname EduKSX-AI; Modelle und öffentlich angebotene Schweizer Anbieter dürfen genannt und verlinkt werden; Vorlage-Bildschirmfotos nur konzeptionell (keine Namen, Marken, Herkunft). Offen: Icon «ai» in EduKSX-UI, Label `prototyp:ai` wird erst nach Merge über «Einstellungen anwenden» angelegt (Issue #88 dann nachträglich labeln), Betriebsmodell, Anbieterprüfung.

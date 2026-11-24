@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Prototyp – GUI-Experience</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/eduksx.css">
+  <link rel="stylesheet" href="assets/gemeinsam.css">
+  <style>
+    .seite { max-width: 1180px; margin: 0 auto; padding: 1.5rem 1.25rem 6rem; }
+    .titelzeile { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+    .titelzeile .marke svg { width: 34px; height: 34px; }
+    .titelzeile h1 { margin: 0; font-size: 1.6rem; }
+    .zurueck { display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border: 1px solid var(--border); border-radius: .5rem; color: inherit; }
+    .zurueck:hover { background: var(--muted); }
+    .lead { font-size: 1.05rem; max-width: 52rem; margin: 1rem 0 1.5rem; }
+    .bisher { display: flex; gap: 1rem; align-items: center; background: var(--muted); border: 1px solid var(--border); border-radius: var(--radius); padding: .9rem 1rem; margin-bottom: 1.75rem; }
+    .bisher .mini { flex: none; }
+    .varianten { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 1rem; }
+    .v-karte { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow); }
+    .v-karte > a { display: block; color: inherit; text-decoration: none; padding: 1rem 1rem .9rem; border-bottom: 1px solid var(--border); }
+    .v-karte > a:hover { background: var(--muted); }
+    .v-karte > a:hover h2 { text-decoration: underline; text-underline-offset: 3px; }
+    .v-karte .buchstabe { display: inline-flex; width: 1.8rem; height: 1.8rem; align-items: center; justify-content: center; border-radius: 8px; background: var(--secondary); color: var(--secondary-foreground); font-weight: 700; margin-right: .4rem; }
+    .v-karte h2 { display: flex; align-items: center; margin: .8rem 0 .3rem; font-size: 1.15rem; }
+    .v-karte .text { padding: .8rem 1rem 1rem; font-size: .9rem; }
+    .v-karte dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: .2rem .6rem; }
+    .v-karte dt { font-weight: 600; color: var(--muted-foreground); }
+    .v-karte dd { margin: 0; }
+    /* Schemabilder */
+    .mini { width: 100%; aspect-ratio: 16/9; border-radius: 10px; background: var(--muted); border: 1px solid var(--border); position: relative; overflow: hidden; }
+    .bisher .mini { width: 140px; }
+    .mini i { position: absolute; display: block; border-radius: 4px; background: var(--border); }
+    .mini i.o { background: var(--brand-orange); } .mini i.v { background: var(--brand-violet); } .mini i.b { background: var(--brand-blue); }
+    .mini i.c { background: var(--card); border: 1px solid var(--border); }
+    h2.abschnitt { margin: 2.25rem 0 .75rem; font-size: 1.2rem; }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    th, td { text-align: left; padding: .55rem .7rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { background: var(--muted); font-weight: 600; }
+    .tabelle { overflow-x: auto; }
+    .stile { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: .75rem; }
+    .stil-wahl { display: flex; align-items: center; gap: .7rem; padding: .7rem .8rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); color: var(--foreground); font: inherit; text-align: left; cursor: pointer; }
+    .stil-wahl[aria-checked="true"] { border-color: var(--brand-orange); box-shadow: inset 0 0 0 1px var(--brand-orange); }
+    .stil-wahl .muster { width: 48px; height: 34px; border-radius: 8px; border: 1px solid var(--border); flex: none; }
+    .stil-wahl small { display: block; color: var(--muted-foreground); }
+    .knopf { font: inherit; border-radius: 8px; padding: .45rem .9rem; border: 1px solid var(--input); background: var(--card); color: var(--foreground); cursor: pointer; }
+    .knopf:hover { background: var(--muted); }
+  </style>
+</head>
+<body data-seite="uebersicht">
+  <p class="hinweis-band">Prototyp mit erfundenen Testdaten – kein produktiver Betrieb. Alle Varianten zeigen denselben Inhalt.</p>
+  <div class="seite">
+    <div class="titelzeile">
+      <span class="marke"><!--eduksx-icon:eduksx--></span>
+      <h1 id="titel"></h1>
+      <a class="zurueck" href="../" title="Zurück zur Einstiegsseite aller EduKSX-Prototypen" aria-label="Zurück zur Einstiegsseite aller EduKSX-Prototypen"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
+    </div>
+    <p class="lead">Fünf grundlegend andere Bedienkonzepte und vier Stile für die EduKSX-Plattform zum Ausprobieren und Vergleichen.
+      Inhalt (Aufgaben, Termine, Module) ist überall gleich – es geht nur um das <strong>Erlebnis</strong>: Wie finde ich mich zurecht, wie schnell komme ich ans Ziel, was fühlt sich gut an?</p>
+
+    <div class="bisher">
+      <div class="mini" aria-hidden="true"><i style="left:0;top:0;right:0;height:14%" class="c"></i><i style="left:0;top:14%;bottom:0;width:24%" class="c"></i><i style="left:30%;top:24%;width:20%;height:22%" class="c"></i><i style="left:54%;top:24%;width:20%;height:22%" class="c"></i><i style="left:78%;top:24%;width:18%;height:22%" class="c"></i><i style="left:30%;top:54%;right:4%;height:38%" class="c"></i></div>
+      <div><strong>Bisher in allen Prototypen:</strong> Kopfzeile, Navigation links, Kennzahl-Karten und Tabellen (klassisches Verwaltungs-Layout).
+        <span class="muted">Die Varianten A–E verzichten bewusst darauf.</span></div>
+    </div>
+
+    <div class="varianten" id="varianten"></div>
+
+    <h2 class="abschnitt">Aussehen (Stil)</h2>
+    <p class="muted small" style="margin-top:-.4rem">Aufbau und Aussehen sind getrennt: Die Varianten A–D lassen sich in jedem Stil zeigen (auch in jeder Variante über «Stil» in der Leiste unten). E hat den festen Stil Neo-Dunkel.</p>
+    <div class="stile" id="stile" role="radiogroup" aria-label="Stil für die Varianten A–D"></div>
+
+    <h2 class="abschnitt">Vergleich</h2>
+    <div class="tabelle"><table>
+      <thead><tr><th>Variante</th><th>Leitidee</th><th>Stark bei</th><th>Gerät</th><th>Zu prüfen</th></tr></thead>
+      <tbody>
+        <tr><td><strong>A – Fokus</strong></td><td>Eine Eingabezeile statt Menü; nur das Nächste wird gezeigt</td><td>Erfahrene, Tastatur, «schnell etwas erledigen»</td><td>Laptop/Desktop</td><td>Auffindbarkeit für Gelegenheitsnutzende</td></tr>
+        <tr><td><strong>B – Kacheln</strong></td><td>Lebende Kacheln wie auf dem Tablet, Dock unten</td><td>Touch, Überblick auf einen Blick, Lehrpersonen</td><td>iPad/Handy</td><td>Viele Module → Kacheln werden voll</td></tr>
+        <tr><td><strong>C – Zeitstrahl</strong></td><td>Alles auf einer Zeitachse, Module als Bahnen</td><td>Planung, Fristen, Jahresabläufe</td><td>Desktop, Querformat</td><td>Einträge ohne Datum (z. B. Begriffe)</td></tr>
+        <tr><td><strong>D – Arbeitsfläche</strong></td><td>Fenster wie am Desktop, mehrere Module nebeneinander</td><td>Paralleles Arbeiten, Vergleichen, Power-User</td><td>Grosser Bildschirm</td><td>Ordnung, Bedienung auf kleinen Geräten</td></tr>
+        <tr><td><strong>E – Cockpit</strong></td><td>Bedienpult mit Leuchtringen und Schaltern, fester Stil Neo-Dunkel</td><td>Persönlicher Tagesüberblick, «Wow»-Effekt</td><td>Desktop und Tablet</td><td>Kontrast der weichen Flächen, Ringe ohne Zahlen verständlich?</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2 class="abschnitt">Meine Bewertungen</h2>
+    <p class="muted small">In jeder Variante unten in der Leiste «Bewerten» wählen. Gespeichert wird nur in diesem Browser.</p>
+    <div class="tabelle"><table>
+      <thead><tr><th>Variante</th><th>Zurechtfinden</th><th>Tempo</th><th>Gefallen</th><th>Bemerkung</th></tr></thead>
+      <tbody id="bewertungen"></tbody>
+    </table></div>
+    <p style="margin-top:.75rem"><button class="knopf" type="button" id="kopieren">Bewertungen als Text kopieren</button></p>
+  </div>
+
+  <script src="assets/daten.js"></script>
+  <script src="assets/gemeinsam.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      const { VARIANTEN, wortmarke, lesen, SPEICHER, toast } = window.EXUI;
+      const esc = window.EX.esc;
+      document.getElementById("titel").innerHTML = wortmarke("EduKSX-Experience") + ' <span class="muted" style="font-weight:500">GUI-EX</span>';
+      const BESCHRIEB = {
+        fokus: ["Befehlszeile statt Menü", "Eine grosse Eingabe («Was möchtest du tun?») findet Aufgaben, Module, Begriffe und Aktionen. Sonst nur die drei nächsten Dinge.", "Tastatur (/, ↑↓, Enter)"],
+        kacheln: ["Lebende Kacheln, Dock unten", "Startbildschirm mit grossen Kacheln, die Live-Werte zeigen und direkt handeln lassen (Stempeln, Signieren). Module öffnen als Vollbild-Blatt.", "Touch, Wischen"],
+        zeitstrahl: ["Alles auf einer Zeitachse", "Aufgaben, Termine und Meldungen aller Module auf einem Zeitstrahl mit Bahnen je Modul und Jetzt-Linie. Detail in der Seitenleiste.", "Scrollen, Zoom, Filter"],
+        fenster: ["Fenster wie am Desktop", "Module als verschiebbare Fenster auf einer Arbeitsfläche, Taskleiste oben. Mehrere Dinge gleichzeitig offen.", "Maus, Ziehen, Doppelklick"],
+        cockpit: ["Bedienpult in Neo-Dunkel", "Fester Stil: weiche Tiefe, Leuchtringe für Stempeluhr, Stellenplan und Aufgaben, Verlaufskurve, Schnellschalter, Aufgaben als Pillen.", "Maus und Touch, Schalter"],
+      };
+      const MINI = {
+        fokus: '<i class="c" style="left:22%;top:30%;width:56%;height:16%;border-radius:20px"></i><i style="left:30%;top:56%;width:40%;height:5%"></i><i style="left:30%;top:66%;width:34%;height:5%"></i><i style="left:30%;top:76%;width:38%;height:5%"></i><i class="o" style="left:22%;top:18%;width:22%;height:5%"></i>',
+        kacheln: '<i class="v" style="left:5%;top:8%;width:42%;height:40%;border-radius:10px"></i><i class="c" style="left:51%;top:8%;width:20%;height:40%;border-radius:10px"></i><i class="b" style="left:75%;top:8%;width:20%;height:18%;border-radius:10px"></i><i class="c" style="left:75%;top:30%;width:20%;height:18%;border-radius:10px"></i><i class="c" style="left:5%;top:52%;width:20%;height:24%;border-radius:10px"></i><i class="o" style="left:29%;top:52%;width:42%;height:24%;border-radius:10px"></i><i class="c" style="left:75%;top:52%;width:20%;height:24%;border-radius:10px"></i><i class="c" style="left:28%;top:84%;width:44%;height:10%;border-radius:20px"></i>',
+        zeitstrahl: '<i style="left:0;top:20%;right:0;height:1px"></i><i class="v" style="left:12%;top:28%;width:22%;height:9%;border-radius:20px"></i><i class="b" style="left:40%;top:44%;width:16%;height:9%;border-radius:20px"></i><i class="o" style="left:58%;top:60%;width:26%;height:9%;border-radius:20px"></i><i class="v" style="left:30%;top:76%;width:12%;height:9%;border-radius:20px"></i><i class="o" style="left:46%;top:12%;width:2px;height:82%"></i>',
+        cockpit: '<i style="left:0;top:0;right:0;bottom:0;background:#1f242c;border-radius:0"></i><i style="left:6%;top:12%;width:26%;height:46%;border-radius:999px;background:#232932;box-shadow:0 0 0 3px #ff8a00,0 0 12px #ff8a00"></i><i style="left:38%;top:14%;width:12%;height:22%;border-radius:999px;border:3px solid #7952b3;background:transparent"></i><i style="left:54%;top:14%;width:12%;height:22%;border-radius:999px;border:3px solid #1b7a3d;background:transparent"></i><i style="left:70%;top:14%;width:12%;height:22%;border-radius:999px;border:3px solid #007ebb;background:transparent"></i><i style="left:38%;top:46%;width:56%;height:24%;background:linear-gradient(90deg,#007ebb55,#ff8a0055);border-radius:10px"></i><i style="left:6%;top:76%;width:88%;height:9%;border-radius:999px;background:#232932"></i>',
+        fenster: '<i class="c" style="left:0;top:0;right:0;height:10%"></i><i class="c" style="left:6%;top:18%;width:46%;height:52%;box-shadow:0 2px 6px rgb(0 0 0/.15)"></i><i class="v" style="left:6%;top:18%;width:46%;height:8%"></i><i class="c" style="left:38%;top:34%;width:40%;height:46%;box-shadow:0 2px 6px rgb(0 0 0/.2)"></i><i class="b" style="left:38%;top:34%;width:40%;height:8%"></i><i class="c" style="left:82%;top:18%;width:13%;height:22%"></i>',
+      };
+      document.getElementById("varianten").innerHTML = VARIANTEN.map((v) => {
+        const [unter, text, bedienung] = BESCHRIEB[v.key];
+        return `<article class="v-karte"><a href="${v.datei}">
+          <div class="mini" aria-hidden="true">${MINI[v.key]}</div>
+          <h2><span class="buchstabe">${v.buchstabe}</span>${v.name}</h2>
+          <div class="muted small">${unter}</div></a>
+          <div class="text"><p>${text}</p><dl><dt>Bedienung</dt><dd>${bedienung}</dd></dl></div></article>`;
+      }).join("");
+
+      const { STILE, stil, stilAktuell } = window.EXUI;
+      function stile() {
+        document.getElementById("stile").innerHTML = STILE.map((x) => `<button type="button" role="radio" class="stil-wahl" data-stil="${x.key}" aria-checked="${x.key === stilAktuell()}"><span class="muster" style="background:${x.muster}" aria-hidden="true"></span><span><b>${x.name}</b><small>${x.text}</small></span></button>`).join("");
+        document.querySelectorAll(".stil-wahl").forEach((b) => b.addEventListener("click", () => { stil(b.dataset.stil); stile(); toast("Stil: " + b.querySelector("b").textContent); }));
+      }
+      stile();
+
+      function bewertungen() {
+        const alle = lesen(SPEICHER, {});
+        document.getElementById("bewertungen").innerHTML = VARIANTEN.map((v) => {
+          const b = alle[v.key];
+          if (!b) return `<tr><td>${v.buchstabe} – ${v.name}</td><td colspan="4" class="muted">noch nicht bewertet</td></tr>`;
+          const z = (n) => n ? esc(n) + " / 5" : "–";
+          return `<tr><td>${v.buchstabe} – ${v.name}</td><td>${z(b.finden)}</td><td>${z(b.tempo)}</td><td>${z(b.gefallen)}</td><td>${esc(b.text || "–")}</td></tr>`;
+        }).join("");
+        return alle;
+      }
+      bewertungen();
+      document.getElementById("kopieren").addEventListener("click", async () => {
+        const alle = bewertungen();
+        const text = "EduKSX-Experience – Bewertungen\n" + VARIANTEN.map((v) => {
+          const b = alle[v.key];
+          return b ? `${v.buchstabe} ${v.name}: Zurechtfinden ${b.finden || "–"}, Tempo ${b.tempo || "–"}, Gefallen ${b.gefallen || "–"} – ${b.text || ""}` : `${v.buchstabe} ${v.name}: nicht bewertet`;
+        }).join("\n");
+        try { await navigator.clipboard.writeText(text); toast("Kopiert"); } catch (e) { toast("Kopieren nicht möglich"); }
+      });
+    })();
+  </script>
+</body>
+</html>

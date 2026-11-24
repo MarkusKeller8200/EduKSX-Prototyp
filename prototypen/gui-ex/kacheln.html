@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <title>EduKSX-Experience – B Kacheln (Prototyp)</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/eduksx.css">
+  <link rel="stylesheet" href="assets/gemeinsam.css">
+  <style>
+    body { background: var(--muted); min-height: 100vh; padding-bottom: 170px; -webkit-tap-highlight-color: transparent; }
+    .status-zeile { display: flex; align-items: center; gap: .6rem; padding: 1rem 1.25rem .25rem; max-width: 1100px; margin: 0 auto; }
+    .status-zeile .marke svg { width: 28px; height: 28px; }
+    .status-zeile h1 { margin: 0; font-size: 1.05rem; }
+    .zurueck { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 999px; color: inherit; background: var(--card); border: 1px solid var(--border); }
+    .status-zeile .uhr { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 600; }
+    .begruessung { max-width: 1100px; margin: 0 auto; padding: .75rem 1.25rem 1rem; }
+    .begruessung p { margin: 0; color: var(--muted-foreground); }
+    .begruessung h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: .1rem 0 0; font-weight: 700; letter-spacing: -.02em; }
+    .seiten { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+    .seiten::-webkit-scrollbar { display: none; }
+    .seite { flex: 0 0 100%; scroll-snap-align: start; }
+    .raster { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem; display: grid; gap: 14px;
+      grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 150px; grid-auto-flow: dense; }
+    @media (max-width: 760px) { .raster { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 140px; } }
+    .kachel { position: relative; border-radius: 26px; padding: 16px 18px; background: var(--card); border: 1px solid var(--border); color: var(--foreground);
+      display: flex; flex-direction: column; overflow: hidden; cursor: pointer; text-align: left; font: inherit; transition: transform .15s ease, box-shadow .15s ease; }
+    .kachel:hover { box-shadow: 0 8px 26px rgb(15 23 42 / .12); }
+    .kachel:active { transform: scale(.97); }
+    .kachel.b2 { grid-column: span 2; } .kachel.h2 { grid-row: span 2; }
+    .kachel .ico { width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: var(--m-soft); }
+    .kachel .ico svg { width: 28px; height: 28px; }
+    .kachel .name { font-weight: 650; margin-top: auto; font-size: 1rem; }
+    .kachel .unter { font-size: .82rem; color: var(--muted-foreground); }
+    .kachel .gross { font-size: 2rem; font-weight: 700; letter-spacing: -.02em; line-height: 1; margin-top: .6rem; font-variant-numeric: tabular-nums; }
+    .kachel .zaehler { position: absolute; top: 14px; right: 14px; min-width: 28px; height: 28px; padding: 0 8px; border-radius: 999px; background: var(--destructive); color: var(--background); font-weight: 700; font-size: .85rem; display: grid; place-items: center; }
+    /* Stempel-Kachel: Fläche orange mit dunkler Schrift (CI) */
+    .kachel.stempel { background: var(--brand-orange); color: #222222; border-color: transparent; }
+    .kachel.stempel .unter { color: #3d2200; }
+    .kachel.stempel .zeit { font-size: clamp(2.4rem, 6vw, 3.4rem); font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1; margin: .5rem 0 .3rem; }
+    .kachel.stempel .knopf-reihe { display: flex; gap: 10px; margin-top: auto; }
+    .kachel.stempel .knopf-reihe span { flex: 1; text-align: center; padding: 12px 0; border-radius: 16px; background: rgb(255 255 255 / .55); font-weight: 650; }
+    .kachel.stempel .knopf-reihe span.an { background: #222222; color: #fff; }
+    .kachel.lila { background: #5b3a8f; color: #fff; border-color: transparent; }
+    .kachel.lila .unter { color: rgb(255 255 255 / .85); }
+    .kachel.lila .ico { background: rgb(255 255 255 / .18); }
+    .kachel ul { list-style: none; margin: .5rem 0 0; padding: 0; display: grid; gap: 6px; font-size: .9rem; }
+    .kachel li { display: flex; gap: .5rem; align-items: baseline; }
+    .kachel li .z { font-variant-numeric: tabular-nums; color: var(--muted-foreground); min-width: 3.1rem; font-size: .82rem; }
+    .kachel.lila li .z { color: rgb(255 255 255 / .8); }
+    .punkte { display: flex; justify-content: center; gap: 8px; margin: 18px 0; }
+    .punkte button { width: 9px; height: 9px; padding: 0; border-radius: 999px; border: 0; background: var(--input); cursor: pointer; }
+    .punkte button[aria-current="true"] { background: var(--foreground); width: 22px; }
+    /* Dock */
+    .dock { position: fixed; left: 50%; bottom: 66px; transform: translateX(-50%); z-index: 850; display: flex; gap: 6px; padding: 8px;
+      background: color-mix(in srgb, var(--card) 82%, transparent); backdrop-filter: blur(18px); border: 1px solid var(--border); border-radius: 28px; box-shadow: 0 10px 30px rgb(15 23 42 / .18); }
+    .dock button { width: 64px; height: 56px; border: 0; border-radius: 20px; background: transparent; color: var(--foreground); display: grid; place-items: center; gap: 2px; cursor: pointer; font: 600 .68rem var(--font-sans); padding: 6px 0 4px; }
+    .dock button svg { width: 24px; height: 24px; }
+    .dock button[aria-pressed="true"] { background: var(--secondary); color: var(--secondary-foreground); }
+    /* Blatt (Vollbild) */
+    .blatt { position: fixed; inset: 0; z-index: 800; background: rgb(15 23 42 / .35); display: flex; align-items: flex-end; }
+    .blatt[hidden] { display: none; }
+    .blatt .innen { width: 100%; max-height: 92vh; overflow: auto; background: var(--background); border-radius: 28px 28px 0 0; padding: 10px 1.25rem 140px;
+      animation: hoch .25s ease; }
+    @keyframes hoch { from { transform: translateY(40px); opacity: .4; } }
+    @media (prefers-reduced-motion: reduce) { .blatt .innen { animation: none; } .kachel { transition: none; } }
+    .griff { width: 44px; height: 5px; border-radius: 99px; background: var(--input); margin: 4px auto 14px; }
+    .blatt .kopfzeile { display: flex; align-items: center; gap: .75rem; max-width: 900px; margin: 0 auto 1rem; }
+    .blatt .kopfzeile .ico { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; background: var(--m-soft); }
+    .blatt .kopfzeile .ico svg { width: 32px; height: 32px; }
+    .blatt .kopfzeile h2 { margin: 0; font-size: 1.4rem; }
+    .blatt .zu { margin-left: auto; width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--border); background: var(--card); color: var(--foreground); font-size: 1.3rem; cursor: pointer; }
+    .blatt .inhalt { max-width: 900px; margin: 0 auto; display: grid; gap: 10px; }
+    .zeile { display: flex; align-items: center; gap: .9rem; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 14px 16px; min-height: 64px; }
+    .zeile .text { flex: 1; min-width: 0; }
+    .zeile .text b { display: block; font-weight: 600; }
+    .zeile .text span { font-size: .85rem; color: var(--muted-foreground); }
+    .zeile button { font: inherit; min-height: 44px; padding: 0 16px; border-radius: 14px; border: 1px solid var(--input); background: var(--card); color: var(--foreground); cursor: pointer; }
+    .zeile button.primaer { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); font-weight: 650; }
+    .leerhinweis { text-align: center; color: var(--muted-foreground); padding: 2rem 0; }
+  </style>
+</head>
+<body data-variante="kacheln">
+  <div class="status-zeile">
+    <span class="marke"><!--eduksx-icon:eduksx--></span>
+    <h1 id="titel"></h1>
+    <a class="zurueck" href="index.html" title="Zurück zur Übersicht GUI-Experience" aria-label="Zurück zur Übersicht GUI-Experience"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
+    <span class="uhr" id="uhr" aria-hidden="true"></span>
+  </div>
+  <div class="begruessung"><p id="datum"></p><h2 id="gruss"></h2></div>
+
+  <main>
+    <div class="seiten" id="seiten" aria-label="Startseiten, seitlich wischen">
+      <section class="seite" aria-label="Seite 1: Heute"><div class="raster" id="raster1"></div></section>
+      <section class="seite" aria-label="Seite 2: Alle Module"><div class="raster" id="raster2"></div></section>
+    </div>
+    <div class="punkte" id="punkte"><button type="button" aria-label="Seite 1: Heute" aria-current="true"></button><button type="button" aria-label="Seite 2: Alle Module"></button></div>
+  </main>
+
+  <nav class="dock" aria-label="Hauptbereiche">
+    <button type="button" data-dock="start" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Start</button>
+    <button type="button" data-dock="aufgaben" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/></svg>Aufgaben</button>
+    <button type="button" data-dock="termine" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Termine</button>
+    <button type="button" data-dock="meldungen" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>Meldungen</button>
+  </nav>
+
+  <div class="blatt" id="blatt" hidden>
+    <div class="innen" role="dialog" aria-modal="true" aria-labelledby="blatt-titel" tabindex="-1">
+      <div class="griff" aria-hidden="true"></div>
+      <div class="kopfzeile" id="blatt-kopf"></div>
+      <div class="inhalt" id="blatt-inhalt"></div>
+    </div>
+  </div>
+
+  <script src="assets/daten.js"></script>
+  <script src="assets/gemeinsam.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    const X = window.EX, U = window.EXUI, esc = X.esc;
+    const $ = (id) => document.getElementById(id);
+    $("titel").innerHTML = U.wortmarke("EduKSX");
+    $("datum").textContent = X.heute.toLocaleDateString("de-CH", { weekday: "long", day: "numeric", month: "long" });
+    $("gruss").textContent = "Hallo " + X.PERSON.name.split(" ")[0];
+    const uhr = () => { $("uhr").textContent = X.fmtZeit(new Date()); };
+    uhr(); setInterval(uhr, 15000);
+
+    let zustand = "arbeit"; // arbeit | pause | weg
+    const start = new Date(); start.setHours(7, 15, 0, 0);
+    if (Date.now() < start) start.setTime(Date.now() - (3 * 60 + 12) * 60000); // Demo ausserhalb der Arbeitszeit
+    const dauer = () => { const ms = Math.max(0, Date.now() - start); const h = Math.floor(ms / 3600000), m = Math.floor(ms / 60000) % 60; return h + ":" + String(m).padStart(2, "0"); };
+    const offen = () => X.AUFGABEN.filter((a) => a.status !== "erledigt");
+    const zuSign = () => offen().filter((a) => a.modul === "sign");
+    const ico = (m) => `<span class="ico">${m.icon}</span>`;
+
+    function seite1() {
+      const flow = X.modul("flow"), sign = X.modul("sign"), staffing = X.modul("staffing"), codex = X.modul("codex"), ai = X.modul("ai");
+      const termine = X.TERMINE.slice(0, 3);
+      $("raster1").innerHTML = `
+        <button class="kachel stempel b2 h2" data-offen="time" type="button" aria-label="Zeiterfassung: ${zustand === "weg" ? "ausgestempelt" : zustand === "pause" ? "in Pause" : "eingestempelt seit 07:15"}. Öffnen">
+          <span class="unter">${zustand === "weg" ? "Ausgestempelt" : zustand === "pause" ? "Pause läuft" : "Eingestempelt seit 07:15 · Arbeitszeit"}</span>
+          <span class="zeit">${zustand === "weg" ? "–:––" : dauer()}</span>
+          <span class="unter">Saldo +3:20 h · Soll heute 8:24 h</span>
+          <span class="knopf-reihe" aria-hidden="true"><span class="${zustand === "arbeit" ? "an" : ""}">Kommen</span><span class="${zustand === "pause" ? "an" : ""}">Pause</span><span class="${zustand === "weg" ? "an" : ""}">Gehen</span></span>
+        </button>
+        <button class="kachel m-${sign.farbe}" data-offen="sign" type="button">${ico(sign)}${zuSign().length ? `<span class="zaehler" aria-label="${zuSign().length} offen">${zuSign().length}</span>` : ""}
+          <span class="name">Signieren</span><span class="unter">${zuSign().length} Dokument${zuSign().length === 1 ? "" : "e"} warten</span></button>
+        <button class="kachel m-${staffing.farbe}" data-offen="staffing" type="button">${ico(staffing)}<span class="gross">${esc(staffing.kennzahl)}</span><span class="unter">${esc(staffing.kennzahlText)}</span></button>
+        <button class="kachel lila b2 h2" data-offen="termine" type="button"><span class="ico">${flow.icon}</span>
+          <span class="name" style="margin-top:.6rem">Nächste Termine</span>
+          <ul>${termine.map((t) => `<li><span class="z">${t.ganztags ? "ganzt." : esc(X.fmtZeit(t.start))}</span><span>${esc(t.titel)} <span class="unter">· ${esc(X.fmtRelativ(t.start))}</span></span></li>`).join("")}</ul></button>
+        <button class="kachel m-${flow.farbe} b2" data-offen="flow" type="button">${ico(flow)}<span class="name">Ablauf «Eintritt Lehrperson»</span><span class="unter">Schritt 3 von 7 · morgen fällig</span></button>
+        <button class="kachel m-${codex.farbe}" data-offen="codex" type="button">${ico(codex)}<span class="name">Codex</span><span class="unter">${esc(codex.kennzahl)} ${esc(codex.kennzahlText)}</span></button>
+        <button class="kachel m-${ai.farbe}" data-offen="ai" type="button">${ico(ai)}<span class="name">KI fragen</span><span class="unter">läuft intern</span></button>`;
+    }
+    function seite2() {
+      $("raster2").innerHTML = X.MODULE.map((m) => `<button class="kachel m-${m.farbe}" data-offen="${m.key}" type="button">${ico(m)}<span class="name">${esc(m.titel)}</span><span class="unter">${esc(m.kurz)}</span></button>`).join("");
+    }
+    function alles() { seite1(); seite2(); }
+    alles(); setInterval(seite1, 30000);
+
+    // Wischen und Punkte
+    const seiten = $("seiten"), punkte = [...$("punkte").children];
+    seiten.addEventListener("scroll", () => { const i = Math.round(seiten.scrollLeft / seiten.clientWidth); punkte.forEach((p, n) => p.setAttribute("aria-current", n === i)); }, { passive: true });
+    punkte.forEach((p, n) => p.addEventListener("click", () => seiten.scrollTo({ left: n * seiten.clientWidth, behavior: "smooth" })));
+
+    // Blatt
+    let zuvor = null;
+    function blatt(kopf, inhalt, farbe) {
+      zuvor = document.activeElement;
+      $("blatt-kopf").className = "kopfzeile " + (farbe ? "m-" + farbe : "");
+      $("blatt-kopf").innerHTML = kopf + `<button class="zu" type="button" aria-label="Schliessen">×</button>`;
+      $("blatt-inhalt").innerHTML = inhalt;
+      $("blatt").hidden = false;
+      $("blatt").querySelector(".innen").focus();
+      $("blatt-kopf").querySelector(".zu").addEventListener("click", zu);
+    }
+    function zu() { $("blatt").hidden = true; document.querySelectorAll(".dock button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.dock === "start")); if (zuvor) zuvor.focus(); }
+    $("blatt").addEventListener("click", (e) => { if (e.target === $("blatt")) zu(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("blatt").hidden) zu(); });
+
+    const aufgabeZeile = (a) => `<div class="zeile"><div class="text"><b>${esc(a.titel)}</b><span>${esc(X.modul(a.modul).titel)} · fällig ${esc(X.fmtRelativ(a.faellig))}</span></div>${U.statusChip(a.status)}${a.status !== "erledigt" ? `<button class="primaer" type="button" data-erledigt="${esc(a.id)}">${a.modul === "sign" ? "Signieren" : "Erledigt"}</button>` : ""}</div>`;
+    function verdrahten() {
+      $("blatt-inhalt").querySelectorAll("[data-erledigt]").forEach((b) => b.addEventListener("click", () => {
+        X.AUFGABEN.find((a) => a.id === b.dataset.erledigt).status = "erledigt";
+        U.toast(b.textContent === "Signieren" ? "Signiert und abgelegt (_sign)" : "Erledigt");
+        alles(); const z = b.closest(".zeile"); z.outerHTML = aufgabeZeile(X.AUFGABEN.find((a) => a.id === b.dataset.erledigt));
+      }));
+      $("blatt-inhalt").querySelectorAll("[data-stempel]").forEach((b) => b.addEventListener("click", () => {
+        zustand = b.dataset.stempel; U.toast({ arbeit: "Kommen", pause: "Pause", weg: "Gehen" }[zustand] + " " + X.fmtZeit(new Date())); alles(); oeffnen("time");
+      }));
+    }
+    function oeffnen(key) {
+      if (key === "termine") {
+        blatt(`<span class="ico" style="background:var(--violet-soft)">${X.modul("flow").icon}</span><h2 id="blatt-titel">Termine</h2>`,
+          X.TERMINE.map((t) => `<div class="zeile"><div class="text"><b>${esc(t.titel)}</b><span>${esc(X.fmtDatum(t.start))}${t.ganztags ? ", ganztags" : ", " + esc(X.fmtZeit(t.start)) + "–" + esc(X.fmtZeit(t.ende))}${t.ort ? " · " + esc(t.ort) : ""}</span></div></div>`).join(""));
+      } else if (key === "aufgaben") {
+        blatt(`<h2 id="blatt-titel">Alle Aufgaben</h2>`, X.AUFGABEN.map(aufgabeZeile).join(""));
+      } else if (key === "meldungen") {
+        blatt(`<h2 id="blatt-titel">Meldungen</h2>`, X.MELDUNGEN.map((m) => `<div class="zeile m-${X.modul(m.modul).farbe}"><span class="ico" style="width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--m-soft)">${X.modul(m.modul).icon}</span><div class="text"><b>${esc(m.text)}</b><span>${esc(X.fmtRelativ(m.zeit))}, ${esc(X.fmtZeit(m.zeit))}</span></div></div>`).join(""));
+      } else if (key === "time") {
+        const m = X.modul("time");
+        blatt(`<span class="ico">${m.icon}</span><h2 id="blatt-titel">${esc(m.titel)}</h2>`,
+          `<div class="zeile"><div class="text"><b>${zustand === "weg" ? "Ausgestempelt" : zustand === "pause" ? "Pause läuft" : "Eingestempelt seit 07:15"}</b><span>Saldo +3:20 h · gesetzliche Pause nach 5 h: 30 Min.</span></div></div>
+           <div class="zeile"><div class="text"><b>Stempeln</b><span>Grosse Tasten für unterwegs</span></div>
+             <button type="button" data-stempel="arbeit" class="${zustand !== "arbeit" ? "primaer" : ""}">Kommen</button><button type="button" data-stempel="pause">Pause</button><button type="button" data-stempel="weg">Gehen</button></div>` +
+          X.AUFGABEN.filter((a) => a.modul === "time").map(aufgabeZeile).join(""), m.farbe);
+      } else {
+        const m = X.modul(key);
+        const auf = X.AUFGABEN.filter((a) => a.modul === key);
+        blatt(`<span class="ico">${m.icon}</span><div><h2 id="blatt-titel">${esc(m.titel)}</h2><span class="muted small">${esc(m.name)} · ${esc(m.kurz)}</span></div>`,
+          `<div class="zeile"><div class="text"><b style="font-size:1.6rem">${esc(m.kennzahl)}</b><span>${esc(m.kennzahlText)}</span></div><button type="button">Modul öffnen</button></div>` +
+          (auf.length ? auf.map(aufgabeZeile).join("") : `<p class="leerhinweis">Keine Aufgaben aus diesem Modul.</p>`), m.farbe);
+      }
+      verdrahten();
+    }
+    document.addEventListener("click", (e) => {
+      const k = e.target.closest("[data-offen]"); if (k) oeffnen(k.dataset.offen);
+      const d = e.target.closest("[data-dock]");
+      if (d) {
+        document.querySelectorAll(".dock button").forEach((b) => b.setAttribute("aria-pressed", b === d));
+        if (d.dataset.dock === "start") { if (!$("blatt").hidden) zu(); seiten.scrollTo({ left: 0, behavior: "smooth" }); }
+        else oeffnen(d.dataset.dock);
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

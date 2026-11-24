@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>EduKSX-Experience – A Fokus (Prototyp)</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/eduksx.css">
+  <link rel="stylesheet" href="assets/gemeinsam.css">
+  <style>
+    body { min-height: 100vh; background:
+      radial-gradient(1200px 500px at 50% -10%, color-mix(in srgb, var(--brand-violet) 9%, transparent), transparent 70%),
+      var(--background); }
+    .oben { display: flex; align-items: center; gap: .6rem; padding: 1rem 1.5rem; }
+    .oben .marke svg { width: 26px; height: 26px; }
+    .oben h1 { font-size: 1rem; margin: 0; font-weight: 600; }
+    .zurueck { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border-radius: 999px; color: inherit; }
+    .zurueck:hover { background: var(--muted); }
+    .oben .person { margin-left: auto; display: flex; align-items: center; gap: .5rem; font-size: .85rem; color: var(--muted-foreground); }
+    .avatar { width: 32px; height: 32px; border-radius: 999px; display: grid; place-items: center; background: var(--violet-soft); color: var(--violet-text); font-weight: 700; font-size: .8rem; }
+    .buehne { max-width: 720px; margin: 0 auto; padding: 8vh 1.25rem 8rem; }
+    .gruss { font-size: clamp(2rem, 5vw, 3.1rem); font-weight: 300; letter-spacing: -.02em; line-height: 1.1; margin: 0; }
+    .gruss strong { font-weight: 650; }
+    .datum { color: var(--muted-foreground); margin: .6rem 0 2rem; font-size: 1.05rem; }
+    .suche { position: relative; }
+    .suche input {
+      width: 100%; font: 400 1.25rem/1.4 var(--font-sans); padding: 1.05rem 1.2rem 1.05rem 3.2rem; border-radius: 18px;
+      border: 1px solid var(--input); background: var(--card); color: var(--foreground);
+      box-shadow: 0 10px 40px rgb(15 23 42 / .08);
+    }
+    .suche input:focus { outline: none; border-color: var(--ring); box-shadow: 0 0 0 4px color-mix(in srgb, var(--ring) 20%, transparent), 0 10px 40px rgb(15 23 42 / .08); }
+    .suche .lupe { position: absolute; left: 1.15rem; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; color: var(--muted-foreground); }
+    .suche kbd { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); }
+    kbd { font: 600 .75rem var(--font-sans); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 6px; padding: .1rem .4rem; color: var(--muted-foreground); background: var(--muted); }
+    .treffer { margin-top: .6rem; background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgb(15 23 42 / .1); }
+    .treffer[hidden] { display: none; }
+    .treffer .gruppe { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-foreground); padding: .7rem 1rem .25rem; }
+    .treffer [role="option"] { display: flex; align-items: center; gap: .75rem; padding: .6rem 1rem; cursor: pointer; }
+    .treffer [role="option"][aria-selected="true"] { background: var(--accent); color: var(--accent-foreground); }
+    .treffer [role="option"] .ico { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: var(--m-soft, var(--muted)); flex: none; }
+    .treffer [role="option"] .ico svg { width: 20px; height: 20px; }
+    .treffer [role="option"] .neben { margin-left: auto; font-size: .8rem; color: var(--muted-foreground); }
+    .treffer .leer { padding: 1rem; color: var(--muted-foreground); }
+    .treffer mark { background: var(--secondary); color: var(--secondary-foreground); border-radius: 3px; }
+    .tipps { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1rem; }
+    .tipp { font: inherit; font-size: .85rem; border: 1px solid var(--border); background: transparent; color: var(--foreground); border-radius: 999px; padding: .3rem .8rem; cursor: pointer; }
+    .tipp:hover { background: var(--muted); }
+    .naechstes { margin-top: 3.5rem; }
+    .naechstes h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted-foreground); font-weight: 600; margin-bottom: .75rem; }
+    .naechstes ol { list-style: none; margin: 0; padding: 0; counter-reset: n; }
+    .naechstes li { counter-increment: n; }
+    .naechstes button { all: unset; box-sizing: border-box; width: 100%; display: grid; grid-template-columns: 2.2rem 1fr auto; align-items: baseline; gap: .5rem; padding: .9rem .2rem; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .naechstes button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 6px; }
+    .naechstes button::before { content: counter(n, decimal-leading-zero); color: var(--muted-foreground); font-variant-numeric: tabular-nums; font-size: .85rem; }
+    .naechstes button:hover .t { text-decoration: underline; text-underline-offset: 3px; }
+    .naechstes .t { font-size: 1.15rem; }
+    .naechstes .u { display: block; font-size: .85rem; color: var(--muted-foreground); margin-top: .15rem; }
+    .ruhig { margin-top: 2.5rem; font-size: .9rem; color: var(--muted-foreground); }
+    .ruhig a { color: var(--link); }
+    /* Detail als ruhiges Blatt */
+    .blatt { position: fixed; inset: 0; z-index: 900; display: grid; place-items: center; background: rgb(15 23 42 / .35); backdrop-filter: blur(3px); padding: 1rem; }
+    .blatt[hidden] { display: none; }
+    .blatt .innen { width: min(620px, 100%); background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 1.75rem; box-shadow: 0 30px 80px rgb(15 23 42 / .35); }
+    .blatt .modul { display: flex; align-items: center; gap: .5rem; font-size: .85rem; color: var(--muted-foreground); }
+    .blatt .modul svg { width: 20px; height: 20px; }
+    .blatt h2 { font-size: 1.5rem; font-weight: 600; margin: .6rem 0; }
+    .blatt .aktionen { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: 1.5rem; }
+    .blatt .aktionen button { font: inherit; border-radius: 10px; padding: .55rem 1rem; border: 1px solid var(--input); background: var(--card); color: var(--foreground); cursor: pointer; }
+    .blatt .aktionen button.primaer { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); font-weight: 600; }
+    .blatt .hinweis-esc { float: right; }
+  </style>
+</head>
+<body data-variante="fokus">
+  <header class="oben">
+    <span class="marke"><!--eduksx-icon:eduksx--></span>
+    <h1 id="titel"></h1>
+    <a class="zurueck" href="index.html" title="Zurück zur Übersicht GUI-Experience" aria-label="Zurück zur Übersicht GUI-Experience"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
+    <div class="person"><span id="person"></span><span class="avatar" id="avatar" aria-hidden="true"></span></div>
+  </header>
+
+  <main class="buehne">
+    <p class="gruss" id="gruss"></p>
+    <p class="datum" id="datum"></p>
+
+    <div class="suche" role="combobox" aria-expanded="false" aria-haspopup="listbox" aria-owns="treffer" id="combo">
+      <svg class="lupe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="eingabe" type="text" autocomplete="off" spellcheck="false" placeholder="Was möchtest du tun?" aria-label="Was möchtest du tun? Suchen oder Befehl eingeben" aria-controls="treffer" aria-autocomplete="list">
+      <kbd aria-hidden="true">/</kbd>
+    </div>
+    <div class="treffer" id="treffer" role="listbox" aria-label="Vorschläge" hidden></div>
+    <div class="tipps" aria-label="Beispiele">
+      <button class="tipp" type="button">einstempeln</button>
+      <button class="tipp" type="button">signieren</button>
+      <button class="tipp" type="button">stellenplan</button>
+      <button class="tipp" type="button">termine morgen</button>
+      <button class="tipp" type="button">glossar pensum</button>
+    </div>
+
+    <section class="naechstes" aria-labelledby="h-naechstes">
+      <h2 id="h-naechstes">Als Nächstes</h2>
+      <ol id="liste"></ol>
+    </section>
+    <p class="ruhig" id="ruhig"></p>
+  </main>
+
+  <div class="blatt" id="blatt" hidden>
+    <div class="innen" role="dialog" aria-modal="true" aria-labelledby="blatt-titel" tabindex="-1">
+      <kbd class="hinweis-esc" aria-hidden="true">Esc</kbd>
+      <div class="modul" id="blatt-modul"></div>
+      <h2 id="blatt-titel"></h2>
+      <div id="blatt-text"></div>
+      <div class="aktionen" id="blatt-aktionen"></div>
+    </div>
+  </div>
+
+  <script src="assets/daten.js"></script>
+  <script src="assets/gemeinsam.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    const X = window.EX, U = window.EXUI, esc = X.esc;
+    const $ = (id) => document.getElementById(id);
+    $("titel").innerHTML = U.wortmarke("EduKSX");
+    $("person").textContent = X.PERSON.name;
+    $("avatar").textContent = X.PERSON.kuerzel;
+    const h = new Date().getHours();
+    const vorname = X.PERSON.name.split(" ")[0];
+    $("gruss").innerHTML = (h < 11 ? "Guten Morgen" : h < 17 ? "Guten Tag" : "Guten Abend") + ", <strong>" + esc(vorname) + "</strong>.";
+    const offen = X.AUFGABEN.filter((a) => a.status !== "erledigt");
+    const heuteT = X.TERMINE.filter((t) => X.fmtRelativ(t.start) === "heute");
+    $("datum").textContent = X.heute.toLocaleDateString("de-CH", { weekday: "long", day: "numeric", month: "long" }) +
+      " · " + offen.length + " offene Aufgaben · " + heuteT.length + " Termin" + (heuteT.length === 1 ? "" : "e") + " heute";
+
+    let eingestempelt = true;
+    const AKTIONEN = [
+      { titel: () => eingestempelt ? "Ausstempeln" : "Einstempeln", worte: "stempeln einstempeln ausstempeln kommen gehen zeit", modul: "time",
+        tun: () => { eingestempelt = !eingestempelt; U.toast(eingestempelt ? "Eingestempelt " + X.fmtZeit(new Date()) : "Ausgestempelt " + X.fmtZeit(new Date())); } },
+      { titel: () => "Pause starten", worte: "pause", modul: "time", tun: () => U.toast("Pause läuft") },
+      { titel: () => "Neues Dokument zum Signieren hochladen", worte: "signieren unterschreiben dokument hochladen", modul: "sign", tun: () => U.toast("Datei wählen … (Prototyp)") },
+      { titel: () => "Neuen Ablauf starten", worte: "ablauf flow neu onboarding eintritt", modul: "flow", tun: () => U.toast("Vorlage wählen … (Prototyp)") },
+      { titel: () => "KI fragen", worte: "ki frage assistent ai", modul: "ai", tun: () => U.toast("Unterhaltung geöffnet (Prototyp)") },
+    ];
+    const BEGRIFFE = [
+      { titel: "Pensum", text: "Anteil einer Vollzeitstelle, in Lektionen oder Prozent." },
+      { titel: "Stellenplan", text: "Zusammenstellung aller bewilligten Stellen einer Schule." },
+      { titel: "Vollzeiteinheit (VZE)", text: "Rechengrösse für eine volle Stelle." },
+    ];
+
+    function eintraege(q) {
+      const w = q.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      const passt = (text) => w.every((x) => text.toLowerCase().includes(x));
+      const gruppen = [];
+      const akt = AKTIONEN.filter((a) => !w.length || passt(a.titel() + " " + a.worte));
+      if (akt.length) gruppen.push(["Aktionen", akt.map((a) => ({ art: "aktion", titel: a.titel(), modul: a.modul, neben: "Enter", ref: a }))]);
+      const auf = X.AUFGABEN.filter((a) => w.length && passt(a.titel + " " + a.text + " " + X.modul(a.modul).titel + " " + X.fmtRelativ(a.faellig)));
+      if (auf.length) gruppen.push(["Aufgaben", auf.map((a) => ({ art: "aufgabe", titel: a.titel, modul: a.modul, neben: X.fmtRelativ(a.faellig), ref: a }))]);
+      const ter = X.TERMINE.filter((t) => w.length && passt(t.titel + " termin termine " + X.fmtRelativ(t.start)));
+      if (ter.length) gruppen.push(["Termine", ter.map((t) => ({ art: "termin", titel: t.titel, modul: t.modul, neben: X.fmtRelativ(t.start) + (t.ganztags ? "" : ", " + X.fmtZeit(t.start)), ref: t }))]);
+      const mod = X.MODULE.filter((m) => w.length && passt(m.name + " " + m.titel + " " + m.kurz + " modul"));
+      if (mod.length) gruppen.push(["Module", mod.map((m) => ({ art: "modul", titel: m.titel, modul: m.key, neben: m.name, ref: m }))]);
+      const beg = BEGRIFFE.filter((b) => w.length && passt("glossar begriff " + b.titel + " " + b.text));
+      if (beg.length) gruppen.push(["Glossar", beg.map((b) => ({ art: "begriff", titel: b.titel, modul: "glossary", neben: "Begriff", ref: b }))]);
+      return gruppen;
+    }
+
+    let flach = [], aktiv = 0;
+    function hervor(text, q) {
+      let s = esc(text);
+      q.toLowerCase().trim().split(/\s+/).filter((x) => x.length > 1).forEach((x) => {
+        s = s.replace(new RegExp("(" + x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "ig"), "<mark>$1</mark>");
+      });
+      return s;
+    }
+    function zeigen() {
+      const q = $("eingabe").value;
+      const box = $("treffer");
+      if (document.activeElement !== $("eingabe") && !q) { box.hidden = true; $("combo").setAttribute("aria-expanded", "false"); return; }
+      const g = eintraege(q);
+      flach = g.flatMap((x) => x[1]);
+      aktiv = Math.min(aktiv, Math.max(0, flach.length - 1));
+      let i = 0;
+      box.innerHTML = g.length ? g.map(([name, liste]) => `<div class="gruppe" role="presentation">${name}</div>` + liste.map((e) => {
+        const m = X.modul(e.modul), n = i++;
+        return `<div role="option" id="opt-${n}" data-i="${n}" aria-selected="${n === aktiv}" class="m-${m.farbe}"><span class="ico">${m.icon}</span><span>${hervor(e.titel, q)}</span><span class="neben">${esc(e.neben)}</span></div>`;
+      }).join("")).join("") : `<div class="leer">Nichts gefunden. Versuche «stempeln», «signieren» oder einen Modulnamen.</div>`;
+      box.hidden = false;
+      $("combo").setAttribute("aria-expanded", "true");
+      $("eingabe").setAttribute("aria-activedescendant", flach.length ? "opt-" + aktiv : "");
+    }
+    function waehlen(e) {
+      if (!e) return;
+      if (e.art === "aktion") { e.ref.tun(); $("eingabe").value = ""; zeigen(); return; }
+      oeffnen(e);
+    }
+
+    let zuvor = null;
+    function oeffnen(e) {
+      const m = X.modul(e.modul);
+      zuvor = document.activeElement;
+      $("blatt-modul").innerHTML = m.icon + esc(m.name + " · " + m.titel);
+      $("blatt-titel").textContent = e.titel;
+      let text = "", akt = [];
+      if (e.art === "aufgabe") {
+        text = `<p>${U.statusChip(e.ref.status)} <span class="muted">fällig ${esc(X.fmtRelativ(e.ref.faellig))}, ${esc(X.fmtZeit(e.ref.faellig))}</span></p><p>${esc(e.ref.text)}</p>`;
+        akt = [["Erledigt", true], ["Später", false], ["In " + m.titel + " öffnen", false]];
+      } else if (e.art === "termin") {
+        text = `<p class="muted">${esc(X.fmtDatum(e.ref.start))}${e.ref.ganztags ? ", ganztags" : ", " + esc(X.fmtZeit(e.ref.start)) + "–" + esc(X.fmtZeit(e.ref.ende))}${e.ref.ort ? " · " + esc(e.ref.ort) : ""}</p>`;
+        akt = [["Zum Kalender", true], ["Unterlagen", false]];
+      } else if (e.art === "modul") {
+        text = `<p>${esc(e.ref.kurz)}.</p><p style="font-size:2rem;font-weight:650;margin:0">${esc(e.ref.kennzahl)}</p><p class="muted">${esc(e.ref.kennzahlText)}</p>`;
+        akt = [["Modul öffnen", true]];
+      } else if (e.art === "begriff") {
+        text = `<p>${esc(e.ref.text)}</p>`;
+        akt = [["Im Glossar ansehen", true]];
+      }
+      $("blatt-text").innerHTML = text;
+      $("blatt-aktionen").innerHTML = akt.map(([t, p]) => `<button type="button" class="${p ? "primaer" : ""}">${esc(t)}</button>`).join("");
+      $("blatt-aktionen").querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+        if (b.textContent === "Erledigt" && e.ref.status) { e.ref.status = "erledigt"; liste(); }
+        U.toast(b.textContent + " (Prototyp)"); schliessen();
+      }));
+      $("blatt").hidden = false;
+      $("blatt").querySelector(".innen").focus();
+    }
+    function schliessen() { $("blatt").hidden = true; if (zuvor) zuvor.focus(); }
+    $("blatt").addEventListener("click", (ev) => { if (ev.target === $("blatt")) schliessen(); });
+
+    function liste() {
+      const rang = { ueberfaellig: 0, heute: 1, offen: 2 };
+      const n = X.AUFGABEN.filter((a) => a.status !== "erledigt").sort((a, b) => rang[a.status] - rang[b.status] || a.faellig - b.faellig).slice(0, 3);
+      $("liste").innerHTML = n.map((a) => `<li><button type="button" data-id="${esc(a.id)}"><span><span class="t">${esc(a.titel)}</span><span class="u">${esc(X.modul(a.modul).titel)} · fällig ${esc(X.fmtRelativ(a.faellig))}</span></span>${U.statusChip(a.status)}</button></li>`).join("");
+      $("liste").querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+        const a = X.AUFGABEN.find((x) => x.id === b.dataset.id);
+        oeffnen({ art: "aufgabe", titel: a.titel, modul: a.modul, ref: a });
+      }));
+      const rest = X.AUFGABEN.filter((a) => a.status !== "erledigt").length - n.length;
+      $("ruhig").innerHTML = rest > 0 ? `Und ${rest} weitere – tippe «aufgaben» oder einen Modulnamen.` : "Sonst ist alles erledigt.";
+    }
+    liste();
+
+    const ein = $("eingabe");
+    ein.addEventListener("input", () => { aktiv = 0; zeigen(); });
+    ein.addEventListener("focus", zeigen);
+    ein.addEventListener("blur", () => setTimeout(zeigen, 150));
+    ein.addEventListener("keydown", (ev) => {
+      if (ev.key === "ArrowDown") { aktiv = Math.min(aktiv + 1, flach.length - 1); zeigen(); ev.preventDefault(); }
+      else if (ev.key === "ArrowUp") { aktiv = Math.max(aktiv - 1, 0); zeigen(); ev.preventDefault(); }
+      else if (ev.key === "Enter") { waehlen(flach[aktiv]); ev.preventDefault(); }
+      else if (ev.key === "Escape") { ein.value = ""; ein.blur(); }
+    });
+    $("treffer").addEventListener("mousedown", (ev) => {
+      const o = ev.target.closest('[role="option"]');
+      if (o) { ev.preventDefault(); waehlen(flach[+o.dataset.i]); }
+    });
+    document.querySelectorAll(".tipp").forEach((b) => b.addEventListener("click", () => { ein.value = b.textContent; ein.focus(); aktiv = 0; zeigen(); }));
+    document.addEventListener("keydown", (ev) => {
+      if (!$("blatt").hidden && ev.key === "Escape") { schliessen(); return; }
+      if ((ev.key === "/" || (ev.key.toLowerCase() === "k" && (ev.metaKey || ev.ctrlKey))) && document.activeElement !== ein && $("blatt").hidden) {
+        ev.preventDefault(); ein.focus();
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
