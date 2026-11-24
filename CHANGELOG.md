@@ -8,6 +8,9 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **GUI-EX 0.3.0 – Tabelle, Suche überall, Konzept (24.11.2026, #93):** Variante F Tabelle (Pensen und Aufgaben direkt
+  in der Zelle bearbeiten, Tastatur, Sammeländerung, Summen, Prüfhinweise, Rückgängig), Suchfenster aus A per
+  Ctrl/⌘ K in B–F, Konzept `docs/KONZEPT-OBERFLAECHE.md` (Ansichten je Art der Arbeit, wählbare Stile, Entscheide E1–E5).
 - **Prototyp EduKSX-Experience – GUI-Experience (24.11.2026, #90):** `prototypen/gui-ex` 0.1.0 – vier grundlegend
   andere Oberflächen mit gleichem Inhalt zum Vergleichen: A Fokus (Befehlszeile statt Menü), B Kacheln (lebende Kacheln,
   Dock, Touch), C Zeitstrahl (Bahnen je Modul auf einer Zeitachse), D Arbeitsfläche (Fenster wie am Desktop);

@@ -57,20 +57,20 @@
       <h1 id="titel"></h1>
       <a class="zurueck" href="../" title="Zurück zur Einstiegsseite aller EduKSX-Prototypen" aria-label="Zurück zur Einstiegsseite aller EduKSX-Prototypen"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
     </div>
-    <p class="lead">Fünf grundlegend andere Bedienkonzepte und vier Stile für die EduKSX-Plattform zum Ausprobieren und Vergleichen.
+    <p class="lead">Sechs Bedienkonzepte für verschiedene Arten von Arbeit und vier Stile für die EduKSX-Plattform zum Ausprobieren und Vergleichen.
       Inhalt (Aufgaben, Termine, Module) ist überall gleich – es geht nur um das <strong>Erlebnis</strong>: Wie finde ich mich zurecht, wie schnell komme ich ans Ziel, was fühlt sich gut an?</p>
 
     <div class="bisher">
       <div class="mini" aria-hidden="true"><i style="left:0;top:0;right:0;height:14%" class="c"></i><i style="left:0;top:14%;bottom:0;width:24%" class="c"></i><i style="left:30%;top:24%;width:20%;height:22%" class="c"></i><i style="left:54%;top:24%;width:20%;height:22%" class="c"></i><i style="left:78%;top:24%;width:18%;height:22%" class="c"></i><i style="left:30%;top:54%;right:4%;height:38%" class="c"></i></div>
       <div><strong>Bisher in allen Prototypen:</strong> Kopfzeile, Navigation links, Kennzahl-Karten und Tabellen (klassisches Verwaltungs-Layout).
-        <span class="muted">Die Varianten A–E verzichten bewusst darauf.</span></div>
+        <span class="muted">Die Varianten A–E verzichten bewusst darauf; F macht es klassisch, aber für dichtes Bearbeiten. In B–F öffnet Ctrl/⌘ K bzw. / die Suche aus A als Fenster.</span></div>
     </div>
 
     <div class="varianten" id="varianten"></div>
 
     <h2 class="abschnitt">Aussehen (Stil)</h2>
-    <p class="muted small" style="margin-top:-.4rem">Aufbau und Aussehen sind getrennt: Die Varianten A–D lassen sich in jedem Stil zeigen (auch in jeder Variante über «Stil» in der Leiste unten). E hat den festen Stil Neo-Dunkel.</p>
-    <div class="stile" id="stile" role="radiogroup" aria-label="Stil für die Varianten A–D"></div>
+    <p class="muted small" style="margin-top:-.4rem">Aufbau und Aussehen sind getrennt: Die Varianten A–D und F lassen sich in jedem Stil zeigen (auch in jeder Variante über «Stil» in der Leiste unten). E hat den festen Stil Neo-Dunkel.</p>
+    <div class="stile" id="stile" role="radiogroup" aria-label="Stil für die Varianten A–D und F"></div>
 
     <h2 class="abschnitt">Vergleich</h2>
     <div class="tabelle"><table>
@@ -81,6 +81,7 @@
         <tr><td><strong>C – Zeitstrahl</strong></td><td>Alles auf einer Zeitachse, Module als Bahnen</td><td>Planung, Fristen, Jahresabläufe</td><td>Desktop, Querformat</td><td>Einträge ohne Datum (z. B. Begriffe)</td></tr>
         <tr><td><strong>D – Arbeitsfläche</strong></td><td>Fenster wie am Desktop, mehrere Module nebeneinander</td><td>Paralleles Arbeiten, Vergleichen, Power-User</td><td>Grosser Bildschirm</td><td>Ordnung, Bedienung auf kleinen Geräten</td></tr>
         <tr><td><strong>E – Cockpit</strong></td><td>Bedienpult mit Leuchtringen und Schaltern, fester Stil Neo-Dunkel</td><td>Persönlicher Tagesüberblick, «Wow»-Effekt</td><td>Desktop und Tablet</td><td>Kontrast der weichen Flächen, Ringe ohne Zahlen verständlich?</td></tr>
+        <tr><td><strong>F – Tabelle</strong></td><td>Dichte Tabelle, direkt in der Zelle bearbeiten</td><td>Massendaten erfassen und korrigieren (Pensen, Lizenzen, Codex-Erfassung)</td><td>Desktop, Tastatur</td><td>Breite Tabellen auf kleinen Geräten</td></tr>
       </tbody>
     </table></div>
 
@@ -106,12 +107,14 @@
         kacheln: ["Lebende Kacheln, Dock unten", "Startbildschirm mit grossen Kacheln, die Live-Werte zeigen und direkt handeln lassen (Stempeln, Signieren). Module öffnen als Vollbild-Blatt.", "Touch, Wischen"],
         zeitstrahl: ["Alles auf einer Zeitachse", "Aufgaben, Termine und Meldungen aller Module auf einem Zeitstrahl mit Bahnen je Modul und Jetzt-Linie. Detail in der Seitenleiste.", "Scrollen, Zoom, Filter"],
         fenster: ["Fenster wie am Desktop", "Module als verschiebbare Fenster auf einer Arbeitsfläche, Taskleiste oben. Mehrere Dinge gleichzeitig offen.", "Maus, Ziehen, Doppelklick"],
+        tabelle: ["Dicht bearbeiten wie in einer Tabellenkalkulation", "Pensen und Aufgaben direkt in der Zelle bearbeiten, mit Tastatur, Mehrfachauswahl, Sammeländerung, Filter, Spaltenwahl, Summenzeile und Prüfhinweisen.", "Tastatur (Pfeile, Enter, Tab, Esc)"],
         cockpit: ["Bedienpult in Neo-Dunkel", "Fester Stil: weiche Tiefe, Leuchtringe für Stempeluhr, Stellenplan und Aufgaben, Verlaufskurve, Schnellschalter, Aufgaben als Pillen.", "Maus und Touch, Schalter"],
       };
       const MINI = {
         fokus: '<i class="c" style="left:22%;top:30%;width:56%;height:16%;border-radius:20px"></i><i style="left:30%;top:56%;width:40%;height:5%"></i><i style="left:30%;top:66%;width:34%;height:5%"></i><i style="left:30%;top:76%;width:38%;height:5%"></i><i class="o" style="left:22%;top:18%;width:22%;height:5%"></i>',
         kacheln: '<i class="v" style="left:5%;top:8%;width:42%;height:40%;border-radius:10px"></i><i class="c" style="left:51%;top:8%;width:20%;height:40%;border-radius:10px"></i><i class="b" style="left:75%;top:8%;width:20%;height:18%;border-radius:10px"></i><i class="c" style="left:75%;top:30%;width:20%;height:18%;border-radius:10px"></i><i class="c" style="left:5%;top:52%;width:20%;height:24%;border-radius:10px"></i><i class="o" style="left:29%;top:52%;width:42%;height:24%;border-radius:10px"></i><i class="c" style="left:75%;top:52%;width:20%;height:24%;border-radius:10px"></i><i class="c" style="left:28%;top:84%;width:44%;height:10%;border-radius:20px"></i>',
         zeitstrahl: '<i style="left:0;top:20%;right:0;height:1px"></i><i class="v" style="left:12%;top:28%;width:22%;height:9%;border-radius:20px"></i><i class="b" style="left:40%;top:44%;width:16%;height:9%;border-radius:20px"></i><i class="o" style="left:58%;top:60%;width:26%;height:9%;border-radius:20px"></i><i class="v" style="left:30%;top:76%;width:12%;height:9%;border-radius:20px"></i><i class="o" style="left:46%;top:12%;width:2px;height:82%"></i>',
+        tabelle: '<i class="c" style="left:4%;top:8%;right:4%;height:10%"></i><i style="left:4%;top:18%;right:4%;height:72%;background:repeating-linear-gradient(var(--card) 0 9%,var(--border) 9% 10%);border:1px solid var(--border)"></i><i class="o" style="left:4%;top:36%;width:3px;height:8%"></i><i style="left:30%;top:18%;width:1px;height:72%"></i><i style="left:58%;top:18%;width:1px;height:72%"></i><i class="b" style="left:58%;top:45%;width:20%;height:8%;background:transparent;border:2px solid var(--brand-blue)"></i>',
         cockpit: '<i style="left:0;top:0;right:0;bottom:0;background:#1f242c;border-radius:0"></i><i style="left:6%;top:12%;width:26%;height:46%;border-radius:999px;background:#232932;box-shadow:0 0 0 3px #ff8a00,0 0 12px #ff8a00"></i><i style="left:38%;top:14%;width:12%;height:22%;border-radius:999px;border:3px solid #7952b3;background:transparent"></i><i style="left:54%;top:14%;width:12%;height:22%;border-radius:999px;border:3px solid #1b7a3d;background:transparent"></i><i style="left:70%;top:14%;width:12%;height:22%;border-radius:999px;border:3px solid #007ebb;background:transparent"></i><i style="left:38%;top:46%;width:56%;height:24%;background:linear-gradient(90deg,#007ebb55,#ff8a0055);border-radius:10px"></i><i style="left:6%;top:76%;width:88%;height:9%;border-radius:999px;background:#232932"></i>',
         fenster: '<i class="c" style="left:0;top:0;right:0;height:10%"></i><i class="c" style="left:6%;top:18%;width:46%;height:52%;box-shadow:0 2px 6px rgb(0 0 0/.15)"></i><i class="v" style="left:6%;top:18%;width:46%;height:8%"></i><i class="c" style="left:38%;top:34%;width:40%;height:46%;box-shadow:0 2px 6px rgb(0 0 0/.2)"></i><i class="b" style="left:38%;top:34%;width:40%;height:8%"></i><i class="c" style="left:82%;top:18%;width:13%;height:22%"></i>',
       };

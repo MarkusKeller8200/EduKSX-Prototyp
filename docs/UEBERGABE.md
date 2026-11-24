@@ -36,6 +36,10 @@ Schliessen erst nach «getestet ok» bzw. abgehakter Testliste.
 Neueste oben. Je Sitzung: Datum und Zeit, Thema, umgesetzte Issues, Entscheide (mit Datum), Offenes. Ältere Sitzungen
 gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 
+### Sitzung 2026-11-24 – GUI-EX 0.3.0: Tabelle, Suche, Konzept, #93
+
+Entscheid 24.11.2026: Die Konzepte A–E eignen sich für verschiedene Arten von Arbeit (A nicht für Tabellen). Neu Variante F Tabelle, Suche aus A per Ctrl/⌘ K in allen Varianten, Konzept `docs/KONZEPT-OBERFLAECHE.md` mit weiteren Stilvorschlägen (Hoher Kontrast, Aurora, Neubrutalismus, Papier, Spielerisch) und Entscheiden E1–E5 (offen).
+
 ### Sitzung 2026-11-24 – GUI-EX 0.2.0: Stile und Variante E, #92
 
 Nach Bildbeispielen aus dem Netz und vom Projektverantwortlichen: Stil-Schalter (Standard, Neo-Dunkel, Glas, Clay) für A–D, Variante E Cockpit im festen Stil Neo-Dunkel, Zeitstrahl mit Fortschrittskarten und Detailspalte. Vorlagen nur als Anregung, nichts übernommen. Offen: Test und Bewertung, Kontrast der weichen Stile prüfen.

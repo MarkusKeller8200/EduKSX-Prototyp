@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>EduKSX-Experience – F Tabelle (Prototyp)</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/eduksx.css">
+  <link rel="stylesheet" href="assets/gemeinsam.css">
+  <style>
+    body { height: 100vh; display: grid; grid-template-rows: auto auto auto 1fr auto; overflow: hidden; }
+    .kopf-t { display: flex; align-items: center; gap: .6rem; padding: .55rem 1rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; background: var(--background); }
+    .kopf-t .marke svg { width: 24px; height: 24px; }
+    .kopf-t h1 { margin: 0; font-size: 1rem; }
+    .zurueck { display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border: 1px solid var(--border); border-radius: .5rem; color: inherit; }
+    .reiter { display: flex; gap: 2px; margin-left: 1rem; }
+    .reiter button { font: inherit; font-size: .88rem; border: 0; background: transparent; color: var(--muted-foreground); padding: .4rem .8rem; border-radius: 8px; cursor: pointer; }
+    .reiter button[aria-selected="true"] { color: var(--foreground); background: var(--muted); font-weight: 600; box-shadow: inset 0 -2px 0 var(--brand-orange); }
+    .kopf-t .rechts { margin-left: auto; font-size: .8rem; color: var(--muted-foreground); }
+    .werkzeug { display: flex; align-items: center; gap: .5rem; padding: .5rem 1rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; background: var(--sidebar); }
+    .werkzeug input[type="search"], .werkzeug select { font: inherit; font-size: .85rem; height: 32px; border: 1px solid var(--input); border-radius: 8px; background: var(--card); color: var(--foreground); padding: 0 .6rem; }
+    .werkzeug input[type="search"] { width: min(260px, 60vw); }
+    .wk { font: inherit; font-size: .85rem; height: 32px; display: inline-flex; align-items: center; gap: .35rem; border: 1px solid var(--input); border-radius: 8px; background: var(--card); color: var(--foreground); padding: 0 .7rem; cursor: pointer; }
+    .wk:disabled { opacity: .45; cursor: not-allowed; }
+    .wk.primaer { background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); font-weight: 600; }
+    .wk svg { width: 15px; height: 15px; }
+    .abstand { margin-left: auto; }
+    details.spalten { position: relative; }
+    details.spalten summary { list-style: none; }
+    details.spalten summary::-webkit-details-marker { display: none; }
+    details.spalten .menue { position: absolute; z-index: 20; top: calc(100% + 4px); left: 0; min-width: 220px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: .4rem; box-shadow: 0 12px 30px rgb(15 23 42 / .2); display: grid; gap: 2px; }
+    details.spalten label { display: flex; gap: .5rem; align-items: center; padding: .3rem .5rem; border-radius: 6px; font-size: .85rem; cursor: pointer; }
+    details.spalten label:hover { background: var(--muted); }
+    .auswahlband { display: flex; align-items: center; gap: .6rem; padding: .45rem 1rem; background: var(--accent); color: var(--accent-foreground); border-bottom: 1px solid var(--border); font-size: .88rem; flex-wrap: wrap; }
+    .auswahlband[hidden] { display: none; }
+    .auswahlband select { font: inherit; font-size: .85rem; height: 30px; border-radius: 8px; border: 1px solid var(--input); background: var(--card); color: var(--foreground); }
+    .rahmen-t { overflow: auto; position: relative; }
+    table.raster { border-collapse: separate; border-spacing: 0; width: max-content; min-width: 100%; font-size: .86rem; font-variant-numeric: tabular-nums; }
+    .raster th, .raster td { border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); padding: 0 .6rem; height: 34px; white-space: nowrap; text-align: left; background: var(--card); }
+    .raster thead th { position: sticky; top: 0; z-index: 3; background: var(--muted); font-weight: 600; font-size: .78rem; color: var(--muted-foreground); padding: 0; }
+    .raster thead th button { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: .3rem; width: 100%; height: 34px; padding: 0 .6rem; cursor: pointer; }
+    .raster thead th button:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+    .raster thead th .pfeil { opacity: .35; } .raster thead th[aria-sort] .pfeil { opacity: 1; color: var(--foreground); }
+    .raster .k { position: sticky; left: 0; z-index: 2; width: 40px; text-align: center; padding: 0; }
+    .raster thead .k { z-index: 4; }
+    .raster td.zahl, .raster th.zahl button { text-align: right; justify-content: flex-end; }
+    .raster td.berechnet { color: var(--muted-foreground); background: color-mix(in srgb, var(--muted) 60%, var(--card)); }
+    .raster tbody tr:hover td { background: color-mix(in srgb, var(--accent) 45%, var(--card)); }
+    .raster tbody tr.gewaehlt td { background: var(--accent); }
+    .raster td:focus { outline: 2px solid var(--ring); outline-offset: -2px; position: relative; z-index: 1; }
+    .raster td.geaendert { box-shadow: inset 3px 0 0 var(--brand-orange); }
+    .raster td.geaendert::after { content: "•"; color: var(--warning); margin-left: .3rem; font-weight: 700; }
+    .raster td.bearbeiten { padding: 0; }
+    .raster td.bearbeiten :is(input, select) { width: 100%; height: 34px; border: 2px solid var(--ring); border-radius: 0; font: inherit; padding: 0 .5rem; background: var(--card); color: var(--foreground); box-sizing: border-box; }
+    .raster tfoot td { position: sticky; bottom: 0; z-index: 2; background: var(--muted); font-weight: 650; border-top: 2px solid var(--border); }
+    .hinweis-zelle { display: inline-flex; align-items: center; gap: .3rem; font-size: .78rem; font-weight: 600; }
+    .hinweis-zelle.warn { color: var(--destructive); } .hinweis-zelle.ok { color: var(--success); }
+    .raster input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--ring); cursor: pointer; }
+    .fuss-t { display: flex; gap: 1.25rem; align-items: center; padding: .45rem 1rem 4.6rem; border-top: 1px solid var(--border); font-size: .8rem; color: var(--muted-foreground); flex-wrap: wrap; }
+    .fuss-t kbd { font: 600 .72rem var(--font-sans); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; padding: 0 .35rem; background: var(--card); color: var(--foreground); }
+  </style>
+</head>
+<body data-variante="tabelle">
+  <header class="kopf-t">
+    <span class="marke"><!--eduksx-icon:staffing--></span>
+    <h1 id="titel"></h1>
+    <a class="zurueck" href="index.html" title="Zurück zur Übersicht GUI-Experience" aria-label="Zurück zur Übersicht GUI-Experience"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
+    <div class="reiter" role="tablist" aria-label="Tabelle">
+      <button type="button" role="tab" id="tab-pensen" aria-selected="true" aria-controls="rahmen">Pensen 2027/28</button>
+      <button type="button" role="tab" id="tab-aufgaben" aria-selected="false" aria-controls="rahmen">Aufgaben</button>
+    </div>
+    <span class="rechts" id="stand"></span>
+  </header>
+
+  <div class="werkzeug" role="toolbar" aria-label="Tabellenwerkzeuge">
+    <input type="search" id="filter" placeholder="Filtern …" aria-label="Zeilen filtern">
+    <select id="statusfilter" aria-label="Nach Status filtern"></select>
+    <details class="spalten" id="spaltenwahl"><summary class="wk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/></svg>Spalten</summary><div class="menue" id="spaltenmenue"></div></details>
+    <span class="abstand"></span>
+    <button class="wk" type="button" id="rueck" disabled title="Rückgängig (Ctrl/⌘ Z)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>Rückgängig</button>
+    <button class="wk" type="button" id="verwerfen" disabled>Verwerfen</button>
+    <button class="wk primaer" type="button" id="speichern" disabled>Speichern</button>
+  </div>
+
+  <div class="auswahlband" id="auswahlband" hidden>
+    <b id="auswahlzahl"></b>
+    <label>Status setzen <select id="sammelstatus"></select></label>
+    <button class="wk" type="button" id="sammelok">Anwenden</button>
+    <button class="wk" type="button" id="auswahlweg">Auswahl aufheben</button>
+  </div>
+
+  <div class="rahmen-t" id="rahmen" role="tabpanel" aria-labelledby="tab-pensen"></div>
+
+  <div class="fuss-t" aria-label="Tastenkürzel">
+    <span><kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> Zelle wählen</span>
+    <span><kbd>Enter</kbd>/<kbd>F2</kbd> oder tippen: bearbeiten</span>
+    <span><kbd>Esc</kbd> abbrechen</span>
+    <span><kbd>Tab</kbd> nächste Zelle</span>
+    <span><kbd>Leertaste</kbd> in der ersten Spalte: Zeile wählen</span>
+    <span><kbd>Ctrl/⌘ K</kbd> Suche</span>
+  </div>
+
+  <script src="assets/daten.js"></script>
+  <script src="assets/gemeinsam.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    const X = window.EX, U = window.EXUI, esc = X.esc;
+    const $ = (id) => document.getElementById(id);
+    $("titel").innerHTML = U.wortmarke("EduKSX");
+    const pensum = (z) => Math.round(z.lektionen / X.VOLLPENSUM * 1000) / 10;
+
+    // Tabellen-Definitionen: Spalten mit Typ (text, zahl, wahl, datum, berechnet)
+    const TABELLEN = {
+      pensen: {
+        zeilen: X.PENSEN, statusFeld: "status", statusWerte: ["offen", "bestätigt", "Stellvertretung"],
+        spalten: [
+          { key: "name", titel: "Name", typ: "text" },
+          { key: "vorname", titel: "Vorname", typ: "text" },
+          { key: "funktion", titel: "Funktion", typ: "wahl", optionen: ["Klassenlehrperson", "Fachlehrperson", "Schulische Heilpädagogik"] },
+          { key: "klassen", titel: "Klassen", typ: "text" },
+          { key: "faecher", titel: "Fächer", typ: "text" },
+          { key: "lektionen", titel: "Lektionen", typ: "zahl", min: 0, max: 40 },
+          { key: "pensum", titel: "Pensum", typ: "berechnet", zahl: true, wert: (z) => pensum(z), text: (z) => pensum(z).toFixed(1) + " %" },
+          { key: "status", titel: "Status", typ: "wahl", optionen: ["offen", "bestätigt", "Stellvertretung"] },
+          { key: "pruefung", titel: "Prüfung", typ: "berechnet", wert: (z) => pensum(z) > 100 ? 1 : 0,
+            html: (z) => pensum(z) > 100 ? `<span class="hinweis-zelle warn"><span aria-hidden="true">!</span>über 100 %</span>` : `<span class="hinweis-zelle ok"><span aria-hidden="true">✓</span>ok</span>` },
+        ],
+        summe: (zeilen) => {
+          const l = zeilen.reduce((s, z) => s + (+z.lektionen || 0), 0);
+          return { name: zeilen.length + " Personen", lektionen: l, pensum: (l / X.VOLLPENSUM).toFixed(2) + " VZE", status: zeilen.filter((z) => z.status === "offen").length + " offen" };
+        },
+      },
+      aufgaben: {
+        zeilen: X.AUFGABEN, statusFeld: "status", statusWerte: ["offen", "heute", "ueberfaellig", "erledigt"], statusText: (v) => X.STATUS[v].text,
+        spalten: [
+          { key: "titel", titel: "Aufgabe", typ: "text" },
+          { key: "modul", titel: "Modul", typ: "berechnet", wert: (z) => X.modul(z.modul).titel, text: (z) => X.modul(z.modul).titel },
+          { key: "faellig", titel: "Fällig", typ: "datum" },
+          { key: "prio", titel: "Priorität", typ: "wahl", optionen: ["tief", "mittel", "hoch"] },
+          { key: "status", titel: "Status", typ: "wahl", optionen: ["offen", "heute", "ueberfaellig", "erledigt"], anzeige: (v) => X.STATUS[v].symbol + " " + X.STATUS[v].text },
+          { key: "fortschritt", titel: "Fortschritt", typ: "berechnet", zahl: true, wert: (z) => X.fortschritt(z), text: (z) => X.fortschritt(z) + " %" },
+        ],
+        summe: (zeilen) => ({ titel: zeilen.length + " Aufgaben", status: zeilen.filter((z) => z.status !== "erledigt").length + " offen" }),
+      },
+    };
+
+    let aktiv = "pensen";
+    const zustand = {}; // je Tabelle: Sortierung, ausgeblendete Spalten, Auswahl, Original, Rückgängig
+    Object.keys(TABELLEN).forEach((k) => { zustand[k] = { sort: null, aus: new Set(), auswahl: new Set(), original: new Map(), rueck: [] }; });
+    let fokus = { r: 0, c: 1 }, bearbeitung = null, ankerZeile = null;
+
+    const tab = () => TABELLEN[aktiv], zs = () => zustand[aktiv];
+    const sichtbareSpalten = () => tab().spalten.filter((s) => !zs().aus.has(s.key));
+    const datumText = (d) => new Date(d).toLocaleDateString("de-CH", { day: "2-digit", month: "2-digit", year: "numeric" });
+    const datumIso = (d) => { const x = new Date(d); return x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0") + "-" + String(x.getDate()).padStart(2, "0"); };
+    function anzeige(s, z) {
+      if (s.html) return s.html(z);
+      if (s.typ === "berechnet") return esc(s.text(z));
+      if (s.typ === "datum") return esc(datumText(z[s.key]));
+      if (s.anzeige) return esc(s.anzeige(z[s.key]));
+      return esc(z[s.key]);
+    }
+    function sortWert(s, z) { return s.typ === "berechnet" ? s.wert(z) : s.typ === "datum" ? +new Date(z[s.key]) : z[s.key]; }
+
+    function zeilen() {
+      const q = $("filter").value.toLowerCase().trim(), st = $("statusfilter").value;
+      let r = tab().zeilen.filter((z) => (!st || z[tab().statusFeld] === st) && (!q || tab().spalten.some((s) => String(s.typ === "berechnet" ? s.text ? s.text(z) : "" : s.typ === "datum" ? datumText(z[s.key]) : z[s.key]).toLowerCase().includes(q))));
+      const so = zs().sort;
+      if (so) { const s = tab().spalten.find((x) => x.key === so.key); r = [...r].sort((a, b) => { const x = sortWert(s, a), y = sortWert(s, b); return (x > y ? 1 : x < y ? -1 : 0) * so.richtung; }); }
+      return r;
+    }
+
+    function zeichnen() {
+      const sp = sichtbareSpalten(), rows = zeilen(), z = zs();
+      const summe = tab().summe(rows);
+      const kopf = `<tr><th class="k" scope="col"><input type="checkbox" id="alle" aria-label="Alle sichtbaren Zeilen wählen" ${rows.length && rows.every((r) => z.auswahl.has(r.id)) ? "checked" : ""}></th>` +
+        sp.map((s) => { const so = z.sort && z.sort.key === s.key ? z.sort.richtung : 0;
+          return `<th scope="col" class="${s.typ === "zahl" || s.zahl ? "zahl" : ""}" ${so ? `aria-sort="${so > 0 ? "ascending" : "descending"}"` : ""}><button type="button" data-sort="${s.key}">${esc(s.titel)}<span class="pfeil" aria-hidden="true">${so < 0 ? "▼" : "▲"}</span></button></th>`; }).join("") + `</tr>`;
+      const koerper = rows.map((r, ri) => `<tr class="${z.auswahl.has(r.id) ? "gewaehlt" : ""}" data-id="${esc(r.id)}" aria-selected="${z.auswahl.has(r.id)}">
+          <td class="k" tabindex="-1" data-r="${ri}" data-c="0"><input type="checkbox" tabindex="-1" aria-label="Zeile wählen" ${z.auswahl.has(r.id) ? "checked" : ""}></td>` +
+        sp.map((s, ci) => { const geaendert = z.original.has(r.id + ":" + s.key);
+          return `<td tabindex="-1" data-r="${ri}" data-c="${ci + 1}" class="${s.typ === "zahl" || s.zahl ? "zahl" : ""} ${s.typ === "berechnet" ? "berechnet" : ""} ${geaendert ? "geaendert" : ""}" ${geaendert ? 'aria-description="geändert"' : ""} ${s.typ === "berechnet" ? 'aria-readonly="true"' : ""}>${anzeige(s, r)}</td>`; }).join("") + `</tr>`).join("");
+      const fuss = `<tr><td class="k"></td>${sp.map((s) => `<td class="${s.typ === "zahl" || s.zahl ? "zahl" : ""}">${summe[s.key] !== undefined ? esc(summe[s.key]) : ""}</td>`).join("")}</tr>`;
+      $("rahmen").innerHTML = `<table class="raster" role="grid" aria-label="${aktiv === "pensen" ? "Pensen 2027/28" : "Aufgaben"}" aria-rowcount="${rows.length + 1}" aria-multiselectable="true"><thead>${kopf}</thead><tbody>${koerper}</tbody><tfoot>${fuss}</tfoot></table>`;
+      $("alle").addEventListener("change", (e) => { rows.forEach((r) => e.target.checked ? z.auswahl.add(r.id) : z.auswahl.delete(r.id)); zeichnen(); });
+      $("rahmen").querySelectorAll("[data-sort]").forEach((b) => b.addEventListener("click", () => {
+        const k = b.dataset.sort; z.sort = z.sort && z.sort.key === k ? (z.sort.richtung > 0 ? { key: k, richtung: -1 } : null) : { key: k, richtung: 1 }; zeichnen();
+      }));
+      band(); knoepfe();
+      fokus.r = Math.min(fokus.r, Math.max(0, rows.length - 1)); fokus.c = Math.min(fokus.c, sp.length);
+      setzeFokus(false);
+    }
+    const zelle = (r, c) => $("rahmen").querySelector(`td[data-r="${r}"][data-c="${c}"]`);
+    function setzeFokus(wirklich = true) {
+      $("rahmen").querySelectorAll("td[tabindex='0']").forEach((t) => t.tabIndex = -1);
+      const t = zelle(fokus.r, fokus.c); if (!t) return;
+      t.tabIndex = 0; if (wirklich) { t.focus(); t.scrollIntoView({ block: "nearest", inline: "nearest" }); }
+    }
+    function band() {
+      const n = zs().auswahl.size;
+      $("auswahlband").hidden = !n;
+      $("auswahlzahl").textContent = n + (n === 1 ? " Zeile" : " Zeilen") + " ausgewählt";
+      $("sammelstatus").innerHTML = tab().statusWerte.map((v) => `<option value="${esc(v)}">${esc(tab().statusText ? tab().statusText(v) : v)}</option>`).join("");
+    }
+    function knoepfe() {
+      const n = zs().original.size;
+      $("rueck").disabled = !zs().rueck.length; $("verwerfen").disabled = !n; $("speichern").disabled = !n;
+      $("speichern").textContent = n ? `Speichern (${n})` : "Speichern";
+      $("stand").textContent = n ? n + " ungespeicherte Änderung" + (n === 1 ? "" : "en") : "alle Änderungen gespeichert";
+    }
+    function filterInit() {
+      $("statusfilter").innerHTML = `<option value="">Alle Status</option>` + tab().statusWerte.map((v) => `<option value="${esc(v)}">${esc(tab().statusText ? tab().statusText(v) : v)}</option>`).join("");
+      $("spaltenmenue").innerHTML = tab().spalten.map((s) => `<label><input type="checkbox" value="${s.key}" ${zs().aus.has(s.key) ? "" : "checked"}>${esc(s.titel)}</label>`).join("");
+    }
+    $("spaltenmenue").addEventListener("change", (e) => { e.target.checked ? zs().aus.delete(e.target.value) : zs().aus.add(e.target.value); zeichnen(); });
+
+    function setzen(zeile, key, wert, mitRueck = true) {
+      const alt = zeile[key]; if (String(alt) === String(wert)) return;
+      const k = zeile.id + ":" + key, z = zs();
+      if (!z.original.has(k)) z.original.set(k, alt);
+      else if (String(z.original.get(k)) === String(wert)) z.original.delete(k);
+      if (mitRueck) z.rueck.push({ id: zeile.id, key, alt });
+      zeile[key] = wert;
+    }
+
+    // Bearbeiten
+    function bearbeiten(start) {
+      const sp = sichtbareSpalten()[fokus.c - 1]; if (!sp) return;
+      if (sp.typ === "berechnet") { U.toast("Berechnetes Feld – nicht bearbeitbar"); return; }
+      const td = zelle(fokus.r, fokus.c), zeile = zeilen()[fokus.r];
+      bearbeitung = { td, zeile, sp };
+      td.classList.add("bearbeiten");
+      let feld;
+      if (sp.typ === "wahl") {
+        td.innerHTML = `<select aria-label="${esc(sp.titel)}">${sp.optionen.map((o) => `<option value="${esc(o)}" ${o === zeile[sp.key] ? "selected" : ""}>${esc(sp.anzeige ? sp.anzeige(o) : o)}</option>`).join("")}</select>`;
+      } else if (sp.typ === "datum") {
+        td.innerHTML = `<input type="date" aria-label="${esc(sp.titel)}" value="${datumIso(zeile[sp.key])}">`;
+      } else {
+        td.innerHTML = `<input type="${sp.typ === "zahl" ? "number" : "text"}" aria-label="${esc(sp.titel)}" ${sp.typ === "zahl" ? `min="${sp.min}" max="${sp.max}" inputmode="numeric"` : ""}>`;
+        td.firstChild.value = start !== undefined ? start : zeile[sp.key];
+      }
+      feld = td.firstChild; feld.focus();
+      if (feld.select && start === undefined && feld.type !== "date") feld.select();
+      feld.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); bearbeitung = null; zeichnen(); setzeFokus(); }
+        else if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); uebernehmen(); bewegen(1, 0); }
+        else if (e.key === "Tab") { e.preventDefault(); e.stopPropagation(); uebernehmen(); bewegen(0, e.shiftKey ? -1 : 1); }
+      });
+      feld.addEventListener("blur", () => { if (bearbeitung && bearbeitung.td === td) { uebernehmen(); } });
+    }
+    function uebernehmen() {
+      if (!bearbeitung) return;
+      const { td, zeile, sp } = bearbeitung; bearbeitung = null;
+      let w = td.firstChild.value;
+      if (sp.typ === "zahl") { w = Math.max(sp.min, Math.min(sp.max, Math.round(+w || 0))); }
+      if (sp.typ === "datum") { const d = new Date(w + "T12:00"); if (isNaN(d)) { zeichnen(); return; } w = d; if (+new Date(zeile[sp.key]) && datumIso(zeile[sp.key]) === datumIso(d)) { zeichnen(); setzeFokus(); return; } }
+      setzen(zeile, sp.key, w);
+      zeichnen(); setzeFokus();
+    }
+    function bewegen(dr, dc) {
+      const rows = zeilen().length, cols = sichtbareSpalten().length;
+      fokus.r = Math.max(0, Math.min(rows - 1, fokus.r + dr));
+      fokus.c = Math.max(0, Math.min(cols, fokus.c + dc));
+      setzeFokus();
+    }
+    function zeileWaehlen(ri, bereich) {
+      const rows = zeilen(), z = zs(), id = rows[ri].id;
+      if (bereich && ankerZeile !== null) { const [a, b] = [Math.min(ankerZeile, ri), Math.max(ankerZeile, ri)]; for (let i = a; i <= b; i++) z.auswahl.add(rows[i].id); }
+      else { z.auswahl.has(id) ? z.auswahl.delete(id) : z.auswahl.add(id); ankerZeile = ri; }
+      zeichnen(); setzeFokus();
+    }
+
+    $("rahmen").addEventListener("click", (e) => {
+      const td = e.target.closest("td[data-r]"); if (!td || bearbeitung) return;
+      fokus = { r: +td.dataset.r, c: +td.dataset.c };
+      if (fokus.c === 0) { zeileWaehlen(fokus.r, e.shiftKey); return; }
+      setzeFokus();
+    });
+    $("rahmen").addEventListener("dblclick", (e) => { const td = e.target.closest("td[data-r]"); if (td && +td.dataset.c > 0) { fokus = { r: +td.dataset.r, c: +td.dataset.c }; bearbeiten(); } });
+    $("rahmen").addEventListener("keydown", (e) => {
+      if (bearbeitung || !e.target.matches("td[data-r]")) return;
+      const k = e.key;
+      if (k === "ArrowDown") { bewegen(1, 0); e.preventDefault(); }
+      else if (k === "ArrowUp") { bewegen(-1, 0); e.preventDefault(); }
+      else if (k === "ArrowRight") { bewegen(0, 1); e.preventDefault(); }
+      else if (k === "ArrowLeft") { bewegen(0, -1); e.preventDefault(); }
+      else if (k === "Home") { fokus.c = e.ctrlKey ? (fokus.r = 0, 1) : 1; setzeFokus(); e.preventDefault(); }
+      else if (k === "End") { if (e.ctrlKey) fokus.r = zeilen().length - 1; fokus.c = sichtbareSpalten().length; setzeFokus(); e.preventDefault(); }
+      else if (k === "Tab") { if (fokus.c < sichtbareSpalten().length || e.shiftKey) { if (!(e.shiftKey && fokus.c === 0)) { bewegen(0, e.shiftKey ? -1 : 1); e.preventDefault(); } } }
+      else if (k === " " && fokus.c === 0) { zeileWaehlen(fokus.r, e.shiftKey); e.preventDefault(); }
+      else if ((k === "Enter" || k === "F2") && fokus.c > 0) { bearbeiten(); e.preventDefault(); }
+      else if ((k === "Delete" || k === "Backspace") && fokus.c > 0) { const sp = sichtbareSpalten()[fokus.c - 1]; if (sp.typ === "text") { bearbeiten(""); e.preventDefault(); } }
+      else if (k.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey && fokus.c > 0 && k !== "/") {
+        const sp = sichtbareSpalten()[fokus.c - 1]; if (sp.typ === "text" || sp.typ === "zahl") { bearbeiten(k); e.preventDefault(); }
+      }
+    });
+    document.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z" && !bearbeitung && !e.target.matches("input,select,textarea")) { e.preventDefault(); $("rueck").click(); }
+    });
+
+    $("rueck").addEventListener("click", () => {
+      const z = zs(), s = z.rueck.pop(); if (!s) return;
+      const zeile = tab().zeilen.find((r) => r.id === s.id); setzen(zeile, s.key, s.alt, false);
+      zeichnen(); setzeFokus(); U.toast("Rückgängig gemacht");
+    });
+    $("verwerfen").addEventListener("click", () => {
+      const z = zs(); z.original.forEach((alt, k) => { const [id, key] = k.split(":"); tab().zeilen.find((r) => r.id === id)[key] = alt; });
+      z.original.clear(); z.rueck = []; zeichnen(); U.toast("Änderungen verworfen");
+    });
+    $("speichern").addEventListener("click", () => { const n = zs().original.size; zs().original.clear(); zs().rueck = []; zeichnen(); U.toast(n + " Änderung" + (n === 1 ? "" : "en") + " gespeichert (Prototyp)"); });
+    $("sammelok").addEventListener("click", () => {
+      const z = zs(), w = $("sammelstatus").value; let n = 0;
+      tab().zeilen.filter((r) => z.auswahl.has(r.id)).forEach((r) => { if (r[tab().statusFeld] !== w) { setzen(r, tab().statusFeld, w); n++; } });
+      zeichnen(); U.toast(n + " Zeile" + (n === 1 ? "" : "n") + " geändert");
+    });
+    $("auswahlweg").addEventListener("click", () => { zs().auswahl.clear(); zeichnen(); });
+    $("filter").addEventListener("input", zeichnen);
+    $("statusfilter").addEventListener("change", zeichnen);
+
+    function wechseln(k) {
+      if (bearbeitung) uebernehmen();
+      aktiv = k; fokus = { r: 0, c: 1 }; ankerZeile = null;
+      $("tab-pensen").setAttribute("aria-selected", k === "pensen"); $("tab-aufgaben").setAttribute("aria-selected", k === "aufgaben");
+      $("rahmen").setAttribute("aria-labelledby", "tab-" + k);
+      $("filter").value = ""; filterInit(); zeichnen();
+    }
+    $("tab-pensen").addEventListener("click", () => wechseln("pensen"));
+    $("tab-aufgaben").addEventListener("click", () => wechseln("aufgaben"));
+
+    // Treffer aus der Suche (Ctrl/⌘ K): Zeile anspringen
+    U.beiOeffnen = (e) => {
+      const k = e.art === "person" ? "pensen" : e.art === "aufgabe" ? "aufgaben" : null;
+      if (!k) return false;
+      if (aktiv !== k) wechseln(k);
+      $("filter").value = ""; $("statusfilter").value = ""; zeichnen();
+      const i = zeilen().findIndex((r) => r.id === e.id); if (i < 0) return false;
+      fokus = { r: i, c: 1 }; setzeFokus(); return true;
+    };
+
+    filterInit(); zeichnen();
+  })();
+  </script>
+</body>
+</html>

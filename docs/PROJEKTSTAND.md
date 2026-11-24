@@ -1,6 +1,6 @@
 # EduKSX-Prototyp – Projektstand
 
-> Stand 2026-11-24: Prototyp EduKSX-Experience (GUI-EX) angelegt (#90), Stil-Schalter und Variante E Cockpit (#92). Zuvor 2026-11-23: Prototyp EduKSX-AI (Interne KI) angelegt (#88). Zuvor 2026-11-20: Umsetzungsgrundlagen nach DB-/API-Standard der Architektur umgestellt (#51). Zuvor 03:45: Umsetzungsgrundlagen für alle fünf Module (`docs/umsetzung/`: Datenbank, API, Pflichtenheft mit Prüfpunkten). Zuvor 00:30: Prototyp EduKSX-Sign (Signatur / Persönliche Ablage) angelegt. Zuvor 2026-11-17 (13:45): Prototyp EduKSX-Time (Stempeln, PWA) angelegt (#19). Zuvor 03:45: Prototyp EduKSX-Codex (Rechtssammlung) ergänzt (#6). Zuvor: Erster Prototyp EduKSX-Staffing (Einsatzplanung) mit Vorgaben Kanton Zürich und Einstiegsseite für GitHub Pages. GitHub-Einstellungen (Labels, Meilensteine, Rulesets) und das Einschalten von Pages stehen noch aus.
+> Stand 2026-11-24: Prototyp EduKSX-Experience (GUI-EX) angelegt (#90), Stil-Schalter und Variante E Cockpit (#92), Variante F Tabelle, Suche überall und Konzept Oberfläche (#93). Zuvor 2026-11-23: Prototyp EduKSX-AI (Interne KI) angelegt (#88). Zuvor 2026-11-20: Umsetzungsgrundlagen nach DB-/API-Standard der Architektur umgestellt (#51). Zuvor 03:45: Umsetzungsgrundlagen für alle fünf Module (`docs/umsetzung/`: Datenbank, API, Pflichtenheft mit Prüfpunkten). Zuvor 00:30: Prototyp EduKSX-Sign (Signatur / Persönliche Ablage) angelegt. Zuvor 2026-11-17 (13:45): Prototyp EduKSX-Time (Stempeln, PWA) angelegt (#19). Zuvor 03:45: Prototyp EduKSX-Codex (Rechtssammlung) ergänzt (#6). Zuvor: Erster Prototyp EduKSX-Staffing (Einsatzplanung) mit Vorgaben Kanton Zürich und Einstiegsseite für GitHub Pages. GitHub-Einstellungen (Labels, Meilensteine, Rulesets) und das Einschalten von Pages stehen noch aus.
 
 ## Umgesetzt
 
@@ -13,13 +13,13 @@
 | Prototyp EduKSX-Time (Zeiterfassung / Stempeln) | Schritt 1: Mobil-App (PWA) Ein-/Ausstempeln (#19), animierte Uhr (#21), Soll-Markierung und gesetzliche Pause (#22, #23), Pausentaste (#24), Symbole Kommen/Gehen (#25), Farben je Zustand (#26) – Prototyp 0.3.4 | 0.1.0 | `prototypen/zeiterfassung/README.md` |
 | Prototyp EduKSX-Sign (Signatur / Persönliche Ablage) | Klickprototyp 0.1.0: Ablage, Abgleich Cloud-Ablage, PDF-/Word-/Excel-Bearbeitung, Signaturprozess, Versiegeln, Eingang aus den Modulen | 0.1.0 | `prototypen/signatur/README.md` |
 | Prototyp EduKSX-AI (Interne KI) | Klickprototyp 0.1.0 (#88): Chat mit Schutzbedarf und Betriebsort, Personendaten-Prüfung, Assistenten, Wissen, Verwaltung von Modellen, Betriebsorten (interner Server, Schweizer Anbieter), Rollen, Datenschutz, Systemzustand | 0.1.0 | `prototypen/interne-ki/README.md` |
-| Prototyp EduKSX-Experience (GUI-EX) | Klickprototyp 0.2.0 (#90, #92): fünf Oberflächen A Fokus, B Kacheln, C Zeitstrahl, D Arbeitsfläche, E Cockpit mit gleichem Inhalt; Stil-Schalter Standard/Neo-Dunkel/Glas/Clay; Bewertung je Variante | – | `prototypen/gui-ex/README.md` |
+| Prototyp EduKSX-Experience (GUI-EX) | Klickprototyp 0.3.0 (#90, #92, #93): sechs Oberflächen A Fokus, B Kacheln, C Zeitstrahl, D Arbeitsfläche, E Cockpit, F Tabelle mit gleichem Inhalt; Suche per Ctrl/⌘ K überall; Stil-Schalter Standard/Neo-Dunkel/Glas/Clay; Bewertung je Variante | – | `docs/KONZEPT-OBERFLAECHE.md`, `prototypen/gui-ex/README.md` |
 | Umsetzungsgrundlagen der Module (Staffing, Flow, Codex, Sign, Time, AI) | Entwurf nach DB-Standard 1.3 / API-Standard 1.2 (englische Namen, deutsche Beschreibungen): Datenbankstruktur (PostgreSQL), OpenAPI 3.1, Anforderungskatalog/Pflichtenheft/Prüfpunkte; erzeugt mit `tools/umsetzung_bauen.py`, geprüft mit `tools/test_umsetzung.py` | – | `docs/umsetzung/README.md` |
 | Einstiegsseite GitHub Pages | fertig, Pages noch einzuschalten | 0.1.0 | `tools/seite_bauen.py` |
 
 ## Offen bzw. geplant
 
-- EduKSX-Experience: Varianten testen und bewerten; Entscheid, was in EduKSX-UI übernommen wird; Label `prototyp:ex` nach Merge an #90, Meilenstein anlegen
+- EduKSX-Experience: Varianten testen und bewerten; Entscheide E1–E5 in `docs/KONZEPT-OBERFLAECHE.md` (Stile, Wahl, Arbeitsfläche, Startseite, Akzentfarbe je Schule)
 - EduKSX-AI: eigenes Icon «ai» in EduKSX-UI; Betriebsmodell (eigener Server, gemietete GPU, Inferenz-API); Datenschutzprüfung der Schweizer Anbieter; Gateway und pgvector ZU PRÜFEN
 - Meilenstein «0.1.0 – Grundgerüst»: Issues noch anzulegen (GitHub-Teil von apply.py)
 - EduKSX-Codex: Websites und CMS der 160 Gemeinden erfassen, 60 Schulgemeinden ergänzen, Codex-Normalform festlegen (noch kein Issue, erst nach Freigabe)
