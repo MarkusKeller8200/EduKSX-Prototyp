@@ -193,8 +193,8 @@ Heute steht die Quelle als Freitext («GG § 18; FD 1.1.2»). Im Betrieb wird si
 
 - `source_id` → Erlass mit `codex_reference` (z. B. `ZH:LS:131.1`), `source_location` = Stelle («§ 18 Abs. 2»),
   `source_checked_version` = Fassung bei der letzten Prüfung («Nachtrag 132»).
-- Freitext bleibt nur für Merkblätter und Arbeitshilfen von Behörden (z. B. Volksschulamt, SUVA) und für schuleigene
-  Unterlagen (Funktionendiagramm, Prozessliste, ICT-Jahresplanung).
+- Freitext bleibt nur für schuleigene Unterlagen (Funktionendiagramm, Prozessliste, ICT-Jahresplanung); Merkblätter und
+  Arbeitshilfen von Behörden (Volksschulamt, SUVA, Gemeindeamt) kommen nach Codex (E23).
 - Datenübernahme: Die Freitexte werden mit `/citations/resolution` von Codex aufgelöst; was nicht eindeutig ist, kommt
   auf die Prüfliste.
 
@@ -203,8 +203,8 @@ Heute steht die Quelle als Freitext («GG § 18; FD 1.1.2»). Im Betrieb wird si
 1. Codex übernimmt eine neue Fassung (nach Bestätigung durch die Redaktion) und sendet `codex.act_version.created`.
 2. Flow nimmt das Ereignis über `POST /api/v1/org/source-changes` an (Servicekonto); gleiche `codex_event_id` wird nicht
    doppelt verarbeitet.
-3. Flow sucht die Vorlagen mit Schritten auf diesem Erlass, deren geprüfte Fassung älter ist, und macht deren Review
-   fällig. **Laufende Abläufe werden nicht verändert.**
+3. Flow sucht die Vorlagen mit Schritten auf diesem Erlass, deren geprüfte Fassung älter ist **und deren zitierter
+   Paragraf sich geändert hat** (E21), und macht deren Review fällig. **Laufende Abläufe werden nicht verändert.**
 4. Prüfauftrag an die Prozessverantwortlichen der Vorlage (E5); im Review wird die geprüfte Fassung je Schritt
    nachgeführt.
 
@@ -229,24 +229,37 @@ Befunde aus dem Abgleich (für Codex):
 | Nr. | Frage | Optionen | Empfehlung | Status |
 |---|---|---|---|---|
 | E20 | Wer führt Erlasse und Fassungen? | Flow / Codex | Codex führt, Flow speichert nur Verweis, Stelle und geprüfte Fassung | EMPFOHLEN |
-| E21 | Wann wird ein Review fällig? | jede neue Fassung des Erlasses / nur wenn die zitierte Stelle geändert hat | zunächst jede neue Fassung (ein Sammelhinweis je Erlass); Stellen-genau, sobald Codex Unterschiede je § liefert (Codex-Konzept «Textfassung», OFFEN) | OFFEN |
+| E21 | Wann wird ein Review fällig? | jede neue Fassung des Erlasses / nur wenn die zitierte Stelle geändert hat | **nur wenn der zitierte Paragraf geändert hat.** Setzt voraus, dass Codex Unterschiede je § liefert (Codex-Konzept «Textfassung», bisher OFFEN – wird damit Voraussetzung). Schritte ohne Stellenangabe: jede Fassung des Erlasses gilt als Änderung (ZU PRÜFEN). Im Prototyp ohne §-Unterschiede nur auf Erlass-Ebene simuliert (#119) | BESCHLOSSEN 24.11.2026 |
 | E22 | Wer erhält den Prüfauftrag? | Prozessverantwortliche der Vorlage / Empfänger aus Codex (CDX-F-32) | Prozessverantwortliche (E5); Codex informiert weiterhin seine eigenen Empfänger | EMPFOHLEN |
-| E23 | Merkblätter und Arbeitshilfen von Behörden (VSA, SUVA, Gemeindeamt) in Codex aufnehmen? | ja, als eigene Klasse / nein, bleibt Freitext in Flow | mit den Quellenklassen A–F von Codex abstimmen | OFFEN |
+| E23 | Merkblätter und Arbeitshilfen von Behörden (VSA, SUVA, Gemeindeamt) in Codex aufnehmen? | ja, als eigene Klasse / nein, bleibt Freitext in Flow | **ja** – in Codex aufnehmen; Einordnung in die Quellenklassen A–F von Codex ZU PRÜFEN; Flow verweist dann auch bei Merkblättern auf Codex (#121) | BESCHLOSSEN 24.11.2026 |
 | E24 | Gemeindeeigene Erlasse | in Flow als Freitext / über die kommunale Sammlung in Codex | über Codex (kommunale Sammlung der Organisation); löst die meisten «ZU PRÜFEN» | EMPFOHLEN |
 
 ## 6. Issues
 
-`gh` ist in dieser Umgebung nicht angemeldet; die Issues werden nachgetragen, sobald es geht (OFFEN).
+Nachgetragen am 24.11.2026; umgesetzte Stände stehen auf `_3 Beta-Test` (Testliste im Issue).
 
 | Issue | Inhalt | Status |
 |---|---|---|
-| – | Stufe 1: Aufgabentypen, Verzweigung, Unterprozess | im Chat freigegeben |
-| – | Stufe 1: Auslöser und Deduplizierung | im Chat freigegeben |
-| – | Stufe 1: Fristarten und Eskalation | im Chat freigegeben |
-| – | Stufe 1: Eingriffe und Journal | im Chat freigegeben |
+| [#107](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/107) | 0.7.0: Stufe 1 der Prozess-Engine | Beta-Test |
+| [#108](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/108) | 0.8.0: Menü Einstellungen mit Katalogen | Beta-Test |
+| [#109](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/109) | 0.9.0: Einstellungen mit Kalender und Funktionendiagramm verknüpft | Beta-Test |
+| [#110](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/110) | 0.10.0: Prozessverantwortung, Eskalation, Kompetenzmerkmale | Beta-Test |
+| [#111](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/111) | 0.11.0: Stufe 2 der Prozess-Engine | Beta-Test |
+| [#112](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/112) | 0.12.0/0.13.0: Katalog Periode, Tooltips, Farbe und Label | Beta-Test |
+| [#113](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/113) | 0.14.0: Mehrjährige Termine im Jahreskalender (E19) | Beta-Test |
+| [#114](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/114) | 0.15.0: Stufe 3 – Prozesslenkung, Reviews, Prozesslandkarte | Beta-Test |
+| [#115](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/115) | 0.16.0: Stufe 3 – Rechtsgrundlagen, Versionsvergleich, Vorlagenbibliothek | Beta-Test |
+| [#116](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/116) | 0.17.0: Rechtsgrundlagen aus EduKSX-Codex | Beta-Test |
+| [#117](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/117) | Entscheid E19: Periode und Intervall: getrennt mit Verknüpfung? | zu entscheiden |
+| [#118](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/118) | Entscheid E20: Wer führt Erlasse und Fassungen – Codex oder Flow? | zu entscheiden |
+| [#119](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/119) | Entscheid E21: Wann wird ein Review nach einer Rechtsänderung fällig? | beschlossen 24.11.2026 |
+| [#120](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/120) | Entscheid E22: Wer erhält den Prüfauftrag bei einer neuen Fassung? | zu entscheiden |
+| [#121](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/121) | Entscheid E23: Merkblätter und Arbeitshilfen von Behörden in EduKSX-Codex aufnehmen? | beschlossen 24.11.2026 |
+| [#122](https://github.com/MarkusKeller8200/EduKSX-Prototyp/issues/122) | Entscheid E24: Gemeindeeigene Erlasse über die kommunale Sammlung in Codex verweisen? | zu entscheiden |
 
 ## 7. Verlauf
 
+- 2026-11-24: E21 (nur bei geändertem Paragrafen) und E23 (Merkblätter in Codex) beschlossen; Issues #107–#122 nachgetragen.
 - 2026-11-24: Rechtsgrundlagen als Teil von EduKSX-Codex gekennzeichnet, Abgleich und Schnittstelle (0.17.0, Abschnitt 5b; E20–E24).
 - 2026-11-24: Stufe 3 umgesetzt (0.15.0 Prozesslenkung, Reviews, Prozesslandkarte; 0.16.0 Rechtsgrundlagen, Versionsvergleich, Vorlagenbibliothek) – während Abwesenheit der Projektleitung, zur Abnahme.
 - 2026-11-24: Katalog Periode und Tooltips (0.12.0), E19 empfohlen.

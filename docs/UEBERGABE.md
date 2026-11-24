@@ -55,9 +55,9 @@ gelegentlich gekürzt nach `PROJEKTSTAND-ARCHIV.md` verschieben.
 - **0.17.0 (auf Wunsch, 08:15):** Rechtsgrundlagen als Teil von EduKSX-Codex gekennzeichnet; Codex-Auszug
   (`tools/flow_codex_auszug.py`), Abgleich neuer Fassungen, Schnittstelle im Konzept 5b (E20–E24 zu entscheiden).
 - **Infrastruktur:** `seite.yml` wiederholt das Bereitstellen einmal nach 60 s (zeitweise «No artifacts named
-  github-pages»). Pushes gingen direkt auf `main` und umgingen die Regel «nur über Pull Request» – `gh` war nicht
-  angemeldet; künftig Branch + PR.
-- **Offen:** Issues für 0.7–0.16 nachtragen (sobald `gh` angemeldet); fachliche Prüfung gemäss PRUEFLISTE.md;
+  github-pages»). Pushes bis 0.17.0 gingen direkt auf `main` (Regel «nur über Pull Request» umgangen); ab jetzt Branch + PR.
+- **Issues:** #107–#116 (0.7–0.17, Beta-Test), #117–#122 (Entscheide E19–E24; E21, E23 beschlossen). `gh api` (REST) funktioniert, GraphQL nicht – PRs über `gh api …/pulls`.
+- **Offen:** fachliche Prüfung gemäss PRUEFLISTE.md;
   Stufe 4 (Kennzahlen) erst mit Personalvertretung und Datenschutz; Organisationseinheiten, Funktionspostfächer,
   ICS-Abo mit fester Adresse (braucht Server); Prototyp EduKSX-Organization (E15) nach Freigabe.
 - **Testen:** Playwright-Szenarien liegen nicht im Repo (nur in der Sitzung); `python3 tools/pruefen.py` grün

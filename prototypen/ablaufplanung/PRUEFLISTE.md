@@ -1,6 +1,6 @@
 # Prüfliste EduKSX-Flow – fachliche Kontrolle
 
-Erzeugt aus den Daten des Prototyps 0.17.0 mit `node werkzeuge/pruefliste.js` – nicht von Hand ändern, sondern die Daten anpassen und neu erzeugen.
+Erzeugt aus den Daten des Prototyps 0.17.1 mit `node werkzeuge/pruefliste.js` – nicht von Hand ändern, sondern die Daten anpassen und neu erzeugen.
 Zweck: Was vor einer produktiven Nutzung fachlich (Schulverwaltung, Ressortvorstand, ggf. Rechtsdienst) zu prüfen ist. Keine Rechtsberatung.
 
 Abhaken: ☐ offen · ☑ geprüft (mit Kürzel und Datum in der Spalte «geprüft»).

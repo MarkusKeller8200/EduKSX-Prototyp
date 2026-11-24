@@ -7,7 +7,7 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v6";
-  const VERSION = "0.17.0";
+  const VERSION = "0.17.1";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
@@ -1415,7 +1415,7 @@
     const e = CODEX.erlasse[key];
     if (!e) return `<span class="small muted">–</span>`;
     if (e.art === "intern") return `<span class="badge neutral">schuleigen</span><div class="small muted">bleibt in Flow</div>`;
-    if (e.art === "merkblatt") return `<span class="badge info">Merkblatt</span><div class="small muted">Aufnahme in Codex offen</div>`;
+    if (e.art === "merkblatt") return `<span class="badge info">Merkblatt</span><div class="small muted">wird in Codex aufgenommen (E23)</div>`;
     const rg = e.rechtsgrundlagen || [];
     return `<a href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.ordnungsnummer)} · ${esc(e.fassung)}</a>
       <div class="small muted">publiziert ${esc(datumIso(e.publiziert))} · ${e.fassungen} Fassungen (${esc(e.sammlung)})</div>
@@ -1445,7 +1445,7 @@
       <div class="formzeile"><label class="feld">Rückwärtssuche (z. B. «GG § 18», «VVO § 100», «UVG»)<input type="search" data-aktion="recht-suche" value="${esc(RECHT_SUCHE)}" style="min-width:20rem"></label></div>
       ${RECHT_SUCHE ? `<div class="karte" style="margin-bottom:1rem"><h3>${treffer.length} Schritte mit «${esc(RECHT_SUCHE)}»</h3><ul class="infoliste">${treffer.slice(0, 60).map(([v, s]) => `<li><a href="#/vorlage/${esc(v.id)}/liste">${esc(v.titel)}</a>: ${esc(s.titel)} <span class="small muted">${quelleHtml(s.quelle)}</span></li>`).join("") || `<li class="muted">Keine Treffer.</li>`}</ul></div>` : ""}
       <div class="karten"><div class="karte"><div class="zahl">${Object.keys(QV).length}</div><div class="titel">Quellen im Verzeichnis</div></div><div class="karte"><div class="zahl">${offen.length}</div><div class="titel">${offen.length ? "⚠ " : ""}Schritte ohne geprüfte Grundlage</div></div><div class="karte"><div class="zahl">${(S.rechtsaenderungen || []).length}</div><div class="titel">gemeldete Änderungen</div></div><div class="karte"><div class="zahl">${neu.length}</div><div class="titel">${neu.length ? "⚠ " : ""}neue Fassungen aus Codex</div></div></div>
-      <section style="margin-bottom:1.25rem"><h2>Abgleich mit EduKSX-Codex</h2><p class="small muted">Erlasse, deren aktuelle Fassung nach dem letzten Review einer Vorlage publiziert wurde. Im Betrieb meldet Codex das selbst; übernehmen heisst: Review der betroffenen Vorlagen fällig – laufende Abläufe bleiben unverändert.</p>
+      <section style="margin-bottom:1.25rem"><h2>Abgleich mit EduKSX-Codex</h2><p class="small muted">Erlasse, deren aktuelle Fassung nach dem letzten Review einer Vorlage publiziert wurde. Im Betrieb meldet Codex das selbst, und ein Review wird nur fällig, wenn sich der zitierte Paragraf geändert hat (Entscheid E21); der Prototyp kennt keine Unterschiede je Paragraf und zeigt deshalb jede neue Fassung. Übernehmen heisst: Review der betroffenen Vorlagen fällig – laufende Abläufe bleiben unverändert.</p>
         ${neu.length ? `<ul class="infoliste">${neu.map(([k, vs]) => { const e = CODEX.erlasse[k]; return `<li><strong>${esc(k)}</strong> ${esc(e.fassung)}, publiziert ${esc(datumIso(e.publiziert))} – ${vs.length} Vorlagen mit älterem Review <span class="small muted">(${vs.map((v) => esc(v.titel)).join("; ")})</span> ${darf ? `<button class="btn klein" data-aktion="codex-fassung" data-key="${esc(k)}">Übernehmen</button>` : ""}</li>`; }).join("")}</ul>` : `<p class="small muted">Alle Vorlagen sind auf dem Stand der aktuellen Fassungen.</p>`}</section>
       <section><h2>Quellenverzeichnis und Verwendung</h2><div class="tabelle-wrap"><table><thead><tr><th>Quelle</th><th>Verwendet in</th><th>EduKSX-Codex</th><th>Offen</th><th></th></tr></thead><tbody>${zeilen}</tbody></table></div></section>
       <section style="margin-top:1.25rem"><h2>Ohne geprüfte Rechtsgrundlage (${offenV.length} Vorlagen)</h2><ul class="infoliste">${offenV.map((v) => `<li><a href="#/vorlage/${esc(v.id)}/liste">${esc(v.titel)}</a> <span class="small muted">${offen.filter(([x]) => x === v).length} Schritte</span></li>`).join("")}</ul></section>

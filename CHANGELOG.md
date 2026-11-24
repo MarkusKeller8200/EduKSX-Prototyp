@@ -8,6 +8,8 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **EduKSX-Flow 0.17.1 (24.11.2026):** Entscheide E21 (Review nur bei geändertem Paragrafen) und E23 (Merkblätter von
+  Behörden in EduKSX-Codex) beschlossen und auf der Seite «Rechtsgrundlagen» vermerkt; Issues #107–#122 nachgetragen.
 - **EduKSX-Flow 0.17.0 – Rechtsgrundlagen aus EduKSX-Codex (24.11.2026):** Seite «Rechtsgrundlagen» als Teil von
   EduKSX-Codex gekennzeichnet (Quellen nicht neu recherchiert, sondern aus den Vorlagen); je Quelle Erlass, aktuelle
   Fassung und Rechtsgrundlagen-Nr. aus einem Auszug des Codex-Prototyps (`tools/flow_codex_auszug.py`); «Abgleich mit
