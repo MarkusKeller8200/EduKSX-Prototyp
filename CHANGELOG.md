@@ -8,6 +8,9 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **EduKSX-Flow 0.14.0 – Mehrjährige Termine (24.11.2026):** Jahreskalender mit «Wiederholung alle n Jahre ab Jahr»
+  für jährliche und Schuljahrestermine; zur Wahl stehen die aktiven Perioden mit Wert unter 1 (Alle 2–5 Jahre).
+  Beispiele: ICT-Konzept überarbeiten (alle 2 Jahre), Ersatzbeschaffung persönliche Geräte (alle 5 Jahre).
 - **EduKSX-Flow 0.13.0 – Farbe und Label (24.11.2026):** alle Einstellungen mit Farbe; daraus wird ein Label erzeugt
   (Kürzel auf der Farbe, Schrift schwarz oder weiss nach Kontrast, Tooltip als Titel) mit Vorschau in der Tabelle;
   Funktionen erscheinen als farbige Rollen-Labels, Kompetenzen als Labels in der Legende des Funktionendiagramms.

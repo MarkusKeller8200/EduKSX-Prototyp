@@ -7,7 +7,7 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v6";
-  const VERSION = "0.13.0";
+  const VERSION = "0.14.0";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;

@@ -170,7 +170,7 @@ und Aufgabenbereichen (gruppiert nach Hauptbereichen), je mit Kürzel/Nr., Bezei
 | E15 | Wohin gehört das Funktionendiagramm? | Flow / EduKSX-Core / eigenes Modul (EduKSX-Competence bzw. EduKSX-Organization) | eigenes Modul **EduKSX-Organization** (Funktionendiagramm, Organigramm, Stellenbeschreibungen); Flow, Staffing, Ident nutzen es. Im Prototyp bleibt es vorerst in Flow; Modulname ZU PRÜFEN | BESCHLOSSEN 24.11.2026 |
 | E16 | Aufgabenbereiche (23 Hauptbereiche) als Nummerierung des Funktionendiagramms | ersetzen / zuordnen | zuordnen: Aufgaben behalten ihre Nr., gruppiert nach Hauptbereich (0.9.0); Zuordnung der Muster-Nummern ZU PRÜFEN | BESCHLOSSEN 24.11.2026 |
 | E17 | Zeitpunkte und Intervalle steuern die Auswahl der Zeitregeln im Kalender | ja / nein | ja (0.9.0) | BESCHLOSSEN 24.11.2026 |
-| E19 | Periode und Intervall | zusammenlegen / getrennt mit Verknüpfung | getrennt: Intervall = Zeitregel im Kalender (wann genau), Periode = Häufigkeit pro Jahr für Planung und Berechnung (Wert); Intervall verweist auf eine Periode. Mehrjährige Perioden (2J–5J) als Zeitregel im Kalender: OFFEN | EMPFOHLEN |
+| E19 | Periode und Intervall | zusammenlegen / getrennt mit Verknüpfung | getrennt: Intervall = Zeitregel im Kalender (wann genau), Periode = Häufigkeit pro Jahr für Planung und Berechnung (Wert); Intervall verweist auf eine Periode. Mehrjährige Perioden (2J–5J) als Wiederholung «alle n Jahre ab Jahr» im Kalender (0.14.0; während Abwesenheit der Projektleitung umgesetzt, zur Bestätigung) | EMPFOHLEN |
 | E18 | Plausibilitätsprüfung (fehlender Entscheid, fehlende Ausführung, Konflikt, Funktionstrennung) | Stufe 2 / 3 | Stufe 3 | EMPFOHLEN |
 
 ## 6. Issues

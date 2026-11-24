@@ -145,6 +145,20 @@
       if (z.am) return { von: `${y}-${z.am}`, bis: `${y}-${z.am}` };
       return { von: `${y}-${z.von}`, bis: `${y}-${z.bis}` };
     }
+    /**
+     * Mehrjährige Wiederholung (Konzept E19): «alle n Jahre ab Jahr»; massgebend ist das Kalenderjahr des Termins.
+     */
+    function zyklusPasst(ev, a) {
+      const zy = ev.zyklus;
+      if (!zy || !(zy.jahre > 1)) return true;
+      const y = Number(a.slice(0, 4));
+      return (((y - Number(zy.ab || y)) % zy.jahre) + zy.jahre) % zy.jahre === 0;
+    }
+    /** Mehrjährige Perioden aus Einstellungen › Periode (Wert < 1, z. B. 0,5 = alle 2 Jahre). */
+    function mehrjahresPerioden(aktuell) {
+      const l = ((S().einstellungen && S().einstellungen.perioden) || []).filter((p) => Number(p.wert) > 0 && Number(p.wert) < 1 && (p.aktiv || p.kuerzel === aktuell));
+      return l.map((p) => ({ kuerzel: p.kuerzel, name: p.name, jahre: Math.round(1 / Number(p.wert)), aktiv: p.aktiv }));
+    }
     /** Alle Vorkommen eines Ereignisses, die den Zeitraum [von, bis] berühren. */
     function vorkommenZwischen(ev, von, bis) {
       const z = ev.zeit, out = [];
@@ -158,7 +172,7 @@
           while (!istSchultag(d) && n++ < 60) d = addTage(d, schritt);
           if (n <= 60) { info = `${info ? info + " · " : ""}verschoben von ${datumKurz(a)} (${grund(a)})`; a = b = d; }
         }
-        if (b >= von && a <= bis && (!ev.jahr || Number(a.slice(0, 4)) === ev.jahr)) out.push({ ev, von: a, bis: b, info: info || "", key: ev.id + "|" + a });
+        if (b >= von && a <= bis && (!ev.jahr || Number(a.slice(0, 4)) === ev.jahr) && zyklusPasst(ev, a)) out.push({ ev, von: a, bis: b, info: info || "", key: ev.id + "|" + a });
       };
       if (!r) {
         for (let y = Number(von.slice(0, 4)) - 1; y <= Number(bis.slice(0, 4)) + 1; y++) { const o = jaehrlichIm(ev, y); add(o.von, o.bis); }
@@ -211,9 +225,12 @@
     }
 
     const EINHEIT = { tage: ["Tag", "Tage"], wochen: ["Woche", "Wochen"], monate: ["Monat", "Monate"] };
+    const zeitregelOhneZyklus = (ev) => zeitregel(Object.assign({}, ev, { zyklus: null }));
     function zeitregel(ev) {
       const z = ev.zeit;
-      const w = ev.jahr ? `nur ${ev.jahr}` : "jährlich";
+      const w = ev.jahr ? `nur ${ev.jahr}` : ev.zyklus && ev.zyklus.jahre > 1 ? `alle ${ev.zyklus.jahre} Jahre ab ${ev.zyklus.ab}` : "jährlich";
+      const zp = ev.zyklus && ev.zyklus.jahre > 1 && z.regel === "stichtag" ? `alle ${ev.zyklus.jahre} Jahre ab ${ev.zyklus.ab}: ` : "";
+      if (zp) return zp + zeitregelOhneZyklus(ev);
       switch (z.regel) {
         case "stichtag": {
           const n = Number(z.versatz || 0), e = EINHEIT[z.einheit || "tage"];
@@ -701,6 +718,8 @@
         <label class="feld">Bezeichnung<input type="text" data-k="titel" value="${esc(ev.titel)}" style="width:100%"></label>
         <div class="formzeile" style="margin-top:.6rem">
           <label class="feld">Bereich${sel("bereich", Object.entries(B).map(([b, v]) => [b, v[0]]), ev.bereich)}</label>
+          ${["q", "kw", "am", "zeitraum", "stichtag"].includes(art) && !ev.jahr && mehrjahresPerioden(ev.zyklus && ev.zyklus.periode).length ? `<label class="feld">Wiederholung${sel("zyklus", [["", "jedes Jahr"]].concat(mehrjahresPerioden(ev.zyklus && ev.zyklus.periode).map((p) => [p.kuerzel, `${p.name} (${p.kuerzel})${p.aktiv ? "" : " (inaktiv)"}`])), (ev.zyklus && ev.zyklus.periode) || "", true)}</label>
+          ${ev.zyklus && ev.zyklus.jahre > 1 ? `<label class="feld">ab Jahr<input type="number" data-k="zyklusAb" value="${esc(ev.zyklus.ab)}" style="width:6rem"></label>` : ""}` : ""}
           <label class="feld">Gültig${sel("jahr", [["", "jedes Jahr"]].concat(artErlaubt("jahr") || (aktiv("intervalle") && aktiv("intervalle").has("jahr")) || ev.jahr ? [[j0, `nur ${j0}`], [j0 + 1, `nur ${j0 + 1}`]] : []), ev.jahr || "")}</label>
         </div>
         <fieldset><legend>Zeitregel</legend><div class="formzeile">
@@ -747,6 +766,9 @@
       else if (art === "woechentlich") ev.zeit = { regel: art, wochentag: gleich ? Number(wert("wochentag", 1)) : wochentag(basis) };
       else ev.zeit = { regel: art };
       ev.ferien = SERIE.includes(art) ? "" : wert("ferienregel", ev.ferien || "");
+      const zk = ["q", "kw", "am", "zeitraum", "stichtag"].includes(art) && !ev.jahr ? wert("zyklus", (ev.zyklus && ev.zyklus.periode) || "") : "";
+      const zper = zk && mehrjahresPerioden(zk).find((p) => p.kuerzel === zk);
+      ev.zyklus = zper ? { periode: zk, jahre: zper.jahre, ab: Number(wert("zyklusAb", (ev.zyklus && ev.zyklus.ab) || y0)) || y0 } : null;
       ev.rollen = {};
       d.querySelectorAll("[data-rolle]").forEach((s) => { if (s.value) ev.rollen[s.dataset.rolle] = s.value; });
     }

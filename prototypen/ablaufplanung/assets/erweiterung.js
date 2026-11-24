@@ -130,6 +130,12 @@
   setze("ictsw", 5, { titel: "Entscheid Ressort und Schulleitung (beide)", mehrfach: { rollen: ["RV", "SL"], quorum: "alle" } });
   D.VERTRETUNGEN = [{ id: "V1", rolle: "RV", vertretung: "SPr", vonTage: -2, bisTage: 5, grund: "Ferien (erfunden)" }];
 
+  // ------------------------------------------------------------ Mehrjährige Termine (Konzept E19)
+  D.EREIGNISSE.push(
+    { id: "kz1", titel: "ICT-Konzept überarbeiten", bereich: "budget", zeit: { q: 1 }, jahr: null, zyklus: { periode: "2J", jahre: 2, ab: 2027 }, rollen: { SPF: "E", SL: "M" }, quelle: "beispiel", flow: null, teil: [], notiz: "Periode «Alle 2 Jahre» (überarbeiten Konzepte)." },
+    { id: "kz2", titel: "Ersatzbeschaffung persönliche Geräte Lehrpersonen", bereich: "beschaffung", zeit: { regel: "stichtag", anker: "schuljahreswechsel", versatz: -6, einheit: "monate" }, jahr: null, zyklus: { periode: "5J", jahre: 5, ab: 2028 }, rollen: { SPF: "E", SV: "M" }, quelle: "beispiel", flow: "beschaffung", teil: [], notiz: "Periode «Alle 5 Jahre» (Ersatzbeschaffung, Ausserbetriebnahme persönlicher Geräte)." },
+  );
+
   // ------------------------------------------------------------ Weitere Testabläufe (erfundene Angaben)
   D.LAEUFE.push(
     { vorlage: "ictsw", tageBisStichtag: 45, kontext: { person: "Lernplattform Mathematik", daten: "ja" }, erledigt: ["ictsw1", "ictsw2", "ictsw3", "ictsw4"] },
