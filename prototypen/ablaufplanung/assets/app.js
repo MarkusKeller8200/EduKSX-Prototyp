@@ -7,7 +7,7 @@
   "use strict";
 
   const SPEICHER = "eduksx-flow-prototyp-v6";
-  const VERSION = "0.14.0";
+  const VERSION = "0.15.0";
   const EINSTIEG = "https://markuskeller8200.github.io/EduKSX-Prototyp/"; // übergeordnete Einstiegsseite aller Prototypen
   const D = window.FLOW_DATEN;
   const ROLLEN = D.ROLLEN;
@@ -710,6 +710,8 @@
     protokoll: ico('<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h6M9 16h6"/>'),
     kalender: ico('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M7 14h3M14 14h3M7 17.5h3"/>'),
     ausloeser: ico('<path d="M13 2L4.5 13.5H12L11 22l8.5-11.5H12z"/>'),
+    landkarte: ico('<rect x="3" y="3" width="18" height="5" rx="1"/><rect x="3" y="10" width="18" height="5" rx="1"/><rect x="3" y="17" width="18" height="4" rx="1"/><path d="M8 5.5h.01M8 12.5h.01M12 12.5h.01M8 19h.01"/>'),
+    reviews: ico('<path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 4v4h4"/><path d="M9 12l2 2 4-4"/>'),
     vertretungen: ico('<circle cx="8" cy="8" r="3"/><path d="M3 19c.5-3 2.6-5 5-5"/><path d="M14 13h7M18 10l3 3-3 3"/>'),
     "einstellungen/kompetenzen": ico('<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="1.8" fill="currentColor"/><circle cx="15" cy="12" r="1.8" fill="currentColor"/><circle cx="10" cy="18" r="1.8" fill="currentColor"/>'),
     "einstellungen/funktionen": ico('<circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3 2.8-5 5.5-5s4.9 2 5.5 5"/><circle cx="17" cy="9" r="2.3"/><path d="M15.5 14.2c2.3.2 4 1.9 4.5 4.8"/>'),
@@ -733,6 +735,9 @@
     ["gruppe", "Automatisierung"],
     ["ausloeser", "Auslöser"],
     ["vorgaenge", "Vorgänge der Module"],
+    ["gruppe", "Qualität"],
+    ["landkarte", "Prozesslandkarte"],
+    ["reviews", "Prozessreviews"],
     ["gruppe", "Nachvollziehen"],
     ["protokoll", "Aufrufprotokoll"],
     ["gruppe", "Einstellungen"],
@@ -1046,7 +1051,7 @@
       <section style="margin-top:1.25rem"><h2>Demnächst (21 Tage)</h2><div class="tabelle-wrap"><table><thead><tr><th>Status</th><th>Schritt</th><th>Frist</th><th>Aufruf</th><th></th></tr></thead><tbody>${bald.map((x) => zeile(x, false)).join("") || `<tr><td colspan="5" class="muted">Keine anstehenden Schritte.</td></tr>`}</tbody></table></div></section>
       <section style="margin-top:1.25rem"><h2>Termine aus dem Jahreskalender</h2><p class="small muted">Ereignisse der nächsten 4 Wochen (und überfällige), bei denen ${esc(ROLLEN[S.rolle])} laut Jahresplanung entscheidet oder verantwortlich ist.</p>${kalListe(KAL.demnaechst(28, true))}</section>
       <section style="margin-top:1.25rem"><h2>Zur Information</h2><p class="small muted">Mitteilungen an ${esc(ROLLEN[S.rolle])} – entspricht «I» im Funktionendiagramm bzw. «Kommunikation an» in der Prozessliste.</p>
-        <ul class="infoliste">${info.map((h) => `<li><span class="small muted">${datumKurz(h.tag)}</span> ${esc(h.text)} <a class="small" href="#/lauf/${esc(h.lauf)}">Ablauf</a></li>`).join("") || `<li class="muted">Keine Mitteilungen.</li>`}</ul></section>`;
+        <ul class="infoliste">${info.map((h) => `<li><span class="small muted">${datumKurz(h.tag)}</span> ${esc(h.text)} ${h.lauf ? `<a class="small" href="#/lauf/${esc(h.lauf)}">Ablauf</a>` : ""}</li>`).join("") || `<li class="muted">Keine Mitteilungen.</li>`}</ul></section>`;
   }
 
   function kalListe(liste) {
@@ -1210,10 +1215,12 @@
         <button role="tab" aria-selected="${reiter === "bild"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/bild">Ablaufbild</button>
         <button role="tab" aria-selected="${reiter === "liste"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/liste">Schritte (${v.schritte.length})</button>
         <button role="tab" aria-selected="${reiter === "felder"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/felder">Kontextfelder</button>
+        <button role="tab" aria-selected="${reiter === "prozess"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/prozess">Prozessblatt</button>
         <button role="tab" aria-selected="${reiter === "ausloeser"}" data-aktion="reiter" data-ziel="#/vorlage/${esc(v.id)}/ausloeser">Auslöser (${(v.ausloeser || []).length})</button>
       </div>
       ${reiter === "bild" ? `${quellenVerzeichnis(v.schritte)}<p class="small muted">Bahnen = verantwortliche Rolle, von links nach rechts = Reihenfolge (Pfeil = «nach»). ${darf ? "Schritt anklicken zum Bearbeiten." : ""} Gestrichelt = nur unter Bedingung.</p>${ablaufbild(v.schritte)}`
         : reiter === "ausloeser" ? vorlageAusloeser(v, darf)
+        : reiter === "prozess" ? prozessblatt(v, darfLenkung())
         : reiter === "felder" ? `<p class="small muted">Angaben beim Start eines Ablaufs. Sie stehen als Platzhalter in den Parametern zur Verfügung, dazu <code>{stichtag+N}</code>/<code>{stichtag-N}</code> und Ergebnisse früherer Schritte wie <code>{o5.benutzername}</code>.</p><div class="tabelle-wrap"><table><thead><tr><th>Platzhalter</th><th>Bezeichnung</th><th>Typ</th></tr></thead><tbody>${felder}</tbody></table></div>`
         : `<div class="tabelle-wrap"><table><thead><tr><th class="zahl">#</th><th>Schritt</th><th>Wer</th><th>Frist</th><th>Nach</th><th>Aufruf</th><th>Ausführung</th><th>Quelle</th><th></th></tr></thead><tbody>${zeilen}</tbody></table></div>${quellenVerzeichnis(v.schritte)}`}`;
   }
@@ -1233,6 +1240,83 @@
       <ul class="infoliste">${liste || `<li class="muted">Nur Start von Hand.</li>`}</ul>${neu}`;
   }
   let AUSL_ART = "ereignis";
+
+  // ---------------------------------------------------------------- Prozesslenkung (Stufe 3)
+  const KATEGORIE = { fuehrung: "Führungsprozesse", kern: "Kernprozesse", support: "Supportprozesse" };
+  const darfLenkung = () => ["SV", "RV"].includes(S.rolle);
+  /** Monate einer Periode (Einstellungen › Periode, Wert = Vorkommen pro Jahr). */
+  function periodeMonate(kz) {
+    const p = ((S.einstellungen && S.einstellungen.perioden) || []).find((x) => x.kuerzel === kz);
+    return p && Number(p.wert) > 0 ? Math.round(12 / Number(p.wert)) : 0;
+  }
+  function plusMonate(iso, n) { const d = new Date(iso + "T12:00:00Z"); d.setUTCMonth(d.getUTCMonth() + n); return d.toISOString().slice(0, 10); }
+  function naechsterReview(v) {
+    const m = v.meta || {};
+    if (v.reviewFaellig) return v.reviewFaellig.seit;
+    const n = periodeMonate(m.reviewPeriode);
+    return n && m.letzterReview ? plusMonate(m.letzterReview, n) : "";
+  }
+  function reviewStand(v) {
+    const n = naechsterReview(v);
+    if (v.reviewFaellig) return ["fehler", "! Review nötig", v.reviewFaellig.grund];
+    if (!n) return ["neutral", "– kein Intervall", ""];
+    const d = tageZwischen(S.heute, n);
+    if (d < 0) return ["fehler", `! überfällig seit ${-d} T`, ""];
+    if (d <= 30) return ["warnung", `◷ fällig in ${d} T`, ""];
+    return ["erfolg", "✓ aktuell", ""];
+  }
+  const reviewBadge = (v) => { const r = reviewStand(v); return `<span class="badge ${r[0]}" title="${esc(r[2] || ("nächster Review " + datumKurz(naechsterReview(v))))}">${esc(r[1])}</span>`; };
+
+  function seiteLandkarte() {
+    const band = (k) => {
+      const vs = S.vorlagen.filter((v) => ((v.meta || {}).kategorie || "support") === k);
+      const gruppen = [...new Set(vs.map((v) => v.gruppe || "Weitere"))];
+      return `<section class="lk-band lk-${k}"><h2>${esc(KATEGORIE[k])} <span class="small muted">${vs.length}</span></h2><div class="lk-gruppen">${gruppen.map((g) => `<div class="lk-gruppe"><h3>${esc(g)}</h3>${vs.filter((v) => (v.gruppe || "Weitere") === g).map((v) => {
+        const laufend = S.laeufe.filter((l) => l.vorlage === v.id && !l.abgeschlossen && !l.abgebrochen).length;
+        return `<a class="lk-prozess" href="#/vorlage/${esc(v.id)}/prozess"><span class="small muted">${esc((v.meta || {}).nummer || v.id)}</span><strong>${esc(v.titel)}</strong><span>${v.status === "freigegeben" ? `<span class="badge erfolg">✓ v${esc(v.version)}</span>` : `<span class="badge warnung">✎ Entwurf v${esc(v.version)}</span>`} ${reviewBadge(v)}${laufend ? ` <span class="badge info">${laufend} laufend</span>` : ""}${(v.meta || {}).schutzbedarf === "hoch" ? ` <span class="badge neutral" title="Schutzbedarf hoch">🔒</span>` : ""}</span></a>`;
+      }).join("")}</div>`).join("")}</div></section>`;
+    };
+    return `<div class="seitenkopf"><div><h1>Prozesslandkarte</h1><p class="muted">Alle Ablaufvorlagen als Prozesse der Schule: Führungsprozesse (Behörde, Gemeinde, Schulleitung), Kernprozesse (Lernende, Ein- und Austritte) und Supportprozesse (Personal, Finanzen, ICT, Infrastruktur). Kategorie, Nummer und Review stehen im Prozessblatt jeder Vorlage.</p></div></div>
+      ${["fuehrung", "kern", "support"].map(band).join("")}`;
+  }
+
+  function seiteReviews() {
+    const vs = S.vorlagen.slice().sort((a, b) => (naechsterReview(a) || "9999").localeCompare(naechsterReview(b) || "9999"));
+    const ueber = vs.filter((v) => reviewStand(v)[0] === "fehler").length, bald = vs.filter((v) => reviewStand(v)[0] === "warnung").length;
+    const zeilen = vs.map((v) => { const m = v.meta || {}; return `<tr><td>${esc(m.nummer || "")}</td><td><a href="#/vorlage/${esc(v.id)}/prozess">${esc(v.titel)}</a><div class="small muted">${esc(KATEGORIE[m.kategorie] || "")} · v${esc(v.version)}</div>${v.reviewFaellig ? `<div class="small" style="color:var(--destructive)">${esc(v.reviewFaellig.grund)}</div>` : ""}</td>
+      <td>${esc(((S.einstellungen.perioden || []).find((p) => p.kuerzel === m.reviewPeriode) || { name: m.reviewPeriode || "–" }).name)}</td><td>${datumKurz(m.letzterReview)}</td><td>${datumKurz(naechsterReview(v))}</td><td>${reviewBadge(v)}</td>
+      <td>${darfLenkung() ? `<button class="btn klein" data-aktion="review" data-vorlage="${esc(v.id)}">✓ Review erfassen</button>` : ""}</td></tr>`; }).join("");
+    return `<div class="seitenkopf"><div><h1>Prozessreviews</h1><p class="muted">Jede Vorlage wird periodisch überprüft (Reviewintervall aus Einstellungen › Periode). Ein Review hält fest, ob die Vorlage noch stimmt; ist eine Anpassung nötig, entsteht ein Hinweis an die Schulverwaltung. Eine geänderte Rechtsgrundlage macht den Review sofort fällig.</p></div></div>
+      <div class="karten"><div class="karte"><div class="zahl">${ueber}</div><div class="titel">${ueber ? "⚠ " : ""}überfällig oder nötig</div></div><div class="karte"><div class="zahl">${bald}</div><div class="titel">fällig in 30 Tagen</div></div><div class="karte"><div class="zahl">${vs.length}</div><div class="titel">Prozesse</div></div></div>
+      ${darfLenkung() ? "" : `<p class="meldung info">Reviews erfassen können Schulverwaltung und Ressortvorstand.</p>`}
+      <div class="tabelle-wrap"><table><thead><tr><th>Nr.</th><th>Prozess</th><th>Intervall</th><th>Letzter Review</th><th>Nächster</th><th>Stand</th><th></th></tr></thead><tbody>${zeilen}</tbody></table></div>`;
+  }
+
+  function prozessblatt(v, darf) {
+    const m = v.meta || (v.meta = {});
+    const per = (S.einstellungen.perioden || []).filter((p) => p.aktiv && Number(p.wert) > 0 && Number(p.wert) <= 2);
+    const feld = (k, label, typ, werte) => {
+      const w = m[k] == null ? "" : m[k];
+      const d = `data-aktion="meta" data-k="${esc(k)}" id="meta-${esc(k)}" ${darf ? "" : "disabled"}`;
+      if (werte) return `<label class="feld" for="meta-${esc(k)}">${esc(label)}<select ${d}>${werte.map(([x, t]) => `<option value="${esc(x)}" ${String(x) === String(w) ? "selected" : ""}>${esc(t)}</option>`).join("")}</select></label>`;
+      return `<label class="feld" for="meta-${esc(k)}">${esc(label)}<input type="${typ}" ${d} value="${esc(w)}" ${typ === "text" ? 'style="min-width:16rem"' : ""}></label>`;
+    };
+    const rv = (v.reviews || []).slice().reverse();
+    return `<p class="small muted">Prozessblatt (Stufe 3, Prozesslenkung): Angaben zur Vorlage als Prozess. Änderungen hier ergeben keine neue Version; Freigaben und Versionen stehen im Verlauf.</p>
+      <div class="karte"><div class="formzeile">
+        ${feld("nummer", "Prozessnummer", "text")}
+        ${feld("kategorie", "Kategorie", "", Object.entries(KATEGORIE))}
+        ${feld("schutzbedarf", "Schutzbedarf", "", [["normal", "normal"], ["hoch", "hoch"], ["sehr hoch", "sehr hoch"]])}
+        ${feld("reviewPeriode", "Reviewintervall", "", per.map((p) => [p.kuerzel, p.name]))}
+        ${feld("gueltigAb", "Gültig ab", "date")}${feld("gueltigBis", "Gültig bis", "date")}
+      </div><div class="formzeile">${feld("dokumente", "Prozessdokumente (Reglemente, Weisungen, Hilfsmittel)", "text")}</div>
+      <div class="feldliste" style="margin-top:.75rem">
+        <div class="feldzeile"><span class="muted">Prozessverantwortlich</span><span>${(v.prozessverantwortlich || []).map(rolleBadge).join(" ")}</span></div>
+        <div class="feldzeile"><span class="muted">Genehmigt</span><span>${esc(m.genehmigtDurch || "–")} ${m.genehmigtAm ? "am " + datumKurz(m.genehmigtAm) : ""}${m.aenderungsgrund ? ` · Grund: ${esc(m.aenderungsgrund)}` : ""}</span></div>
+        <div class="feldzeile"><span class="muted">Review</span><span>letzter ${datumKurz(m.letzterReview)} · nächster ${datumKurz(naechsterReview(v))} ${reviewBadge(v)} ${darfLenkung() ? `<button class="btn klein" data-aktion="review" data-vorlage="${esc(v.id)}">✓ Review erfassen</button>` : ""}</span></div>
+      </div></div>
+      <h3 style="margin-top:1rem">Reviews</h3>${rv.length ? `<ul class="infoliste">${rv.map((r) => `<li><span class="small muted">${datumKurz(r.am)}</span> ${esc(r.durch)} – <strong>${esc(r.ergebnis)}</strong>${r.bemerkung ? ": " + esc(r.bemerkung) : ""}</li>`).join("")}</ul>` : `<p class="small muted">Noch keine Reviews erfasst.</p>`}`;
+  }
 
   const darfVertretung = () => ["SV", "SL", "SPr"].includes(S.rolle);
   function seiteVertretungen() {
@@ -1270,7 +1354,8 @@
       const last = {}; S.laeufe.forEach((l) => { if (!l.abgeschlossen && !l.abgebrochen) l.schritte.forEach((x) => { const d = tageZwischen(h, fristVon(l, x)); if (!ERLEDIGT.includes(x.status) && d <= 30) handelnde(x).forEach((q) => { last[q] = (last[q] || 0) + 1; }); }); });
       const max = Math.max(1, ...Object.values(last));
       const balkenListe = Object.entries(last).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([q, n]) => `<div class="lastzeile"><span>${rolleBadge(q)}</span><span class="lastbalken" style="width:${Math.round((n / max) * 100)}%" role="img" aria-label="${n} Schritte"></span><span class="small">${n}</span></div>`).join("");
-      teil = `<div class="spalten"><div class="karte"><h3>Meine nächsten Aufgaben</h3>${liste(meine, "Nichts zu erledigen.")}</div><div class="karte"><h3>Belastung je Funktion (fällig in 30 Tagen inkl. überfällig)</h3>${balkenListe || '<p class="small muted">Keine.</p>'}</div></div>`;
+      const rv = ["SV", "RV"].includes(r) ? S.vorlagen.filter((v) => ["fehler", "warnung"].includes(reviewStand(v)[0])) : [];
+      teil = `<div class="spalten"><div class="karte"><h3>Meine nächsten Aufgaben</h3>${liste(meine, "Nichts zu erledigen.")}</div><div class="karte"><h3>Belastung je Funktion (fällig in 30 Tagen inkl. überfällig)</h3>${balkenListe || '<p class="small muted">Keine.</p>'}</div>${rv.length ? `<div class="karte"><h3>Prozessreviews fällig (${rv.length})</h3><ul class="infoliste">${rv.slice(0, 6).map((v) => `<li><a href="#/vorlage/${esc(v.id)}/prozess">${esc(v.titel)}</a> ${reviewBadge(v)}</li>`).join("")}</ul><p class="small"><a href="#/reviews">Alle Prozessreviews</a></p></div>` : ""}</div>`;
     }
     return `<section class="fuersie" style="margin-bottom:1.25rem"><h2>Für ${esc(ROLLEN[r] || r)}</h2>
       <div class="karten">
@@ -1694,6 +1779,8 @@
         case "protokoll": return seiteProtokoll();
         case "ausloeser": return seiteAusloeser();
         case "vertretungen": return seiteVertretungen();
+        case "landkarte": return seiteLandkarte();
+        case "reviews": return seiteReviews();
         case "einstellungen": return ES.seite(a);
         default: return seiteUebersicht();
       }
@@ -1844,7 +1931,29 @@
         });
         break;
       }
-      case "freigeben": { const v = vorlageVon(a); v.status = "freigegeben"; speichern(); render(); ansage(`Version ${esc(v.version)} freigegeben.`); break; }
+      case "freigeben": {
+        const v = vorlageVon(a);
+        formular(`Version ${v.version} freigeben`, `«${v.titel}» – Freigabe durch ${ROLLEN[S.rolle]} (FD 1.1.5). Die Begründung steht im Prozessblatt und im Versionsverlauf.`, [{ key: "grund", label: "Änderungsbegründung", typ: "textarea", pflicht: true }], "Freigeben", (w) => {
+          v.status = "freigegeben";
+          v.meta = v.meta || {};
+          Object.assign(v.meta, { genehmigtDurch: ROLLEN[S.rolle], genehmigtAm: S.heute, aenderungsgrund: w.grund });
+          (v.verlauf = v.verlauf || []).push({ version: v.version, am: S.heute, durch: ROLLEN[S.rolle], grund: w.grund, schritte: kopie(v.schritte), felder: kopie(v.felder), ausloeser: kopie(v.ausloeser || []), prozessverantwortlich: kopie(v.prozessverantwortlich || []) });
+          speichern(); render(); ansage(`Version ${v.version} freigegeben.`);
+        });
+        break;
+      }
+      case "review": {
+        const v = vorlageVon(el.dataset.vorlage);
+        if (!v || !darfLenkung()) break;
+        formular(`Review: ${v.titel}`, `${(v.meta || {}).nummer || ""} · Version ${v.version}${v.reviewFaellig ? "\nAnlass: " + v.reviewFaellig.grund : ""}`, [
+          { key: "ergebnis", label: "Ergebnis", typ: "auswahl", werte: ["ohne Änderung", "Anpassung nötig"] }, { key: "bemerkung", label: "Bemerkung", typ: "textarea", pflichtWenn: (x) => x.ergebnis === "Anpassung nötig" }], "Review erfassen", (w) => {
+          (v.reviews = v.reviews || []).push({ am: S.heute, durch: ROLLEN[S.rolle], ergebnis: w.ergebnis, bemerkung: w.bemerkung, anlass: v.reviewFaellig ? v.reviewFaellig.grund : "periodisch" });
+          v.meta = v.meta || {}; v.meta.letzterReview = S.heute; delete v.reviewFaellig;
+          if (w.ergebnis === "Anpassung nötig") hinweis(["SV"], { id: "" }, `Review «${v.titel}»: Anpassung nötig – ${w.bemerkung}`);
+          speichern(); render(); ansage("Review erfasst.");
+        });
+        break;
+      }
       case "dlg-abbrechen": ev.preventDefault(); document.getElementById("dlg").close(); EDIT = null; break;
       case "dlg-speichern": ev.preventDefault(); if (dialogSpeichern()) { document.getElementById("dlg").close(); speichern(); render(); } break;
       default: if (!(ak.startsWith("es-") && ES.klick(ak, el)) && !ak.startsWith("es-")) KAL.klick(ak, el); break;
@@ -1874,6 +1983,7 @@
     }
     if (ak === "ereignis-feld") { const E = EREIGNIS_EINGABE[el.dataset.ev]; E[el.dataset.key] = el.value; render(); }
     if (ak === "ausl-art") { AUSL_ART = el.value; render(); }
+    if (ak === "meta" && darfLenkung()) { const [, vid] = route(); const v = vorlageVon(vid); if (v) { (v.meta = v.meta || {})[el.dataset.k] = el.value; speichern(); render(); } }
     if (ak === "pv-rolle" && S.rolle === "SV") {
       const [, vid] = route(); const v = vorlageVon(vid); if (!v) return;
       const neu = el.checked ? [...new Set([...(v.prozessverantwortlich || []), el.dataset.rolle])] : (v.prozessverantwortlich || []).filter((r) => r !== el.dataset.rolle);
@@ -1900,6 +2010,7 @@
   if (!S.einstellungen) S.einstellungen = kopie(window.FLOW_EINSTELLUNGEN_DATEN);
   if (!S.fd) S.fd = kopie(D.FUNKTIONENDIAGRAMM);
   if (!S.vertretungen) S.vertretungen = [];
+  S.vorlagen.forEach((v) => { if (!v.meta) { const d = D.VORLAGEN.find((x) => x.id === v.id); v.meta = kopie((d && d.meta) || { kategorie: "support", reviewPeriode: "J" }); } if (!v.reviews) v.reviews = []; });
   if (!S.einstellungen.eskalation) S.einstellungen.eskalation = kopie(window.FLOW_EINSTELLUNGEN_DATEN.eskalation);
   if (!S.einstellungen.perioden) S.einstellungen.perioden = kopie(window.FLOW_EINSTELLUNGEN_DATEN.perioden);
   Object.entries(S.einstellungen).forEach(([b, l]) => (l || []).forEach((e) => {

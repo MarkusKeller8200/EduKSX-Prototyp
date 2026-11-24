@@ -136,6 +136,25 @@
     { id: "kz2", titel: "Ersatzbeschaffung persönliche Geräte Lehrpersonen", bereich: "beschaffung", zeit: { regel: "stichtag", anker: "schuljahreswechsel", versatz: -6, einheit: "monate" }, jahr: null, zyklus: { periode: "5J", jahre: 5, ab: 2028 }, rollen: { SPF: "E", SV: "M" }, quelle: "beispiel", flow: "beschaffung", teil: [], notiz: "Periode «Alle 5 Jahre» (Ersatzbeschaffung, Ausserbetriebnahme persönlicher Geräte)." },
   );
 
+  // ------------------------------------------------------------ Prozesslenkung (Stufe 3): Metadaten je Vorlage
+  const KAT = { Gemeinde: "fuehrung", Schulbehörde: "fuehrung", Rechnungsprüfungskommission: "fuehrung", Schulleitung: "fuehrung", Lernende: "kern" };
+  const KUERZEL = { Gemeinde: "GEM", Schulbehörde: "BEH", Rechnungsprüfungskommission: "RPK", Schulleitung: "SL", Finanzen: "FIN", Lernende: "LER", Personal: "PER", Infrastruktur: "INF", ICT: "ICT" };
+  const zaehler = {};
+  const heute = new Date(), iso = (d) => d.toISOString().slice(0, 10);
+  D.VORLAGEN.forEach((v, i) => {
+    const g = v.gruppe || "Weitere", kz = KUERZEL[g] || "WEI";
+    zaehler[kz] = (zaehler[kz] || 0) + 1;
+    const letzter = new Date(heute.getTime() - ((i * 37) % 420 + 20) * 86400000); // erfundene Reviewdaten, einige überfällig
+    v.meta = v.meta || {
+      nummer: `P-${kz}-${String(zaehler[kz]).padStart(2, "0")}`,
+      kategorie: KAT[g] || (["onboarding", "offboarding", "mutation"].includes(v.id) ? "kern" : "support"),
+      schutzbedarf: ["Personal", "Lernende"].includes(g) || ["onboarding", "offboarding", "mutation"].includes(v.id) ? "hoch" : "normal",
+      reviewPeriode: g === "Gemeinde" || g === "Rechnungsprüfungskommission" ? "2J" : "J",
+      letzterReview: iso(letzter), gueltigAb: "2026-08-01", gueltigBis: "", dokumente: "", genehmigtDurch: "Ressortvorstand", genehmigtAm: "2026-08-01",
+    };
+    v.reviews = v.reviews || [];
+  });
+
   // ------------------------------------------------------------ Weitere Testabläufe (erfundene Angaben)
   D.LAEUFE.push(
     { vorlage: "ictsw", tageBisStichtag: 45, kontext: { person: "Lernplattform Mathematik", daten: "ja" }, erledigt: ["ictsw1", "ictsw2", "ictsw3", "ictsw4"] },

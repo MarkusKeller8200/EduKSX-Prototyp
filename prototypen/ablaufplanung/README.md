@@ -98,6 +98,8 @@ Schritt den passenden Vorgang in einem anderen EduKSX-Modul auf, ohne dass EduKS
   zugeordneter Periode, Tooltip in allen Katalogen.
 - **Farbe und Label** (0.13.0): jede Einstellung hat eine Farbe; daraus entsteht ein Label (Kontrast automatisch),
   verwendet für Rollen und Kompetenzen.
+- **Stufe 3 – Prozesslenkung** (0.15.0): Prozessblatt je Vorlage, Freigabe mit Änderungsbegründung und
+  Versionsverlauf, Prozessreviews nach Intervall, Prozesslandkarte (Führungs-, Kern-, Supportprozesse).
 - **Simulation:** simulierter Tag (+1, +7, nächste Frist), Module als «nicht erreichbar» schalten, Rollenwechsel.
 
 ## Grundlagen

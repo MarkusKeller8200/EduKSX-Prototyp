@@ -8,6 +8,11 @@ Format angelehnt an [Keep a Changelog](https://keepachangelog.com/de/), Versione
 
 ### Hinzugefügt
 
+- **EduKSX-Flow 0.15.0 – Stufe 3: Prozesslenkung (24.11.2026):** Prozessblatt je Vorlage (Prozessnummer, Kategorie
+  Führungs-/Kern-/Supportprozess, Schutzbedarf, Reviewintervall aus den Perioden, gültig ab/bis, Prozessdokumente,
+  Genehmigung mit Änderungsbegründung); Freigabe verlangt eine Änderungsbegründung und legt die Version im Verlauf
+  ab; Seite **Prozessreviews** (fällig/überfällig, Review erfassen mit Ergebnis); **Prozesslandkarte** (drei Bänder
+  nach Kategorie, gruppiert); fällige Reviews in der Übersicht von SV und RV.
 - **EduKSX-Flow 0.14.0 – Mehrjährige Termine (24.11.2026):** Jahreskalender mit «Wiederholung alle n Jahre ab Jahr»
   für jährliche und Schuljahrestermine; zur Wahl stehen die aktiven Perioden mit Wert unter 1 (Alle 2–5 Jahre).
   Beispiele: ICT-Konzept überarbeiten (alle 2 Jahre), Ersatzbeschaffung persönliche Geräte (alle 5 Jahre).
