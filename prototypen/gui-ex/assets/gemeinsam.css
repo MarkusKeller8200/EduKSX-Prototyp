@@ -148,3 +148,23 @@ html[data-stil="clay"] .eintrag { border-radius: 14px; }
 html[data-stil="clay"] .fenster .titelbalken { background: transparent; }
 html[data-stil="clay"] :is(.ecke, .tagkopf, .bahnkopf, .senkrecht h3) { background: var(--background); }
 html[data-stil="clay"] .zelle, html[data-stil="clay"] .tagkopf { border-color: rgb(84 92 150 / .12); }
+
+/* Suchfenster (Ctrl/⌘ K) – Muster aus Variante A */
+.ex-suche { border: 1px solid var(--border); border-radius: 16px; padding: 0; width: min(640px, calc(100vw - 2rem)); margin: 12vh auto auto;
+  background: var(--card); color: var(--foreground); box-shadow: 0 30px 80px rgb(15 23 42 / .35); overflow: hidden; }
+.ex-suche::backdrop { background: rgb(15 23 42 / .4); backdrop-filter: blur(2px); }
+.ex-suche .feld { display: flex; align-items: center; gap: .6rem; padding: .8rem 1rem; border-bottom: 1px solid var(--border); }
+.ex-suche .feld svg { width: 20px; height: 20px; color: var(--muted-foreground); flex: none; }
+.ex-suche input { flex: 1; border: 0; outline: none; font: 400 1.1rem var(--font-sans); background: transparent; color: var(--foreground); }
+.ex-suche kbd { font: 600 .72rem var(--font-sans); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 5px; padding: 0 .35rem; color: var(--muted-foreground); }
+.ex-suche [role="listbox"] { max-height: min(55vh, 460px); overflow: auto; padding-bottom: .4rem; }
+.ex-suche .gruppe { font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-foreground); padding: .6rem 1rem .2rem; }
+.ex-suche [role="option"] { display: flex; align-items: center; gap: .7rem; padding: .5rem 1rem; cursor: pointer; font-size: .92rem; }
+.ex-suche [role="option"][aria-selected="true"] { background: var(--accent); color: var(--accent-foreground); }
+.ex-suche .ico { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; background: var(--m-soft, var(--muted)); flex: none; }
+.ex-suche .ico svg { width: 18px; height: 18px; }
+.ex-suche .neben { margin-left: auto; font-size: .78rem; color: var(--muted-foreground); }
+.ex-suche .leer { padding: 1rem; color: var(--muted-foreground); }
+html[data-stil="glas"] .ex-suche { background: var(--glas-stark); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); }
+html[data-stil="clay"] .ex-suche { box-shadow: var(--clay); border-radius: 28px; border-color: transparent; }
+html[data-stil="neo"] .ex-suche { box-shadow: var(--flaeche-schatten); }

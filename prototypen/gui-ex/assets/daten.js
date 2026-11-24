@@ -63,6 +63,25 @@
   const WOCHE_ZEIT = [8.1, 8.9, 7.6, 9.2, 8.4, 8.7, 6.9];
   const SOLL_TAG = 8.4;
 
+  // Pensenplanung (EduKSX-Staffing) für Variante F – erfundene Personen; Vollpensum = 28 Lektionen (Annahme Prototyp)
+  const VOLLPENSUM = 28;
+  const PENSEN = [
+    ["P01", "Beispiel", "Lea", "Klassenlehrperson", "1a", "Deutsch, Geschichte", 26, "bestätigt"],
+    ["P02", "Muster", "Tom", "Fachlehrperson", "1a, 1b", "Mathematik", 24, "bestätigt"],
+    ["P03", "Probst", "Nina", "Klassenlehrperson", "1b", "Englisch, Französisch", 28, "bestätigt"],
+    ["P04", "Gerber", "Jan", "Fachlehrperson", "2a, 2b, 3a", "Sport", 18, "offen"],
+    ["P05", "Weber", "Sara", "Klassenlehrperson", "2a", "Deutsch, Lebenskunde", 27, "bestätigt"],
+    ["P06", "Huber", "Luca", "Klassenlehrperson", "2b", "Mathematik, Natur und Technik", 30, "offen"],
+    ["P07", "Frei", "Mia", "Fachlehrperson", "1a–3b", "Bildnerisches Gestalten", 12, "bestätigt"],
+    ["P08", "Keller", "Noah", "Schulische Heilpädagogik", "1a–2b", "Förderunterricht", 20, "offen"],
+    ["P09", "Baumann", "Elin", "Klassenlehrperson", "3a", "Geschichte, Geografie", 25, "bestätigt"],
+    ["P10", "Meier", "Ben", "Klassenlehrperson", "3b", "Mathematik, Medien und Informatik", 28, "bestätigt"],
+    ["P11", "Schmid", "Ida", "Fachlehrperson", "3a, 3b", "Englisch", 10, "Stellvertretung"],
+    ["P12", "Brunner", "Leo", "Fachlehrperson", "1b–3b", "Musik", 14, "offen"],
+    ["P13", "Steiner", "Zoe", "Fachlehrperson", "2a–3b", "Hauswirtschaft", 9, "bestätigt"],
+    ["P14", "Graf", "Elias", "Fachlehrperson", "1a–3b", "Textiles und Technisches Gestalten", 16, "offen"],
+  ].map(([id, name, vorname, funktion, klassen, faecher, lektionen, status]) => ({ id, name, vorname, funktion, klassen, faecher, lektionen, status }));
+
   const PERSON = { name: "Alex Beispiel", rolle: "Leitung Fachstelle ICT", kuerzel: "AB", schule: "Musterschule Seetal" };
 
   const STATUS = {
@@ -89,5 +108,5 @@
   // Fortschritt einer Aufgabe in Prozent aus ihren Teilschritten
   const fortschritt = (a) => a.status === "erledigt" ? 100 : Math.round(100 * a.teil.filter((t) => t[1]).length / a.teil.length);
 
-  window.EX = { WOCHE_ZEIT, SOLL_TAG, heute, MODULE, AUFGABEN, TERMINE, MELDUNGEN, PERSON, STATUS, fmtZeit, fmtDatum, fmtRelativ, esc, modul, fortschritt };
+  window.EX = { PENSEN, VOLLPENSUM, WOCHE_ZEIT, SOLL_TAG, heute, MODULE, AUFGABEN, TERMINE, MELDUNGEN, PERSON, STATUS, fmtZeit, fmtDatum, fmtRelativ, esc, modul, fortschritt };
 })();
