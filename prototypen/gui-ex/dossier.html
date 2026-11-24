@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>EduKSX-Experience – G Dossier (Prototyp)</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="assets/eduksx.css">
+  <link rel="stylesheet" href="assets/gemeinsam.css">
+  <style>
+    body { height: 100vh; display: grid; grid-template-rows: auto 1fr; grid-template-columns: minmax(0, 1fr); overflow: hidden; }
+    /* Tableiste */
+    .tabzeile { display: flex; align-items: stretch; gap: .25rem; padding: 0 .6rem; background: var(--card); border-bottom: 1px solid var(--border); min-height: 48px; }
+    .tabzeile .marke { display: flex; align-items: center; gap: .45rem; padding-right: .3rem; flex: none; }
+    .tabzeile .marke svg { width: 24px; height: 24px; }
+    .zurueck { align-self: center; display: inline-flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; border: 1px solid var(--border); border-radius: .5rem; color: inherit; margin-right: .4rem; flex: none; }
+    .tabs { display: flex; align-items: stretch; gap: 2px; overflow-x: auto; scrollbar-width: thin; min-width: 0; flex: 1; }
+    .tab { display: flex; align-items: center; gap: .1rem; border-radius: 10px 10px 0 0; margin-top: 6px; background: transparent; border: 1px solid transparent; border-bottom: 0; max-width: 220px; flex: none; }
+    .tab:hover { background: var(--muted); }
+    .tab.aktiv { background: var(--background); border-color: var(--border); box-shadow: inset 0 2px 0 var(--brand-orange); position: relative; top: 1px; }
+    .tab [role="tab"] { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: .45rem; padding: 0 .3rem 0 .7rem; height: 40px; cursor: pointer; font-size: .86rem; min-width: 0; color: var(--foreground); }
+    .tab [role="tab"]:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; border-radius: 8px; }
+    .tab [role="tab"] .txt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tab [role="tab"] svg { width: 18px; height: 18px; flex: none; }
+    .tab .ico-art { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; font: 700 .62rem var(--font-sans); flex: none; }
+    .art-l { background: var(--violet-soft); color: var(--violet-text); } .art-p { background: var(--accent); color: var(--accent-foreground); }
+    .tab .klein { width: 24px; height: 24px; border: 0; border-radius: 6px; background: transparent; color: var(--muted-foreground); cursor: pointer; display: grid; place-items: center; flex: none; padding: 0; }
+    .tab .klein:hover { background: var(--border); color: var(--foreground); }
+    .tab .klein svg { width: 14px; height: 14px; }
+    .tab .nadel { opacity: 0; } .tab:hover .nadel, .tab:focus-within .nadel, .tab.angeheftet .nadel { opacity: 1; }
+    .tab.angeheftet .nadel { color: var(--warning); }
+    .tabzeile .rechts { display: flex; align-items: center; gap: .5rem; padding-left: .5rem; font-size: .8rem; flex: none; }
+    .tabzeile select, .tabzeile .wk { font: inherit; font-size: .8rem; height: 30px; border: 1px solid var(--input); border-radius: 8px; background: var(--card); color: var(--foreground); padding: 0 .5rem; cursor: pointer; }
+    .tabzeile label.schalt { display: inline-flex; align-items: center; gap: .3rem; cursor: pointer; white-space: nowrap; }
+    .zuletzt { position: relative; align-self: center; flex: none; }
+    .zuletzt .menue { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; min-width: 260px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: .35rem; box-shadow: 0 14px 34px rgb(15 23 42 / .22); }
+    .zuletzt .menue[hidden] { display: none; }
+    .zuletzt .menue h3 { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-foreground); margin: .4rem .5rem .3rem; }
+    .zuletzt .menue button { all: unset; box-sizing: border-box; display: flex; gap: .5rem; align-items: center; width: 100%; padding: .4rem .5rem; border-radius: 8px; cursor: pointer; font-size: .86rem; }
+    .zuletzt .menue button:hover, .zuletzt .menue button:focus-visible { background: var(--muted); }
+    .zuletzt .leer { padding: .5rem; color: var(--muted-foreground); font-size: .85rem; }
+    .schmal-wahl { display: none; }
+    @media (max-width: 760px) {
+      .tabs, .zuletzt, .tabzeile .marke #titel { display: none; } .schmal-wahl { display: flex; align-items: center; flex: 1; min-width: 0; }
+      .schmal-wahl select { width: 100%; min-width: 0; }
+      .tabzeile { gap: .4rem; align-items: center; } .tabzeile .rechts select { max-width: 9.5rem; }
+      .tabzeile .rechts .schalt, .tabzeile .rechts .rolle-txt { display: none; }
+    }
+    /* Inhalt */
+    .ansicht { overflow: auto; background: var(--muted); }
+    .start { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.25rem 6rem; }
+    .start h1 { font-size: 1.35rem; margin: 0 0 .3rem; }
+    .start .werkzeug { display: flex; gap: .5rem; margin: 1rem 0; flex-wrap: wrap; }
+    .start input[type="search"] { font: inherit; height: 36px; border: 1px solid var(--input); border-radius: 8px; padding: 0 .7rem; width: min(320px, 100%); background: var(--card); color: var(--foreground); }
+    .liste { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; font-size: .88rem; }
+    .liste th, .liste td { text-align: left; padding: .5rem .7rem; border-bottom: 1px solid var(--border); }
+    .liste th { background: var(--sidebar); font-size: .75rem; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: .04em; }
+    .liste tbody tr { cursor: pointer; }
+    .liste tbody tr:hover td, .liste tbody tr:focus-within td { background: var(--accent); }
+    .liste .oeffnen { all: unset; cursor: pointer; color: var(--link); font-weight: 600; }
+    .liste .oeffnen:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 4px; }
+    .dossier-kopf { background: var(--card); border-bottom: 1px solid var(--border); padding: 1.1rem 1.5rem 1rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+    .avatar { width: 56px; height: 56px; border-radius: 999px; display: grid; place-items: center; font-weight: 700; font-size: 1.1rem; flex: none; }
+    .dossier-kopf h1 { margin: 0; font-size: 1.35rem; }
+    .dossier-kopf .typ { font-size: .82rem; color: var(--muted-foreground); }
+    .kern { display: flex; gap: 2rem; flex-wrap: wrap; margin-left: auto; }
+    .kern div { font-size: .85rem; } .kern dt { font-size: .72rem; color: var(--muted-foreground); } .kern dd { margin: 0; font-weight: 600; }
+    .dossier-rumpf { display: grid; grid-template-columns: 230px minmax(0, 1fr); min-height: calc(100% - 92px); }
+    .abschnitte { background: var(--card); border-right: 1px solid var(--border); padding: .8rem .5rem; }
+    .abschnitte ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+    .abschnitte button { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: .55rem; width: 100%; padding: .5rem .7rem; border-radius: 8px; cursor: pointer; font-size: .9rem; border-left: 3px solid transparent; }
+    .abschnitte button:hover { background: var(--muted); }
+    .abschnitte button:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; }
+    .abschnitte button[aria-current="true"] { background: var(--secondary); color: var(--secondary-foreground); border-left-color: var(--brand-orange); font-weight: 600; }
+    .abschnitte .zahl { margin-left: auto; font-size: .75rem; min-width: 1.4rem; text-align: center; padding: 0 .35rem; border-radius: 999px; background: var(--muted); color: var(--muted-foreground); }
+    .abschnitte .trenn { height: 1px; background: var(--border); margin: .5rem .4rem; }
+    .inhalt { padding: 1.25rem 1.5rem 6rem; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr)); align-content: start; }
+    .karte-d { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.2rem; box-shadow: var(--shadow); }
+    .karte-d.breit { grid-column: 1 / -1; }
+    .karte-d h2 { font-size: 1rem; margin: 0 0 .8rem; }
+    .felder { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1.2rem; margin: 0; }
+    .felder dt { font-size: .74rem; color: var(--muted-foreground); } .felder dd { margin: .1rem 0 0; font-size: .92rem; }
+    .felder dd.leer { color: var(--muted-foreground); }
+    .geschuetzt { display: inline-flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+    .geschuetzt code { font: 500 .9rem var(--font-sans); letter-spacing: .04em; }
+    .geschuetzt button { font: inherit; font-size: .76rem; border: 1px solid var(--input); border-radius: 6px; background: var(--card); color: var(--foreground); padding: .1rem .5rem; cursor: pointer; }
+    .gesperrt { display: inline-flex; align-items: center; gap: .35rem; font-size: .82rem; color: var(--muted-foreground); }
+    .eintraege { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
+    .eintraege li { display: flex; gap: .7rem; align-items: center; padding: .55rem .7rem; border: 1px solid var(--border); border-radius: 10px; background: var(--background); font-size: .88rem; }
+    .eintraege li .neben { margin-left: auto; font-size: .78rem; color: var(--muted-foreground); }
+    @media (max-width: 760px) { .dossier-rumpf { grid-template-columns: minmax(0, 1fr); } .abschnitte { min-width: 0; } .abschnitte ul { display: flex; overflow-x: auto; } .abschnitte button { white-space: nowrap; } .abschnitte .trenn { display: none; } .felder { grid-template-columns: 1fr; } .kern { margin-left: 0; } }
+  </style>
+</head>
+<body data-variante="dossier">
+  <header class="tabzeile">
+    <span class="marke"><!--eduksx-icon:eduksx--><span id="titel"></span></span>
+    <a class="zurueck" href="index.html" title="Zurück zur Übersicht GUI-Experience" aria-label="Zurück zur Übersicht GUI-Experience"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
+    <div class="tabs" role="tablist" aria-label="Geöffnete Dossiers" id="tabs"></div>
+    <div class="schmal-wahl"><select id="schmalwahl" aria-label="Geöffnete Dossiers"></select></div>
+    <div class="zuletzt"><button class="wk" type="button" id="zuletzt-knopf" aria-haspopup="true" aria-expanded="false">Zuletzt <span id="zuletzt-zahl"></span></button><div class="menue" id="zuletzt-menue" hidden></div></div>
+    <div class="rechts">
+      <label class="schalt"><input type="checkbox" id="kuerzel"> Kürzel in Tabs</label>
+      <label><span class="rolle-txt">Rolle </span><select id="rolle" aria-label="Rolle (Prototyp)"><option value="klp">Klassenlehrperson</option><option value="verwaltung">Schulverwaltung</option></select></label>
+    </div>
+  </header>
+  <main class="ansicht" id="ansicht" role="tabpanel" tabindex="-1"></main>
+
+  <script src="assets/daten.js"></script>
+  <script src="assets/gemeinsam.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    const X = window.EX, U = window.EXUI, esc = X.esc;
+    const $ = (id) => document.getElementById(id);
+    $("titel").innerHTML = U.wortmarke("EduKSX");
+    const MAX = 8, SPEICHER = "eduksx-ex-dossier";
+
+    // Datensätze: Lernende (L…) und Lehrpersonen (P…)
+    const satz = (id) => id[0] === "L" ? { art: "l", ...X.LERNENDE.find((x) => x.id === id) } : { art: "p", ...X.PENSEN.find((x) => x.id === id) };
+    const kuerzel = (s) => s.vorname[0] + ". " + s.name[0] + ".";
+    const voll = (s) => s.name + " " + s.vorname;
+    const klp = (klasse) => { const p = X.PENSEN.find((x) => x.id === X.KLASSENLEHRPERSON[klasse]); return p ? voll(p) : "–"; };
+    const verlauf = []; // Zugriffsprotokoll (nur Anzeige im Prototyp)
+
+    // Zustand: offene Tabs (Reihenfolge = Öffnungsreihenfolge), aktiver Tab, zuletzt geöffnet, Abschnitt je Tab
+    let z = { tabs: [], aktiv: "start", zuletzt: [], abschnitt: {} };
+    function laden() {
+      const h = new URLSearchParams(location.hash.slice(1));
+      if (h.has("t")) {
+        z.tabs = h.get("t").split(",").filter(Boolean).map((t) => ({ id: t.replace("!", ""), pin: t[0] === "!" })).filter((t) => /^[LP]\d\d$/.test(t.id) && satz(t.id).name);
+        z.aktiv = h.get("a") && z.tabs.some((t) => t.id === h.get("a")) ? h.get("a") : "start";
+        const alt = U.lesen(SPEICHER, null); if (alt) z.zuletzt = alt.zuletzt || [];
+      } else { const alt = U.lesen(SPEICHER, null); if (alt) z = Object.assign(z, alt); }
+      z.tabs = z.tabs.slice(0, MAX);
+    }
+    function sichern() {
+      U.schreiben(SPEICHER, z);
+      const t = z.tabs.map((x) => (x.pin ? "!" : "") + x.id).join(",");
+      history.replaceState(null, "", "#t=" + t + "&a=" + z.aktiv);
+    }
+
+    function oeffnen(id, imHintergrund) {
+      if (!z.tabs.some((t) => t.id === id)) {
+        if (z.tabs.length >= MAX) {
+          const i = z.tabs.findIndex((t) => !t.pin);
+          if (i < 0) { U.toast("Höchstens " + MAX + " Tabs – zuerst einen lösen"); return; }
+          const weg = z.tabs.splice(i, 1)[0]; nachZuletzt(weg.id);
+          U.toast(voll(satz(weg.id)) + " → «Zuletzt»");
+        }
+        z.tabs.push({ id, pin: false });
+        z.zuletzt = z.zuletzt.filter((x) => x !== id);
+      }
+      if (!imHintergrund) z.aktiv = id;
+      alles(); if (!imHintergrund) fokusTab(id);
+    }
+    function nachZuletzt(id) { z.zuletzt = [id, ...z.zuletzt.filter((x) => x !== id)].slice(0, 12); }
+    function schliessen(id) {
+      const i = z.tabs.findIndex((t) => t.id === id); if (i < 0) return;
+      z.tabs.splice(i, 1); nachZuletzt(id);
+      if (z.aktiv === id) z.aktiv = z.tabs[Math.min(i, z.tabs.length - 1)] ? z.tabs[Math.min(i, z.tabs.length - 1)].id : "start";
+      alles(); fokusTab(z.aktiv);
+    }
+    function anheften(id) {
+      const t = z.tabs.find((x) => x.id === id); t.pin = !t.pin;
+      z.tabs.sort((a, b) => (b.pin - a.pin)); // angeheftete vorne, sonst Reihenfolge bleibt
+      alles(); fokusTab(id);
+    }
+    const fokusTab = (id) => { const b = document.querySelector(`[role="tab"][data-id="${id}"]`); if (b) b.focus(); };
+
+    // ---------- Tableiste ----------
+    const SVG_HAUS = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>`;
+    const SVG_X = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>`;
+    const SVG_NADEL = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 3l6 6-3 1-4 4 1 5-2 2-4-4-5 5-1-1 5-5-4-4 2-2 5 1 4-4z"/></svg>`;
+    function leiste() {
+      const mitKuerzel = $("kuerzel").checked;
+      const tabs = [{ id: "start" }, ...z.tabs];
+      $("tabs").innerHTML = tabs.map((t, i) => {
+        if (t.id === "start") return `<div class="tab ${z.aktiv === "start" ? "aktiv" : ""}"><button role="tab" data-id="start" aria-selected="${z.aktiv === "start"}" tabindex="${z.aktiv === "start" ? 0 : -1}" title="Start (Alt+1)">${SVG_HAUS}<span class="txt">Start</span></button></div>`;
+        const s = satz(t.id), name = mitKuerzel ? kuerzel(s) : voll(s);
+        return `<div class="tab ${z.aktiv === t.id ? "aktiv" : ""} ${t.pin ? "angeheftet" : ""}" data-id="${t.id}">
+          <button role="tab" data-id="${t.id}" aria-selected="${z.aktiv === t.id}" tabindex="${z.aktiv === t.id ? 0 : -1}" title="${esc(voll(s))}${i < 9 ? " (Alt+" + (i + 1) + ")" : ""}" aria-label="${esc((s.art === "l" ? "Lernendendossier " : "Personaldossier ") + (mitKuerzel ? kuerzel(s) : voll(s)))}${t.pin ? ", angeheftet" : ""}">
+            <span class="ico-art art-${s.art}" aria-hidden="true">${s.art === "l" ? "LD" : "PD"}</span><span class="txt">${esc(name)}</span></button>
+          <button class="klein nadel" type="button" data-pin="${t.id}" aria-pressed="${t.pin}" aria-label="${esc(name)} ${t.pin ? "lösen" : "anheften"}" title="${t.pin ? "Lösen" : "Anheften"}">${SVG_NADEL}</button>
+          <button class="klein" type="button" data-zu="${t.id}" aria-label="${esc(name)} schliessen" title="Schliessen">${SVG_X}</button></div>`;
+      }).join("");
+      $("schmalwahl").innerHTML = tabs.map((t) => `<option value="${t.id}" ${z.aktiv === t.id ? "selected" : ""}>${t.id === "start" ? "Start" : esc((t.pin ? "📌 " : "") + (mitKuerzel ? kuerzel(satz(t.id)) : voll(satz(t.id))))}</option>`).join("") +
+        (z.zuletzt.length ? `<optgroup label="Zuletzt geöffnet">${z.zuletzt.map((id) => `<option value="${id}">${esc(voll(satz(id)))}</option>`).join("")}</optgroup>` : "");
+      $("zuletzt-zahl").textContent = z.zuletzt.length ? "(" + z.zuletzt.length + ")" : "";
+      $("zuletzt-menue").innerHTML = `<h3>Zuletzt geöffnet</h3>` + (z.zuletzt.length ? z.zuletzt.map((id) => { const s = satz(id); return `<button type="button" data-auf="${id}"><span class="ico-art art-${s.art}" style="width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font:700 .62rem var(--font-sans)" aria-hidden="true">${s.art === "l" ? "LD" : "PD"}</span>${esc(voll(s))}</button>`; }).join("") : `<div class="leer">Noch nichts geschlossen.</div>`);
+    }
+    $("tabs").addEventListener("click", (e) => {
+      const pin = e.target.closest("[data-pin]"), zu = e.target.closest("[data-zu]"), tab = e.target.closest('[role="tab"]');
+      if (pin) anheften(pin.dataset.pin); else if (zu) schliessen(zu.dataset.zu); else if (tab) { z.aktiv = tab.dataset.id; alles(); fokusTab(z.aktiv); }
+    });
+    $("tabs").addEventListener("auxclick", (e) => { if (e.button !== 1) return; const t = e.target.closest(".tab[data-id]"); if (t) { e.preventDefault(); schliessen(t.dataset.id); } });
+    $("tabs").addEventListener("mousedown", (e) => { if (e.button === 1) e.preventDefault(); });
+    $("tabs").addEventListener("keydown", (e) => {
+      const tabs = [...$("tabs").querySelectorAll('[role="tab"]')], i = tabs.indexOf(document.activeElement); if (i < 0) return;
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") { const n = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length]; tabs.forEach((t) => t.tabIndex = -1); n.tabIndex = 0; n.focus(); e.preventDefault(); }
+      else if (e.key === "Enter" || e.key === " ") { z.aktiv = tabs[i].dataset.id; alles(); fokusTab(z.aktiv); e.preventDefault(); }
+      else if (e.key === "Delete" && tabs[i].dataset.id !== "start") { schliessen(tabs[i].dataset.id); e.preventDefault(); }
+    });
+    $("schmalwahl").addEventListener("change", (e) => { const id = e.target.value; id === "start" ? (z.aktiv = "start", alles()) : oeffnen(id); });
+    $("zuletzt-knopf").addEventListener("click", () => { const m = $("zuletzt-menue"); m.hidden = !m.hidden; $("zuletzt-knopf").setAttribute("aria-expanded", String(!m.hidden)); if (!m.hidden) { const b = m.querySelector("button"); if (b) b.focus(); } });
+    $("zuletzt-menue").addEventListener("click", (e) => { const b = e.target.closest("[data-auf]"); if (b) { $("zuletzt-menue").hidden = true; $("zuletzt-knopf").setAttribute("aria-expanded", "false"); oeffnen(b.dataset.auf); } });
+    document.addEventListener("click", (e) => { if (!e.target.closest(".zuletzt")) { $("zuletzt-menue").hidden = true; $("zuletzt-knopf").setAttribute("aria-expanded", "false"); } });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !$("zuletzt-menue").hidden) { $("zuletzt-menue").hidden = true; $("zuletzt-knopf").focus(); }
+      if (e.altKey && /^[1-9]$/.test(e.key)) { const ids = ["start", ...z.tabs.map((t) => t.id)], id = ids[+e.key - 1]; if (id) { z.aktiv = id; alles(); fokusTab(id); e.preventDefault(); } }
+    });
+    $("kuerzel").addEventListener("change", () => { U.schreiben("eduksx-ex-kuerzel", $("kuerzel").checked); leiste(); });
+    $("rolle").addEventListener("change", () => { U.toast("Rolle: " + $("rolle").selectedOptions[0].text); ansicht(); });
+
+    // ---------- Ansichten ----------
+    function ansicht() {
+      const a = $("ansicht");
+      $("ansicht").setAttribute("aria-label", z.aktiv === "start" ? "Start" : voll(satz(z.aktiv)));
+      if (z.aktiv === "start") { a.innerHTML = startHtml(); startVerdrahten(); return; }
+      const s = satz(z.aktiv), ab = z.abschnitt[s.id] || "uebersicht";
+      const ABS = s.art === "l"
+        ? [["uebersicht", "Übersicht"], ["familie", "Familie"], "-", ["zuteilungen", "Zuteilungen"], "-", ["dokumente", "Dokumente", s.dokumente], ["aufgaben", "Aufgaben", s.aufgaben], ["notizen", "Notizen", s.notizen], "-", ["verlauf", "Zugriffe", verlauf.filter((v) => v.id === s.id).length]]
+        : [["uebersicht", "Übersicht"], ["zuteilungen", "Zuteilungen"], "-", ["dokumente", "Dokumente", 1], ["verlauf", "Zugriffe", verlauf.filter((v) => v.id === s.id).length]];
+      const kern = s.art === "l"
+        ? [["Klasse", s.klasse], ["Schulhaus", s.schulhaus], ["Klassenlehrperson", klp(s.klasse)], ["Status", s.status]]
+        : [["Funktion", s.funktion], ["Klassen", s.klassen], ["Pensum", (s.lektionen / X.VOLLPENSUM * 100).toFixed(1) + " %"], ["Status", s.status]];
+      a.innerHTML = `<div class="dossier-kopf"><span class="avatar art-${s.art}" aria-hidden="true">${esc(s.vorname[0] + s.name[0])}</span>
+          <div><h1>${esc(voll(s))}</h1><div class="typ">${s.art === "l" ? "Lernendendossier" : "Personaldossier"}</div></div>
+          <dl class="kern">${kern.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl></div>
+        <div class="dossier-rumpf"><nav class="abschnitte" aria-label="Abschnitte"><ul>${ABS.map((x) => x === "-" ? `<li class="trenn" role="separator"></li>` :
+          `<li><button type="button" data-ab="${x[0]}" aria-current="${x[0] === ab}">${esc(x[1])}${x[2] !== undefined ? `<span class="zahl" aria-label="${x[2]} Einträge">${x[2]}</span>` : ""}</button></li>`).join("")}</ul></nav>
+          <div class="inhalt">${abschnittHtml(s, ab)}</div></div>`;
+      a.querySelectorAll("[data-ab]").forEach((b) => b.addEventListener("click", () => { z.abschnitt[s.id] = b.dataset.ab; sichern(); ansicht(); const n = a.querySelector(`[data-ab="${b.dataset.ab}"]`); if (n) n.focus(); }));
+      a.querySelectorAll("[data-zeigen]").forEach((b) => b.addEventListener("click", () => {
+        const feld = b.dataset.zeigen; verlauf.unshift({ id: s.id, zeit: new Date(), text: feld + " angezeigt (" + $("rolle").selectedOptions[0].text + ")" });
+        b.closest(".geschuetzt").innerHTML = `<code>${esc(b.dataset.wert)}</code><span class="small muted">angezeigt · protokolliert</span>`;
+        U.toast("Zugriff auf «" + feld + "» wird protokolliert");
+        const zahl = a.querySelector('[data-ab="verlauf"] .zahl'); if (zahl) zahl.textContent = verlauf.filter((v) => v.id === s.id).length;
+      }));
+    }
+    const feld = (k, v) => `<div><dt>${esc(k)}</dt><dd class="${v === "–" ? "leer" : ""}">${v}</dd></div>`;
+    function geschuetzt(name, maske, wert, nurVerwaltung) {
+      if (nurVerwaltung && $("rolle").value !== "verwaltung") return `<span class="gesperrt"><span aria-hidden="true">🔒</span>Keine Berechtigung für diese Rolle</span>`;
+      return `<span class="geschuetzt"><code aria-label="verborgen">${esc(maske)}</code><button type="button" data-zeigen="${esc(name)}" data-wert="${esc(wert)}">Anzeigen</button></span>`;
+    }
+    function abschnittHtml(s, ab) {
+      if (ab === "uebersicht" && s.art === "l") {
+        const g = s.geburt.split("-");
+        return `<section class="karte-d"><h2>Personenangaben</h2><dl class="felder">
+            ${feld("Vorname", esc(s.vorname))}${feld("Name", esc(s.name))}${feld("Geschlecht", s.geschlecht === "w" ? "weiblich" : "männlich")}
+            ${feld("Geburtsdatum", geschuetzt("Geburtsdatum", "••.••." + g[0], g[2] + "." + g[1] + "." + g[0], false))}
+            ${feld("Sozialversicherungsnummer", geschuetzt("Sozialversicherungsnummer", "756.••••.••••.••", "756.0000.0000.00 (Testwert)", true))}
+            ${feld("Mediennutzung Fotos", "Einwilligung offen")}</dl></section>
+          <section class="karte-d"><h2>Kontakt</h2><dl class="felder">
+            ${feld("Erziehungsberechtigte Person", esc(s.kontakt))}${feld("Korrespondenzsprache", esc(s.sprache))}
+            ${feld("E-Mail Schule", esc((s.vorname + "." + s.name).toLowerCase()) + "@schule.example")}${feld("Adresse", geschuetzt("Adresse", "••••, Musterstadt", "Musterweg 1, 9999 Musterstadt (Testwert)", false))}
+            ${feld("Notfallkontakt", "–")}</dl></section>
+          <section class="karte-d breit"><h2>Schullaufbahn</h2><ul class="eintraege">
+            <li>Sekundarstufe, Klasse ${esc(s.klasse)}<span class="neben">seit August</span></li><li>Primarstufe abgeschlossen<span class="neben">Juli</span></li></ul></section>`;
+      }
+      if (ab === "uebersicht") {
+        return `<section class="karte-d"><h2>Anstellung</h2><dl class="felder">
+            ${feld("Vorname", esc(s.vorname))}${feld("Name", esc(s.name))}${feld("Funktion", esc(s.funktion))}${feld("Status", esc(s.status))}
+            ${feld("Lektionen", s.lektionen)}${feld("Pensum", (s.lektionen / X.VOLLPENSUM * 100).toFixed(1) + " %")}
+            ${feld("Personalnummer", geschuetzt("Personalnummer", "••••", s.id.replace("P", "90") + " (Testwert)", true))}</dl></section>
+          <section class="karte-d"><h2>Unterricht</h2><dl class="felder">${feld("Klassen", esc(s.klassen))}${feld("Fächer", esc(s.faecher))}</dl></section>`;
+      }
+      if (ab === "familie") return `<section class="karte-d breit"><h2>Familie</h2><ul class="eintraege"><li>${esc(s.kontakt)}<span class="neben">Erziehungsberechtigt · Hauptkontakt</span></li><li>Zweite erziehungsberechtigte Person<span class="neben">nicht erfasst</span></li></ul></section>`;
+      if (ab === "zuteilungen") {
+        const z2 = s.art === "l" ? [`Klasse ${s.klasse} · ${s.schulhaus}`, `Klassenlehrperson ${klp(s.klasse)}`] : s.klassen.split(/,\s*/).map((k) => "Klasse " + k + " · " + s.faecher);
+        return `<section class="karte-d breit"><h2>Zuteilungen</h2><ul class="eintraege">${z2.map((x) => `<li>${esc(x)}<span class="neben">Schuljahr 2027/28</span></li>`).join("")}</ul></section>`;
+      }
+      if (ab === "dokumente") { const n = s.art === "l" ? s.dokumente : 1; return `<section class="karte-d breit"><h2>Dokumente</h2>${n ? `<ul class="eintraege">${Array.from({ length: n }, (_, i) => `<li>📄 ${["Anmeldung", "Zeugnis Primarstufe", "Einwilligung Medien", "Gesprächsnotiz", "Bericht"][i % 5]}.pdf<span class="neben">EduKSX-Sign</span></li>`).join("")}</ul>` : `<p class="muted">Keine Dokumente.</p>`}</section>`; }
+      if (ab === "aufgaben") return `<section class="karte-d breit"><h2>Aufgaben</h2>${s.aufgaben ? `<ul class="eintraege"><li>Gespräch vereinbaren<span class="neben">${U.statusChip("offen")}</span></li></ul>` : `<p class="muted">Keine offenen Aufgaben.</p>`}</section>`;
+      if (ab === "notizen") return `<section class="karte-d breit"><h2>Notizen</h2>${s.notizen ? `<ul class="eintraege">${Array.from({ length: s.notizen }, (_, i) => `<li>Notiz ${i + 1} (nur für berechtigte Rollen sichtbar)<span class="neben">vor ${i + 2} Tagen</span></li>`).join("")}</ul>` : `<p class="muted">Keine Notizen.</p>`}</section>`;
+      if (ab === "verlauf") { const v = verlauf.filter((x) => x.id === s.id); return `<section class="karte-d breit"><h2>Zugriffe auf geschützte Angaben</h2>${v.length ? `<ul class="eintraege">${v.map((x) => `<li>${esc(x.text)}<span class="neben">${esc(X.fmtZeit(x.zeit))}</span></li>`).join("")}</ul>` : `<p class="muted">Noch keine Zugriffe in dieser Sitzung.</p>`}</section>`; }
+      return "";
+    }
+
+    let filter = "";
+    function startHtml() {
+      const f = filter.toLowerCase();
+      const l = X.LERNENDE.filter((s) => !f || (voll(s) + " " + s.klasse + " " + s.schulhaus).toLowerCase().includes(f));
+      const p = X.PENSEN.filter((s) => !f || (voll(s) + " " + s.klassen + " " + s.funktion).toLowerCase().includes(f));
+      const zeile = (s, a, b, c) => `<tr data-id="${s.id}"><td><button class="oeffnen" type="button" data-id="${s.id}">${esc(voll(s))}</button></td><td>${esc(a)}</td><td>${esc(b)}</td><td>${esc(c)}</td></tr>`;
+      return `<div class="start"><h1>Dossiers</h1><p class="muted">Klick öffnet einen Tab, Ctrl/⌘-Klick oder mittlere Maustaste öffnet im Hintergrund. Höchstens ${MAX} Tabs, ältere wandern nach «Zuletzt».</p>
+        <div class="werkzeug"><input type="search" id="startfilter" placeholder="Filtern …" aria-label="Dossiers filtern" value="${esc(filter)}"></div>
+        <h2 class="small muted" style="text-transform:uppercase;letter-spacing:.05em;margin:1rem 0 .4rem">Lernende (${l.length})</h2>
+        <table class="liste"><thead><tr><th>Name</th><th>Klasse</th><th>Schulhaus</th><th>Status</th></tr></thead><tbody>${l.map((s) => zeile(s, s.klasse, s.schulhaus, s.status)).join("")}</tbody></table>
+        <h2 class="small muted" style="text-transform:uppercase;letter-spacing:.05em;margin:1.4rem 0 .4rem">Lehrpersonen (${p.length})</h2>
+        <table class="liste"><thead><tr><th>Name</th><th>Funktion</th><th>Klassen</th><th>Status</th></tr></thead><tbody>${p.map((s) => zeile(s, s.funktion, s.klassen, s.status)).join("")}</tbody></table></div>`;
+    }
+    function startVerdrahten() {
+      const f = $("startfilter");
+      f.addEventListener("input", () => { filter = f.value; const pos = f.selectionStart; ansicht(); const n = $("startfilter"); n.focus(); n.setSelectionRange(pos, pos); });
+      $("ansicht").querySelectorAll("tbody tr").forEach((tr) => {
+        tr.addEventListener("click", (e) => { e.preventDefault(); oeffnen(tr.dataset.id, e.ctrlKey || e.metaKey); if (e.ctrlKey || e.metaKey) U.toast("Im Hintergrund geöffnet"); });
+        tr.addEventListener("auxclick", (e) => { if (e.button === 1) { e.preventDefault(); oeffnen(tr.dataset.id, true); U.toast("Im Hintergrund geöffnet"); } });
+      });
+    }
+
+    function alles() { leiste(); ansicht(); sichern(); const t = document.querySelector(`.tab.aktiv`); if (t) t.scrollIntoView({ block: "nearest", inline: "nearest" }); }
+
+    // Treffer aus der Suche (Ctrl/⌘ K) öffnen als Tab
+    U.beiOeffnen = (e) => { if (e.art === "lernende" || e.art === "person") { oeffnen(e.id); return true; } return false; };
+    window.addEventListener("hashchange", () => { laden(); leiste(); ansicht(); });
+
+    $("kuerzel").checked = !!U.lesen("eduksx-ex-kuerzel", false);
+    laden();
+    if (!z.tabs.length && !location.hash) { z.tabs = [{ id: "L03", pin: true }, { id: "L05", pin: false }, { id: "P06", pin: false }]; z.aktiv = "L05"; }
+    alles();
+  })();
+  </script>
+</body>
+</html>

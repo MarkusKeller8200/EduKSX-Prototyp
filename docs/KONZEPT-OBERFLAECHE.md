@@ -1,8 +1,8 @@
 # Konzept: Oberfläche – Ansichten je Arbeit und wählbare Stile (#93)
 
-Stand: 2026-11-24 (Prototyp GUI-EX 0.3.0 / Meilenstein «EduKSX-Experience – GUI-Experience») · Status: **ENTWURF**
+Stand: 2026-11-24 (Prototyp GUI-EX 0.4.0 / Meilenstein «EduKSX-Experience – GUI-Experience») · Status: **ENTWURF**
 
-Entscheidungsgrundlage für EduKSX-UI und alle Module. Erprobt im Prototyp `prototypen/gui-ex` (#90, #92, #93).
+Entscheidungsgrundlage für EduKSX-UI und alle Module. Erprobt im Prototyp `prototypen/gui-ex` (#90, #92, #93, #95).
 Umgesetzt wird erst, was als Issue mit `_1 bereit` freigegeben ist.
 
 | Stufe | Bedeutung |
@@ -15,7 +15,7 @@ Umgesetzt wird erst, was als Issue mit `_1 bereit` freigegeben ist.
 ## 1. Ziel
 
 Alle bisherigen Prototypen nutzen dasselbe Verwaltungs-Layout (Kopfzeile, Navigation links, Kennzahl-Karten,
-Tabellen). GUI-EX hat sechs andere Bedienkonzepte und vier Stile erprobt.
+Tabellen). GUI-EX hat sieben Bedienkonzepte und vier Stile erprobt.
 
 - **BESCHLOSSEN (24.11.2026):** Die Konzepte eignen sich für verschiedene Arten von Arbeit – es gibt nicht *ein*
   Layout für alles. Beispiel: A (Befehlszeile) eignet sich nicht zum Bearbeiten von Tabellen.
@@ -33,11 +33,29 @@ Stile, die die CI-Farben ersetzen.
 | Tagesüberblick, unterwegs, Handy/Tablet | **Startseite** mit lebenden Kacheln bzw. Cockpit | B Kacheln, E Cockpit | EMPFOHLEN |
 | Planen mit Fristen und Abläufen (Flow, Jahresplanung, Stellvertretungen) | **Zeitstrahl** als Ansicht («als Zeitstrahl zeigen») mit Fortschritt und Detailspalte | C Zeitstrahl | EMPFOHLEN |
 | Massendaten erfassen und korrigieren (Pensen, Lizenzen, Codex-Erfassung) | **Tabelle/Raster**: direkt in der Zelle bearbeiten, Tastatur, Mehrfachauswahl, Sammeländerung, Summen, Prüfhinweise, Rückgängig | F Tabelle | EMPFOHLEN |
-| Vergleichen, mehrere Dinge parallel | **Arbeitsfläche** mit Fenstern, nur auf grossen Bildschirmen, optional | D Arbeitsfläche | OFFEN (E3) |
-| Einzelnen Datensatz bearbeiten | Formular bzw. Detailspalte (wie C) | – | EMPFOHLEN |
+| Vergleichen, mehrere Dinge parallel | **Arbeitsfläche** mit Fenstern, nur auf grossen Bildschirmen, optional – Tabs (G) decken den häufigen Fall «zwischen Dossiers springen» einfacher ab | D Arbeitsfläche | OFFEN (E3) |
+| An einzelnen Datensätzen arbeiten (Lernende, Lehrpersonen, Klassen) | **Dossier**: Kopf mit wenigen Kernangaben, Abschnittsmenü mit Zählern, Karten mit Feldern; geöffnete Dossiers als **Tabs** | G Dossier (Anregung: Tab-Konzept einer bestehenden Schulverwaltungs-Software) | EMPFOHLEN |
+| Kurz einen Datensatz ansehen oder ändern, ohne die Liste zu verlassen | Detailspalte rechts (wie C) | C Zeitstrahl | EMPFOHLEN |
 
 Ein Modul bietet die Ansichten an, die zu seinen Daten passen (z. B. Staffing: Tabelle + Zeitstrahl; Time: Startseite
 + Tabelle für Korrekturen; Codex: Tabelle + Lesesicht). Die Suche ist überall gleich.
+
+### Regeln für Tabs (EMPFOHLEN)
+
+- Tabs nur für **Datensätze** (Dossiers), nicht für Module oder Listen; Start-Tab fest.
+- Höchstens **8** offene Tabs; beim neunten rutscht der älteste nicht angeheftete nach «Zuletzt geöffnet» (OFFEN E6).
+- Anheften, Schliessen mit × und mittlerer Maustaste, Wechsel mit Alt+1–9 bzw. Pfeiltasten in der Tableiste.
+- Offene Tabs stehen in der Adresse (Link teilbar, Zurück-Taste des Browsers bleibt sinnvoll) und überstehen das Neuladen.
+- Schmale Bildschirme: Auswahlliste «Geöffnet / Zuletzt» statt Tabs.
+- Tabtitel wahlweise mit **Kürzel** statt vollem Namen (Bildschirm in Unterricht/Sitzung sichtbar).
+
+### Datenschutz in Dossiers (EMPFOHLEN)
+
+- Heikle Angaben (z. B. Sozialversicherungsnummer, Geburtsdatum, Adresse, Notizen) nicht auf der Übersicht im Klartext:
+  je nach **Rolle** ausgeblendet («Keine Berechtigung») oder erst nach **«Anzeigen»** sichtbar.
+- Jedes Anzeigen geschützter Angaben wird **protokolliert** (wer, was, wann) – Bezug zur Informationssicherheit
+  (ISMS); Aufbewahrung und Einsicht ins Protokoll ZU PRÜFEN.
+- Leere Felder kompakt darstellen statt vieler «–».
 
 ## 3. Stile (Themes)
 
@@ -72,6 +90,8 @@ Zusätzlich, unabhängig vom Stil:
 | E3 | Arbeitsfläche (D) anbieten? | gar nicht / optional ab grossem Bildschirm | – | OFFEN |
 | E4 | Startseite: Kacheln (B) oder Cockpit (E)? | B / E / B als Standard, E als Stil «Neo-Dunkel» der Startseite | – | OFFEN |
 | E5 | Akzentfarbe je Schule? | nein / ja, mit Kontrastprüfung | – | OFFEN |
+| E6 | Tabs für Dossiers? | nein / ja mit Obergrenze 8 / andere Obergrenze | – | OFFEN |
+| E7 | Welche Angaben gelten als geschützt, je Rolle? | Liste mit Datenschutz abstimmen | – | OFFEN |
 
 ## 5. Umsetzung
 
@@ -97,7 +117,9 @@ Zusätzlich, unabhängig vom Stil:
 | #90 | GUI-EX: Varianten A–D | `_3 Beta-Test` |
 | #92 | GUI-EX: Stil-Schalter, Variante E, Zeitstrahl mit Fortschritt | `_3 Beta-Test` |
 | #93 | GUI-EX: Variante F Tabelle, Suche überall, dieses Konzept | `_3 Beta-Test` |
+| #95 | GUI-EX: Variante G Dossier mit Tabs, Dossier-Ansicht und Tab-Regeln | `_3 Beta-Test` |
 
 ## 7. Verlauf
 
 - 2026-11-24: Konzept angelegt nach Test von GUI-EX 0.2.0; Beschluss «Konzepte je Art der Arbeit».
+- 2026-11-24: Dossier-Ansicht, Regeln für Tabs und Datenschutz in Dossiers ergänzt (G, #95); E6, E7 neu.
