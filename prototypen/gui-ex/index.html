@@ -42,7 +42,7 @@
     .tabelle { overflow-x: auto; }
     .stile { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: .75rem; }
     .stil-wahl { display: flex; align-items: center; gap: .7rem; padding: .7rem .8rem; border: 1px solid var(--border); border-radius: 12px; background: var(--card); color: var(--foreground); font: inherit; text-align: left; cursor: pointer; }
-    .stil-wahl[aria-checked="true"] { border-color: var(--brand-orange); box-shadow: inset 0 0 0 1px var(--brand-orange); }
+    .stil-wahl[aria-checked="true"] { border-color: var(--akzent); box-shadow: inset 0 0 0 1px var(--akzent); }
     .stil-wahl .muster { width: 48px; height: 34px; border-radius: 8px; border: 1px solid var(--border); flex: none; }
     .stil-wahl small { display: block; color: var(--muted-foreground); }
     .knopf { font: inherit; border-radius: 8px; padding: .45rem .9rem; border: 1px solid var(--input); background: var(--card); color: var(--foreground); cursor: pointer; }
@@ -57,7 +57,7 @@
       <h1 id="titel"></h1>
       <a class="zurueck" href="../" title="Zurück zur Einstiegsseite aller EduKSX-Prototypen" aria-label="Zurück zur Einstiegsseite aller EduKSX-Prototypen"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
     </div>
-    <p class="lead">Sieben Bedienkonzepte für verschiedene Arten von Arbeit und vier Stile für die EduKSX-Plattform zum Ausprobieren und Vergleichen.
+    <p class="lead">Sieben Bedienkonzepte für verschiedene Arten von Arbeit und zwanzig Stile für die EduKSX-Plattform zum Ausprobieren und Vergleichen.
       Inhalt (Aufgaben, Termine, Module) ist überall gleich – es geht nur um das <strong>Erlebnis</strong>: Wie finde ich mich zurecht, wie schnell komme ich ans Ziel, was fühlt sich gut an?</p>
 
     <div class="bisher">
@@ -69,7 +69,8 @@
     <div class="varianten" id="varianten"></div>
 
     <h2 class="abschnitt">Aussehen (Stil)</h2>
-    <p class="muted small" style="margin-top:-.4rem">Aufbau und Aussehen sind getrennt: Die Varianten A–D, F und G lassen sich in jedem Stil zeigen (auch in jeder Variante über «Stil» in der Leiste unten). E hat den festen Stil Neo-Dunkel.</p>
+    <p class="muted small" style="margin-top:-.4rem">Aufbau und Aussehen sind getrennt. Das Erscheinungsbild besteht aus fünf unabhängigen Einstellungen: Stil, Farbmodus, Informationsdichte, Akzentfarbe und Barrierefreiheit (in jeder Variante über das Palettensymbol in der Leiste unten). E hat den festen Stil Neo-Dunkel.</p>
+    <p style="margin:.2rem 0 .8rem"><button class="knopf" type="button" id="eb-oeffnen">Erscheinungsbild … (Stil, Farbmodus, Dichte, Akzentfarbe, Barrierefreiheit)</button></p>
     <div class="stile" id="stile" role="radiogroup" aria-label="Stil für die Varianten A–D, F und G"></div>
 
     <h2 class="abschnitt">Vergleich</h2>
@@ -136,6 +137,8 @@
         document.querySelectorAll(".stil-wahl").forEach((b) => b.addEventListener("click", () => { stil(b.dataset.stil); stile(); toast("Stil: " + b.querySelector("b").textContent); }));
       }
       stile();
+      document.getElementById("eb-oeffnen").addEventListener("click", () => { window.EXUI.erscheinungsbild(); });
+      document.addEventListener("click", (e) => { if (e.target.closest(".ex-eb")) setTimeout(stile, 0); });
 
       function bewertungen() {
         const alle = lesen(SPEICHER, {});

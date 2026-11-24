@@ -21,8 +21,30 @@
     { key: "papier", name: "Papier", text: "ruhig wie Gedrucktes, Serifen", muster: "linear-gradient(#fbf7ef,#efe6d4)" },
     { key: "spiel", name: "Spielerisch", text: "kräftig und gross (Primar)", muster: "linear-gradient(135deg,#ffd6e8,#d6ecff,#fff0c2)" },
     { key: "kontrast", name: "Hoher Kontrast", text: "Barrierefreiheit, keine Transparenz", muster: "linear-gradient(135deg,#fff 50%,#000 50%)" },
+    { key: "swiss", name: "Swiss", text: "präzise, sachlich, klares Raster", muster: "linear-gradient(#fff 0 70%,#111 70% 76%,#fff 76%)" },
+    { key: "tonal", name: "Tonal", text: "dynamisch, abgestufte Farbflächen", muster: "linear-gradient(135deg,#fdf7ff,#e8def8,#eaddff)" },
+    { key: "sachlich", name: "Sachlich", text: "vertraut wie Büroanwendungen", muster: "linear-gradient(#f5f5f5 0 40%,#fff 40%)" },
+    { key: "neumorph", name: "Neumorph", text: "weiche Schatten, monochrom", muster: "linear-gradient(135deg,#f6f8fb,#cfd5df)" },
+    { key: "bento", name: "Bento", text: "modulare Blöcke, modern", muster: "linear-gradient(90deg,#fff 0 48%,#f2f3f5 48% 52%,#e6f3fa 52%)" },
+    { key: "minimal", name: "Minimal", text: "flach und reduziert", muster: "#ffffff" },
+    { key: "natur", name: "Natur", text: "Salbei und Sand, sanfte Formen", muster: "linear-gradient(135deg,#dfe8d8,#f3f0e7,#e6d6b8)" },
+    { key: "zen", name: "Zen", text: "ruhig und reizarm", muster: "linear-gradient(#f7f5f2,#ebe6de)" },
+    { key: "enterprise", name: "Enterprise", text: "kompakt, hohe Informationsdichte", muster: "repeating-linear-gradient(#fff 0 4px,#d8dee6 4px 5px)" },
+    { key: "cyberpunk", name: "Cyberpunk", text: "Neon, futuristisch", muster: "linear-gradient(135deg,#07060d 40%,#ff2bd6 40% 55%,#00e5ff 55% 70%,#07060d 70%)" },
+    { key: "terminal", name: "Terminal", text: "Monospace, technisch", muster: "linear-gradient(#0b0f0c 0 60%,#5dff95 60% 66%,#0b0f0c 66%)" },
   ];
-  const IMMER_DUNKEL = ["neo", "aurora"];
+  // Gruppen für das Fenster «Erscheinungsbild»
+  const STILGRUPPEN = [
+    ["Sachlich", ["standard", "swiss", "sachlich", "enterprise", "minimal", "papier"]],
+    ["Weich", ["clay", "neumorph", "tonal", "glas", "bento"]],
+    ["Ruhig", ["zen", "natur"]],
+    ["Ausdrucksstark", ["neo", "aurora", "cyberpunk", "terminal", "brutal", "spiel"]],
+    ["Barrierefrei", ["kontrast"]],
+  ];
+  const IMMER_DUNKEL = ["neo", "aurora", "cyberpunk", "terminal"];
+  const AKZENTE = [["orange", "EduKSX-Orange", "#ff8a00"], ["blau", "Blau", "#0272ad"], ["violett", "Violett", "#6b46a3"], ["gruen", "Grün", "#1b7a3d"], ["rot", "Rot", "#b71c1c"]];
+  // Vorgabe der Schule (im Prototyp fest; später je Mandant in EduKSX-Core)
+  const SCHULVORGABE = { stil: "standard", modus: "system", dichte: "normal", akzent: "orange", kontrast: false, bewegung: false, transparenz: false };
   const SPEICHER = "eduksx-ex-bewertung";
 
   function lesen(k, standard) { try { const v = localStorage.getItem(k); return v === null ? standard : JSON.parse(v); } catch (e) { return standard; } }
@@ -31,15 +53,23 @@
   const html = document.documentElement;
   const festerStil = () => document.body && document.body.dataset.stilFest;
   let stilJetzt = lesen("eduksx-ex-stil", "standard");
-  function thema(dunkel) {
-    schreiben("eduksx-ex-dunkel", dunkel);
-    anwenden();
-  }
+  // Erscheinungsbild: fünf unabhängige Einstellungen (Stil, Farbmodus, Dichte, Akzent, Barrierefreiheit)
+  const altDunkel = lesen("eduksx-ex-dunkel", null);
+  const eb = Object.assign({}, SCHULVORGABE, altDunkel === null ? {} : { modus: altDunkel ? "dunkel" : "hell" }, lesen("eduksx-ex-eb", {}));
+  delete eb.stil;
+  const systemDunkel = () => !!(window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+  function ebSetzen(k, v) { eb[k] = v; schreiben("eduksx-ex-eb", eb); anwenden(); }
+  function thema(dunkel) { ebSetzen("modus", dunkel ? "dunkel" : "hell"); }
+  if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (eb.modus === "system") anwenden(); });
   function anwenden() {
     const stil = festerStil() || stilJetzt;
     html.dataset.stil = stil;
+    html.dataset.dichte = eb.dichte; html.dataset.akzent = eb.akzent;
+    eb.kontrast ? html.dataset.kontrast = "an" : delete html.dataset.kontrast;
+    eb.bewegung ? html.dataset.bewegung = "aus" : delete html.dataset.bewegung;
+    eb.transparenz ? html.dataset.transparenz = "aus" : delete html.dataset.transparenz;
     // Neo-Dunkel ist immer dunkel; sonst gilt die eigene Wahl
-    html.classList.toggle("dark", IMMER_DUNKEL.includes(stil) || lesen("eduksx-ex-dunkel", window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches));
+    html.classList.toggle("dark", IMMER_DUNKEL.includes(stil) || eb.modus === "dunkel" || (eb.modus === "system" && systemDunkel()));
   }
   function stil(key) { stilJetzt = key; schreiben("eduksx-ex-stil", key); anwenden(); document.dispatchEvent(new CustomEvent("ex-stil", { detail: key })); }
   anwenden();
@@ -99,31 +129,13 @@
       sk.addEventListener("click", suche);
       nav.insertBefore(sk, nav.querySelector('[data-ex="thema"]'));
     }
-    if (!festerStil()) {
-      const knopf = document.createElement("span");
-      knopf.className = "stilknopf";
-      knopf.innerHTML = `<button type="button" aria-haspopup="true" aria-expanded="false" title="Stil wählen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 2a10 10 0 1 0 0 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.3A5.7 5.7 0 0 0 22 9.7C22 5.4 17.5 2 12 2z"/></svg><span class="lang">Stil</span></button>
-        <div class="ex-stilmenue" role="menu" aria-label="Stil" hidden>${STILE.map((x) => `<button type="button" role="menuitemradio" data-stil="${x.key}" aria-checked="${x.key === stilJetzt}"><span class="muster" style="background:${x.muster}" aria-hidden="true"></span><span>${x.name}<small>${x.text}</small></span></button>`).join("")}</div>`;
-      nav.insertBefore(knopf, nav.querySelector('[data-ex="thema"]'));
-      const auf = knopf.querySelector("button"), menue = knopf.querySelector(".ex-stilmenue");
-      const zu = () => { menue.hidden = true; auf.setAttribute("aria-expanded", "false"); };
-      auf.addEventListener("click", () => { menue.hidden = !menue.hidden; auf.setAttribute("aria-expanded", String(!menue.hidden)); if (!menue.hidden) menue.querySelector('[aria-checked="true"]').focus(); });
-      menue.addEventListener("click", (e) => {
-        const b = e.target.closest("[data-stil]"); if (!b) return;
-        stil(b.dataset.stil);
-        menue.querySelectorAll("[data-stil]").forEach((x) => x.setAttribute("aria-checked", x === b));
-        zu(); auf.focus(); toast("Stil: " + STILE.find((x) => x.key === b.dataset.stil).name);
-      });
-      menue.addEventListener("keydown", (e) => {
-        const alle = [...menue.querySelectorAll("[data-stil]")], i = alle.indexOf(document.activeElement);
-        if (e.key === "ArrowDown") { alle[(i + 1) % alle.length].focus(); e.preventDefault(); }
-        else if (e.key === "ArrowUp") { alle[(i + alle.length - 1) % alle.length].focus(); e.preventDefault(); }
-        else if (e.key === "Escape") { zu(); auf.focus(); }
-      });
-      document.addEventListener("click", (e) => { if (!knopf.contains(e.target)) zu(); });
-    }
+    const ebKnopf = document.createElement("button");
+    ebKnopf.type = "button"; ebKnopf.title = "Erscheinungsbild"; ebKnopf.setAttribute("aria-haspopup", "dialog");
+    ebKnopf.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 2a10 10 0 1 0 0 20c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.3A5.7 5.7 0 0 0 22 9.7C22 5.4 17.5 2 12 2z"/></svg><span class="lang">Erscheinungsbild</span>`;
+    ebKnopf.addEventListener("click", erscheinungsbild);
+    nav.insertBefore(ebKnopf, nav.querySelector('[data-ex="thema"]'));
     const themaKnopf = nav.querySelector('[data-ex="thema"]');
-    if (festerStil() === "neo") themaKnopf.remove();
+    if (IMMER_DUNKEL.includes(festerStil())) themaKnopf.remove();
     else themaKnopf.addEventListener("click", () => {
       if (IMMER_DUNKEL.includes(festerStil() || stilJetzt)) { toast("Dieser Stil ist immer dunkel"); return; }
       thema(!html.classList.contains("dark"));
@@ -132,11 +144,59 @@
     document.body.appendChild(nav);
   }
 
+  // ---------- Fenster «Erscheinungsbild»: fünf unabhängige Einstellungen ----------
+  function erscheinungsbild() {
+    if (document.querySelector(".ex-eb")) return;
+    const fest = festerStil();
+    const d = document.createElement("dialog");
+    d.className = "ex-dialog ex-eb"; d.setAttribute("aria-labelledby", "eb-titel");
+    const seg = (name, werte, aktuell, gesperrt) => `<div class="segment-eb" role="radiogroup" aria-label="${name}">${werte.map(([k, t]) => `<button type="button" role="radio" data-${name.toLowerCase()}="${k}" aria-checked="${k === aktuell}" ${gesperrt ? "disabled" : ""}>${t}</button>`).join("")}</div>`;
+    const stilAkt = fest || stilJetzt, dunkelFest = IMMER_DUNKEL.includes(stilAkt);
+    d.innerHTML = `<form method="dialog">
+      <h2 id="eb-titel">Erscheinungsbild<button type="submit" class="zu" aria-label="Schliessen">×</button></h2>
+      <div class="vorgabe"><span>Vorgabe der Schule: <b>Standard</b>, Akzent <b>EduKSX-Orange</b>, Modus wie System.</span><button type="button" data-zurueck>Auf Schulvorgabe zurücksetzen</button></div>
+      <section aria-labelledby="eb-stil"><h3 id="eb-stil">Stil</h3>${fest ? `<p class="muted small" style="margin:0">Diese Variante hat den festen Stil «${STILE.find((x) => x.key === fest).name}».</p>` :
+        STILGRUPPEN.map(([g, keys]) => `<div class="stilgruppe">${g}</div><div class="stilraster" role="radiogroup" aria-label="Stil ${g}">${keys.map((k) => { const x = STILE.find((y) => y.key === k); return `<button type="button" role="radio" data-stil="${k}" aria-checked="${k === stilJetzt}"><span class="muster" style="background:${x.muster}" aria-hidden="true"></span><span>${x.name}<small>${x.text}</small></span></button>`; }).join("")}</div>`).join("")}</section>
+      <div class="zweispaltig">
+        <section><h3>Farbmodus</h3>${seg("Modus", [["hell", "Hell"], ["dunkel", "Dunkel"], ["system", "System"]], eb.modus, dunkelFest)}${dunkelFest ? `<p class="muted small" style="margin:.4rem 0 0">Dieser Stil ist immer dunkel.</p>` : ""}</section>
+        <section><h3>Informationsdichte</h3>${seg("Dichte", [["kompakt", "Kompakt"], ["normal", "Normal"], ["komfortabel", "Komfortabel"]], eb.dichte)}</section>
+      </div>
+      <div class="zweispaltig">
+        <section><h3>Akzentfarbe</h3><div class="akzente" role="radiogroup" aria-label="Akzentfarbe">${AKZENTE.map(([k, t, f]) => `<button type="button" role="radio" data-akzent="${k}" aria-checked="${k === eb.akzent}" title="${t}" aria-label="${t}" style="background:${f}">${k === eb.akzent ? "✓" : ""}</button>`).join("")}</div>
+          <p class="muted small" style="margin:.4rem 0 0">Z. B. Farbe der Schule; die Wortmarke bleibt unverändert.</p></section>
+        <section class="a11y"><h3>Barrierefreiheit</h3>
+          <label><input type="checkbox" data-a11y="kontrast" ${eb.kontrast ? "checked" : ""}><span>Erhöhter Kontrast<small>gilt über jedem Stil</small></span></label>
+          <label><input type="checkbox" data-a11y="bewegung" ${eb.bewegung ? "checked" : ""}><span>Animationen reduzieren</span></label>
+          <label><input type="checkbox" data-a11y="transparenz" ${eb.transparenz ? "checked" : ""}><span>Transparenz deaktivieren<small>z. B. bei Glas und Aurora</small></span></label></section>
+      </div>
+      <p class="muted small" style="margin:0">Alles wird sofort angewendet und gilt für alle Varianten (gespeichert in diesem Browser; später im Benutzerprofil).</p>
+    </form>`;
+    document.body.appendChild(d);
+    const neuZeichnen = () => {
+      const f = document.activeElement, sel = f && [...f.attributes].find((a) => /^data-(stil|modus|dichte|akzent)$/.test(a.name) || a.name === "data-zurueck");
+      d._neu = true; d.close(); d.remove(); erscheinungsbild();
+      const n = sel && document.querySelector(`.ex-eb [${sel.name}${sel.value ? `="${sel.value}"` : ""}]`); if (n) n.focus();
+    };
+    d.addEventListener("click", (e) => {
+      const t = e.target.closest("button"); if (!t) { if (e.target === d) d.close(); return; }
+      if (t.dataset.stil) { stil(t.dataset.stil); toast("Stil: " + STILE.find((x) => x.key === t.dataset.stil).name); neuZeichnen(); }
+      else if (t.dataset.modus) { ebSetzen("modus", t.dataset.modus); neuZeichnen(); }
+      else if (t.dataset.dichte) { ebSetzen("dichte", t.dataset.dichte); neuZeichnen(); }
+      else if (t.dataset.akzent) { ebSetzen("akzent", t.dataset.akzent); neuZeichnen(); }
+      else if (t.hasAttribute("data-zurueck")) { Object.assign(eb, SCHULVORGABE); delete eb.stil; schreiben("eduksx-ex-eb", eb); if (!fest) stil(SCHULVORGABE.stil); else anwenden(); toast("Schulvorgabe wiederhergestellt"); neuZeichnen(); }
+    });
+    d.addEventListener("change", (e) => { const c = e.target.closest("[data-a11y]"); if (c) ebSetzen(c.dataset.a11y, c.checked); });
+    d.addEventListener("close", () => { if (d._neu) return; d.remove(); const k = document.querySelector('.ex-leiste [aria-haspopup="dialog"]'); if (k) k.focus(); });
+    d.showModal();
+    const erst = d.querySelector('[aria-checked="true"]'); if (erst) erst.focus();
+  }
+
   // ---------- Suche aus Variante A als Fenster in allen anderen Varianten (Ctrl/⌘ K oder /) ----------
   function suchEintraege() {
     const X = window.EX, liste = [];
     VARIANTEN.forEach((v) => liste.push({ art: "aktion", gruppe: "Aktionen", titel: `Variante ${v.buchstabe} – ${v.name} öffnen`, worte: "variante wechseln " + v.name, tun: () => { location.href = v.datei; } }));
     if (!festerStil()) STILE.forEach((x) => liste.push({ art: "aktion", gruppe: "Aktionen", titel: `Stil: ${x.name}`, worte: "stil aussehen theme " + x.text, tun: () => { stil(x.key); toast("Stil: " + x.name); } }));
+    liste.push({ art: "aktion", gruppe: "Aktionen", titel: "Erscheinungsbild …", worte: "stil dichte akzent farbe kontrast barrierefreiheit animation transparenz einstellungen", tun: erscheinungsbild });
     liste.push({ art: "aktion", gruppe: "Aktionen", titel: "Hell/Dunkel umschalten", worte: "dunkel hell modus thema", tun: () => { if (IMMER_DUNKEL.includes(festerStil() || stilJetzt)) toast("Dieser Stil ist immer dunkel"); else thema(!html.classList.contains("dark")); } });
     if (!X) return liste;
     X.AUFGABEN.forEach((a) => liste.push({ art: "aufgabe", id: a.id, gruppe: "Aufgaben", titel: a.titel, neben: X.fmtRelativ(a.faellig), modul: a.modul, worte: a.text + " " + X.modul(a.modul).titel + " " + X.STATUS[a.status].text }));
@@ -208,7 +268,7 @@
     return `<span class="status ${s.klasse}"><span class="sym" aria-hidden="true">${s.symbol}</span>${s.text}</span>`;
   }
 
-  window.EXUI = { suche, stil, stilAktuell: () => stilJetzt, STILE, VARIANTEN, leiste, wortmarke, statusChip, toast, lesen, schreiben, SPEICHER };
+  window.EXUI = { erscheinungsbild, suche, stil, stilAktuell: () => stilJetzt, STILE, VARIANTEN, leiste, wortmarke, statusChip, toast, lesen, schreiben, SPEICHER };
   anwenden();
   if (document.body.dataset.variante) leiste(document.body.dataset.variante);
 })();
